@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 strPipePath=""
 UMIcol="h5path"
+ANNcol="metapath"
 batchKey="library_id"
 # maximum number of a parallel job can be re-submited is 5
 maxJobSubmitRepN=5 
@@ -154,6 +155,7 @@ def MsgPower():
   print("\nPowered by the Computational Biology Group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]")
   print("------------")
 def MsgHelp():
+  MsgInit()
   print("\nscPIPE /path/to/a/DNAnexus/download/folder === or === scPIPE /path/to/a/config/file\n")
   print("The config file will be generated automatically when a DNAnexus download folder is provided")
   print("Available reference data:")
@@ -170,18 +172,23 @@ def MsgInit():
   print("## Pipeline Path: %s"%strPipePath)
   print("## Pipeline Date: %s"%run_cmd(cmdDate).stdout.decode("utf-8").replace("\n",""))
   print("## git HEAD: %s###########\n"%run_cmd(cmdHEAD).stdout.decode("utf-8"))
-  print("\nLoading resources")
+  #print("\nLoading resources")
 
 def initProject(strDNAnexus):
   if os.path.isdir(strDNAnexus):
     strDNAnexus = os.path.realpath(strDNAnexus)
     meta = initMeta(strDNAnexus)
-    strConfig = initSave(meta,strDNAnexus)
+    if meta is None:
+      strConfig = initExternal(strDNAnexus)
+    else:
+      strConfig = initSave(meta,strDNAnexus)
     initMsg(strConfig)
-    Exit()
+    exit()
 def initMeta(strInput):
   print("Procing sample meta information ...")
   strMeta = "%s/samplesheet.tsv"%strInput
+  if not os.path.isfile(strMeta):
+    return None
   meta = pd.read_csv(strMeta,sep="\t")
   sysConfig = getConfig()
   config = getConfig("template.yml")
@@ -230,6 +237,19 @@ def initSave(meta,strInput):
   with open(strConfig,"w") as f:
     f.writelines(config)
   return strConfig
+def initExternal(strInput):
+  config = getConfig("template.yml")
+  print("*****\nExternal data, please fill the config file and provide sample sheet with two mandatory columns:")
+  print("Two columns with names '%s' and '%s' indicating sample name and UMI path"%(config['sample_name'],UMIcol))
+  print("Option columns for sample annotation")
+  print("Option column '%s' can be provided for cell level annotation first column cell bar code\n*****"%ANNcol)
+  configL = getConfig("template.yml",blines=True)
+  configL = [one.replace("initOutput",strInput) for one in configL]
+  configL = [re.sub(r'\b(init\w*)',' #required',one) for one in configL]
+  strConfig = os.path.join(strInput,"config.yml")
+  with open(strConfig,"w") as f:
+    f.writelines(configL)
+  return strConfig
 def initMsg(strConfig):
     print("\nSingle cell/nuclei RNAseq project was created @%s"%os.path.dirname(strConfig))
     print("Please update the config file, if any reference can be used.")
@@ -244,6 +264,7 @@ def runPipe(strConfig):
   MsgInit()
   sc.settings.n_jobs=1
   config = getConfig(strConfig,bSys=False)
+  checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
   prefix = runQC(config,meta)
   
@@ -252,14 +273,22 @@ def runPipe(strConfig):
   moveCellDepot(prefix)
   runDEG(strConfig,prefix,config)
   MsgPower()
-
+def checkConfig(config):
+  if config["prj_name"] is None:
+    Exit("'prj_name' is required in config file!")
+  if config['sample_meta'] is None:
+    Exit("'sample_meta' is required in config file!")
 def runQC(config,meta):
   plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
   prefix = os.path.join(config["output"],config["prj_name"])
   if not config["runAnalysis"] or not os.path.isfile("%s_raw.h5ad"%prefix) or config["newProcess"]:
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
-      adata = getData(meta,config["sample_name"])
+      if not os.path.isfile("%s_raw_prefilter.h5ad"%prefix) or config["newProcess"]:
+        adata = getData(meta,config["sample_name"])
+        adata.write("%s_raw_prefilter.h5ad"%prefix)
+      else:
+        adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
       adata = preprocess(adata,config)
       adata.obs,adata.obsm=obtainRAWobsm(adata.copy())
       plotQC(adata,config["output"],config["group"])
@@ -321,7 +350,7 @@ def getSampleMeta(strMeta):
   if not UMIcol in meta.columns:
     Exit("'%s' columns is required in meta file (%s)"%(UMIcol,strMeta))
   for oneH5 in meta[UMIcol]:
-    if not os.path.isfile(oneH5):
+    if not os.path.isdir(oneH5) and not (os.path.isfile(oneH5) and oneH5.endswith(".h5")):
       Exit("The UMI file %s does not exist, please correct the sample sheet"%oneH5)
   return(meta)
 def getData(meta,sID):
@@ -329,8 +358,20 @@ def getData(meta,sID):
   adatals = []
   for i in range(meta.shape[0]):
     print("\t%s"%meta[sID][i])
-    adata = sc.read_10x_h5(meta[UMIcol][i])
+    if os.path.isdir(meta[UMIcol][i]):
+      adata = sc.read_10x_mtx(meta[UMIcol][i])
+    elif meta[UMIcol][i].endswith('.h5'):
+      adata = sc.read_10x_h5(meta[UMIcol][i])
+    else:
+      Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
+
+    if ANNcol in meta.columns:
+      annMeta = pd.read_csv(meta[ANNcol][i],index_col=0)
+      adata = adata[adata.obs.index.isin(list(annMeta.index))]
+      adata.obs = pd.merge(adata.obs,annMeta,left_index=True,right_index=True)
+      print("\t\tCell level meta available, cell number: %d"%adata.shape[0])
+      
     for one in meta.columns:
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
@@ -369,14 +410,22 @@ def preprocess(adata,config):
   ## filtering low content cells and low genes
   print("\tfiltering cells and genes")
   sc.pp.filter_genes(adata,min_cells=min_cells)
+  print("\t\tfiltered genes with min.cells %d left %d genes"%(min_cells,adata.shape[1]))
   sc.pp.filter_cells(adata,min_genes=min_features)
+  print("\t\tfiltered cells with min.features %d left %d cells"%(min_features,adata.shape[0]))
   
   adata = adata[adata.obs.pct_counts_mt<mt_cutoff,:]
+  print("\t\tfiltered cells with mt.cutoff %d left %d cells"%(mt_cutoff,adata.shape[0]))
   adata = adata[adata.obs.n_genes_by_counts<highGene_cutoff,:]
+  print("\t\tfiltered cells with highGene.cutoff %d left %d cells"%(highGene_cutoff,adata.shape[0]))
   adata = adata[adata.obs.total_counts<highCount_cutoff,:]
+  print("\t\tfiltered cells with highCount.cutoff %d left %d cells"%(highCount_cutoff,adata.shape[0]))
+  if adata.shape[0]<10:
+    Exit("Few cells (%d<10) left after filtering, please check the filtering setting in config to contitue!"%adata.shape[0])
   return adata
 def obtainRAWobsm(D):
   # 95 percentile to normalize
+  print("\tinitializing layout")
   sc.pp.normalize_total(D,target_sum=math.ceil(np.percentile(D.X.sum(axis=1).transpose().tolist()[0],95)))
   sc.pp.log1p(D)
   sc.pp.highly_variable_genes(D, min_mean=0.01, max_mean=3, min_disp=0.5)

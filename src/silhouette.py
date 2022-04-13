@@ -57,7 +57,7 @@ def main():
   ax = coeff_pca50_df.boxplot(by='method',rot=90)
   ax.set_title("Silhouette_coefficients")
   plt.grid()
-  plt.savefig("Silhouette_boxplot_pc50.pdf",bbox_inches="tight")
+  plt.savefig("%s_Silhouette_boxplot_pc50.pdf"%prefix,bbox_inches="tight")
   plt.close()
 
 if __name__ == "__main__":
