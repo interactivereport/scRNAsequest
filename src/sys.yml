@@ -1,0 +1,126 @@
+notMeta:
+- Sapio_Submission_ID
+- TST_ID
+- Status
+- Volume
+- Sapio_Sample_ID
+- Sapio_Request_Name
+- Status_Time
+- Notes
+- Sapio_Request_ID
+- Sapio_URL
+- Sample_Process
+- Sapio_Plate_ID
+- Plate_Name
+- Sample_Type
+- Sapio_Plate_Name
+- Sapio_Profile
+- Sapio_IndexBarcode
+celldepotDir: /camhpc/pubdata/shared/h5ad/CellDepot/
+celldepotHttp: http://omicsoft01.hpc.biogen.com:8088/d/
+refDir: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/
+ref:
+- human_cortex
+- human_fetal
+- human_pbmc
+- mouse_thalamus
+- mouse_cortex
+- mouse_spinalCord
+human_cortex:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_human_cortex_ref/ref.Rds
+  ref_link: https://azimuth.hubmapconsortium.org/references/
+  ref_src: single nuclei
+  ref_platform: SNARE-seq2
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - class
+  - cluster
+  - subclass
+  - cross_species_cluster
+human_fetal:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_human_fetal_ref/ref.Rds
+  ref_link: https://azimuth.hubmapconsortium.org/references/
+  ref_src: single cell
+  ref_platform: sciRNA-seq3
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - annotation.l1
+  - annotation.l2
+human_pbmc:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_human_pbmc_citeseq_ref/ref.Rds
+  ref_link: https://azimuth.hubmapconsortium.org/references/
+  ref_src: single cell
+  ref_platform: CITE-seq
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - celltype.l1
+  - celltype.l2
+  - celltype.l3
+mouse_thalamus:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_mouse_10x_thalamus_snRNA_ref/ref.Rds
+  ref_link: http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php?ID=301
+  ref_src: single nuclei
+  ref_platform: 10X
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - celltype
+  - genotype
+mouse_cortex:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_mouse_cortex_ref/ref.Rds
+  ref_link: https://azimuth.hubmapconsortium.org/references/
+  ref_src: single nuclei
+  ref_platform: 10X
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - class
+  - cluster
+  - subclass
+  - cross_species_cluster
+mouse_spinalCord:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_mouse_dropseq_spinalCord_ref/ref.Rds
+  ref_link: http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php?ID=285
+  ref_src: single nuclei
+  ref_platform: 10X
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - celltype1
+  - celltype2
+  - location
+methods:
+  SCT:
+  - SCT.py
+  - raw
+  Harmony:
+  - harmony.py
+  - raw
+  Seurat:
+  - seurat.py
+  - raw
+  Liger:
+  - liger.py
+  - raw
+  SeuratRef:
+  - seuratRef.py
+  - raw
+# ..._raw.h5ad and user config file is passing to the above methods
+# ..._<method name>.h5ad is expected to becreated, such as ..._SCT.h5ad, ..._Harmony.h5ad
+# For kBET: please make sure the saved h5ad contains "X_umap" in obsm and "library_id" (batchKey) in obs
+# For silhouette: please make sure the saved h5ad contains "X_pca" in the obsm and "*louvain"/"*cluster" in the obs

@@ -1,0 +1,16 @@
+# please check wiki page for the details
+output: OUTPUTdir
+# the following is normally located in the same folder of celldepot hosting h5ad files
+ref_h5ad_raw: # full path to the h5ad file contains raw UMI along with cell annotation and layout
+ref_batch: library_id
+# above two parameters are ignored, if a seurat object can be located in the project folder
+ref_rds: #full path to the processed seurat object including SCT assay, cell annotation and layout
+
+# All information below are required
+ref_name: # please provide a unique name prefer to include species and tissue (check existed by calling scPIPE without argument)
+ref_link: # The web link to the information of this reference
+ref_src: # sc/"single cell" or sn/"single nuclei"
+ref_platform: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
+ref_PCA: pca #list a PCA to be used for reduction (full name from VIP)
+ref_label: [] # list the annotations to be used for transferring
+overwrite: False #overwrite the existing?

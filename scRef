@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+config=$1
+src="$(dirname $0)/src"
+
+if [[ ! -f "$src/.env" ]]; then
+  echo "scRef: Please run ./install to setup necessary env variables"
+  exit
+fi
+
+env -i config="$config" src="$src" bash -c 'set -o allexport;source $src/.env;set +o allexport;eval $condaEnv;Rscript $src/scRef.R $config'
