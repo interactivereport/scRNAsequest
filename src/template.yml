@@ -1,7 +1,7 @@
 # please check wiki page for the details
 prj_name: initPrjName
 prj_title: "initPrjTitle"
-ref_name: # choose one from scPIPE call
+ref_name: # choose one from scAnalyzer call without argument
 output: initOutput #output path
 sample_name: Sample_Name
 sample_meta: initPrjMeta

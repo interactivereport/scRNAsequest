@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-#nohup scPIPE config.yml > QC.log 2>&1 &
+#nohup scAnalyzer config.yml > QC.log 2>&1 &
 
 config=$1
 src="$(dirname $0)/src"
 
 if [[ ! -f "$src/.env" ]]; then
-  echo "scPIPE: Please run ./install to setup necessary env variables"
+  echo "scAnalyzer: Please run ./install to setup necessary env variables"
   exit
 fi
 

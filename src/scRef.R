@@ -45,7 +45,7 @@ MsgHelp <- function(){
 }
 MsgInit <- function(){
   cmdURL=paste0("cd ",strPipePath,";git config --get remote.origin.url")
-  message("###########\n## scPIPE: ",run_cmd(cmdURL))
+  message("###########\n## scAnalyzer: ",run_cmd(cmdURL))
   message("## Pipeline Path: ",strPipePath)
   cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
   message("## git HEAD: ",run_cmd(cmdHEAD),"\n###########")
@@ -208,7 +208,7 @@ saveRef <- function(D,config,sysConfig){
   yaml::write_yaml(sysConfig,strSys)
   cat(paste(comments,collapse="\n"),"\n",
       sep="",file=strSys,append=T)
-  message("\nA new reference (",config$ref_name,") is added into the scPIPE!")
+  message("\nA new reference (",config$ref_name,") is added into the scAnalyzer!")
   MsgPower()
 }
 createRef <- function(strConfig){

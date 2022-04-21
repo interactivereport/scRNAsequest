@@ -156,7 +156,7 @@ def MsgPower():
   print("------------")
 def MsgHelp():
   MsgInit()
-  print("\nscPIPE /path/to/a/DNAnexus/download/folder === or === scPIPE /path/to/a/config/file\n")
+  print("\nscAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file\n")
   print("The config file will be generated automatically when a DNAnexus download folder is provided")
   print("Available reference data:")
   sysConfig = getConfig()
@@ -168,7 +168,7 @@ def MsgInit():
   cmdURL="cd %s;git config --get remote.origin.url"%strPipePath
   cmdDate="cd %s;git show -s --format=%%ci"%strPipePath
   cmdHEAD="cd %s;git rev-parse HEAD"%strPipePath
-  print("###########\n## scPIPE: %s"%run_cmd(cmdURL).stdout.decode("utf-8").replace("\n",""))
+  print("###########\n## scAnalyzer: %s"%run_cmd(cmdURL).stdout.decode("utf-8").replace("\n",""))
   print("## Pipeline Path: %s"%strPipePath)
   print("## Pipeline Date: %s"%run_cmd(cmdDate).stdout.decode("utf-8").replace("\n",""))
   print("## git HEAD: %s###########\n"%run_cmd(cmdHEAD).stdout.decode("utf-8"))
@@ -253,11 +253,11 @@ def initExternal(strInput):
 def initMsg(strConfig):
     print("\nSingle cell/nuclei RNAseq project was created @%s"%os.path.dirname(strConfig))
     print("Please update the config file, if any reference can be used.")
-    print("\tReference information can be access by 'scPIPE' without any input argument.")
+    print("\tReference information can be access by 'scAnalyzer' without any input argument.")
     print("Additional columns can be provided into the sample meta table (sampleMeta.csv).")
     print("DEG table (DEGinfo.csv) can be filled later and rerun the following command.")
     print("Please run the following command to use the pipeline for the input dataset.")
-    print("\n===> scPIPE %s"%strConfig)
+    print("\n===> scAnalyzer %s"%strConfig)
     MsgPower()
 
 def runPipe(strConfig):
@@ -556,8 +556,8 @@ def moveCellDepot(prefix):
   sysConfig = getConfig()
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
   print("\nTo check the result, please visit: %s%s.h5ad/"%(sysConfig['celldepotHttp'],os.path.basename(prefix)))
-  print("\nAfter confirm the results, please update the publish section of config file before running scPIPE with 'publish: True' ")
-  print("=== scPIPE is completed ===")
+  print("\nAfter confirm the results, please update the publish section of config file before running scAnalyzer with 'publish: True' ")
+  print("=== scAnalyzer is completed ===")
 
 def runDEG(strConfig,prefix,config):
   #Rscript /home/zouyang/projects/scRNAsequest/src/scRNAseq_DE.R

@@ -7,7 +7,7 @@ ref_batch: library_id
 ref_rds: #full path to the processed seurat object including SCT assay, cell annotation and layout
 
 # All information below are required
-ref_name: # please provide a unique name prefer to include species and tissue (check existed by calling scPIPE without argument)
+ref_name: # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
 ref_link: # The web link to the information of this reference
 ref_src: # sc/"single cell" or sn/"single nuclei"
 ref_platform: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
