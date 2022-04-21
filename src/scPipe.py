@@ -174,6 +174,7 @@ def MsgInit():
   print("## git HEAD: %s###########\n"%run_cmd(cmdHEAD).stdout.decode("utf-8"))
   #print("\nLoading resources")
 
+## init projects
 def initProject(strDNAnexus):
   if os.path.isdir(strDNAnexus):
     strDNAnexus = os.path.realpath(strDNAnexus)
@@ -243,8 +244,12 @@ def initExternal(strInput):
   print("Two columns with names '%s' and '%s' indicating sample name and UMI path"%(config['sample_name'],UMIcol))
   print("Option columns for sample annotation")
   print("Option column '%s' can be provided for cell level annotation first column cell bar code\n*****"%ANNcol)
+  strMeta = os.path.join(strInput,"sampleMeta.csv")
+  with open(strMeta,"w") as f:
+    f.writelines(["%s,%s,%s\n"%(config['sample_name'],UMIcol,ANNcol)])
   configL = getConfig("template.yml",blines=True)
   configL = [one.replace("initOutput",strInput) for one in configL]
+  configL = [one.replace("initPrjMeta",strMeta) for one in configL]
   configL = [re.sub(r'\b(init\w*)',' #required',one) for one in configL]
   strConfig = os.path.join(strInput,"config.yml")
   with open(strConfig,"w") as f:
@@ -260,6 +265,7 @@ def initMsg(strConfig):
     print("\n===> scAnalyzer %s"%strConfig)
     MsgPower()
 
+## pipeline run 
 def runPipe(strConfig):
   MsgInit()
   sc.settings.n_jobs=1
