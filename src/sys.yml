@@ -19,6 +19,7 @@ notMeta:
 celldepotDir: /camhpc/pubdata/shared/h5ad/CellDepot/
 celldepotHttp: http://omicsoft01.hpc.biogen.com:8088/d/
 refDir: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/
+powerby: the Research Data Sciences Group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
 ref:
 - human_cortex
 - human_fetal
@@ -26,6 +27,7 @@ ref:
 - mouse_thalamus
 - mouse_cortex
 - mouse_spinalCord
+- mouse_telencephalon_diencephalon
 human_cortex:
   ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas/azimuth_human_cortex_ref/ref.Rds
   ref_link: https://azimuth.hubmapconsortium.org/references/
@@ -104,6 +106,18 @@ mouse_spinalCord:
   - celltype1
   - celltype2
   - location
+mouse_telencephalon_diencephalon:
+  ref_file: /camhpc/dept/compbio/shared/single_cell/SingleCell_reference/reference_atlas//azimuth_mouse_telencephalon_diencephalon_sn_10X_ref/ref.Rds
+  ref_link: https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/
+  ref_src: sn
+  ref_platform: 10X
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - annotation_1
+  - annotation_1_print
 methods:
   SCT:
   - SCT.py

@@ -11,7 +11,10 @@ mapOne <- function(oneD){
   
 }
 processSCTref <- function(strH5ad,batch,config,strOut){
-  reference <- readRDS(config$ref_file)
+  if(grepl("^http",config$ref_file))
+    reference <- readRDS(url(config$ref_file))
+  else
+    reference <- readRDS(config$ref_file)
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
                           meta.data=getobs(strH5ad))

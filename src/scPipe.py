@@ -38,6 +38,12 @@ def getConfig(strConfig="sys.yml",blines=False,bSys=True):
     else:
       config = yaml.safe_load(f)
   return(config)
+def checkInstallSetting():
+  ## check sys config file
+  strConfig = "%s/src/sys.yml"%(strPipePath)
+  if not os.path.isfile(strConfig):
+    print("=====\nPlease contact admin to set the sys.yml in %s.\nAn Example is 'sys_example.yml'.\n====="%strPipePath)
+    exit()
 
 ## parallel job management 
 def submit_cmd(cmds,config,core=None):
@@ -152,7 +158,8 @@ def qstat(jID,strPath,cmds,cmdN,core):
   
 ## msg
 def MsgPower():
-  print("\nPowered by the Computational Biology Group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]")
+  sysConfig = getConfig()
+  print("\nPowered by %s"%sysConfig['powerby'])
   print("------------")
 def MsgHelp():
   MsgInit()
@@ -195,8 +202,10 @@ def initMeta(strInput):
   config = getConfig("template.yml")
   
   with warnings.catch_warnings():
-      warnings.simplefilter("ignore")
-      meta = meta[[one for one in meta.columns if not one in sysConfig['notMeta']]].dropna(1,'all')
+    warnings.simplefilter("ignore")
+    if not 'notMeta' in sysConfig.keys():
+      sysConfig['notMeta'] = []
+    meta = meta[[one for one in meta.columns if not one in sysConfig['notMeta']]].dropna(1,'all')
   meta.insert(0,UMIcol,["%s/%s.filtered_feature_bc_matrix.h5"%(strInput,one) for one in meta[config["sample_name"]]])
   for oneH5 in meta[UMIcol]:
     if not os.path.isfile(oneH5):
@@ -589,6 +598,7 @@ def runDEG(strConfig,prefix,config):
 def main():
   global strPipePath
   strPipePath=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+  checkInstallSetting()
   
   if len(sys.argv)<2:
     MsgHelp()

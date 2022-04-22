@@ -30,7 +30,7 @@ MsgExit <- function(msg=""){
   q()
 }
 MsgPower <- function(){
-  message("\nPowered by the Computational Biology Group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]")
+  message("\nPowered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]")
   message("------------")
 }
 MsgHelp <- function(){
@@ -45,9 +45,11 @@ MsgHelp <- function(){
 }
 MsgInit <- function(){
   cmdURL=paste0("cd ",strPipePath,";git config --get remote.origin.url")
+  cmdDate=paste0("cd ",strPipePath,";git show -s --format=%%ci")
+  cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
   message("###########\n## scAnalyzer: ",run_cmd(cmdURL))
   message("## Pipeline Path: ",strPipePath)
-  cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
+  message("## Pipeline Date: ",run_cmd(cmdDate))
   message("## git HEAD: ",run_cmd(cmdHEAD),"\n###########")
   message("\nLoading resources")
 }
@@ -69,8 +71,8 @@ main <- function(){
 }
 
 initRef <- function(strDir){
-  strDir <- normalizePath(strDir)
   dir.create(strDir,showWarnings=F)
+  strDir <- normalizePath(strDir)
   config <- readLines(paste0(strPipePath,"/src/ref.yml"))
   config <- gsub("OUTPUTdir",strDir,config)
   writeLines(config,paste0(strDir,"/refConfig.yml"))
@@ -98,8 +100,17 @@ checkConfig <- function(strConfig,sysConfig){
   if(!checkExist(config$ref_rds))
     if(!checkExist(config$ref_h5ad_raw))
       MsgExit(paste0("Either one seurat object rds file or raw h5ad files is required to be existed"))
-
+  
   return(config)
+}
+checkRefSetting <- function(config){
+  xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
+  if(is.null(xy)) MsgExit(paste0("The 'ref_PCA' (",config$ref_PCA,") is not in the h5ad file"))
+  
+  meta <- getobs(config$ref_h5ad)
+  if(sum(!config$ref_label%in%colnames(meta)))
+    MsgExit(paste0("The following annotation labels (case sensitive) are not in the h5ad file:\n",
+                   paste(config$ref_label[!config$ref_label%in%colnames(meta)],collapse=", ")))
 }
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
@@ -216,6 +227,7 @@ createRef <- function(strConfig){
   sysConfig <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))
   config <- checkConfig(strConfig,sysConfig)
   suppressMessages(suppressWarnings(loadingPKG()))
+  checkRefSetting(config)
   #"/camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_SCT.h5ad"
   if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
     D <- readRDS(config$ref_rds)
@@ -223,7 +235,6 @@ createRef <- function(strConfig){
     D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
     DefaultAssay(D) <- "SCT"
     xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
-    if(is.null(xy)) MsgExit(paste0("The 'ref_PCA' (",config$ref_PCA,") is not in the h5ad file"))
     rownames(xy) <- colnames(D)
     D[[config$ref_PCA]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
                                                 key="PC_",
@@ -231,9 +242,7 @@ createRef <- function(strConfig){
   }else{
     MsgExit(paste0("Either one seurat object rds file or two h5ad files are required to be existed"))
   }
-  if(sum(!config$ref_label%in%colnames(D@meta.data)))
-    MsgExit(paste0("The following annotation labels are not in the h5ad file:\n",
-                   paste(config$ref_label[!config$ref_label%in%colnames(D@meta.data)],collapse=", ")))
+  
   message("Processing ...")
   D <- FindNeighbors(D, dims = 1:30, reduction=config$ref_PCA,verbose = FALSE)
   D <- RunSPCA(D, npcs=ncol(D[[config$ref_PCA]]), graph = 'SCT_snn')

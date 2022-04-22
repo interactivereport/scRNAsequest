@@ -12,5 +12,5 @@ ref_link: # The web link to the information of this reference
 ref_src: # sc/"single cell" or sn/"single nuclei"
 ref_platform: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
 ref_PCA: pca #list a PCA to be used for reduction (full name from VIP)
-ref_label: [] # list the annotations to be used for transferring
+ref_label: [] # list the annotations (case sensitive) to be used for transferring
 overwrite: False #overwrite the existing?
