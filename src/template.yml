@@ -20,7 +20,7 @@ overwrite: False
 #parallelTime: 180 # for a job (not the entire pipeline) in minutes, default 3hr
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
-DEG_desp: initDEG
+DEG_desp: initDEG #required for DEG analysis
 # Please be causion of changing the following default filtering
 min.cells.per.gene: 3
 min.genes.per.cell: 250

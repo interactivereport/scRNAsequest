@@ -244,12 +244,19 @@ def initExternal(strInput):
   print("Two columns with names '%s' and '%s' indicating sample name and UMI path"%(config['sample_name'],UMIcol))
   print("Option columns for sample annotation")
   print("Option column '%s' can be provided for cell level annotation first column cell bar code\n*****"%ANNcol)
+  # save empty sample meta file with columns
   strMeta = os.path.join(strInput,"sampleMeta.csv")
   with open(strMeta,"w") as f:
     f.writelines(["%s,%s,%s\n"%(config['sample_name'],UMIcol,ANNcol)])
+  # save empty DE csv table
+  strDEG = os.path.join(strInput,"DEGinfo.csv")
+  with open(strDEG,"w") as f:
+    f.write("sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
+
   configL = getConfig("template.yml",blines=True)
   configL = [one.replace("initOutput",strInput) for one in configL]
   configL = [one.replace("initPrjMeta",strMeta) for one in configL]
+  configL = [one.replace("initDEG",strDEG) for one in configL]
   configL = [re.sub(r'\b(init\w*)',' #required',one) for one in configL]
   strConfig = os.path.join(strInput,"config.yml")
   with open(strConfig,"w") as f:
@@ -567,6 +574,11 @@ def moveCellDepot(prefix):
 
 def runDEG(strConfig,prefix,config):
   #Rscript /home/zouyang/projects/scRNAsequest/src/scRNAseq_DE.R
+  if config['DEG_desp'] is None or not os.path.isfile(config['DEG_desp']):
+    return
+  D = pd.read_csv(config['DEG_desp'],header=0)
+  if D.shape[0]==0:
+    return
   cmd = "Rscript %s/src/scRNAseq_DE.R %s"%(strPipePath,strConfig)
   msg = run_cmd(cmd).stdout.decode("utf-8")
   if "scDEG task creation completed" in msg:
