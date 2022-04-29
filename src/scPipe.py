@@ -266,7 +266,9 @@ def initExternal(strInput):
   configL = [one.replace("initOutput",strInput) for one in configL]
   configL = [one.replace("initPrjMeta",strMeta) for one in configL]
   configL = [one.replace("initDEG",strDEG) for one in configL]
-  configL = [re.sub(r'\b(init\w*)',' #required',one) for one in configL]
+  configL = [one.replace("initPrjName",' #required') for one in configL]
+  configL = [one.replace('"initPrjTitle"',' #required') for one in configL]
+
   strConfig = os.path.join(strInput,"config.yml")
   with open(strConfig,"w") as f:
     f.writelines(configL)
@@ -312,17 +314,19 @@ def runQC(config,meta):
       else:
         adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
       adata = preprocess(adata,config)
-      adata.obs,adata.obsm=obtainRAWobsm(adata.copy())
       plotQC(adata,config["output"],config["group"])
-      adata.write("%s_raw.h5ad"%prefix)
     if not config["runAnalysis"]:
       runQCmsg(config)
       exit()
+    with warnings.catch_warnings():
+      adata.obs,adata.obsm=obtainRAWobsm(adata.copy())
+      adata.write("%s_raw.h5ad"%prefix)
+      
   return prefix
 def runQCmsg(config):
   print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tumiQC.pdf"%config['output'])
   print("And then:")
-  print("\t1. Remove any outlier sample from the sample meta table %s")
+  print("\t1. Remove any outlier sample from the sample meta table %s"%config['sample_meta'])
   print("\t2. Update config file on cutoff values for cell filtering")
   print("\t3. After making sure the cell filtering setting (might several iteration), set 'runAnalysis: True' in the config file.")
   print("\t4. (Optional) consider to enable parallel by setting: 'parallel: sge' for CAMHPC or 'parallel: slurm' for EdgeHPC.")

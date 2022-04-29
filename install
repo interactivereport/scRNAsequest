@@ -14,14 +14,14 @@ conda env create -f install.yml
 condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
 #sed -i "1s|^|#. $condaPath/etc/profile.d/conda.sh;conda activate scRNAsequest\n|" src/sys.yml
-echo "condaEnv='. $condaPath/etc/profile.d/conda.sh;conda activate scRNAsequest'" > $src/.env
-echo "PATH=$PATH" >> $src/.env
-echo "OPENBLAS_NUM_THREADS=1" >> $src/.env
-echo "SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
-echo "SGE_QMASTER_PORT=$SGE_QMASTER_PORT" >> $src/.env
-echo "SGE_ROOT=$SGE_ROOT" >> $src/.env
+echo "export condaEnv='. $condaPath/etc/profile.d/conda.sh;conda activate scRNAsequest'" > $src/.env
+echo "export PATH=$PATH" >> $src/.env
+echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
+echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
+echo "export SGE_QMASTER_PORT=$SGE_QMASTER_PORT" >> $src/.env
+echo "export SGE_ROOT=$SGE_ROOT" >> $src/.env
 
 ## additional packages which are not available on anaconda
-env -i src="$src" bash -c 'set -o allexport;source $src/.env;set +o allexport;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET")})'"'"
-env -i src="$src" bash -c 'set -o allexport;source $src/.env;set +o allexport;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula@v1.1.7")})'"'"
-env -i src="$src" bash -c 'set -o allexport;source $src/.env;set +o allexport;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth@v0.4.1")})'"'"
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET")})'"'"
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula@v1.1.7")})'"'"
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth@v0.4.1")})'"'"

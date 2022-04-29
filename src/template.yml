@@ -1,6 +1,6 @@
 # please check wiki page for the details
 prj_name: initPrjName
-prj_title: initPrjTitle # quote might be needed
+prj_title: "initPrjTitle" # quote might be needed
 ref_name: # choose one from scAnalyzer call without argument
 output: initOutput #output path
 sample_name: Sample_Name

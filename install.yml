@@ -55,4 +55,5 @@ dependencies:
   - python-igraph=0.9.9
   - louvain=0.7.1
   - multicore-tsne=0.1
+  - git=2.35.1
   
