@@ -162,7 +162,6 @@ def MsgPower():
   print("\nPowered by %s"%sysConfig['powerby'])
   print("------------")
 def MsgHelp():
-  MsgInit()
   print("\nscAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file\n")
   print("The config file will be generated automatically when a DNAnexus download folder is provided")
   print("Available reference data:")
@@ -175,7 +174,7 @@ def MsgInit():
   cmdURL="cd %s;git config --get remote.origin.url"%strPipePath
   cmdDate="cd %s;git show -s --format=%%ci"%strPipePath
   cmdHEAD="cd %s;git rev-parse HEAD"%strPipePath
-  print("###########\n## scAnalyzer: %s"%run_cmd(cmdURL).stdout.decode("utf-8").replace("\n",""))
+  print("###########\n## scRNAsequest: %s"%run_cmd(cmdURL).stdout.decode("utf-8").replace("\n",""))
   print("## Pipeline Path: %s"%strPipePath)
   print("## Pipeline Date: %s"%run_cmd(cmdDate).stdout.decode("utf-8").replace("\n",""))
   print("## git HEAD: %s###########\n"%run_cmd(cmdHEAD).stdout.decode("utf-8"))
@@ -285,7 +284,6 @@ def initMsg(strConfig):
 
 ## pipeline run 
 def runPipe(strConfig):
-  MsgInit()
   sc.settings.n_jobs=1
   config = getConfig(strConfig,bSys=False)
   checkConfig(config)
@@ -603,6 +601,7 @@ def main():
   global strPipePath
   strPipePath=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
   checkInstallSetting()
+  MsgInit()
   
   if len(sys.argv)<2:
     MsgHelp()

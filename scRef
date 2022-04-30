@@ -8,4 +8,10 @@ if [[ ! -f "$src/.env" ]]; then
   exit
 fi
 
-env -i config="$config" src="$src" bash -c 'set -o allexport;source $src/.env;set +o allexport;eval $condaEnv;Rscript $src/scRef.R $config'
+if [[ -f "$config" ]]; then
+  env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/scRef.R $config 2>&1 | tee -a $config.$(date +%Y%m%d).log'
+elif [[ -d "$config" ]]; then
+  env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/scRef.R $config 2>&1 | tee -a $config/init_$(date +%Y%m%d).log'
+else
+  env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/scRef.R'
+fi

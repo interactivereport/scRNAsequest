@@ -47,7 +47,7 @@ MsgInit <- function(){
   cmdURL=paste0("cd ",strPipePath,";git config --get remote.origin.url")
   cmdDate=paste0("cd ",strPipePath,";git show -s --format=%%ci")
   cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
-  message("###########\n## scAnalyzer: ",run_cmd(cmdURL))
+  message("###########\n## scRNAsequest: ",run_cmd(cmdURL))
   message("## Pipeline Path: ",strPipePath)
   message("## Pipeline Date: ",run_cmd(cmdDate))
   message("## git HEAD: ",run_cmd(cmdHEAD),"\n###########")
@@ -57,7 +57,7 @@ MsgInit <- function(){
 main <- function(){
   args = commandArgs()
   strPipePath <<- normalizePath(dirname(dirname(sapply(strsplit(grep("file=",args,value=T),"="),tail,1))))
-
+  MsgInit()
   strInput <- commandArgs(trailingOnly=T)
   if(length(strInput)==0){
     MsgHelp()
@@ -223,7 +223,6 @@ saveRef <- function(D,config,sysConfig){
   MsgPower()
 }
 createRef <- function(strConfig){
-  MsgInit()
   sysConfig <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))
   config <- checkConfig(strConfig,sysConfig)
   suppressMessages(suppressWarnings(loadingPKG()))
