@@ -313,7 +313,11 @@ def runQC(config,meta):
       else:
         adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
       adata = preprocess(adata,config)
-      plotQC(adata,config["output"],config["group"])
+      strPrefilterQC = os.path.join(config["output"],"prefilter.QC.pdf")
+      if not os.path.isfile(strPrefilterQC):
+        plotQC(adata,strPrefilterQC,config["group"])
+      adata = filtering(adata,config)
+      plotQC(adata,os.path.join(config["output"],"postfilter.QC.pdf"),config["group"])
     if not config["runAnalysis"]:
       runQCmsg(config)
       exit()
@@ -323,7 +327,7 @@ def runQC(config,meta):
       
   return prefix
 def runQCmsg(config):
-  print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tumiQC.pdf"%config['output'])
+  print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%config['output'])
   print("And then:")
   print("\t1. Remove any outlier sample from the sample meta table %s"%config['sample_meta'])
   print("\t2. Update config file on cutoff values for cell filtering")
@@ -413,11 +417,6 @@ def getData(meta,sID):
   return(adata)
 def preprocess(adata,config):
   MTstring=config["MTstring"]
-  min_cells=config["min.cells"]
-  min_features=config["min.features"]
-  mt_cutoff=config["mt.cutoff"]
-  highCount_cutoff=config["highCount.cutoff"]
-  highGene_cutoff=config["highGene.cutoff"]
 
   print("preprocessing ...")
   sc.pp.calculate_qc_metrics(adata, inplace=True)
@@ -430,8 +429,18 @@ def preprocess(adata,config):
   else:
     mito_genes = adata.var_names.str.startswith(MTstring)
   adata.obs['pct_counts_mt'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
-  print("\tall mitochondrial genes removed")
-  adata = adata[:, np.invert(mito_genes)]
+  if config["rmMT"]:
+    print("\tall mitochondrial genes removed")
+    adata = adata[:, np.invert(mito_genes)]
+  
+  return adata
+def filtering(adata,config):
+  min_cells=config["min.cells"]
+  min_features=config["min.features"]
+  mt_cutoff=config["mt.cutoff"]
+  highCount_cutoff=config["highCount.cutoff"]
+  highGene_cutoff=config["highGene.cutoff"]
+  
   ## filtering low content cells and low genes
   print("\tfiltering cells and genes")
   sc.pp.filter_genes(adata,min_cells=min_cells)
@@ -469,9 +478,9 @@ def obtainRAWobsm(D):
     sc.tl.rank_genes_groups(D, 'raw.louvain')
     sc.tl.tsne(D, n_pcs=npcs)
   return D.obs,D.obsm #, D.var.highly_variable
-def plotQC(adata,strOut,grp=None):
+def plotQC(adata,strPDF,grp=None):
   print("plotting UMI QC ...")
-  with PdfPages("%s/umiQC.pdf"%strOut) as pdf:
+  with PdfPages(strPDF) as pdf:
     sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=batchKey,alpha=0.5)
     pdf.savefig(bbox_inches="tight")
     sc.pl.highest_expr_genes(adata, n_top=20)
