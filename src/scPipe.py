@@ -174,6 +174,7 @@ def MsgInit():
   cmdURL="cd %s;git config --get remote.origin.url"%strPipePath
   cmdDate="cd %s;git show -s --format=%%ci"%strPipePath
   cmdHEAD="cd %s;git rev-parse HEAD"%strPipePath
+  print("\n\n*****",datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"*****")
   print("###########\n## scRNAsequest: %s"%run_cmd(cmdURL).stdout.decode("utf-8").replace("\n",""))
   print("## Pipeline Path: %s"%strPipePath)
   print("## Pipeline Date: %s"%run_cmd(cmdDate).stdout.decode("utf-8").replace("\n",""))
