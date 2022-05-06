@@ -10,11 +10,35 @@ PKGloading <- function(){
 mapOne <- function(oneD){
   
 }
+checkRef <- function(ref,config){
+  checkList <- list(ref_assay="refAssay",
+                    ref_neighbors="refdr.annoy.neighbors",
+                    ref_reduction="refDR",
+                    ref_reduction.model="refUMAP",
+                    ref_label=NA)  
+  for(one in names(checkList)){
+    if(!one %in% names(config)){
+      if(!is.na(checkList[[one]])){
+        tmp <- tryCatch({
+          ref[[checkList[[one]]]]
+        },error=function(e){
+          stop(paste(checkList[[one]],"cannot be found!\n\tPlease use scRef to generate reference!"))
+        })
+        rm("tmp")
+        config[[one]] <- checkList[[one]]
+      }else{
+        config[[one]] <- names(ref@tools$AzimuthReference@colormap)
+      }
+    }
+  }
+  return(config)
+}
 processSCTref <- function(strH5ad,batch,config,strOut){
   if(grepl("^http",config$ref_file))
     reference <- readRDS(url(config$ref_file))
   else
     reference <- readRDS(config$ref_file)
+  config <- checkRef(reference,config)
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
                           meta.data=getobs(strH5ad))
@@ -122,12 +146,18 @@ main <- function(){
   
   config <- yaml::read_yaml(strConfig)
   sysConfig <- yaml::read_yaml(paste0(dirname(selfPath),"/sys.yml"))
-  if(is.null(config$ref_name) || !config$ref_name%in%names(sysConfig))
+  if(file.exists(config$ref_name) && grepl("rds$",config$ref_name)){
+    oneRef <- list(ref_file=config$ref_name)
+  }
+  else if(!is.null(config$ref_name) && !config$ref_name%in%names(sysConfig)){
+    oneRef <- sysConfig[[config$ref_name]]
+  }else{
     stop(paste("unknown reference:",config$ref_name))
+  }
 
   strOut <- args[3]
   if(length(args)>3) batchKey <- args[4]
-  processSCTref(strH5ad,batchKey,sysConfig[[config$ref_name]],strOut)
+  processSCTref(strH5ad,batchKey,oneRef,strOut)
   
 }
 

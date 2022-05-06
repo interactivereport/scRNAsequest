@@ -47,6 +47,7 @@ MsgInit <- function(){
   cmdURL=paste0("cd ",strPipePath,";git config --get remote.origin.url")
   cmdDate=paste0("cd ",strPipePath,";git show -s --format=%%ci")
   cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
+  message("\n\n*****",format(Sys.time(), "%a %b %d, %Y | %X"),"*****")
   message("###########\n## scRNAsequest: ",run_cmd(cmdURL))
   message("## Pipeline Path: ",strPipePath)
   message("## Pipeline Date: ",run_cmd(cmdDate))
@@ -103,14 +104,24 @@ checkConfig <- function(strConfig,sysConfig){
   
   return(config)
 }
-checkRefSetting <- function(config){
+checkH5adRefSetting <- function(config){
   xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
   if(is.null(xy)) MsgExit(paste0("The 'ref_PCA' (",config$ref_PCA,") is not in the h5ad file"))
   
   meta <- getobs(config$ref_h5ad)
-  if(sum(!config$ref_label%in%colnames(meta)))
+  if(sum(!config$ref_label%in%colnames(meta))>0)
     MsgExit(paste0("The following annotation labels (case sensitive) are not in the h5ad file:\n",
                    paste(config$ref_label[!config$ref_label%in%colnames(meta)],collapse=", ")))
+}
+checkRDSRefSeting <- function(config,D){
+  if(!"SCT" %in% names(D@assays)) MsgExit(paste0("The 'SCT' assay is required but not in the rds file"))
+  if(!config$ref_PCA %in% names(D@reductions)) MsgExit(paste0("The 'ref_PCA' (",config$ref_PCA,") is not in the rds file"))
+  if(sum(!config$ref_label%in%colnames(D@meta.data))>0)
+    MsgExit(paste0("The following annotation labels (case sensitive) are not in the rds file:\n",
+                   paste(config$ref_label[!config$ref_label%in%colnames(D@meta.data)],collapse=", ")))
+  #https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
+  if(ncol(D[[config$ref_PCA]])<50)
+    MsgExit(paste0(config$ref_PCA," should contain at least 50 dimensions for use with Azimuth"))
 }
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
@@ -177,15 +188,20 @@ getSCT <- function(strH5ad,batch){
   }else{
     SCT <- merge(Dlist[[1]], y=Dlist[-1])
   }
-  # obtain one unified SCT model for Azimuth, and the SCT model is not used for mapping which cause problem of normalizing
-  Dtmp <- SCTransform(SCT,method = 'glmGamPoi',new.assay.name="SCT",return.only.var.genes = FALSE,verbose = FALSE)
-  SCT[["SCT"]]@SCTModel.list <- Dtmp[["SCT"]]@SCTModel.list
   VariableFeatures(SCT) <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
   return(SCT)
 }
-saveRef <- function(D,config,sysConfig){
+unifySCTmodel <- function(SCT){
+  if(length(levels(SCT[["SCT"]])) == 1) return(SCT)
+  # obtain one unified SCT model for Azimuth, and the SCT model is not used for mapping which cause problem of normalizing
+  Dtmp <- SCTransform(SCT,method = 'glmGamPoi',new.assay.name="SCT",return.only.var.genes = FALSE,verbose = FALSE)
+  SCT[["SCT"]]@SCTModel.list <- Dtmp[["SCT"]]@SCTModel.list
+  return(SCT)
+}
+saveRef <- function(D,config,sysConfig,strAzimuth="azimuth"){
+  message("saving to scAnalyzer ...")
   strRef <- file.path(sysConfig$refDir,
-                       gsub("[ [:punct:]]","_",paste("azimuth",config$ref_name,config$ref_src,config$ref_platform,"ref")),
+                       gsub("[ [:punct:]]","_",paste(strAzimuth,config$ref_name,config$ref_src,config$ref_platform,"ref")),
                        "ref.Rds")
   message("ref saved @",strRef)
   dir.create(dirname(strRef),showWarnings=F)
@@ -226,38 +242,56 @@ createRef <- function(strConfig){
   sysConfig <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))
   config <- checkConfig(strConfig,sysConfig)
   suppressMessages(suppressWarnings(loadingPKG()))
-  checkRefSetting(config)
   #"/camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_SCT.h5ad"
-  if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
-    D <- readRDS(config$ref_rds)
-  }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
-    D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
-    DefaultAssay(D) <- "SCT"
-    xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
-    rownames(xy) <- colnames(D)
-    D[[config$ref_PCA]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
-                                                key="PC_",
-                                                assay="SCT")
+  strRef <- file.path(config$output,paste0(config$ref_name,"_for_scAnalyzer.rds"))
+  if(!file.exists(strRef)){
+    if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
+      message("Reading rds file @",config$ref_rds," ...")
+      D <- readRDS(config$ref_rds)
+      checkRDSRefSeting(config,D)
+    }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
+      message("Reading h5ad file ...")
+      checkH5adRefSetting(config)
+      D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
+      DefaultAssay(D) <- "SCT"
+      xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
+      rownames(xy) <- colnames(D)
+      D[[config$ref_PCA]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
+                                                  key="PC_",
+                                                  assay="SCT")
+    }else{
+      MsgExit(paste0("Either one seurat object rds file or two h5ad files are required to be existed"))
+    }
+    
+    message("Processing ...")
+    D <- unifySCTmodel(D)
+    D <- FindNeighbors(D, dims = 1:30, reduction=config$ref_PCA,verbose = FALSE)
+    D <- RunSPCA(D, npcs=ncol(D[[config$ref_PCA]]), graph = 'SCT_snn')
+    D <- RunUMAP(D, dims = 1:30, reduction="spca",return.model=TRUE)
+    saveRDS(D,file.path(config$output,"ref_notFor_scAnalyzer.rds"))
+    
+    D_ref <- AzimuthReference(
+      D,
+      refUMAP = "umap",
+      refDR = "spca",
+      refAssay = "SCT",
+      dims = 1:ncol(D[[config$ref_PCA]]),
+      plotref = "umap",
+      metadata = config$ref_label #c('genotype','age','sex','cluster',"celltype")
+    )
+    saveRDS(D_ref,strRef)
   }else{
-    MsgExit(paste0("Either one seurat object rds file or two h5ad files are required to be existed"))
+    message("Found the existed ref @",strRef,"\n\tPlease remove/rename it rerun is prefered!")
   }
   
-  message("Processing ...")
-  D <- FindNeighbors(D, dims = 1:30, reduction=config$ref_PCA,verbose = FALSE)
-  D <- RunSPCA(D, npcs=ncol(D[[config$ref_PCA]]), graph = 'SCT_snn')
-  D <- RunUMAP(D, dims = 1:30, reduction="spca",return.model=TRUE)
-  saveRDS(D,file.path(config$output,"ref_full.rds"))
-  D_Azimuth <- AzimuthReference(
-    D,
-    refUMAP = "umap",
-    refDR = "spca",
-    refAssay = "SCT",
-    dims = 1:ncol(D[[config$ref_PCA]]),
-    plotref = "umap",
-    metadata = config$ref_label #c('genotype','age','sex','cluster',"celltype")
-  )
-  
-  saveRef(D_Azimuth,config,sysConfig)
+  if(config$publish){
+    D_Azimuth <- readRDS(strRef)
+    saveRef(D_Azimuth,config,sysConfig)
+  }else{
+    message("The private reference could be used by provide the following full path to 'ref_name' in scAnalyzer config file:")
+    message("\t",strRef)
+  }
+    
   
 }
 main()

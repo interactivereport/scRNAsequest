@@ -8,6 +8,7 @@ import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
+sc.set_figure_params(vector_friendly=True, dpi_save=300)
 strPipePath=""
 UMIcol="h5path"
 ANNcol="metapath"
@@ -435,6 +436,7 @@ def preprocess(adata,config):
   
   return adata
 def filtering(adata,config):
+  print("filtering ...")
   min_cells=config["min.cells"]
   min_features=config["min.features"]
   mt_cutoff=config["mt.cutoff"]

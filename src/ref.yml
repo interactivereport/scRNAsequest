@@ -11,6 +11,10 @@ ref_name: # please provide a unique name prefer to include species and tissue (c
 ref_link: # The web link to the information of this reference
 ref_src: # sc/"single cell" or sn/"single nuclei"
 ref_platform: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
-ref_PCA: pca #list a PCA to be used for reduction (full name from VIP)
+#list a PCA to be used for reduction (full name from VIP or one from seurat 'reductions' ) 
+# The PCA was used for the prefered layout (UMAP/tSNE)
+# For instance, if harmony was used, provide 'harmony'-like from reductions slot of seurat
+ref_PCA: pca 
 ref_label: [] # list the annotations (case sensitive) to be used for transferring
-overwrite: False #overwrite the existing?
+publish: False #should this reference be published into scAnalyzer
+overwrite: False #overwrite the existing scAnalyzer reference 
