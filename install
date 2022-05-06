@@ -13,13 +13,15 @@ src="$(dirname $0)/src"
 conda env create -f install.yml
 condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
-#sed -i "1s|^|#. $condaPath/etc/profile.d/conda.sh;conda activate scRNAsequest\n|" src/sys.yml
-echo "export condaEnv='. $condaPath/etc/profile.d/conda.sh;conda activate scRNAsequest'" > $src/.env
+. $condaPath/etc/profile.d/conda.sh
+conda activate scRNAsequest
+echo "export condaEnv='. $condaPath/etc/profile.d/conda.sh;conda activate $CONDA_PREFIX'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
 echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
 echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
 echo "export SGE_QMASTER_PORT=$SGE_QMASTER_PORT" >> $src/.env
 echo "export SGE_ROOT=$SGE_ROOT" >> $src/.env
+conda deactivate
 
 ## additional packages which are not available on anaconda
 env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET")})'"'"
