@@ -195,7 +195,14 @@ unifySCTmodel <- function(SCT){
   if(length(levels(SCT[["SCT"]])) == 1) return(SCT)
   # obtain one unified SCT model for Azimuth, and the SCT model is not used for mapping which cause problem of normalizing
   Dtmp <- SCTransform(SCT,method = 'glmGamPoi',new.assay.name="SCT",return.only.var.genes = FALSE,verbose = FALSE)
-  SCT[["SCT"]]@SCTModel.list <- Dtmp[["SCT"]]@SCTModel.list
+  if(is.null(levels(SCT[["SCT"]]))){
+    Dtmp[["SCT"]]$data <- SCT[["SCT"]]$data
+    Dtmp[["SCT"]]$scale.data <- SCT[["SCT"]]$scale.data
+    Dtmp[["SCT"]]$var.features <- SCT[["SCT"]]$var.features
+    SCT <- Dtmp
+  }else{
+    SCT[["SCT"]]@SCTModel.list <- Dtmp[["SCT"]]@SCTModel.list
+  }
   return(SCT)
 }
 saveRef <- function(D,config,sysConfig,strAzimuth="azimuth"){
