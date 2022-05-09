@@ -437,6 +437,7 @@ def preprocess(adata,config):
   return adata
 def filtering(adata,config):
   print("filtering ...")
+  print("10X report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
   min_cells=config["min.cells"]
   min_features=config["min.features"]
   mt_cutoff=config["mt.cutoff"]
