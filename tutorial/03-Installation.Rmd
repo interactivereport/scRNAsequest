@@ -1,0 +1,96 @@
+# Installation
+
+## Install scRNASequest
+
+First we install the scRNASequest by downloading the scripts from GitHub:
+
+```{bash, eval=FALSE}
+git clone https://github.com/interactivereport/scRNAsequest.git
+cd scRNAsequest
+
+#Install scRNAsequest conda environment and R packages
+#Please make sure you have conda installed before, and this step may take a while (30min ~1 hour)
+bash install
+
+#Activate the conda environment
+conda activate scRNAsequest
+
+#Also, .env will be created under the src directory:
+ls ~/scRNAsequest/src/.env
+
+#Check the path of current directory and add it to $PATH:
+CurrentDir=`pwd`
+export PATH="$CurrentDir:$PATH"
+
+#However, the above command only adds the scRNAsequest directory to $PATH temporarily
+#To add it to the environment permanently, edit ~/.bash_profile or ~/.bashrc:
+vim ~/.bash_profile
+#Add the full path of the scRNAsequest directory to $PATH, for example, $HOME/scRNAsequest
+PATH=$PATH:$HOME/RNAsequest
+#Source the file
+source ~/.bash_profile
+```
+
+If the installation is successful, scAnalyzer and scRef should be able to run without passing any parameters:
+
+```{bash, eval=FALSE}
+$ scAnalyzer
+
+***** 2022-05-06 18:26:41 *****
+###########
+## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
+## Pipeline Path: /camhpc/home/zouyang/projects/scRNAsequest
+## Pipeline Date: 2022-05-06 15:15:38 -0400
+## git HEAD: ccd9e414b5266d32fbebd89ecfa4a89c20144315
+###########
+
+
+scAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file
+
+The config file will be generated automatically when a DNAnexus download folder is provided
+Available reference data:
+	human_cortex: more information @ https://azimuth.hubmapconsortium.org/references/
+	human_fetal: more information @ https://azimuth.hubmapconsortium.org/references/
+	human_pbmc: more information @ https://azimuth.hubmapconsortium.org/references/
+	mouse_thalamus: more information @ http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php?ID=301
+	mouse_cortex: more information @ https://azimuth.hubmapconsortium.org/references/
+	mouse_spinalCord: more information @ http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php?ID=285
+	mouse_telencephalon_diencephalon: more information @ https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/
+If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.
+
+
+Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
+```
+
+Typing scRef directly without any parameters will activate the user manual page:
+
+```{bash, eval=FALSE}
+$ scRef
+
+*****Mon May 09, 2022 | 10:48:58*****
+###########
+## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
+## Pipeline Path: /camhpc/home/zouyang/projects/scRNAsequest
+## Pipeline Date: %ci
+## git HEAD: 48fec4f088c69942ada621434adaa4ae0b66979e
+###########
+
+Loading resources
+
+scRef /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file
+
+The folder will be created if it does not exist.
+The Ref config file will be generated automatically when a path is provided
+===== CAUTION =====
+	1. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!
+	2. Make sure the data provided for reference building is SCT transformed!
+
+Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
+------------
+```
+
+## Install CellDepot
+
+Please refer the detailed instructions below to install CellDepot:
+
+[https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php](https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php){target="_blank"}

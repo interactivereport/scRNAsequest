@@ -1,0 +1,63 @@
+--- 
+title: "scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing"
+author:
+  - name: Kejie Li
+    email: kejie.li@biogen.com
+    affiliation: Biogen
+  - name: Zhengyu Ouyang
+    email: oyoung@bioinforx.com
+    affiliation: BioInfoRx
+  - name: Yu (Henry) Sun
+    email: yuhenry.sun@biogen.com
+    affiliation: Biogen
+  - name: Soumya Negi
+    email: soumya.negi@biogen.com
+    affiliation: Biogen
+  - name: Wanli Wang
+    email: wanli.wang@biogen.com
+    affiliation: Biogen
+  - name: Yirui Chen
+    email: yirui.chen@biogen.com
+    affiliation: Biogen
+  - name: Sarbottam Piya
+    email: sarbottam.piya@biogen.com
+    affiliation: Biogen
+  - name: Wenxing Hu
+    email: wenxing.hu@biogen.com
+    affiliation: Biogen
+  - name: Maria Zavodszky
+    email: maria.zavodszky@biogen.com
+    affiliation: Biogen
+  - name: Hima Yalamanchili
+    email: hima.yalamanchili@biogen.com
+    affiliation: Biogen
+  - name: Shaolong Cao
+    email: shaolong.cao@biogen.com
+    affiliation: Biogen
+  - name: Andrew Gehrke
+    email: andrew.gehrke@biogen.com
+    affiliation: Biogen
+  - name: Mark Sheehan
+    email: make.sheehan@biogen.com
+    affiliation: Biogen
+  - name: Dann Huh
+    email: dann.huh@biogen.com
+    affiliation: Biogen
+  - name: Fergal Casey
+    email: fergal.casey@biogen.com
+    affiliation: Biogen
+  - name: Baohong Zhang (Corresponding Author)
+    email: baohong.zhang@biogen.com
+    affiliation: Biogen
+  - name: These authors contribute equally Kejie Li, Zhengyu Ouyang
+address:
+  - code: Research and Development, Biogen, Inc
+    address: 225 Binney St, Cambridge, MA 02142, USA
+  - code: Data Science, BioInfoRx, Inc
+    address: 510 Charmany Dr, Suite 275A, Madison, WI 53719, USA
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+
+# Preface
+This is a *user manual* written using Bookdown, which provides a detailed guide for scRNASequest.

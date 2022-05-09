@@ -1,0 +1,30 @@
+# Introduction
+
+scRNASequest is a semi-automated single cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:
+
+- Preprocessing from raw single-cell RNA sequencing data, 
+
+- Batch correction by one or multiple harmonization methods, 
+
+- Reference dataset based cell type label transfer and embedding projection, 
+
+- Multi-sample multi-condition single-cell level differential gene expression analysis
+
+- Seamless integration with cellxgene VIP for visualization and with [CellDepot](https://github.com/interactivereport/CellDepot){target="_blank"} for data hosting and sharing by generating compatible h5ad file. Users have option to run it on local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.
+
+This pipeline contains two main programs:
+
+  - **scAnalyzer**
+  
+    This is the main script in scRNASequest for singl-cell data processing and analysis.
+    
+    Through running scAnalyzer, a directory will be generated based on the date of running the pipeline. For example, sc20220506_0 will be created since today is 2022-05-06. If the user runs scAnalyzer again for the same dataset, the last digit will add up to avoid duplications: sc20220328_1.
+    
+    Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration.
+    
+    
+  - **scRef**
+  
+    scRef generates a reference dataset for label transfer. 
+    
+    For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanant path.

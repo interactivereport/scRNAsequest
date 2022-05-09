@@ -1,1 +1,1 @@
-# scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing
+# Bookdown tutorial for scRNASequest

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  
+  
+  
+
+
+
+<meta name="date" content="2022-05-09" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="introduction.html"/>
+<link rel="next" href="data-preparation.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">RNASequest</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
+<li class="chapter" data-level="3" data-path="installation.html"><a href="installation.html"><i class="fa fa-check"></i><b>3</b> Installation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a></li>
+<li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.2</b> Install CellDepot</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>4</b> Data preparation</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="data-preparation.html"><a href="data-preparation.html#retrieving-data-from-ncbi-geo"><i class="fa fa-check"></i><b>4.1</b> Retrieving data from NCBI GEO</a></li>
+<li class="chapter" data-level="4.2" data-path="data-preparation.html"><a href="data-preparation.html#file-hierarchy"><i class="fa fa-check"></i><b>4.2</b> File hierarchy</a></li>
+<li class="chapter" data-level="4.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>4.3</b> Self-prepared files</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="installation" class="section level1" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Installation</h1>
+<div id="install-scrnasequest" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Install scRNASequest</h2>
+<p>First we install the scRNASequest by downloading the scripts from GitHub:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="installation.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/interactivereport/scRNAsequest.git</span>
+<span id="cb1-2"><a href="installation.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> scRNAsequest</span>
+<span id="cb1-3"><a href="installation.html#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="installation.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Install scRNAsequest conda environment and R packages</span></span>
+<span id="cb1-5"><a href="installation.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Please make sure you have conda installed before, and this step may take a while (30min ~1 hour)</span></span>
+<span id="cb1-6"><a href="installation.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> install</span>
+<span id="cb1-7"><a href="installation.html#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="installation.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Activate the conda environment</span></span>
+<span id="cb1-9"><a href="installation.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate scRNAsequest</span>
+<span id="cb1-10"><a href="installation.html#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="installation.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Also, .env will be created under the src directory:</span></span>
+<span id="cb1-12"><a href="installation.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/scRNAsequest/src/.env</span>
+<span id="cb1-13"><a href="installation.html#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="installation.html#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#Check the path of current directory and add it to $PATH:</span></span>
+<span id="cb1-15"><a href="installation.html#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="va">CurrentDir</span><span class="op">=</span><span class="kw">`</span><span class="bu">pwd</span><span class="kw">`</span></span>
+<span id="cb1-16"><a href="installation.html#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$CurrentDir</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
+<span id="cb1-17"><a href="installation.html#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="installation.html#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#However, the above command only adds the scRNAsequest directory to $PATH temporarily</span></span>
+<span id="cb1-19"><a href="installation.html#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#To add it to the environment permanently, edit ~/.bash_profile or ~/.bashrc:</span></span>
+<span id="cb1-20"><a href="installation.html#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ex">vim</span> ~/.bash_profile</span>
+<span id="cb1-21"><a href="installation.html#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#Add the full path of the scRNAsequest directory to $PATH, for example, $HOME/scRNAsequest</span></span>
+<span id="cb1-22"><a href="installation.html#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:<span class="va">$HOME</span>/RNAsequest</span>
+<span id="cb1-23"><a href="installation.html#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">#Source the file</span></span>
+<span id="cb1-24"><a href="installation.html#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.bash_profile</span></code></pre></div>
+<p>If the installation is successful, scAnalyzer and scRef should be able to run without passing any parameters:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="installation.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scAnalyzer</span>
+<span id="cb2-2"><a href="installation.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="installation.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-05-06 18:26:41 <span class="pp">*****</span></span>
+<span id="cb2-4"><a href="installation.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb2-5"><a href="installation.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb2-6"><a href="installation.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /camhpc/home/zouyang/projects/scRNAsequest</span></span>
+<span id="cb2-7"><a href="installation.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-05-06 15:15:38 -0400</span></span>
+<span id="cb2-8"><a href="installation.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: ccd9e414b5266d32fbebd89ecfa4a89c20144315</span></span>
+<span id="cb2-9"><a href="installation.html#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb2-10"><a href="installation.html#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="installation.html#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="installation.html#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file</span>
+<span id="cb2-13"><a href="installation.html#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="installation.html#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> config file will be generated automatically when a DNAnexus download folder is provided</span>
+<span id="cb2-15"><a href="installation.html#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ex">Available</span> reference data:</span>
+<span id="cb2-16"><a href="installation.html#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">human_cortex:</span> more information @ https://azimuth.hubmapconsortium.org/references/</span>
+<span id="cb2-17"><a href="installation.html#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="ex">human_fetal:</span> more information @ https://azimuth.hubmapconsortium.org/references/</span>
+<span id="cb2-18"><a href="installation.html#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">human_pbmc:</span> more information @ https://azimuth.hubmapconsortium.org/references/</span>
+<span id="cb2-19"><a href="installation.html#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">mouse_thalamus:</span> more information @ http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php<span class="pp">?</span>ID=301</span>
+<span id="cb2-20"><a href="installation.html#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">mouse_cortex:</span> more information @ https://azimuth.hubmapconsortium.org/references/</span>
+<span id="cb2-21"><a href="installation.html#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="ex">mouse_spinalCord:</span> more information @ http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php<span class="pp">?</span>ID=285</span>
+<span id="cb2-22"><a href="installation.html#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">mouse_telencephalon_diencephalon:</span> more information @ https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/</span>
+<span id="cb2-23"><a href="installation.html#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ex">If</span> one of the above can be used as a reference for your datasets, please update the config file with the name in <span class="st">&#39;ref_name&#39;</span>.</span>
+<span id="cb2-24"><a href="installation.html#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="installation.html#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="installation.html#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span></code></pre></div>
+<p>Typing scRef directly without any parameters will activate the user manual page:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="installation.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
+<span id="cb3-2"><a href="installation.html#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="installation.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****Mon</span> May 09, 2022 <span class="kw">|</span> <span class="ex">10:48:58*****</span></span>
+<span id="cb3-4"><a href="installation.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb3-5"><a href="installation.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb3-6"><a href="installation.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /camhpc/home/zouyang/projects/scRNAsequest</span></span>
+<span id="cb3-7"><a href="installation.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: %ci</span></span>
+<span id="cb3-8"><a href="installation.html#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 48fec4f088c69942ada621434adaa4ae0b66979e</span></span>
+<span id="cb3-9"><a href="installation.html#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb3-10"><a href="installation.html#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="installation.html#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb3-12"><a href="installation.html#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="installation.html#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
+<span id="cb3-14"><a href="installation.html#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="installation.html#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder will be created if it does not exist.</span>
+<span id="cb3-16"><a href="installation.html#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
+<span id="cb3-17"><a href="installation.html#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
+<span id="cb3-18"><a href="installation.html#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
+<span id="cb3-19"><a href="installation.html#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
+<span id="cb3-20"><a href="installation.html#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="installation.html#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb3-22"><a href="installation.html#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+</div>
+<div id="install-celldepot" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Install CellDepot</h2>
+<p>Please refer the detailed instructions below to install CellDepot:</p>
+<p><a href="https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php" target="_blank">https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php</a></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introduction.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="data-preparation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/03-Installation.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/03-Installation.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
