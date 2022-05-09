@@ -10,6 +10,7 @@ else
 fi
 
 src="$(dirname $0)/src"
+if { conda env list | grep '^scRNAsequest'; } >/dev/null 2>/dev/null; then conda env remove -n scRNAsequest; fi
 conda env create -f install.yml
 condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
