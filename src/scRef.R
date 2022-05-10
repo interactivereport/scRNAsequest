@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 strPipePath <- ""
-##
+## loading packages -----
 loadingPKG <- function(){
   require(Seurat)
   require(cowplot)
@@ -9,21 +9,12 @@ loadingPKG <- function(){
   require(sctransform)
   require(rhdf5)
   require(Matrix)
-  require(Azimuth)
+  #require(Azimuth)
   require(scales)
   options(future.globals.maxsize=3145728000,stringsAsFactors=F)
-  #source(paste0(strPipePath,"/src/Azimuth_create.R"))
+  source(paste0(strPipePath,"/src/azimuth.R"))
 }
-run_cmd <- function(cmd){
-  cmdR <- tryCatch(system(cmd,intern=T),
-                   error=function(e){
-                     message(e)
-                     return("")
-                   })
-  return(cmdR)
-}
-
-## msg
+## msg -----
 MsgExit <- function(msg=""){
   if(nchar(msg)>3) message("ERROR: ",msg)
   MsgPower()
@@ -45,7 +36,7 @@ MsgHelp <- function(){
 }
 MsgInit <- function(){
   cmdURL=paste0("cd ",strPipePath,";git config --get remote.origin.url")
-  cmdDate=paste0("cd ",strPipePath,";git show -s --format=%%ci")
+  cmdDate=paste0("cd ",strPipePath,";git show -s --format=%ci")
   cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
   message("\n\n*****",format(Sys.time(), "%a %b %d, %Y | %X"),"*****")
   message("###########\n## scRNAsequest: ",run_cmd(cmdURL))
@@ -54,7 +45,17 @@ MsgInit <- function(){
   message("## git HEAD: ",run_cmd(cmdHEAD),"\n###########")
   message("\nLoading resources")
 }
+## ----
+run_cmd <- function(cmd){
+  cmdR <- tryCatch(system(cmd,intern=T),
+                   error=function(e){
+                     message(e)
+                     return("")
+                   })
+  return(cmdR)
+}
 
+## main functions -----
 main <- function(){
   args = commandArgs()
   strPipePath <<- normalizePath(dirname(dirname(sapply(strsplit(grep("file=",args,value=T),"="),tail,1))))
@@ -252,31 +253,38 @@ createRef <- function(strConfig){
   #"/camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_SCT.h5ad"
   strRef <- file.path(config$output,paste0(config$ref_name,"_for_scAnalyzer.rds"))
   if(!file.exists(strRef)){
-    if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
-      message("Reading rds file @",config$ref_rds," ...")
-      D <- readRDS(config$ref_rds)
-      checkRDSRefSeting(config,D)
-    }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
-      message("Reading h5ad file ...")
-      checkH5adRefSetting(config)
-      D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
-      DefaultAssay(D) <- "SCT"
-      xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
-      rownames(xy) <- colnames(D)
-      D[[config$ref_PCA]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
-                                                  key="PC_",
-                                                  assay="SCT")
+    strTemp <- file.path(config$output,"ref_notFor_scAnalyzer.rds")
+    if(!file.exists(strTemp)){
+      if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
+        message("Reading rds file @",config$ref_rds," ...")
+        D <- readRDS(config$ref_rds)
+        checkRDSRefSeting(config,D)
+      }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
+        message("Reading h5ad file ...")
+        checkH5adRefSetting(config)
+        D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
+        DefaultAssay(D) <- "SCT"
+        xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
+        rownames(xy) <- colnames(D)
+        D[[config$ref_PCA]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
+                                                    key="PC_",
+                                                    assay="SCT")
+      }else{
+        MsgExit(paste0("Either one seurat object rds file or two h5ad files are required to be existed"))
+      }
+      
+      message("Processing ...")
+      D <- unifySCTmodel(D)
+      D <- FindNeighbors(D, dims = 1:30, reduction=config$ref_PCA,verbose = FALSE)
+      D <- RunSPCA(D, npcs=ncol(D[[config$ref_PCA]]), graph = 'SCT_snn')
+      D <- RunUMAP(D, dims = 1:30, reduction="spca",return.model=TRUE)
+      saveRDS(D,strTemp)
     }else{
-      MsgExit(paste0("Either one seurat object rds file or two h5ad files are required to be existed"))
+      message("Previous tmp file found @",strTemp,"\nPlease remove it if all new reference is needed.\nLoading ...")
+      D <- readRDS(strTemp)
     }
     
-    message("Processing ...")
-    D <- unifySCTmodel(D)
-    D <- FindNeighbors(D, dims = 1:30, reduction=config$ref_PCA,verbose = FALSE)
-    D <- RunSPCA(D, npcs=ncol(D[[config$ref_PCA]]), graph = 'SCT_snn')
-    D <- RunUMAP(D, dims = 1:30, reduction="spca",return.model=TRUE)
-    saveRDS(D,file.path(config$output,"ref_notFor_scAnalyzer.rds"))
-    
+    message("Creating Azimuth reference ...")
     D_ref <- AzimuthReference(
       D,
       refUMAP = "umap",
