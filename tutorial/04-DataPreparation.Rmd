@@ -2,7 +2,7 @@
 
 scRNASequest pipeline is compatible with different single-cell experiment outputs, including the **10X mtx folder** and the **10X h5 output** from cellranger. The user may need to manually separate the annotation file, so that no cell filtering was performed. In this chapter, we will walk through how to prepare the data before running the pipeline.
 
-## Retrieving public data in h5 format
+## Public data in h5 format
 
 Here, we first present an example of the data processing steps using a public EMBL EBI dataset: [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"}. The nine processed zip files were downloaded and unzipped.
 
@@ -26,7 +26,7 @@ There are total 6 datasets, with 6 corresponding *raw_feature_bc_matrix.h5 files
 -rwxrwxr--. 1 zouyang ngs 177M Oct 25  2021 5705STDY8058285_raw_feature_bc_matrix.h5
 ```
 
-## Retrieving public data in 10X mtx format
+## Public data in 10X mtx format
 
 Another example is based on the 10X mtx folder output. **?????Waiting for an example**
 

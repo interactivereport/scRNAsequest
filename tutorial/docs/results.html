@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 6 Results | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 6 Results | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 6 Results | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 6 Results | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="installation.html"/>
-<link rel="next" href="running-the-pipeline.html"/>
+<link rel="prev" href="running-the-pipeline.html"/>
+
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -178,98 +178,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="data-preparation" class="section level1" number="4">
-<h1><span class="header-section-number">Chapter 4</span> Data preparation</h1>
-<p>scRNASequest pipeline is compatible with different single-cell experiment outputs, including the <strong>10X mtx folder</strong> and the <strong>10X h5 output</strong> from cellranger. The user may need to manually separate the annotation file, so that no cell filtering was performed. In this chapter, we will walk through how to prepare the data before running the pipeline.</p>
-<div id="public-data-in-h5-format" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Public data in h5 format</h2>
-<p>Here, we first present an example of the data processing steps using a public EMBL EBI dataset: <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a>. The nine processed zip files were downloaded and unzipped.</p>
-<p>There are total 6 datasets, with 6 corresponding *raw_feature_bc_matrix.h5 files:</p>
-<pre><code>#Annotation files
--rwxrwx---. 1 zouyang ngs 440K Apr 21 16:59 5705STDY8058280_annotation.csv
--rwxrwx---. 1 zouyang ngs 446K Apr 21 16:59 5705STDY8058281_annotation.csv
--rwxrwx---. 1 zouyang ngs 310K Apr 21 16:59 5705STDY8058282_annotation.csv
--rwxrwx---. 1 zouyang ngs 282K Apr 21 16:59 5705STDY8058283_annotation.csv
--rwxrwx---. 1 zouyang ngs 157K Apr 21 16:59 5705STDY8058284_annotation.csv
--rwxrwx---. 1 zouyang ngs 555K Apr 21 16:59 5705STDY8058285_annotation.csv
+<div id="results" class="section level1" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Results</h1>
 
-#h5 matrix files
--rwxrwxr--. 1 zouyang ngs 165M Oct 25  2021 5705STDY8058280_raw_feature_bc_matrix.h5
--rwxrwxr--. 1 zouyang ngs 165M Oct 25  2021 5705STDY8058281_raw_feature_bc_matrix.h5
--rwxrwxr--. 1 zouyang ngs 156M Oct 25  2021 5705STDY8058282_raw_feature_bc_matrix.h5
--rwxrwxr--. 1 zouyang ngs 162M Oct 25  2021 5705STDY8058283_raw_feature_bc_matrix.h5
--rwxrwxr--. 1 zouyang ngs 149M Oct 25  2021 5705STDY8058284_raw_feature_bc_matrix.h5
--rwxrwxr--. 1 zouyang ngs 177M Oct 25  2021 5705STDY8058285_raw_feature_bc_matrix.h5</code></pre>
-</div>
-<div id="public-data-in-10x-mtx-format" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Public data in 10X mtx format</h2>
-<p>Another example is based on the 10X mtx folder output. <strong>?????Waiting for an example</strong></p>
-</div>
-<div id="self-prepared-files" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Self-prepared files</h2>
-<p>For users that have their own dataset to run EA, several files can be prepared from scratch. Here is the detailed instruction on what files are required to run the pipeline.</p>
-<p>Please use the same file hierarchy as 4.2 after creating them.</p>
-<ul>
-<li><p><strong>comparison.csv</strong></p>
-<p>This file contains comparison groups, which must be defined in the <strong>meta.csv</strong>.</p>
-<p>Here is an example of the <strong>comparison.csv</strong> file:</p>
-<pre><code>metacol,case,ctrl
-group,grp2,grp1
-group,grp3,grp2</code></pre></li>
-<li><p><strong>counts.tsv</strong></p>
-<p>This file stores the raw counts of each sample in a tab-delimited format (tsv).</p>
-<pre><code>$ head -4 counts.tsv
-
-&quot;&quot;      &quot;SRR9139048&quot;     &quot;SRR9139049&quot;        &quot;SRR9139050&quot;
-&quot;ENSMUSG00000079800.2&quot;      7       9       11
-&quot;ENSMUSG00000095092.1&quot;      2       1       10
-&quot;ENSMUSG00000079192.2&quot;      7       7       1</code></pre></li>
-<li><p><strong>geneAnnotation.csv</strong></p>
-<p>This file contains the detailed annotation of each gene shown in the count.tsv table.</p>
-<p>Here is an example:</p>
-<pre><code>$ head -4 geneAnnotation.csv
-
-&quot;&quot;,&quot;seqnames&quot;,&quot;start&quot;,&quot;end&quot;,&quot;width&quot;,&quot;strand&quot;,&quot;source&quot;,&quot;type&quot;,&quot;bp_length&quot;,&quot;phase&quot;,&quot;UniqueID&quot;,&quot;gene_type&quot;,&quot;Gene.Name&quot;,&quot;level&quot;,&quot;mgi_id&quot;,&quot;havana_gene&quot;,&quot;tag&quot;,&quot;id&quot;
-&quot;ENSMUSG00000079800.2&quot;,&quot;GL456210.1&quot;,9124,58882,49759,&quot;-&quot;,&quot;ENSEMBL&quot;,&quot;gene&quot;,1271,NA,&quot;ENSMUSG00000079800.2&quot;,&quot;protein_coding&quot;,&quot;AC125149.3&quot;,&quot;3&quot;,NA,NA,NA,1
-&quot;ENSMUSG00000095092.1&quot;,&quot;GL456210.1&quot;,108390,110303,1914,&quot;-&quot;,&quot;ENSEMBL&quot;,&quot;gene&quot;,366,NA,&quot;ENSMUSG00000095092.1&quot;,&quot;protein_coding&quot;,&quot;AC125149.5&quot;,&quot;3&quot;,NA,NA,NA,2
-&quot;ENSMUSG00000079192.2&quot;,&quot;GL456210.1&quot;,123792,124928,1137,&quot;+&quot;,&quot;ENSEMBL&quot;,&quot;gene&quot;,255,NA,&quot;ENSMUSG00000079192.2&quot;,&quot;protein_coding&quot;,&quot;AC125149.1&quot;,&quot;3&quot;,NA,NA,NA,3</code></pre></li>
-<li><p><strong>geneLength.tsv</strong></p>
-<p>This file has the gene length information. It must match the dimension of the count.tsv file.</p>
-<pre><code>$ head -4 geneLength.tsv
-
-&quot;&quot;      &quot;SRR9139048&quot;     &quot;SRR9139049&quot;        &quot;SRR9139050&quot;
-&quot;ENSMUSG00000079800.2&quot;        1271      1271        1271
-&quot;ENSMUSG00000095092.1&quot;        366       366     366
-&quot;ENSMUSG00000079192.2&quot;        255       255     255</code></pre></li>
-<li><p><strong>meta.csv</strong></p>
-<p>This <strong>meta.csv</strong> file can contain many annotation columns for the dataset. For example, this is a meta file containing group information:</p>
-<pre><code>$ head -4 meta.tsv
-
-&quot;&quot;,&quot;group&quot;
-&quot;SRR9139048&quot;,&quot;grp1&quot;
-&quot;SRR9139049&quot;,&quot;grp2&quot;
-&quot;SRR9139050&quot;,&quot;grp3&quot;</code></pre></li>
-<li><p><strong>project.yml</strong></p>
-<p>The project.yml file contains a high-level summary of the project, including project name, species, etc.</p>
-<pre><code>$ cat project.yml
-
-project: SRP199678
-species: mouse
-file_source: sra
-project_home: data_sources_sra
-project_type: data_sources
-number_samples: 155</code></pre></li>
-</ul>
-
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="installation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="running-the-pipeline.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="running-the-pipeline.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -300,7 +219,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/04-DataPreparation.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/06-Output.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -308,7 +227,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/04-DataPreparation.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/06-Output.Rmd",
 "text": null
 },
 "download": null,

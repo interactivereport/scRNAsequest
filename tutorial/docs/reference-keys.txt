@@ -4,8 +4,8 @@ installation
 install-scrnasequest
 install-celldepot
 data-preparation
-retrieving-public-data-in-h5-format
-retrieving-public-data-in-10x-mtx-format
+public-data-in-h5-format
+public-data-in-10x-mtx-format
 self-prepared-files
 running-the-pipeline
 prepare-the-config.yml-file
@@ -14,6 +14,4 @@ prepare-the-comparison-file
 file-hierarchy
 scanalyzer
 scref
-output
-quickomics-visualization
-other-output-files
+results
