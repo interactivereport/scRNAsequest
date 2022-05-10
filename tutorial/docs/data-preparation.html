@@ -207,59 +207,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="self-prepared-files" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Self-prepared files</h2>
-<p>For users that have their own dataset to run EA, several files can be prepared from scratch. Here is the detailed instruction on what files are required to run the pipeline.</p>
-<p>Please use the same file hierarchy as 4.2 after creating them.</p>
-<ul>
-<li><p><strong>comparison.csv</strong></p>
-<p>This file contains comparison groups, which must be defined in the <strong>meta.csv</strong>.</p>
-<p>Here is an example of the <strong>comparison.csv</strong> file:</p>
-<pre><code>metacol,case,ctrl
-group,grp2,grp1
-group,grp3,grp2</code></pre></li>
-<li><p><strong>counts.tsv</strong></p>
-<p>This file stores the raw counts of each sample in a tab-delimited format (tsv).</p>
-<pre><code>$ head -4 counts.tsv
-
-&quot;&quot;      &quot;SRR9139048&quot;     &quot;SRR9139049&quot;        &quot;SRR9139050&quot;
-&quot;ENSMUSG00000079800.2&quot;      7       9       11
-&quot;ENSMUSG00000095092.1&quot;      2       1       10
-&quot;ENSMUSG00000079192.2&quot;      7       7       1</code></pre></li>
-<li><p><strong>geneAnnotation.csv</strong></p>
-<p>This file contains the detailed annotation of each gene shown in the count.tsv table.</p>
-<p>Here is an example:</p>
-<pre><code>$ head -4 geneAnnotation.csv
-
-&quot;&quot;,&quot;seqnames&quot;,&quot;start&quot;,&quot;end&quot;,&quot;width&quot;,&quot;strand&quot;,&quot;source&quot;,&quot;type&quot;,&quot;bp_length&quot;,&quot;phase&quot;,&quot;UniqueID&quot;,&quot;gene_type&quot;,&quot;Gene.Name&quot;,&quot;level&quot;,&quot;mgi_id&quot;,&quot;havana_gene&quot;,&quot;tag&quot;,&quot;id&quot;
-&quot;ENSMUSG00000079800.2&quot;,&quot;GL456210.1&quot;,9124,58882,49759,&quot;-&quot;,&quot;ENSEMBL&quot;,&quot;gene&quot;,1271,NA,&quot;ENSMUSG00000079800.2&quot;,&quot;protein_coding&quot;,&quot;AC125149.3&quot;,&quot;3&quot;,NA,NA,NA,1
-&quot;ENSMUSG00000095092.1&quot;,&quot;GL456210.1&quot;,108390,110303,1914,&quot;-&quot;,&quot;ENSEMBL&quot;,&quot;gene&quot;,366,NA,&quot;ENSMUSG00000095092.1&quot;,&quot;protein_coding&quot;,&quot;AC125149.5&quot;,&quot;3&quot;,NA,NA,NA,2
-&quot;ENSMUSG00000079192.2&quot;,&quot;GL456210.1&quot;,123792,124928,1137,&quot;+&quot;,&quot;ENSEMBL&quot;,&quot;gene&quot;,255,NA,&quot;ENSMUSG00000079192.2&quot;,&quot;protein_coding&quot;,&quot;AC125149.1&quot;,&quot;3&quot;,NA,NA,NA,3</code></pre></li>
-<li><p><strong>geneLength.tsv</strong></p>
-<p>This file has the gene length information. It must match the dimension of the count.tsv file.</p>
-<pre><code>$ head -4 geneLength.tsv
-
-&quot;&quot;      &quot;SRR9139048&quot;     &quot;SRR9139049&quot;        &quot;SRR9139050&quot;
-&quot;ENSMUSG00000079800.2&quot;        1271      1271        1271
-&quot;ENSMUSG00000095092.1&quot;        366       366     366
-&quot;ENSMUSG00000079192.2&quot;        255       255     255</code></pre></li>
-<li><p><strong>meta.csv</strong></p>
-<p>This <strong>meta.csv</strong> file can contain many annotation columns for the dataset. For example, this is a meta file containing group information:</p>
-<pre><code>$ head -4 meta.tsv
-
-&quot;&quot;,&quot;group&quot;
-&quot;SRR9139048&quot;,&quot;grp1&quot;
-&quot;SRR9139049&quot;,&quot;grp2&quot;
-&quot;SRR9139050&quot;,&quot;grp3&quot;</code></pre></li>
-<li><p><strong>project.yml</strong></p>
-<p>The project.yml file contains a high-level summary of the project, including project name, species, etc.</p>
-<pre><code>$ cat project.yml
-
-project: SRP199678
-species: mouse
-file_source: sra
-project_home: data_sources_sra
-project_type: data_sources
-number_samples: 155</code></pre></li>
-</ul>
 
 </div>
 </div>
