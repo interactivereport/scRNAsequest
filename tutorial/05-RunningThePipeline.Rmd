@@ -1,95 +1,158 @@
-# Expression analysis (EA) component
+# Running the pipeline
 
-First, make sure the .env has been created under the src folder:
+First, make sure the .env has been created in the src folder under the pipeline directory:
 
 ```
-ls ~/RNASequest/src/.env
+ls ~/scRNAsequest/src/.env
 ```
 
-## EAinit
+## Prepare the config.yml file
+
+To run the scRNAsequest pipeline, a config.yml file is required to fill in. Please use the following template as an example to prepare this file:
+
+```
+prj_name: E-MTAB-11115 #required
+prj_title: Cell2location maps fine-grained cell types in spatial transcriptomics #required # quote might be needed
+ref_name: # This is optional. You can choose one from scAnalyzer call without argument
+output: /home/ysun4/E-MTAB-11115/processing #output path
+sample_name: Sample_Name
+sample_meta: /home/ysun4/E-MTAB-11115/processing/sampleMeta.csv
+MTstring: "" #default search "MT-", "Mt-" and "mt-"
+rmMT: True
+min.cells: 0 #filtering genes by minimal cell
+min.features: 0 #filtering cells by minimal genes
+mt.cutoff: 100 # any cells with higher MT percentage to be removed
+highCount.cutoff: 1000000 # any cells with higher total counts to be removed
+highGene.cutoff: 300000 # any cells with higher number of detected genes to be removed
+group: #if provided, a 10X QC box plot will be ploted in QC plot
+runAnalysis: False
+newProcess: False
+parallel: sge #"sge" or "slurm"
+core: 4
+overwrite: False
+#parallelTime: 180 # for a job (not the entire pipeline) in minutes, default 3hr
+
+## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
+DEG_desp:  #required if you would like to perform DEG analysis. Leaving this empty won't cause error.
+# Please be causion of changing the following default filtering
+min.cells.per.gene: 3
+min.genes.per.cell: 250
+min.perc.cells.per.gene: 0.00
+perc_filter: TRUE
+R6_min.cells.per.gene: 3
+R6_min.perc.cells.per.gene: 0.1
+R6_min.cells.per.gene.type: "or"
+R6_cells.per.gene.filter: TRUE
+R6_perc.cells.filter: TRUE
+R6_perc.filter: FALSE
+R6_perc.filter.type: "and"
+R6_perc_threshold: 0.90
+R6_min.ave.pseudo.bulk.cpm: 1
+R6_pseudo.bulk.cpm.filter: FALSE
+R6_min.cells.per.subj: 3
+
+## publish to celldepot
+publish: False
+```
+
+In the first run (see the below scAnalyzer section on how to run the pipeline), the user can set `runAnalysis: False` and use the above default parameters to perform cell filtering and QC.
+
+Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different dataset may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.
+
+Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:
+
+```
+runAnalysis: True
+overwrite: True
+```
+
+## Prepare the sample meta file
+
+Another important file in the sample meta file, a csv file storing data information. Usually it is named as sampleMeta.csv
+
+Here is an example with minimal information for the public dataset (for 10X h5 data):
+
+```
+Sample_Name,h5path,metapath
+5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058280_annotation.csv
+5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv
+5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv
+5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv
+5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv
+5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv
+```
+
+## Prepare the comparison file
+
+This file is critical for the differential expressed gene (DEG) analysis.
+
+In the DEG comparison file, “sample”, “cluster”, “group” and “covars” are the annotation headers, and “alt” and “ref” are the entries from “group” column.
+
+The DEG is performing between “alt” and “ref” cells from “group” within each entry of “cluster” considering “sample” variations
+
+Here is an example of the DEG comparison file called DEGinfo.csv:
+
+```
+sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+
+#####To be added
+```
+
+Once the DEGinfo.csv file created, it can be added to the config.yml file:
+
+```
+DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv
+```
+
+## File hierarchy
+
+After downloading the files, usually we save them in the ./data folder. For the config.yml and the sample meta files, we saved them into another folder.
+
+For data downloaded in 10X h5 format:
+
+```
+E-MTAB-11115/
+    ├── data
+        ├── 5705STDY8058280_annotation.csv
+        ├── 5705STDY8058280_raw_feature_bc_matrix.h5
+        ├── 5705STDY8058281_annotation.csv
+        ├── 5705STDY8058281_raw_feature_bc_matrix.h5
+        ...
+    ├── processing
+        ├── config.yml
+        ├── DEGinfo.csv
+        └── sampleMeta.csv
+```
+
+For data downloaded in 10X mtx format:
+
+```
+########To be added
+```
+
+## scAnalyzer
+
+To run scAnalyzer, the user can pass the path to the config.yml file to the program. This command can be executed at anywhere on the computer.
 
 ```{bash, eval=FALSE}
-EAinit Path/to/a/DNAnexus/result/folder
+scAnalyzer Path/to/a/config/file
 
 #Example:
-EAinit ~/RNASequest/example/SRP199678
+scAnalyzer ~/E-MTAB-11115/processing/config.yml
 ```
 
-Execution of the above command will create a sub-folder (EA[timestamp]) in the specified RNAseq result folder.
-There will be five files in the result folder:
+The output files will be stored in the location designated in the config.yml.
 
-- compareInfo.csv: an empty comparison definition file (with header). Please fill in this file before the ```EArun``` call.
-- config.yml: a config file specifies the parameters of the ```EAqc``` and ```EArun```. Please update **covariates_adjust** after ```EAqc```.
-- geneAnnotation.csv: a gene annotation file including gene symbol.
-- sampleMeta.csv: a sample meta-information file, please feel free to add additional columns whose column names should be considered to be added into **covariates_check** in *config.yml*.
-- alignQC.pdf: plots generated from alignment QC metrics.
+## scRef
 
-**_Please pay attention to the std out messages._**
+This pipeline is used to process the current data and add it to the reference. Please be cautious about the following two things:
 
-## EAqc
+- This process will add a Seurat reference data into the scRNAsequest pipeline PERMANENTLY!
+- Please make sure the data provided for reference building is SCT transformed!
 
-```
-EAqc Path/to/a/config/file
+```{bash, eval=FALSE}
+scRef Path/to/a/config/file
 
 #Example:
-EAqc ~/RNASequest/example/SRP199678/EA20220328_0/config.yml
+scRef ~/E-MTAB-11115/processing/config.yml
 ```
-Through executing the command with the above default config file, expression PC analysis will be done against covariates specified in **covariates_check** in the *config.yml* file. An Excel file will list p-values for all numeric and categorical covariates, and significant ones will be in plot pdf files. The analysis before covariate adjusting will have the prefix *covariatePCanalysis_noAdjust*. 
-Based on the above results, you can add covariates into **covariates_adjust** in the *config.yml* file, and rerun ```EAqc```. This time additional expression PC analysis will be applied to covariate-adjusted expression with files started with *covariatePCanalysis_Adjusted*. 
-
-**_Please pay attention to the std out messages._**
-
-## EArun
-
-```
-EArun Path/to/a/config/file
-
-#Example:
-EArun ~/RNASequest/example/SRP199678/EA20220328_0/config.yml
-```
-**_Please fill the compareInfo.csv before executing the above command_**
-
-Execution of the above command will produce R objects for QuickOmics webserver to load. The process will generate the covariate-adjusted logTPM for visualization; complete differentially expressed gene analysis and gene network generation. 
-
-The results (four files) can be uploaded to the QuickOmics webserver.
-
-**_Please pay attention to the std out messages._**
-
-## EAreport
-
-```
-EAreport Path/to/a/config/file
-
-#Example:
-EAreport ~/RNASequest/example/SRP199678/EA20220328_0/config.yml
-```
-
-By running the command above, the pipeline will generate a **BookdownReport** folder in the same directory as the config file. This folder contains the raw Rmd files, as well as the final bookdown report, which is the **BookdownReport/docs/index.html** file. If you would like to send the full report to your collaborators, please download the tarball created under the EA working directory, named as **ProjectName_BookdownReport.tar.gz** (ProjectName was extracted from the config.yml file). The index.html inside it is the bookdown report.
-
-## EA2DA
-```
-EA2DA A/path/to/a/config/file
-
-#Example:
-EA2DA ~/RNASequest/example/SRP199678/EA20220328_0/config.yml
-```
-The execution of above command will produce 6 data files which are required for the [OmicsView](https://github.com/interactivereport/OmicsView){target="_blank"} project import.
-
-**_Please fill the empty entries in the Project_Info.csv before import._**
-
-## Administration
-There are two config files in the pipeline folder:
-
- - config.tmp.yml: The template of the config file, with all default values;
- 
- - sys.yml: the system config file, which includes:
- 
-    - 1. genome_path: the root path where the genome definition files (gtf) are located
-    
-    - 2. notCovariates: the column names from the sample meta information should not be considred as default covariates
-    
-    - 3. qc2meta: the column names from mapping QC file should be extracted and inserted into sample meta table
-    
-    - 4. QuickOmics_path: the file path to store the files for QuickOmics web server display
-    
-    - 5. DA_columns: the column names available for the sample meta table in the [OmicsView](https://github.com/interactivereport/OmicsView){target="_blank"} system

@@ -1,29 +1,38 @@
 # Data preparation
 
-## Retrieving data from NCBI GEO
+scRNASequest pipeline is compatible with different single-cell experiment outputs, including the **10X mtx folder** and the **10X h5 output** from cellranger. The user may need to manually separate the annotation file, so that no cell filtering was performed. In this chapter, we will walk through how to prepare the data before running the pipeline.
 
-ExpressionAnalysis requires several input files, which should be organized in specific formats. Here, we present an example of the data processing steps using a public NCBI GEO dataset: [SRP199678](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131869){target="_blank"}. The R code [recount3.example.R](https://github.com/interactivereport/RNASequest/blob/main/example/recount3.example.R){target="_blank"} can be run in the terminal under the conda environment created before.
+## Retrieving public data in h5 format
 
-```
-conda activate ExpressionAnalysis
-cd RNASequest/example
+Here, we first present an example of the data processing steps using a public EMBL EBI dataset: [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"}. The nine processed zip files were downloaded and unzipped.
 
-Rscript recount3.example.R
-```
-
-## File hierarchy
-
-After running [recount3.example.R](https://github.com/interactivereport/RNASequest/blob/main/example/recount3.example.R){target="_blank"}, we will have all input files for ExpressionAnalysis with the following hierarchy:
+There are total 6 datasets, with 6 corresponding *raw_feature_bc_matrix.h5 files:
 
 ```
-SRP199678/
-    ├── comparison.csv
-    ├── counts.tsv
-    ├── geneAnnotation.csv
-    ├── geneLength.tsv
-    ├── meta.csv
-    └── project.yml
+#Annotation files
+-rwxrwx---. 1 zouyang ngs 440K Apr 21 16:59 5705STDY8058280_annotation.csv
+-rwxrwx---. 1 zouyang ngs 446K Apr 21 16:59 5705STDY8058281_annotation.csv
+-rwxrwx---. 1 zouyang ngs 310K Apr 21 16:59 5705STDY8058282_annotation.csv
+-rwxrwx---. 1 zouyang ngs 282K Apr 21 16:59 5705STDY8058283_annotation.csv
+-rwxrwx---. 1 zouyang ngs 157K Apr 21 16:59 5705STDY8058284_annotation.csv
+-rwxrwx---. 1 zouyang ngs 555K Apr 21 16:59 5705STDY8058285_annotation.csv
+
+#h5 matrix files
+-rwxrwxr--. 1 zouyang ngs 165M Oct 25  2021 5705STDY8058280_raw_feature_bc_matrix.h5
+-rwxrwxr--. 1 zouyang ngs 165M Oct 25  2021 5705STDY8058281_raw_feature_bc_matrix.h5
+-rwxrwxr--. 1 zouyang ngs 156M Oct 25  2021 5705STDY8058282_raw_feature_bc_matrix.h5
+-rwxrwxr--. 1 zouyang ngs 162M Oct 25  2021 5705STDY8058283_raw_feature_bc_matrix.h5
+-rwxrwxr--. 1 zouyang ngs 149M Oct 25  2021 5705STDY8058284_raw_feature_bc_matrix.h5
+-rwxrwxr--. 1 zouyang ngs 177M Oct 25  2021 5705STDY8058285_raw_feature_bc_matrix.h5
 ```
+
+## Retrieving public data in 10X mtx format
+
+Another example is based on the 10X mtx folder output. **?????Waiting for an example**
+
+
+
+
 
 ## Self-prepared files
 
