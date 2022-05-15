@@ -149,7 +149,7 @@ main <- function(){
   if(file.exists(config$ref_name) && grepl("rds$",config$ref_name)){
     oneRef <- list(ref_file=config$ref_name)
   }
-  else if(!is.null(config$ref_name) && !config$ref_name%in%names(sysConfig)){
+  else if(!is.null(config$ref_name) && config$ref_name%in%names(sysConfig)){
     oneRef <- sysConfig[[config$ref_name]]
   }else{
     stop(paste("unknown reference:",config$ref_name))

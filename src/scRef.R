@@ -35,7 +35,11 @@ MsgHelp <- function(){
   q()
 }
 MsgInit <- function(){
+  # .git/config
   cmdURL=paste0("cd ",strPipePath,";git config --get remote.origin.url")
+  # .git/logs/HEAD
+  #format(as.POSIXct(1650404849, origin="1970-01-01"),format="%Y-%m-%d %H:%M:%S")
+  #from datetime import datetime;datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
   cmdDate=paste0("cd ",strPipePath,";git show -s --format=%ci")
   cmdHEAD=paste0("cd ",strPipePath,";git rev-parse HEAD")
   message("\n\n*****",format(Sys.time(), "%a %b %d, %Y | %X"),"*****")

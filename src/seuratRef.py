@@ -29,7 +29,8 @@ def main():
   if config['ref_name'] is None:
     print("No reference specified, END")
     return
-  D = sc.read_h5ad(strH5ad,backed=True)
+  print(strH5ad)
+  D = ad.read_h5ad(strH5ad) #,backed=True
   Dbatch = D.obs["library_id"].copy()
 
   strCSV = strH5ad.replace("raw.h5ad","seuratRef.csv")

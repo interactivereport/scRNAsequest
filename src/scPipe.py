@@ -62,7 +62,10 @@ def submit_cmd(cmds,config,core=None):
       try:
         cmdR = subprocess.run(cmds[one],shell=True,check=True)#,capture_output=True
       except subprocess.CalledProcessError as e:
-        print("%s process error return:\n %s"%(one,e.stderr.decode("utf-8")))
+        strError = os.path.join(config["output"],"%s.error"%one)
+        print("%s process error return: @%s"%(one,strError))
+        with open(strError) as f:
+          json.dump(e,f)
   elif parallel=="sge":
     jID = qsub(cmds,config['output'],core)
     print("----- Monitoring all submitted SGE jobs ...")
@@ -377,6 +380,8 @@ def getSampleMeta(strMeta):
   if not os.path.isfile(strMeta):
     Exit("Sample meta information (%s) specified in config file does not exist!"%strMeta)
   meta = pd.read_csv(strMeta)
+  if meta.shape[0]==0:
+    Exit("Sample definition file (%s) is empty"%strMeta)
   if not UMIcol in meta.columns:
     Exit("'%s' columns is required in meta file (%s)"%(UMIcol,strMeta))
   for oneH5 in meta[UMIcol]:
