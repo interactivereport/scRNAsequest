@@ -1,4 +1,4 @@
-import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math
+import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser
 import pandas as pd
 from datetime import datetime
 import scanpy as sc
@@ -175,16 +175,19 @@ def MsgHelp():
   print("If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.\n")
   Exit()
 def MsgInit():
-  cmdURL="cd %s;git config --get remote.origin.url"%strPipePath
-  cmdDate="cd %s;git show -s --format=%%ci"%strPipePath
-  cmdHEAD="cd %s;git rev-parse HEAD"%strPipePath
   print("\n\n*****",datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"*****")
-  print("###########\n## scRNAsequest: %s"%run_cmd(cmdURL).stdout.decode("utf-8").replace("\n",""))
-  print("## Pipeline Path: %s"%strPipePath)
-  print("## Pipeline Date: %s"%run_cmd(cmdDate).stdout.decode("utf-8").replace("\n",""))
-  print("## git HEAD: %s###########\n"%run_cmd(cmdHEAD).stdout.decode("utf-8"))
-  #print("\nLoading resources")
-
+  if os.path.isdir(os.path.join(strPipePath,".git")):
+    gitConfig = configparser.ConfigParser()
+    tmp = gitConfig.read(os.path.join(strPipePath,".git","config"))
+    url = gitConfig['remote "origin"']['url']
+    
+    gitLog = pd.read_csv(os.path.join(strPipePath,".git","logs","HEAD"),sep="\t",header=None)
+    gitLog = gitLog.iloc[-1,0].split(" ")
+    print("###########\n## scRNAsequest: %s"%url)
+    print("## Pipeline Path: %s"%strPipePath)
+    print("## Pipeline Date: %s %s"%(datetime.fromtimestamp(int(gitLog[4])).strftime('%Y-%m-%d %H:%M:%S'),gitLog[5]))
+    print("## git HEAD: %s\n###########\n"%gitLog[1])
+    
 ## init projects
 def initProject(strDNAnexus):
   if os.path.isdir(strDNAnexus):
