@@ -64,7 +64,7 @@ def submit_cmd(cmds,config,core=None):
       except subprocess.CalledProcessError as e:
         strError = os.path.join(config["output"],"%s.error"%one)
         print("%s process error return: @%s"%(one,strError))
-        with open(strError) as f:
+        with open(strError,"w") as f:
           json.dump(e,f)
   elif parallel=="sge":
     jID = qsub(cmds,config['output'],core)
