@@ -1,3 +1,4 @@
+
 PKGloading <- function(){
   require(Seurat)
   require(RcppCNPy)
@@ -5,6 +6,14 @@ PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
   options(stringsAsFactors = FALSE)
+  
+  rlang::env_unlock(env = asNamespace('base'))
+  rlang::env_binding_unlock(env = asNamespace('base'))
+  message <<- function(...,domain = NULL, appendLF = TRUE){
+    cat(...,"\n",sep="")
+  }
+  rlang::env_binding_lock(env = asNamespace('base'))
+  rlang::env_lock(asNamespace('base'))
 }
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")

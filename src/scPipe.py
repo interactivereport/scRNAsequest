@@ -59,13 +59,12 @@ def submit_cmd(cmds,config,core=None):
       if cmds[one] is None:
         continue
       print("submitting %s"%one)
+      strError = os.path.join(config["output"],"%s.error"%one)
       try:
-        cmdR = subprocess.run(cmds[one],shell=True,check=True)#,capture_output=True
+        with open(strError,"w") as errorF:
+          cmdR = subprocess.run(cmds[one],shell=True,check=True,stderr=errorF,text=True)#,capture_output=True
       except subprocess.CalledProcessError as e:
-        strError = os.path.join(config["output"],"%s.error"%one)
         print("%s process error return: @%s"%(one,strError))
-        with open(strError,"w") as f:
-          json.dump(e,f)
   elif parallel=="sge":
     jID = qsub(cmds,config['output'],core)
     print("----- Monitoring all submitted SGE jobs ...")
@@ -361,9 +360,11 @@ def plotSeqQC(meta,sID,strOut,grp=None):
   QC.columns=k
   QC.to_csv("%s/sequencingQC.csv"%strOut)
   QC['sample'] = QC.index
+  h = 4.8
+  w = max(6.4,QC.shape[0]*2/10)
   with PdfPages("%s/sequencingQC.pdf"%strOut) as pdf:
     for one in k:
-      ax = QC.plot.bar(x='sample',y=one,rot=90,legend=False)
+      ax = QC.plot.bar(x='sample',y=one,rot=90,legend=False,figsize=(w,h))
       ax.set_title(one)
       plt.grid()
       pdf.savefig(bbox_inches="tight")
@@ -372,8 +373,9 @@ def plotSeqQC(meta,sID,strOut,grp=None):
       for oneG in grp:
         if oneG in meta.columns:
           QC[oneG] = list(meta[oneG])
+          w = max(4,meta[oneG].nunique()*2/10)
           for one in k:
-            ax = QC[[one,oneG]].boxplot(by=oneG,rot=90)
+            ax = QC[[one,oneG]].boxplot(by=oneG,rot=90,figsize=(w,h))
             ax.set_title(one)
             plt.grid()
             pdf.savefig(bbox_inches="tight")
