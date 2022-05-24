@@ -427,22 +427,39 @@ def getData(meta,sID):
   adata.var.columns=[varCol[i] for i in varInx]
   return(adata)
 def preprocess(adata,config):
-  MTstring=config["MTstring"]
-
   print("preprocessing ...")
   sc.pp.calculate_qc_metrics(adata, inplace=True)
-  #get MT genes
-  if MTstring is None or len(MTstring)<2:
-    for one in ["MT-","Mt-","mt-"]:
-      mito_genes = adata.var_names.str.startswith(one)
-      if (mito_genes).sum()>0:
-        break
+  if "MTstring" in config.keys():#older version
+    MTstring=config["MTstring"]
+    #get MT genes
+    if MTstring is None or len(MTstring)<2:
+      for one in ["MT-","Mt-","mt-"]:
+        mito_genes = adata.var_names.str.startswith(one)
+        if (mito_genes).sum()>0:
+          break
+    else:
+      mito_genes = adata.var_names.str.startswith(MTstring)
+    adata.obs['pct_counts_mt'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
+    if config["rmMT"]:
+      print("\tall mitochondrial genes removed")
+      adata = adata[:, np.invert(mito_genes)]
+  elif "gene_group" in config.keys():
+    for k in config['gene_group']:
+      if type(config['gene_group'][k]['startwith']) is not list:
+        Exit("config error with %s, 'startwith' has to be a list"%k)
+      gList = np.full(adata.shape[1],False)
+      for one in config['gene_group'][k]['startwith']:
+        if len(one)>1:
+          gList = gList | adata.var_names.str.startswith(one)
+      if gList.sum()==0:
+        print("\tNo genes found for %s"%k)
+        continue
+      adata.obs['pct_%s'%k] = np.sum(adata[:, gList].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
+      if config['gene_group'][k]['rm']:
+        print("\t%s genes are removed"%k)
+        adata = adata[:, np.invert(gList)]
   else:
-    mito_genes = adata.var_names.str.startswith(MTstring)
-  adata.obs['pct_counts_mt'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
-  if config["rmMT"]:
-    print("\tall mitochondrial genes removed")
-    adata = adata[:, np.invert(mito_genes)]
+    Exit("Unknown config format! Either 'MTstring' or 'gene_group' is required")
   
   return adata
 def filtering(adata,config):
@@ -450,19 +467,30 @@ def filtering(adata,config):
   print("10X report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
   min_cells=config["min.cells"]
   min_features=config["min.features"]
-  mt_cutoff=config["mt.cutoff"]
   highCount_cutoff=config["highCount.cutoff"]
   highGene_cutoff=config["highGene.cutoff"]
   
-  ## filtering low content cells and low genes
   print("\tfiltering cells and genes")
+  if "mt.cutoff" in config.keys():
+    mt_cutoff=config["mt.cutoff"]
+    adata = adata[adata.obs.pct_counts_mt<mt_cutoff,:]
+    print("\t\tfiltered cells with mt.cutoff %d left %d cells"%(mt_cutoff,adata.shape[0]))
+  elif "gene_group" in config.keys():
+    for k in config['gene_group']:
+      if not "pct_%s"%k in adata.obs.columns:
+        print("\t\tskip %s"%k)
+        continue
+      adata = adata[adata.obs["pct_%s"%k]<config['gene_group'][k]["cutoff"],:]
+      print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],adata.shape[0]))
+  else:
+    Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
+  
+  ## filtering low content cells and low genes
   sc.pp.filter_genes(adata,min_cells=min_cells)
   print("\t\tfiltered genes with min.cells %d left %d genes"%(min_cells,adata.shape[1]))
   sc.pp.filter_cells(adata,min_genes=min_features)
   print("\t\tfiltered cells with min.features %d left %d cells"%(min_features,adata.shape[0]))
-  
-  adata = adata[adata.obs.pct_counts_mt<mt_cutoff,:]
-  print("\t\tfiltered cells with mt.cutoff %d left %d cells"%(mt_cutoff,adata.shape[0]))
+
   adata = adata[adata.obs.n_genes_by_counts<highGene_cutoff,:]
   print("\t\tfiltered cells with highGene.cutoff %d left %d cells"%(highGene_cutoff,adata.shape[0]))
   adata = adata[adata.obs.total_counts<highCount_cutoff,:]
@@ -500,7 +528,8 @@ def plotQC(adata,strPDF,grp=None):
     pdf.savefig(bbox_inches="tight")
     sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90)
     pdf.savefig(bbox_inches="tight")
-    sc.pl.violin(adata, keys ='pct_counts_mt',groupby=batchKey,rotation=90)
+    for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
+      sc.pl.violin(adata, keys =k,groupby=batchKey,rotation=90)
     pdf.savefig(bbox_inches="tight")
     if not grp==None:
       for oneG in grp:
@@ -509,7 +538,8 @@ def plotQC(adata,strPDF,grp=None):
           pdf.savefig(bbox_inches="tight")
           sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90)
           pdf.savefig(bbox_inches="tight")
-          sc.pl.violin(adata, keys ='pct_counts_mt',groupby=oneG,rotation=90)
+          for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
+            sc.pl.violin(adata, keys =k,groupby=oneG,rotation=90)
           pdf.savefig(bbox_inches="tight")
 
 def runMethods(prefix,strConfig):

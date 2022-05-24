@@ -5,10 +5,17 @@ ref_name: # choose one from scAnalyzer call without argument
 output: initOutput #output path
 sample_name: Sample_Name
 sample_meta: initPrjMeta
-MTstring: "" #default search "MT-", "Mt-" and "mt-"
+gene_group:
+  MT:
+    startwith: ["MT-","Mt-","mt-"]
+    cutoff: 20 # percentage cutoff to filter out the cells (larger than this cutoff)
+    rm: False
+  RP:
+    startwith: []
+    cutoff: 20
+    rm: False
 min.cells: 3 #filtering genes by minimal cell
 min.features: 50 #filtering cells by minimal genes
-mt.cutoff: 20 # any cells with higher MT percentage to be removed
 highCount.cutoff: 10000 # any cells with higher total counts to be removed
 highGene.cutoff: 3000 # any cells with higher number of detected genes to be removed
 group: #if provided, a 10X QC box plot will be ploted in QC plot
