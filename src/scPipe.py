@@ -322,8 +322,9 @@ def runQC(config,meta):
       strPrefilterQC = os.path.join(config["output"],"prefilter.QC.pdf")
       if not os.path.isfile(strPrefilterQC):
         plotQC(adata,strPrefilterQC,config["group"])
-      adata = filtering(adata,config)
-      plotQC(adata,os.path.join(config["output"],"postfilter.QC.pdf"),config["group"])
+      if config["filter_step"]:
+        adata = filtering(adata,config)
+        plotQC(adata,os.path.join(config["output"],"postfilter.QC.pdf"),config["group"])
     if not config["runAnalysis"]:
       runQCmsg(config)
       exit()
