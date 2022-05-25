@@ -482,7 +482,7 @@ def filtering(adata,config):
   highCount_cutoff=config["highCount.cutoff"]
   highGene_cutoff=config["highGene.cutoff"]
   
-  filterRes=[]
+  filterRes=["Filter,cutoff,cell_number,gene_number\n"]
   
   print("\tfiltering cells and genes")
   if "mt.cutoff" in config.keys():
