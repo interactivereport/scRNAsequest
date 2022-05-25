@@ -308,6 +308,11 @@ def checkConfig(config):
     Exit("'prj_name' is required in config file!")
   if config['sample_meta'] is None:
     Exit("'sample_meta' is required in config file!")
+  if 'initPrjName' in config["prj_name"]:
+    Exit("Please update the 'prj_name' in the config file")
+  if 'initPrjTitle' in config["prj_title"]:
+    Exit("Please update the 'prj_title' in the config file")
+  
 def runQC(config,meta):
   plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
   prefix = os.path.join(config["output"],config["prj_name"])
@@ -330,9 +335,13 @@ def runQC(config,meta):
       runQCmsg(config)
       exit()
     with warnings.catch_warnings():
-      adata.obs,adata.obsm=obtainRAWobsm(adata.copy())
+      if "MTstring" in config.keys():
+        regress_out = ['total_counts', 'pct_counts_mt']
+      elif "gene_group" in config.keys():
+        regress_out = ["pct_%s"%k for k in config["gene_group"].keys() if "pct_%s"%k in adata.obs.columns]
+        regress_out.append("total_counts")
+      adata.obs,adata.obsm=obtainRAWobsm(adata.copy(),regress_out)
       adata.write("%s_raw.h5ad"%prefix)
-      
   return prefix
 def runQCmsg(config):
   print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%config['output'])
@@ -521,14 +530,16 @@ def filtering(adata,config):
   if adata.shape[0]<10:
     Exit("Few cells (%d<10) left after filtering, please check the filtering setting in config to contitue!"%adata.shape[0])
   return adata
-def obtainRAWobsm(D):
+def obtainRAWobsm(D,reg=None):
   # 95 percentile to normalize
   print("\tinitializing layout")
   sc.pp.normalize_total(D,target_sum=math.ceil(np.percentile(D.X.sum(axis=1).transpose().tolist()[0],95)))
   sc.pp.log1p(D)
   sc.pp.highly_variable_genes(D, min_mean=0.01, max_mean=3, min_disp=0.5)
   D = D[:, D.var.highly_variable]
-  sc.pp.regress_out(D, ['total_counts', 'pct_counts_mt'])
+  if not reg is None:
+    sc.pp.regress_out(D, reg)#['total_counts', 'pct_counts_mt']
+  
   sc.pp.scale(D, max_value=10)
   sc.tl.pca(D, svd_solver='arpack',n_comps = 100)
   npcs = 50
