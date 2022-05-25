@@ -269,6 +269,7 @@ createRef <- function(strConfig){
       if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
         message("Reading rds file @",config$ref_rds," ...")
         D <- readRDS(config$ref_rds)
+        DefaultAssay(D) <- "SCT"
         checkRDSRefSeting(config,D)
       }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
         message("Reading h5ad file ...")
