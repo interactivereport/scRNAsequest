@@ -556,6 +556,9 @@ def plotQC(adata,strPDF,grp=None):
     plt.savefig("%s_topGene.png"%strRmark,bbox_inches="tight")
     plt.close()
     
+    w = max(6.4,adata.obs[batchKey].nunique()*2/10)
+    plt.rcParams["figure.figsize"] = (w,4.8)
+    
     sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90)
     pdf.savefig(bbox_inches="tight")
     plt.savefig("%s_genes.png"%strRmark,bbox_inches="tight")
@@ -566,6 +569,9 @@ def plotQC(adata,strPDF,grp=None):
       pdf.savefig(bbox_inches="tight")
       plt.savefig("%s_%s.png"%(strRmark,k),bbox_inches="tight")
       plt.close()
+      
+    plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
+    
     if not grp==None:
       for oneG in grp:
         if oneG in adata.obs.columns:
@@ -573,6 +579,10 @@ def plotQC(adata,strPDF,grp=None):
           pdf.savefig(bbox_inches="tight")
           plt.savefig("%s_%s_couts_genes.png"%(strRmark,oneG),bbox_inches="tight")
           plt.close()
+          
+          w = max(6.4,adata.obs[oneG].nunique()*2/10)
+          plt.rcParams["figure.figsize"] = (w,4.8)
+          
           sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90)
           pdf.savefig(bbox_inches="tight")
           plt.savefig("%s_%s_genes.png"%(strRmark,oneG),bbox_inches="tight")
@@ -582,6 +592,7 @@ def plotQC(adata,strPDF,grp=None):
             pdf.savefig(bbox_inches="tight")
             plt.savefig("%s_%s_%s.png"%(strRmark,oneG,k),bbox_inches="tight")
             plt.close()
+          plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
 
 def runMethods(prefix,strConfig):
   print("starting the process by each method ...")
