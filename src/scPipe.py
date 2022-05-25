@@ -13,6 +13,7 @@ strPipePath=""
 UMIcol="h5path"
 ANNcol="metapath"
 batchKey="library_id"
+Rmarkdown="Rmarkdown"
 # maximum number of a parallel job can be re-submited is 5
 maxJobSubmitRepN=5 
 logging.disable()
@@ -343,6 +344,11 @@ def runQCmsg(config):
   MsgPower()
 def plotSeqQC(meta,sID,strOut,grp=None):
   print("plotting sequence QC ...")
+  global Rmarkdown
+  Rmarkdown = os.path.join(strOut,Rmarkdown)
+  if not os.path.isdir(Rmarkdown):
+    os.mkdir(Rmarkdown)
+  
   seqQC = []
   for i in range(meta.shape[0]):
     strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
@@ -363,12 +369,14 @@ def plotSeqQC(meta,sID,strOut,grp=None):
   QC['sample'] = QC.index
   h = 4.8
   w = max(6.4,QC.shape[0]*2/10)
+  
   with PdfPages("%s/sequencingQC.pdf"%strOut) as pdf:
     for one in k:
       ax = QC.plot.bar(x='sample',y=one,rot=90,legend=False,figsize=(w,h))
       ax.set_title(one)
       plt.grid()
       pdf.savefig(bbox_inches="tight")
+      plt.savefig(os.path.join(Rmarkdown,"sequencingQC_%s.png"%formatFileName(one)),bbox_inches="tight")
       plt.close()
     if not grp==None:
       for oneG in grp:
@@ -380,7 +388,10 @@ def plotSeqQC(meta,sID,strOut,grp=None):
             ax.set_title(one)
             plt.grid()
             pdf.savefig(bbox_inches="tight")
+            plt.savefig(os.path.join(Rmarkdown,"sequencingQC_%s_%s.png"%(oneG,formatFileName(one))),bbox_inches="tight")
             plt.close()
+def formatFileName(strF):
+  return re.sub('_$','',re.sub('[^A-Za-z0-9]+','_',strF))
 def getSampleMeta(strMeta):
   print("processing sample meta information ...")
   if not os.path.isfile(strMeta):
@@ -471,10 +482,13 @@ def filtering(adata,config):
   highCount_cutoff=config["highCount.cutoff"]
   highGene_cutoff=config["highGene.cutoff"]
   
+  filterRes=[]
+  
   print("\tfiltering cells and genes")
   if "mt.cutoff" in config.keys():
     mt_cutoff=config["mt.cutoff"]
     adata = adata[adata.obs.pct_counts_mt<mt_cutoff,:]
+    filterRes.append("MT cutoff,%f,%d,%d\n"%(mt_cutoff,adata.shape[0],adata.shape[1]))
     print("\t\tfiltered cells with mt.cutoff %d left %d cells"%(mt_cutoff,adata.shape[0]))
   elif "gene_group" in config.keys():
     for k in config['gene_group']:
@@ -482,20 +496,28 @@ def filtering(adata,config):
         print("\t\tskip %s"%k)
         continue
       adata = adata[adata.obs["pct_%s"%k]<config['gene_group'][k]["cutoff"],:]
+      filterRes.append("%s,%f,%d,%d\n"%(k,config['gene_group'][k]["cutoff"],adata.shape[0],adata.shape[1]))
       print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],adata.shape[0]))
   else:
     Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
   
   ## filtering low content cells and low genes
   sc.pp.filter_genes(adata,min_cells=min_cells)
+  filterRes.append("min cell,%d,%d,%d\n"%(min_cells,adata.shape[0],adata.shape[1]))
   print("\t\tfiltered genes with min.cells %d left %d genes"%(min_cells,adata.shape[1]))
   sc.pp.filter_cells(adata,min_genes=min_features)
+  filterRes.append("min gene,%d,%d,%d\n"%(min_features,adata.shape[0],adata.shape[1]))
   print("\t\tfiltered cells with min.features %d left %d cells"%(min_features,adata.shape[0]))
 
   adata = adata[adata.obs.n_genes_by_counts<highGene_cutoff,:]
+  filterRes.append("max gene,%d,%d,%d\n"%(highGene_cutoff,adata.shape[0],adata.shape[1]))
   print("\t\tfiltered cells with highGene.cutoff %d left %d cells"%(highGene_cutoff,adata.shape[0]))
   adata = adata[adata.obs.total_counts<highCount_cutoff,:]
+  filterRes.append("max UMI,%d,%d,%d\n"%(highCount_cutoff,adata.shape[0],adata.shape[1]))
   print("\t\tfiltered cells with highCount.cutoff %d left %d cells"%(highCount_cutoff,adata.shape[0]))
+  with open("%s/filter.csv"%Rmarkdown,"w") as f:
+    f.writelines(filterRes)
+
   if adata.shape[0]<10:
     Exit("Few cells (%d<10) left after filtering, please check the filtering setting in config to contitue!"%adata.shape[0])
   return adata
@@ -522,26 +544,44 @@ def obtainRAWobsm(D):
   return D.obs,D.obsm #, D.var.highly_variable
 def plotQC(adata,strPDF,grp=None):
   print("plotting UMI QC ...")
+  strRmark = os.path.join(Rmarkdown,os.path.splitext(os.path.basename(strPDF))[0])
   with PdfPages(strPDF) as pdf:
     sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=batchKey,alpha=0.5)
     pdf.savefig(bbox_inches="tight")
+    plt.savefig("%s_couts_genes.png"%strRmark,bbox_inches="tight")
+    plt.close()
+    
     sc.pl.highest_expr_genes(adata, n_top=20)
     pdf.savefig(bbox_inches="tight")
+    plt.savefig("%s_topGene.png"%strRmark,bbox_inches="tight")
+    plt.close()
+    
     sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90)
     pdf.savefig(bbox_inches="tight")
+    plt.savefig("%s_genes.png"%strRmark,bbox_inches="tight")
+    plt.close()
+    
     for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
       sc.pl.violin(adata, keys =k,groupby=batchKey,rotation=90)
-    pdf.savefig(bbox_inches="tight")
+      pdf.savefig(bbox_inches="tight")
+      plt.savefig("%s_%s.png"%(strRmark,k),bbox_inches="tight")
+      plt.close()
     if not grp==None:
       for oneG in grp:
         if oneG in adata.obs.columns:
           sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=oneG,alpha=0.5)
           pdf.savefig(bbox_inches="tight")
+          plt.savefig("%s_%s_couts_genes.png"%(strRmark,oneG),bbox_inches="tight")
+          plt.close()
           sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90)
           pdf.savefig(bbox_inches="tight")
+          plt.savefig("%s_%s_genes.png"%(strRmark,oneG),bbox_inches="tight")
+          plt.close()
           for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
             sc.pl.violin(adata, keys =k,groupby=oneG,rotation=90)
-          pdf.savefig(bbox_inches="tight")
+            pdf.savefig(bbox_inches="tight")
+            plt.savefig("%s_%s_%s.png"%(strRmark,oneG,k),bbox_inches="tight")
+            plt.close()
 
 def runMethods(prefix,strConfig):
   print("starting the process by each method ...")
