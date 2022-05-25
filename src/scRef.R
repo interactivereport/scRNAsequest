@@ -271,6 +271,10 @@ createRef <- function(strConfig){
         D <- readRDS(config$ref_rds)
         DefaultAssay(D) <- "SCT"
         checkRDSRefSeting(config,D)
+        if(length(D@assays$SCT@var.features)==0){
+          VariableFeatures(D) <- D@assays[[D@reductions[[config$ref_PCA]]@assay.used]]@var.features
+        }
+        D@reductions[[config$ref_PCA]]@assay.used <- "SCT"
       }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
         message("Reading h5ad file ...")
         checkH5adRefSetting(config)
