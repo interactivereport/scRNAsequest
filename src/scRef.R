@@ -234,6 +234,7 @@ saveRef <- function(D,config,sysConfig,strAzimuth="azimuth"){
   MsgInit()
   sink(type="message")
   close(conn)
+  system(paste("chmod a+r -R",dirname(strRef)))
   # update system config
   addOne <- setNames(list(list(ref_file=strRef,
                                ref_link=config$ref_link,
