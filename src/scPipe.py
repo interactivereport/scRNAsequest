@@ -744,7 +744,7 @@ echo 'end of HOST'
 # exit 
 set -e
 
-env -i bash -c 'set -o allexport;source sysPath/src/.env;set +o allexport;eval $condaEnv;strCMD'
+env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
 echo 'DONE'
 '''
 sbatch='''#!/bin/bash
