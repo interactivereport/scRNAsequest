@@ -57,15 +57,19 @@ runLiger <- function(strH5ad,strHVG,batchKey,strOut){
   message("\toptimizing ALS ...")
   adatalg <- optimizeALS(adatalg, k=50)
   adatalg <- quantileAlignSNF(adatalg)
-  
   # using H.norm to simulate PCA
   layout <- setNames(as.data.frame(adatalg@H.norm),paste0("pca_",1:ncol(adatalg@H.norm)))
   
   message("\trunning UMAP ...")
-  adatalg <- runUMAP(adatalg)
+  #adatalg <- runUMAP(adatalg) # this create a tmp file in the conda env root folder, so permission denied
+  UMAP <- uwot::umap(adatalg@H.norm,
+                     n_components = 2, metric = "euclidean",
+                     n_neighbors = 10, min_dist = 0.1)
+  rownames(UMAP) <- rownames(adatalg@H.norm)
+  message(tempdir())
   #saveRDS(adatalg, file = "working_data/concat_liger_runumap.Rdata")
   layout <- cbind(layout,
-                  setNames(as.data.frame(adatalg@tsne.coords),paste0("umap_",1:ncol(adatalg@tsne.coords))))
+                  setNames(as.data.frame(UMAP),paste0("umap_",1:ncol(UMAP))))
 
   message("\trunning tSNE ...")
   adatalg <- runTSNE(adatalg)
