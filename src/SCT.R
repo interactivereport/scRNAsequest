@@ -73,9 +73,11 @@ saveX <- function(SCT,strH5){
   }))
   h5write(X@p,file=strH5,name="indptr")
   h5write(dim(X),file=strH5,name="shape")
-  h5write(rownames(X),file=strH5,name="row_names")
-  h5write(colnames(X),file=strH5,name="col_names")
+  #h5write(rownames(X),file=strH5,name="row_names")
+  #h5write(colnames(X),file=strH5,name="col_names")
   h5closeAll()
+  cat(paste(rownames(X),collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
+  cat(paste(colnames(X),collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
 }
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))

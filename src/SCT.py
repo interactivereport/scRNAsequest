@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings
+import subprocess, os, h5py, sys, warnings, re
 import scanpy as sc
 from scipy import sparse
 from scipy.sparse import csc_matrix
@@ -29,12 +29,17 @@ def main():
   print("\tcreating h5ad from SCT h5 ...")
   f = h5py.File(strH5,'r')
   X = sparse.csc_matrix((f['data'],f['indices'],f['indptr']),f['shape'])
-  cID = [one.decode('utf-8') for one in f['row_names']]
-  gID = [one.decode('utf-8') for one in f['col_names']]
+  #cID = [one.decode('utf-8') for one in f['row_names']]
+  #gID = [one.decode('utf-8') for one in f['col_names']]
   f.close()
+  cID = pd.read_csv(re.sub("h5$","cID",strH5),header=None,index_col=0)
+  gID = pd.read_csv(re.sub("h5$","gID",strH5),header=None,index_col=0)
+
   D = sc.AnnData(X)
-  D.obs_names = pd.Index(cID)
-  D.var_names = pd.Index(gID)
+  #D.obs_names = pd.Index(cID)
+  #D.var_names = pd.Index(gID)
+  D.obs_names = list(cID.index)
+  D.var_names = list(gID.index)
   
   Draw = sc.read_h5ad(strH5ad)
   D.obs=pd.concat([D.obs,Draw.obs],axis=1,join="inner")
