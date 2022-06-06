@@ -11,7 +11,10 @@ PKGloading <- function(){
 }
 
 processH5ad <- function(strH5ad,batch,strOut){
-  D <- CreateSeuratObject(counts=getX(strH5ad),
+  X <- getX(strH5ad)
+  gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
+  rownames(X) <- gsub(rownames(X),"_","-")
+  D <- CreateSeuratObject(counts=X,
                           project="SCT",
                           meta.data=getobs(strH5ad))
   Dmedian <- median(colSums(D@assays$RNA@counts))
@@ -34,7 +37,7 @@ processH5ad <- function(strH5ad,batch,strOut){
   }else{
     SCT <- merge(Dlist[[1]], y=Dlist[-1])
   }
-  saveX(SCT,strOut)
+  saveX(SCT,strOut,gID)
 }
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
@@ -62,7 +65,7 @@ getX <- function(strH5ad){
   }
   return(M)
 }
-saveX <- function(SCT,strH5){
+saveX <- function(SCT,strH5,gID){
   message("\tsaving SCT ...")
   saveRDS(SCT,paste0(strH5,".rds"))
   X <- Matrix::t(Matrix::Matrix(SCT@assays$SCT@data,sparse=T))
@@ -77,7 +80,7 @@ saveX <- function(SCT,strH5){
   #h5write(colnames(X),file=strH5,name="col_names")
   h5closeAll()
   cat(paste(rownames(X),collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
-  cat(paste(colnames(X),collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
+  cat(paste(gID[colnames(X)],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
 }
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
