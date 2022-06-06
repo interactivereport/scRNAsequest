@@ -1,0 +1,251 @@
+# QC plots
+
+**Quality control (QC)** is of single-cell RNA-Seq experiment is critical to downstream analyses. In this section, we present a series of QC plots for better understanding of data quality.
+
+In total there are 19 figures showing different aspects of the data. These plots can be further grouped into the following categories:
+
+- **General QC**
+
+   - Estimated Number of Cells
+   
+   - Median UMI Counts per Cell
+   
+   - Median Genes per Cell
+   
+   - Number of Reads
+
+   - Mean Reads per Cell
+   
+   - Total Genes Detected
+   
+   - Valid Barcodes%
+   
+   - Sequencing Saturation%
+   
+   - Fraction Reads in Cells%
+   
+- **Q30 Bases Percentage**
+   
+   - Q30 Bases in Barcode%
+   
+   - Q30 Bases in RNA Read%
+   
+   - Q30 Bases in UMI%
+   
+- **Reads Mapping Summary**
+
+   - Reads Mapped to Genome%
+   
+   - Reads Mapped Confidently to Genome%
+   
+   - Reads Mapped Confidently to Intergenic Regions%
+   
+   - Reads Mapped Confidently to Intronic Regions%
+   
+   - Reads Mapped Confidently to Exonic Regions%
+   
+   - Reads Mapped Confidently to Transcriptome%
+   
+   - Reads Mapped Antisense to Gene%
+   
+## General QC
+
+The General QC plot section includes nine bar plots to visualize general metrics of the current single-cell project.
+
+### Estimated Number of Cells
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Estimated_Number_of_Cells.png")){
+  knitr::include_graphics("images/sequencingQC_Estimated_Number_of_Cells.png")
+}else{
+  cat("Missing figure: sequencingQC_Estimated_Number_of_Cells.png") 
+}
+```
+   
+### Median UMI Counts per Cell
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Median_UMI_Counts_per_Cell.png")){
+  knitr::include_graphics("images/sequencingQC_Median_UMI_Counts_per_Cell.png")
+}else{
+  cat("Missing figure: sequencingQC_Median_UMI_Counts_per_Cell.png") 
+}
+```
+
+### Median Genes per Cell
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Median_Genes_per_Cell.png")){
+  knitr::include_graphics("images/sequencingQC_Median_Genes_per_Cell.png")
+}else{
+  cat("Missing figure: sequencingQC_Median_Genes_per_Cell.png") 
+}
+```
+
+### Number of Reads
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Number_of_Reads.png")){
+  knitr::include_graphics("images/sequencingQC_Number_of_Reads.png")
+}else{
+  cat("Missing figure: sequencingQC_Number_of_Reads.png") 
+}
+```
+
+### Mean Reads per Cell
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Mean_Reads_per_Cell.png")){
+  knitr::include_graphics("images/sequencingQC_Mean_Reads_per_Cell.png")
+}else{
+  cat("Missing figure: sequencingQC_Mean_Reads_per_Cell.png") 
+}
+```
+
+### Total Genes Detected
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Total_Genes_Detected.png")){
+  knitr::include_graphics("images/sequencingQC_Total_Genes_Detected.png")
+}else{
+  cat("Missing figure: sequencingQC_Total_Genes_Detected.png") 
+}
+```
+
+### Valid Barcodes%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Valid_Barcodes.png")){
+  knitr::include_graphics("images/sequencingQC_Valid_Barcodes.png")
+}else{
+  cat("Missing figure: sequencingQC_Valid_Barcodes.png") 
+}
+```
+
+### Sequencing Saturation%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Sequencing_Saturation.png")){
+  knitr::include_graphics("images/sequencingQC_Sequencing_Saturation.png")
+}else{
+  cat("Missing figure: sequencingQC_Sequencing_Saturation.png") 
+}
+```
+
+### Fraction Reads in Cells%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Fraction_Reads_in_Cells.png")){
+  knitr::include_graphics("images/sequencingQC_Fraction_Reads_in_Cells.png")
+}else{
+  cat("Missing figure: sequencingQC_Fraction_Reads_in_Cells.png") 
+}
+```
+
+## Q30 Bases Percentage
+
+The Q30 Bases Percentage includes three Q30 plots showing Barcode%, RNA Read% and UMI%.
+
+### Q30 Bases in Barcode%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Q30_Bases_in_Barcode.png")){
+  knitr::include_graphics("images/sequencingQC_Q30_Bases_in_Barcode.png")
+}else{
+  cat("Missing figure: sequencingQC_Q30_Bases_in_Barcode.png") 
+}
+```
+
+### Q30 Bases in RNA Read%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Q30_Bases_in_RNA_Read.png")){
+  knitr::include_graphics("images/sequencingQC_Q30_Bases_in_RNA_Read.png")
+}else{
+  cat("Missing figure: sequencingQC_Q30_Bases_in_RNA_Read.png") 
+}
+```
+
+### Q30 Bases in UMI%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Q30_Bases_in_UMI.png")){
+  knitr::include_graphics("images/sequencingQC_Q30_Bases_in_UMI.png")
+}else{
+  cat("Missing figure: sequencingQC_Q30_Bases_in_UMI.png") 
+}
+```
+
+## Reads Mapping Summary
+
+The Reads Mapping Summary section includes seven plots showing the percentage of reads mapped to different genomic features. Ideally, most of the reads should map to the Genome, as well as the Transcriptome. For single-nucleus RNA-seq data, we expect to see more reads mapped to the intronic region, compared to a single-cell RNA-seq data.
+
+### Genome%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_to_Genome.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_to_Genome.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_to_Genome.png") 
+}
+```
+
+### Confidently to Genome%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_Confidently_to_Genome.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_Confidently_to_Genome.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_Confidently_to_Genome.png") 
+}
+```
+
+### Confidently to Intergenic Regions%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_Confidently_to_Intergenic_Regions.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_Confidently_to_Intergenic_Regions.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_Confidently_to_Intergenic_Regions.png") 
+}
+```
+
+### Confidently to Intronic Regions%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_Confidently_to_Intronic_Regions.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_Confidently_to_Intronic_Regions.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_Confidently_to_Intronic_Regions.png") 
+}
+```
+
+### Confidently to Exonic Regions%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_Confidently_to_Exonic_Regions.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_Confidently_to_Exonic_Regions.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_Confidently_to_Exonic_Regions.png") 
+}
+```
+
+### Confidently to Transcriptome%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_Confidently_to_Transcriptome.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_Confidently_to_Transcriptome.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_Confidently_to_Transcriptome.png") 
+}
+```
+
+### Antisense to Gene%
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/sequencingQC_Reads_Mapped_Antisense_to_Gene.png")){
+  knitr::include_graphics("images/sequencingQC_Reads_Mapped_Antisense_to_Gene.png")
+}else{
+  cat("Missing figure: sequencingQC_Reads_Mapped_Antisense_to_Gene.png") 
+}
+```

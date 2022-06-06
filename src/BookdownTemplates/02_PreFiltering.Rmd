@@ -1,0 +1,91 @@
+# Pre-filtering Plots
+
+In this section, we present 8 figures to visualize the statistics of genes and counts across multiple datasets in the current project. In a typical single-cell data, usually several thousand genes can be detected. However, the detection of many genes (i.e. over 10,000) may indicate more than one cells were sequenced. The plots shown here can be used as a guidance to determine the cutoff. If you have turned on "filter_step: True" in the config.yml file, you will also see post-filtering plots in the next section.
+
+## Counts and Genes
+
+```{r echo=FALSE, out.width = '100%', results = "asis"}
+if (file.exists("images/prefilter.QC_couts_genes.png")){
+   cat("This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_couts_genes.png")
+}else{
+  cat("Missing figure: prefilter.QC_couts_genes.png") 
+}
+```
+
+## Number of Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_genes.png")){
+   cat("This plot shows Number of Genes (Y axis) detected in each data, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_genes.png")
+}else{
+  cat("Missing figure: prefilter.QC_genes.png")
+}
+```
+
+## Top Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_topGene.png")){
+   cat("This plot shows Top Genes and % of Total Counts in each data, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_topGene.png")
+}else{
+  cat("Missing figure: prefilter.QC_topGene.png")
+}
+```
+
+## Percentage of Top 50 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_pct_counts_in_top_50_genes.png")){
+   cat("This plot shows % of Total Counts of top 50 genes, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_pct_counts_in_top_50_genes.png")
+}else{
+  cat("Missing figure: prefilter.QC_pct_counts_in_top_50_genes.png")
+}
+```
+
+## Percentage of Top 100 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_pct_counts_in_top_100_genes.png")){
+   cat("This plot shows % of Total Counts of top 100 genes, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_pct_counts_in_top_100_genes.png")
+}else{
+  cat("Missing figure: prefilter.QC_pct_counts_in_top_100_genes.png")
+}
+```
+
+## Percentage of Top 200 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_pct_counts_in_top_200_genes.png")){
+   cat("This plot shows % of Total Counts of top 200 genes, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_pct_counts_in_top_200_genes.png")
+}else{
+  cat("Missing figure: prefilter.QC_pct_counts_in_top_200_genes.png")
+}
+```
+
+## Percentage of Top 500 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_pct_counts_in_top_500_genes.png")){
+   cat("This plot shows % of Total Counts of top 500 genes, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_pct_counts_in_top_500_genes.png")
+}else{
+  cat("Missing figure: prefilter.QC_pct_counts_in_top_500_genes.png")
+}
+```
+
+## Percentage of Mitochondria
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/prefilter.QC_pct_MT.png")){
+   cat("This plot shows % of Mitochondria, before filtering.\n\n")
+   knitr::include_graphics("images/prefilter.QC_pct_MT.png")
+}else{
+  cat("Missing figure: prefilter.QC_pct_MT.png")
+}
+```
