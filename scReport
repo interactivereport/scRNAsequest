@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+#nohup scReport config.yml > QC.log 2>&1 &
+
+if [[ -n "$1" ]]; then
+    src="$(dirname $0)/src"
+	if [[ ! -f "$src/.env" ]]; then
+  		echo "scReport: Please run ./install to setup necessary env variables"
+  		#exit
+	fi
+
+	echo "###########"
+	echo "scReport: Building bookdown report..."
+
+    source $src/.env
+    eval $condaEnv
+
+    workingdir=$(dirname $1)
+    configdir=$1
+
+    if [[ $workingdir = ..* ]];then 
+        CurrentPath=`pwd`"/"
+        workingdir=$CurrentPath$workingdir
+        configdir=$CurrentPath$configdir
+    fi
+
+    if [[ $workingdir = .* ]];then 
+        CurrentPath=`pwd`
+        RestPath=`echo $workingdir|sed 's/^\.//'`
+        RestConfigPath=`echo $1|sed 's/^\.//'`
+        workingdir=$CurrentPath$RestPath
+        if [[ ! $RestConfigPath = /* ]];then
+            configdir=$CurrentPath"/"$RestConfigPath
+        else
+            configdir=$CurrentPath$RestConfigPath
+        fi
+    fi
+
+    if [[ ! $workingdir = /* ]];then
+        CurrentPath=`pwd`
+        workingdir=$CurrentPath"/"$workingdir
+        configdir=$CurrentPath"/"$configdir
+    fi
+
+    echo -e "Building bookdown report in: \n    "$workingdir/BookdownReport/
+    rm -rf $workingdir/BookdownReport && cp -r $(dirname $0)/src/BookdownTemplates $workingdir/BookdownReport
+    cp -r $workingdir/Rmarkdown $workingdir/BookdownReport/images
+
+    #Create a bookdown.info.txt file
+    echo -e "Source_code\t"$(dirname $0)/src/ > $workingdir/BookdownReport/bookdown.info.txt
+    echo -e "Working_dir\t"$workingdir/BookdownReport/ >> $workingdir/BookdownReport/bookdown.info.txt
+    echo -e "Config_file\t"$configdir >> $workingdir/BookdownReport/bookdown.info.txt
+    echo -e "PNG_dir\t"$workingdir/Rmarkdown/ >> $workingdir/BookdownReport/bookdown.info.txt
+    ProjName=`awk '{if ($1=="prj_name:") print $2}' $configdir`
+
+    echo "Running the following command:"
+    echo -e "Rscript $(dirname $0)/src/BookdownReport.R \ \n    $configdir \ \n    $workingdir/BookdownReport/"
+    Rscript $(dirname $0)/src/BookdownReport.R $configdir $workingdir/BookdownReport/ && \
+        echo -e "Done building report ..." && \
+		echo -e "Please find the report in: \n    "$workingdir/BookdownReport/docs/index.html && \
+        mkdir $workingdir/${ProjName}_BookdownReport && \
+        cp -r $workingdir/BookdownReport/docs/* $workingdir/${ProjName}_BookdownReport && \
+        cd $workingdir && \
+        tar -czf ${ProjName}_BookdownReport.tar.gz ${ProjName}_BookdownReport && \
+        rm -rf ${ProjName}_BookdownReport && \
+        echo -e "The tarball containing the full report is ready (index.html is the bookdown report): \n    "$workingdir/${ProjName}_BookdownReport.tar.gz
+	
+else
+    echo "=============== scReport path/to/config/file"
+    echo "scReport generates a bookdown summary of the current single-cell project"
+    exePath=$(dirname $0)
+    echo "Please run scReport after running scAnalyzer, and make sure the Rmarkdown directory has been generated"
+    echo "==============="
+    exit 0
+fi
