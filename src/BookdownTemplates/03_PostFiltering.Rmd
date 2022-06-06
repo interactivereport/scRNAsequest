@@ -1,0 +1,124 @@
+```{r, echo=FALSE}
+
+#Retrieve information from the previously saved bookdown.info.txt file
+PWD <- system("pwd", intern = TRUE)
+Info <- paste0(PWD, "/bookdown.info.txt")
+Data <- read.table(Info)
+Source_code <- Data$V2[1]
+Working_dir <- Data$V2[2]
+Config_file <- Data$V2[3]
+PNG_dir <- Data$V2[4]
+
+#Extract information from the Config_file
+config <- sapply(yaml::read_yaml(Config_file),unlist)
+ProjectName <- config$prj_name
+```
+
+# Post-filtering Plots
+
+These post-filtering plots can be used to examine the filtering cutoff. If any of the cutoffs were not ideal, please adjust the cutoff parameters in the config.yml file, then rerun scAnalyzer to generate this report again. This step is designed as semi-automatic, which allows the users to fine-tune the cutoffs and understand the data
+
+```{r, echo=FALSE, results = "asis"}
+suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
+
+if (file.exists(paste0(PNG_dir, "filter.csv"))){
+  Data <- read.csv(paste0(PNG_dir, "filter.csv"))
+  cat("A summary of filtering cutoffs, and number of cells and genes after each filtering step.\n\n")
+  cat("The last row shows the final number after all steps.\n\n")
+  kable(Data, caption = "Data filtering", align = "c", booktabs = TRUE) %>% 
+    kable_styling(bootstrap_options = "striped") %>%
+    column_spec(2, width_min = "2in")
+}else{
+  cat("No filtering was performed, and filter.csv file was not generated either.") 
+}
+
+```
+
+## Counts and Genes
+
+```{r echo=FALSE, out.width = '100%', results = "asis"}
+if (file.exists("images/postfilter.QC_couts_genes.png")){
+  cat("This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_couts_genes.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Number of Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_genes.png")){
+  cat("This plot shows Number of Genes (Y axis) detected in each data, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_genes.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Top Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_topGene.png")){
+  cat("This plot shows Top Genes and % of Total Counts in each data, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_topGene.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Percentage of Top 50 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_pct_counts_in_top_50_genes.png")){
+  cat("This plot shows % of Total Counts of top 50 genes, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_pct_counts_in_top_50_genes.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Percentage of Top 100 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_pct_counts_in_top_100_genes.png")){
+  cat("This plot shows % of Total Counts of top 100 genes, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_pct_counts_in_top_100_genes.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Percentage of Top 200 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_pct_counts_in_top_200_genes.png")){
+  cat("This plot shows % of Total Counts of top 200 genes, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_pct_counts_in_top_200_genes.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Percentage of Top 500 Genes
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_pct_counts_in_top_500_genes.png")){
+  cat("This plot shows % of Total Counts of top 500 genes, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_pct_counts_in_top_500_genes.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
+
+## Percentage of Mitochondria
+
+```{r echo=FALSE, out.width = '80%', results = "asis"}
+if (file.exists("images/postfilter.QC_pct_MT.png")){
+  cat("This plot shows % of Mitochondria, after filtering.\n\n")
+  knitr::include_graphics("images/postfilter.QC_pct_MT.png")
+}else{
+  cat("No filtering was performed.")
+}
+```
