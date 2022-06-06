@@ -5,7 +5,7 @@ if [[ -n "$1" ]]; then
     src="$(dirname $0)/src"
 	if [[ ! -f "$src/.env" ]]; then
   		echo "scReport: Please run ./install to setup necessary env variables"
-  		#exit
+  		exit
 	fi
 
 	echo "###########"
