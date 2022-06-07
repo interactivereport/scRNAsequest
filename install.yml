@@ -56,5 +56,5 @@ dependencies:
   - louvain=0.7.1
   - multicore-tsne=0.1
   - r-bookdown=0.26
-  - r-kableextra=1.3.4
+  - r-knitr=1.39
   

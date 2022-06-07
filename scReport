@@ -8,8 +8,8 @@ if [[ -n "$1" ]]; then
   		exit
 	fi
 
-	echo "###########"
-	echo "scReport: Building bookdown report..."
+    echo "###########"
+    echo "scReport: Building bookdown report..."
 
     source $src/.env
     eval $condaEnv
