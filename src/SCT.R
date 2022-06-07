@@ -13,7 +13,7 @@ PKGloading <- function(){
 processH5ad <- function(strH5ad,batch,strOut){
   X <- getX(strH5ad)
   gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
-  rownames(X) <- gsub(rownames(X),"_","-")
+  rownames(X) <- names(gID) #gsub("_","-",rownames(X))
   D <- CreateSeuratObject(counts=X,
                           project="SCT",
                           meta.data=getobs(strH5ad))
