@@ -14,11 +14,11 @@ fi
 
 if [[ -f "$config" ]]; then
   env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scPipe.py $config 2>&1 | tee -a $config.$(date +%Y%m%d).log'
+  scReport $config 2>&1 | tee -a $config.$(date +%Y%m%d).log
 elif [[ -d "$config" ]]; then
   env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scPipe.py $config 2>&1 | tee -a $config/sc$(date +%Y%m%d).init.log'
+  scReport $config 2>&1 | tee -a $config/sc$(date +%Y%m%d).init.log
 else
   env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scPipe.py'
+  scReport $config
 fi
-
-scReport $config
-
