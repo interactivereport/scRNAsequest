@@ -20,15 +20,12 @@ These post-filtering plots can be used to examine the filtering cutoff. If any o
 
 ```{r, echo=FALSE, results = "asis"}
 suppressMessages(library(knitr))
-suppressMessages(library(kableExtra))
 
 if (file.exists(paste0(PNG_dir, "filter.csv"))){
   Data <- read.csv(paste0(PNG_dir, "filter.csv"))
   cat("A summary of filtering cutoffs, and number of cells and genes after each filtering step.\n\n")
   cat("The last row shows the final number after all steps.\n\n")
-  kable(Data, caption = "Data filtering", align = "c", booktabs = TRUE) %>% 
-    kable_styling(bootstrap_options = "striped") %>%
-    column_spec(2, width_min = "2in")
+  kable(Data, caption = "Data filtering", align = "c", booktabs = TRUE)
 }else{
   cat("No filtering was performed, and filter.csv file was not generated either.") 
 }
