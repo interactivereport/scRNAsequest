@@ -20,5 +20,5 @@ else
   env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scPipe.py'
 fi
 
-
+scReport $config
 
