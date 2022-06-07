@@ -16,7 +16,7 @@ ProjectName <- config$prj_name
 
 # Post-filtering Plots
 
-These post-filtering plots can be used to examine the filtering cutoff. If any of the cutoffs were not ideal, please adjust the cutoff parameters in the config.yml file, then rerun scAnalyzer to generate this report again. This step is designed as semi-automatic, which allows the users to fine-tune the cutoffs and understand the data
+These post-filtering plots can be used to examine the filtering cutoff. If any of the cutoffs were not ideal, please adjust the cutoff parameters in the config.yml file, then rerun scAnalyzer to generate this report again. This step is designed as semi-automatic, which allows the users to fine-tune the cutoffs and understand the data.
 
 ```{r, echo=FALSE, results = "asis"}
 suppressMessages(library(knitr))
@@ -27,7 +27,7 @@ if (file.exists(paste0(PNG_dir, "filter.csv"))){
   cat("The last row shows the final number after all steps.\n\n")
   kable(Data, caption = "Data filtering", align = "c", booktabs = TRUE)
 }else{
-  cat("No filtering was performed, and filter.csv file was not generated either.") 
+  cat("Neither filtering was performed, nor filter.csv was generated.") 
 }
 
 ```
