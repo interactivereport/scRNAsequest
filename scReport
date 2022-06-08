@@ -8,7 +8,7 @@ if [[ -n "$1" ]]; then
   		exit
 	fi
 
-    echo "###########"
+    echo "############"
     echo "scReport: Building bookdown report..."
 
     source $src/.env
@@ -63,7 +63,7 @@ if [[ -n "$1" ]]; then
         tar -czf ${ProjName}_BookdownReport.tar.gz ${ProjName}_BookdownReport && \
         rm -rf ${ProjName}_BookdownReport && \
         echo -e "The tarball containing the full report is ready (index.html is the bookdown report): \n    "$workingdir/${ProjName}_BookdownReport.tar.gz
-	
+    echo "------------"
 else
     echo "=============== scReport path/to/config/file"
     echo "scReport generates a bookdown summary of the current single-cell project"
