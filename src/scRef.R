@@ -45,7 +45,7 @@ MsgInit <- function(){
     url <- sapply(strsplit(grep("^url",trimws(gitConfig[pos[sel]:(pos[sel+1]-1)]),value=T),
                            " "),tail,1)
     gitLog <- unlist(strsplit(unlist(tail(data.table::fread(file.path(strPipePath,".git","logs","HEAD"),header=F),1))[1]," "))
-    message("###########\n## ExpressionAnalysis: ",url)
+    message("###########\n## scRNAsequest: ",url)
     message("## Pipeline Path: ",strPipePath)
     message("## Pipeline Date: ",
             format(as.POSIXct(as.numeric(tail(gitLog,2)[1]),
