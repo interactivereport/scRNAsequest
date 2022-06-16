@@ -2,6 +2,8 @@
 
 **Quality control (QC)** is of single-cell RNA-Seq experiment is critical to downstream analyses. In this section, we present a series of QC plots for better understanding of data quality.
 
+Please be aware that these figures were generated based on the metrics_summary.csv files associated with each sample. For the processed data directly downloaded from NCBI/GEO or EBI, they may not have these information, and thus no QC plots will be generated here.
+
 In total there are 19 figures showing different aspects of the data. These plots can be further grouped into the following categories:
 
 - **General QC**
