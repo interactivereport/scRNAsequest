@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 5 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 5 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 5 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 5 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="installation.html"/>
+<link rel="prev" href="data-preparation.html"/>
+<link rel="next" href="running-the-pipeline.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -192,35 +192,147 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="introduction" class="section level1" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Introduction</h1>
-<p>scRNASequest is a semi-automated single cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:</p>
-<ul>
-<li><p>Preprocessing from raw single-cell RNA sequencing data,</p></li>
-<li><p>Batch correction by one or multiple harmonization methods,</p></li>
-<li><p>Reference dataset based cell type label transfer and embedding projection,</p></li>
-<li><p>Multi-sample multi-condition single-cell level differential gene expression analysis</p></li>
-<li><p>Seamless integration with cellxgene VIP for visualization and with <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> for data hosting and sharing by generating compatible h5ad file. Users have option to run it on local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.</p></li>
-</ul>
-<p>This pipeline contains two main programs:</p>
-<ul>
-<li><p><strong>scAnalyzer</strong></p>
-<p>This is the main script in scRNASequest for singl-cell data processing and analysis.</p>
-<p>Through running scAnalyzer, a directory will be generated based on the date of running the pipeline. For example, sc20220506_0 will be created since today is 2022-05-06. If the user runs scAnalyzer again for the same dataset, the last digit will add up to avoid duplications: sc20220328_1.</p>
-<p>Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration.</p></li>
-<li><p><strong>scRef</strong></p>
-<p>scRef generates a reference dataset for label transfer.</p>
-<p>For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanant path.</p></li>
-</ul>
+<div id="input-configuration" class="section level1" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Input configuration</h1>
+<p>First, make sure the .env has been created in the src folder under the pipeline directory:</p>
+<pre><code>ls ~/scRNAsequest/src/.env</code></pre>
+<div id="prepare-the-config.yml-file" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Prepare the config.yml file</h2>
+<p>To run the scRNAsequest pipeline, a config.yml file is required to be filled in. Please use the following template as an example to prepare this file:</p>
+<p><a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml">config.yml</a></p>
+<pre><code>## Project info and filtering parameters
+prj_name: E-MTAB-11115            #required, project name
+prj_title: &quot;Cell2location maps fine-grained cell types in spatial transcriptomics&quot; #required, and quotes might be needed
+ref_name:                         #optional. You can choose one from scAnalyzer call without argument
+output: /home/ysun4/E-MTAB-11115/ #required, output path
+sample_name: Sample_Name
+sample_meta: ~/E-MTAB-11115/sampleMeta.csv   #required, sample meta information, see section 5.1
+gene_group:
+  MT:
+    startwith: [&quot;MT-&quot;,&quot;Mt-&quot;,&quot;mt-&quot;]
+    cutoff: 20           # percentage cutoff to filter out the cells (larger than this cutoff)
+    rm: False
+  RP:
+    startwith: []
+    cutoff: 20
+    rm: False
+filter_step: True        #if False, the above &#39;gene_group&#39; filtering will be skipped as well
+min.cells: 3             #filtering genes by minimal cell
+min.features: 50         #filtering cells by minimal genes
+highCount.cutoff: 10000  #any cells with higher total counts to be removed
+highGene.cutoff: 3000    #any cells with higher number of detected genes to be removed
 
+group:                   #if provided, a 10X QC box plot will be ploted in QC plot
+runAnalysis: True
+newProcess: False
+parallel: False          #&quot;sge&quot; or &quot;slurm&quot;
+core: 2
+overwrite: True
+#parallelTime: 180       #for a job (not the entire pipeline) in minutes, default 3hr
+
+## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
+DEG_desp:  ~/E-MTAB-11115/DEGinfo.csv         #required for DEG analysis, but you can leave this empty if not going to run DEG
+# Please be causion of changing the following default filtering
+min.cells.per.gene: 3
+min.genes.per.cell: 250
+min.perc.cells.per.gene: 0.00
+perc_filter: TRUE
+R6_min.cells.per.gene: 3
+R6_min.perc.cells.per.gene: 0.1
+R6_min.cells.per.gene.type: &quot;or&quot;
+R6_cells.per.gene.filter: TRUE
+R6_perc.cells.filter: TRUE
+R6_perc.filter: FALSE
+R6_perc.filter.type: &quot;and&quot;
+R6_perc_threshold: 0.90
+R6_min.ave.pseudo.bulk.cpm: 1
+R6_pseudo.bulk.cpm.filter: FALSE
+R6_min.cells.per.subj: 3
+
+## publish to celldepot
+publish: False</code></pre>
+<p>In the first run (see the below scAnalyzer section on how to run the pipeline), the user can set <code>runAnalysis: False</code> and use the above default parameters to perform cell filtering and QC.</p>
+<p>Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different dataset may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.</p>
+<p>Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:</p>
+<pre><code>runAnalysis: True
+overwrite: True</code></pre>
+</div>
+<div id="prepare-the-sample-meta-file" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Prepare the sample meta file</h2>
+<p>The sample meta file, usually named as <strong>sampleMeta.csv</strong>, is a csv file storing data information. The minimal columns for this file are <strong>Sample_Name</strong> (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and <strong>h5path</strong>. If you have the celltype annotation information, you can provide is by adding a column called <strong>metapath</strong>. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.</p>
+<div id="h5-input" class="section level3" number="5.2.1">
+<h3><span class="header-section-number">5.2.1</span> h5 input</h3>
+<p>Here is an example with minimal information for the public dataset <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/">E-MTAB-11115</a> (10X h5 format):</p>
+<pre><code>Sample_Name,h5path
+5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280.filtered_feature_bc_matrix.h5
+5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281.filtered_feature_bc_matrix.h5
+5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282.filtered_feature_bc_matrix.h5
+5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283.filtered_feature_bc_matrix.h5
+5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284.filtered_feature_bc_matrix.h5
+5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285.filtered_feature_bc_matrix.h5</code></pre>
+<p>Another example if you would like to use the celltype annotation defined by their analysis, which can be included in the <strong>metapath</strong> column. Moreover, the user has the freedom to provide further information such as sex and age:</p>
+<pre><code>Sample_Name,h5path,metapath,sex,age
+5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058280_annotation.csv,Female,56d
+5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv,Female,56d
+5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,Female,56d
+5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,Male,56d
+5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,Male,56d
+5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv,Male,56d</code></pre>
+</div>
+<div id="mex-input" class="section level3" number="5.2.2">
+<h3><span class="header-section-number">5.2.2</span> MEX input</h3>
+<p>Since each data has three MEX files (barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz), here we provide the path to each MEX result directory. The minimal information in the sample meta file:</p>
+<pre><code>Sample_Name,h5path
+miR155cKO_rep1,~/10XGenomicsData/GSM6213399_IT_YZ_0309_2904
+WT_rep1,~/10XGenomicsData/GSM6213400_IT_YZ_0309_2905
+WT_rep2,~/10XGenomicsData/GSM6213401_IT_YZ_0309_2908
+miR155cKO_rep2,~/10XGenomicsData/GSM6213402_IT_YZ_0322_3125</code></pre>
+<p>Another example with additional information:</p>
+<pre><code>Sample_Name,h5path,Genotype,Sex
+miR155cKO_rep1,~/10XGenomicsData/GSM6213399_IT_YZ_0309_2904,miR155cKO,Female
+WT_rep1,~/10XGenomicsData/GSM6213400_IT_YZ_0309_2905,WT,Female
+WT_rep2,~/10XGenomicsData/GSM6213401_IT_YZ_0309_2908,WT,Female
+miR155cKO_rep2,~/10XGenomicsData/GSM6213402_IT_YZ_0322_3125,miR155cKO,Female</code></pre>
+</div>
+</div>
+<div id="file-hierarchy" class="section level2" number="5.3">
+<h2><span class="header-section-number">5.3</span> File hierarchy</h2>
+<p>Before running the pipeline, please check the file hierarchy. Here are examples for h5 and MEX inputs, and we suggest creating a separate folder (such as <em>processing</em>) to store the config.yml and sampleMeta.csv files. The output files will be generated in the directory specified in config.yml.</p>
+<p>For data downloaded in 10X h5 format:</p>
+<pre><code>E-MTAB-11115/
+    ├── data
+        ├── 5705STDY8058280_annotation.csv           (optional)
+        ├── 5705STDY8058280_raw_feature_bc_matrix.h5
+        ├── 5705STDY8058281_annotation.csv           (optional)
+        ├── 5705STDY8058281_raw_feature_bc_matrix.h5
+        ...
+    ├── processing
+        ├── config.yml
+        └── sampleMeta.csv</code></pre>
+<p>For data downloaded in 10X MEX format:</p>
+<pre><code>GSE205483/
+    ├── GSM6213399_IT_YZ_0309_2904
+        ├── barcodes.tsv.gz
+        ├── features.tsv.gz
+        └── matrix.mtx.gz
+    ├── GSM6213400_IT_YZ_0309_2905
+        ├── barcodes.tsv.gz
+        ├── features.tsv.gz
+        └── matrix.mtx.gz
+    ...
+    ├── processing
+        ├── config.yml
+        └── sampleMeta.csv</code></pre>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="installation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="data-preparation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="running-the-pipeline.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -251,7 +363,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/02-Introduction.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/05-InputConfiguration.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -259,7 +371,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/02-Introduction.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/05-InputConfiguration.Rmd",
 "text": null
 },
 "download": null,

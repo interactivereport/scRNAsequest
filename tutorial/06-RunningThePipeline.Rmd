@@ -1,0 +1,131 @@
+# Running the pipeline
+
+After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.
+
+## Initial scAnalyzer run
+
+The initial scAnalyzer run intends to test the default filtering parameters on the single-cell RNA-seq data. We suggest the following settings in the config.yml file to activate the filtering step, but pause the pipeline from additional analysis (such as data integration, harmonization, etc.):
+
+```
+# Change the following settings in the config.yml file:
+filter_step: True
+runAnalysis: False
+```
+
+To run scAnalyzer, simply pass the path to the config.yml file to the program:
+
+```{bash, eval=FALSE}
+scAnalyzer Path/to/a/config/file
+
+#Example:
+scAnalyzer ~/E-MTAB-11115/processing/config.yml
+```
+
+Output files:
+
+```
+outputdir
+    ├── BookdownReport/                #Full bookdown report folder. This is same as the BookdownReport.tar.gz below
+    ├── config.yml
+    ├── config.yml.20220617.log        #log file
+    ├── ProjName_BookdownReport.tar.gz #Bookdown report tar ball. 
+                                       #Please download this file and open the index.html file for the report
+    ├── ProjName_raw_prefilter.h5ad    #h5ad after pre-filtering
+    ├── prefilter.QC.pdf               #QC plots before filtering. These plots are included in the Bookdown report
+    ├── postfilter.QC.pdf              #QC plots after filtering
+    └── Rmarkdown/                     #Source files for the Bookdown report
+```
+
+## Review the bookdown report
+
+After the initial scAnalyzer run, a bookdown report, named **ProjName_BookdownReport.tar.gz** will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:
+
+```
+# Cell filtering parameters in the config.yml file:
+gene_group:
+  MT:
+    startwith: ["MT-","Mt-","mt-"]
+    cutoff: 20           #percentage cutoff to filter out the cells (larger than this cutoff)
+    rm: False
+  RP:
+    startwith: []
+    cutoff: 20
+    rm: False
+filter_step: True        #if False, the above 'gene_group' filtering will be skipped as well
+min.cells: 3             #filtering genes by minimal cell
+min.features: 50         #filtering cells by minimal genes
+highCount.cutoff: 10000  #any cells with higher total counts to be removed
+highGene.cutoff: 3000    #any cells with higher number of detected genes to be removed
+```
+
+The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.
+
+## Run the full analysis
+
+After the filtering step is done, we are ready to turn on the *runAnalysis* parameter and run the full pipeline:
+
+```
+# Change the following setting in the config.yml file:
+runAnalysis: True
+```
+
+Please also pay attention to the **reference** data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example using **mouse_spinalCord** as the reference:
+
+```
+ref_name: mouse_spinalCord    #To check all references, run scAnalyzer without any parameter
+```
+
+THen run the same command again. This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/) data (final cell number: 29511) to finish. For a larger dataset, such as [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483) (final cell number: 111,011), the full pipeline took ~7 hours.
+
+```{bash, eval=FALSE}
+scAnalyzer Path/to/a/config/file
+
+#Example:
+scAnalyzer ~/E-MTAB-11115/processing/config.yml
+```
+
+## Visualize the harmonized results
+
+After running the pipeline, the following files will be generated for each harmonization method (Harmony, Seurat, Liger):
+
+```
+outputdir
+    ├── BookdownReport
+    ├── config.yml
+    ├── config.yml.20220615.log
+    ├── Harmony.error                      #Error messages
+    ├── kBET.error
+    ├── Liger.error
+    ├── SCT.error
+    ├── Seurat.error
+    ├── SeuratRef.error
+    ├── silhouette.error
+    ├── ProjName_BookdownReport.tar.gz     #Bookdown report
+    ├── ProjName.h5ad                      #Final h5 file
+    ├── ProjName_Harmony.h5ad              #Harmony
+    ├── ProjName_harmony_py2r_batch.Rdata
+    ├── ProjName_harmony_py2r_pca.Rdata
+    ├── ProjName_harmony_r2py.Rdata
+    ├── ProjName_kBET_umap_k0_100.pdf
+    ├── ProjName_liger.csv                 #Liger
+    ├── ProjName_Liger.h5ad
+    ├── ProjName_liger_hvg.csv
+    ├── ProjName_raw_added.h5ad
+    ├── ProjName_raw.h5ad
+    ├── ProjName_raw_prefilter.h5ad
+    ├── ProjName_SCT.cID                   #SCT transformation
+    ├── ProjName_SCT.gID
+    ├── ProjName_SCT.h5
+    ├── ProjName_SCT.h5ad
+    ├── ProjName_SCT.h5.rds
+    ├── ProjName_Seurat.h5ad               #Seurat
+    ├── ProjName_seurat_r2py_integrated.csv.gz
+    ├── ProjName_seurat_r2py_integrated.genes.csv.gz
+    ├── ProjName_Silhouette_boxplot_pc50.pdf
+    ├── postfilter.QC.pdf
+    ├── prefilter.QC.pdf
+    ├── Rmarkdown/
+    └── sampleMeta.csv
+```
+
+Please review the **ProjName.h5ad** file for the harmonization result. If you have [Cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP) installed, the visualization will be easier.

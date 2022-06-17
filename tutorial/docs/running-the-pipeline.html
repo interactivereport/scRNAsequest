@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 5 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,22 +16,22 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
 
 
 
-<meta name="date" content="2022-05-10" />
+<meta name="date" content="2022-06-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="data-preparation.html"/>
-<link rel="next" href="results.html"/>
+<link rel="prev" href="input-configuration.html"/>
+<link rel="next" href="differential-expression-de-analysis.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -141,24 +141,38 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3" data-path="installation.html"><a href="installation.html"><i class="fa fa-check"></i><b>3</b> Installation</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a></li>
-<li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.2</b> Install CellDepot</a></li>
+<li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#install-cellxgene_vip"><i class="fa fa-check"></i><b>3.2</b> Install cellxgene_VIP</a></li>
+<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.3</b> Install CellDepot</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>4</b> Data preparation</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-h5-format"><i class="fa fa-check"></i><b>4.1</b> Public data in h5 format</a></li>
-<li class="chapter" data-level="4.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mtx-format"><i class="fa fa-check"></i><b>4.2</b> Public data in 10X mtx format</a></li>
+<li class="chapter" data-level="4.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mex-format"><i class="fa fa-check"></i><b>4.2</b> Public data in 10X MEX format</a></li>
 <li class="chapter" data-level="4.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>4.3</b> Self-prepared files</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>5</b> Running the pipeline</a>
+<li class="chapter" data-level="5" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>5</b> Input configuration</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="5.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#prepare-the-sample-meta-file"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a></li>
-<li class="chapter" data-level="5.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#prepare-the-comparison-file"><i class="fa fa-check"></i><b>5.3</b> Prepare the comparison file</a></li>
-<li class="chapter" data-level="5.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#file-hierarchy"><i class="fa fa-check"></i><b>5.4</b> File hierarchy</a></li>
-<li class="chapter" data-level="5.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#scanalyzer"><i class="fa fa-check"></i><b>5.5</b> scAnalyzer</a></li>
-<li class="chapter" data-level="5.6" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#scref"><i class="fa fa-check"></i><b>5.6</b> scRef</a></li>
+<li class="chapter" data-level="5.1" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
+<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-sample-meta-file"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>5.2.1</b> h5 input</a></li>
+<li class="chapter" data-level="5.2.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>5.2.2</b> MEX input</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>6</b> Results</a></li>
+<li class="chapter" data-level="5.3" data-path="input-configuration.html"><a href="input-configuration.html#file-hierarchy"><i class="fa fa-check"></i><b>5.3</b> File hierarchy</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>6</b> Running the pipeline</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>6.1</b> Initial scAnalyzer run</a></li>
+<li class="chapter" data-level="6.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>6.2</b> Review the bookdown report</a></li>
+<li class="chapter" data-level="6.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>6.3</b> Run the full analysis</a></li>
+<li class="chapter" data-level="6.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>6.4</b> Visualize the harmonized results</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>7</b> Differential expression (DE) analysis</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
+<li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
+<li class="chapter" data-level="7.3" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#submit-de-analysis"><i class="fa fa-check"></i><b>7.3</b> Submit DE analysis</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -178,123 +192,106 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="running-the-pipeline" class="section level1" number="5">
-<h1><span class="header-section-number">Chapter 5</span> Running the pipeline</h1>
-<p>First, make sure the .env has been created in the src folder under the pipeline directory:</p>
-<pre><code>ls ~/scRNAsequest/src/.env</code></pre>
-<div id="prepare-the-config.yml-file" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> Prepare the config.yml file</h2>
-<p>To run the scRNAsequest pipeline, a config.yml file is required to fill in. Please use the following template as an example to prepare this file:</p>
-<pre><code>prj_name: E-MTAB-11115 #required
-prj_title: Cell2location maps fine-grained cell types in spatial transcriptomics #required # quote might be needed
-ref_name: # This is optional. You can choose one from scAnalyzer call without argument
-output: /home/ysun4/E-MTAB-11115/processing #output path
-sample_name: Sample_Name
-sample_meta: /home/ysun4/E-MTAB-11115/processing/sampleMeta.csv
-MTstring: &quot;&quot; #default search &quot;MT-&quot;, &quot;Mt-&quot; and &quot;mt-&quot;
-rmMT: True
-min.cells: 0 #filtering genes by minimal cell
-min.features: 0 #filtering cells by minimal genes
-mt.cutoff: 100 # any cells with higher MT percentage to be removed
-highCount.cutoff: 1000000 # any cells with higher total counts to be removed
-highGene.cutoff: 300000 # any cells with higher number of detected genes to be removed
-group: #if provided, a 10X QC box plot will be ploted in QC plot
-runAnalysis: False
-newProcess: False
-parallel: sge #&quot;sge&quot; or &quot;slurm&quot;
-core: 4
-overwrite: False
-#parallelTime: 180 # for a job (not the entire pipeline) in minutes, default 3hr
-
-## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
-DEG_desp:  #required if you would like to perform DEG analysis. Leaving this empty won&#39;t cause error.
-# Please be causion of changing the following default filtering
-min.cells.per.gene: 3
-min.genes.per.cell: 250
-min.perc.cells.per.gene: 0.00
-perc_filter: TRUE
-R6_min.cells.per.gene: 3
-R6_min.perc.cells.per.gene: 0.1
-R6_min.cells.per.gene.type: &quot;or&quot;
-R6_cells.per.gene.filter: TRUE
-R6_perc.cells.filter: TRUE
-R6_perc.filter: FALSE
-R6_perc.filter.type: &quot;and&quot;
-R6_perc_threshold: 0.90
-R6_min.ave.pseudo.bulk.cpm: 1
-R6_pseudo.bulk.cpm.filter: FALSE
-R6_min.cells.per.subj: 3
-
-## publish to celldepot
-publish: False</code></pre>
-<p>In the first run (see the below scAnalyzer section on how to run the pipeline), the user can set <code>runAnalysis: False</code> and use the above default parameters to perform cell filtering and QC.</p>
-<p>Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different dataset may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.</p>
-<p>Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:</p>
-<pre><code>runAnalysis: True
-overwrite: True</code></pre>
+<div id="running-the-pipeline" class="section level1" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Running the pipeline</h1>
+<p>After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.</p>
+<div id="initial-scanalyzer-run" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Initial scAnalyzer run</h2>
+<p>The initial scAnalyzer run intends to test the default filtering parameters on the single-cell RNA-seq data. We suggest the following settings in the config.yml file to activate the filtering step, but pause the pipeline from additional analysis (such as data integration, harmonization, etc.):</p>
+<pre><code># Change the following settings in the config.yml file:
+filter_step: True
+runAnalysis: False</code></pre>
+<p>To run scAnalyzer, simply pass the path to the config.yml file to the program:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="running-the-pipeline.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb21-2"><a href="running-the-pipeline.html#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="running-the-pipeline.html#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb21-4"><a href="running-the-pipeline.html#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<p>Output files:</p>
+<pre><code>outputdir
+    ├── BookdownReport/                #Full bookdown report folder. This is same as the BookdownReport.tar.gz below
+    ├── config.yml
+    ├── config.yml.20220617.log        #log file
+    ├── ProjName_BookdownReport.tar.gz #Bookdown report tar ball. 
+                                       #Please download this file and open the index.html file for the report
+    ├── ProjName_raw_prefilter.h5ad    #h5ad after pre-filtering
+    ├── prefilter.QC.pdf               #QC plots before filtering. These plots are included in the Bookdown report
+    ├── postfilter.QC.pdf              #QC plots after filtering
+    └── Rmarkdown/                     #Source files for the Bookdown report</code></pre>
 </div>
-<div id="prepare-the-sample-meta-file" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Prepare the sample meta file</h2>
-<p>Another important file in the sample meta file, a csv file storing data information. Usually it is named as sampleMeta.csv</p>
-<p>Here is an example with minimal information for the public dataset (for 10X h5 data):</p>
-<pre><code>Sample_Name,h5path,metapath
-5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058280_annotation.csv
-5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv
-5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv
-5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv
-5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv
-5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv</code></pre>
+<div id="review-the-bookdown-report" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Review the bookdown report</h2>
+<p>After the initial scAnalyzer run, a bookdown report, named <strong>ProjName_BookdownReport.tar.gz</strong> will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:</p>
+<pre><code># Cell filtering parameters in the config.yml file:
+gene_group:
+  MT:
+    startwith: [&quot;MT-&quot;,&quot;Mt-&quot;,&quot;mt-&quot;]
+    cutoff: 20           #percentage cutoff to filter out the cells (larger than this cutoff)
+    rm: False
+  RP:
+    startwith: []
+    cutoff: 20
+    rm: False
+filter_step: True        #if False, the above &#39;gene_group&#39; filtering will be skipped as well
+min.cells: 3             #filtering genes by minimal cell
+min.features: 50         #filtering cells by minimal genes
+highCount.cutoff: 10000  #any cells with higher total counts to be removed
+highGene.cutoff: 3000    #any cells with higher number of detected genes to be removed</code></pre>
+<p>The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.</p>
 </div>
-<div id="prepare-the-comparison-file" class="section level2" number="5.3">
-<h2><span class="header-section-number">5.3</span> Prepare the comparison file</h2>
-<p>This file is critical for the differential expressed gene (DEG) analysis.</p>
-<p>In the DEG comparison file, “sample”, “cluster”, “group” and “covars” are the annotation headers, and “alt” and “ref” are the entries from “group” column.</p>
-<p>The DEG is performing between “alt” and “ref” cells from “group” within each entry of “cluster” considering “sample” variations</p>
-<p>Here is an example of the DEG comparison file called DEGinfo.csv:</p>
-<pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
-
-#####To be added</code></pre>
-<p>Once the DEGinfo.csv file created, it can be added to the config.yml file:</p>
-<pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
+<div id="run-the-full-analysis" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Run the full analysis</h2>
+<p>After the filtering step is done, we are ready to turn on the <em>runAnalysis</em> parameter and run the full pipeline:</p>
+<pre><code># Change the following setting in the config.yml file:
+runAnalysis: True</code></pre>
+<p>Please also pay attention to the <strong>reference</strong> data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example using <strong>mouse_spinalCord</strong> as the reference:</p>
+<pre><code>ref_name: mouse_spinalCord    #To check all references, run scAnalyzer without any parameter</code></pre>
+<p>THen run the same command again. This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="running-the-pipeline.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb26-2"><a href="running-the-pipeline.html#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="running-the-pipeline.html#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb26-4"><a href="running-the-pipeline.html#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 </div>
-<div id="file-hierarchy" class="section level2" number="5.4">
-<h2><span class="header-section-number">5.4</span> File hierarchy</h2>
-<p>After downloading the files, usually we save them in the ./data folder. For the config.yml and the sample meta files, we saved them into another folder.</p>
-<p>For data downloaded in 10X h5 format:</p>
-<pre><code>E-MTAB-11115/
-    ├── data
-        ├── 5705STDY8058280_annotation.csv
-        ├── 5705STDY8058280_raw_feature_bc_matrix.h5
-        ├── 5705STDY8058281_annotation.csv
-        ├── 5705STDY8058281_raw_feature_bc_matrix.h5
-        ...
-    ├── processing
-        ├── config.yml
-        ├── DEGinfo.csv
-        └── sampleMeta.csv</code></pre>
-<p>For data downloaded in 10X mtx format:</p>
-<pre><code>########To be added</code></pre>
-</div>
-<div id="scanalyzer" class="section level2" number="5.5">
-<h2><span class="header-section-number">5.5</span> scAnalyzer</h2>
-<p>To run scAnalyzer, the user can pass the path to the config.yml file to the program. This command can be executed at anywhere on the computer.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="running-the-pipeline.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb13-2"><a href="running-the-pipeline.html#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="running-the-pipeline.html#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb13-4"><a href="running-the-pipeline.html#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
-<p>The output files will be stored in the location designated in the config.yml.</p>
-</div>
-<div id="scref" class="section level2" number="5.6">
-<h2><span class="header-section-number">5.6</span> scRef</h2>
-<p>This pipeline is used to process the current data and add it to the reference. Please be cautious about the following two things:</p>
-<ul>
-<li>This process will add a Seurat reference data into the scRNAsequest pipeline PERMANENTLY!</li>
-<li>Please make sure the data provided for reference building is SCT transformed!</li>
-</ul>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="running-the-pipeline.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> Path/to/a/config/file</span>
-<span id="cb14-2"><a href="running-the-pipeline.html#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="running-the-pipeline.html#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb14-4"><a href="running-the-pipeline.html#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div id="visualize-the-harmonized-results" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> Visualize the harmonized results</h2>
+<p>After running the pipeline, the following files will be generated for each harmonization method (Harmony, Seurat, Liger):</p>
+<pre><code>outputdir
+    ├── BookdownReport
+    ├── config.yml
+    ├── config.yml.20220615.log
+    ├── Harmony.error                      #Error messages
+    ├── kBET.error
+    ├── Liger.error
+    ├── SCT.error
+    ├── Seurat.error
+    ├── SeuratRef.error
+    ├── silhouette.error
+    ├── ProjName_BookdownReport.tar.gz     #Bookdown report
+    ├── ProjName.h5ad                      #Final h5 file
+    ├── ProjName_Harmony.h5ad              #Harmony
+    ├── ProjName_harmony_py2r_batch.Rdata
+    ├── ProjName_harmony_py2r_pca.Rdata
+    ├── ProjName_harmony_r2py.Rdata
+    ├── ProjName_kBET_umap_k0_100.pdf
+    ├── ProjName_liger.csv                 #Liger
+    ├── ProjName_Liger.h5ad
+    ├── ProjName_liger_hvg.csv
+    ├── ProjName_raw_added.h5ad
+    ├── ProjName_raw.h5ad
+    ├── ProjName_raw_prefilter.h5ad
+    ├── ProjName_SCT.cID                   #SCT transformation
+    ├── ProjName_SCT.gID
+    ├── ProjName_SCT.h5
+    ├── ProjName_SCT.h5ad
+    ├── ProjName_SCT.h5.rds
+    ├── ProjName_Seurat.h5ad               #Seurat
+    ├── ProjName_seurat_r2py_integrated.csv.gz
+    ├── ProjName_seurat_r2py_integrated.genes.csv.gz
+    ├── ProjName_Silhouette_boxplot_pc50.pdf
+    ├── postfilter.QC.pdf
+    ├── prefilter.QC.pdf
+    ├── Rmarkdown/
+    └── sampleMeta.csv</code></pre>
+<p>Please review the <strong>ProjName.h5ad</strong> file for the harmonization result. If you have <a href="https://github.com/interactivereport/cellxgene_VIP">Cellxgene VIP</a> installed, the visualization will be easier.</p>
 
 </div>
 </div>
@@ -303,8 +300,8 @@ overwrite: True</code></pre>
           </div>
         </div>
       </div>
-<a href="data-preparation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="results.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="input-configuration.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="differential-expression-de-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -335,7 +332,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/05-RunningThePipeline.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/06-RunningThePipeline.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -343,7 +340,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/05-RunningThePipeline.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/06-RunningThePipeline.Rmd",
 "text": null
 },
 "download": null,

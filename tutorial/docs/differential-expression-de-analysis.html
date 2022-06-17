@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="installation.html"/>
+<link rel="prev" href="running-the-pipeline.html"/>
+
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -192,35 +192,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="introduction" class="section level1" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Introduction</h1>
-<p>scRNASequest is a semi-automated single cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:</p>
-<ul>
-<li><p>Preprocessing from raw single-cell RNA sequencing data,</p></li>
-<li><p>Batch correction by one or multiple harmonization methods,</p></li>
-<li><p>Reference dataset based cell type label transfer and embedding projection,</p></li>
-<li><p>Multi-sample multi-condition single-cell level differential gene expression analysis</p></li>
-<li><p>Seamless integration with cellxgene VIP for visualization and with <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> for data hosting and sharing by generating compatible h5ad file. Users have option to run it on local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.</p></li>
-</ul>
-<p>This pipeline contains two main programs:</p>
-<ul>
-<li><p><strong>scAnalyzer</strong></p>
-<p>This is the main script in scRNASequest for singl-cell data processing and analysis.</p>
-<p>Through running scAnalyzer, a directory will be generated based on the date of running the pipeline. For example, sc20220506_0 will be created since today is 2022-05-06. If the user runs scAnalyzer again for the same dataset, the last digit will add up to avoid duplications: sc20220328_1.</p>
-<p>Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration.</p></li>
-<li><p><strong>scRef</strong></p>
-<p>scRef generates a reference dataset for label transfer.</p>
-<p>For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanant path.</p></li>
-</ul>
+<div id="differential-expression-de-analysis" class="section level1" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Differential expression (DE) analysis</h1>
+<p>Another critical function of the scRNASequest pipeline is the <strong>Differential expression (DE)</strong> analysis. By running the steps in Section 6, we have performed quality control of the data, and generated an integrated dataset.</p>
+<p>Before running the DE analysis, the DEG.csv comparison file needs to be prepared:</p>
+<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png" /></a></p>
+<p>In the DEG comparison file above, <strong>“sample”</strong>, <strong>“cluster”</strong>, <strong>“group”</strong> and <strong>“covars”</strong> are the annotation headers, and <strong>“alt”</strong> and <strong>“ref”</strong> are the entries from <strong>“group”</strong> column.</p>
+<p>The DEG is performing between <strong>“alt”</strong> and <strong>“ref”</strong> cells from <strong>“group”</strong> within each entry of <strong>“cluster”</strong> considering <strong>“sample”</strong> variations.</p>
+<p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest</p>
+<div id="example-1" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Example 1</h2>
+<p>Here is an example of the DEG comparison file called DEGinfo.csv (header only):</p>
+<pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]</code></pre>
+</div>
+<div id="example-2" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Example 2</h2>
+</div>
+<div id="submit-de-analysis" class="section level2" number="7.3">
+<h2><span class="header-section-number">7.3</span> Submit DE analysis</h2>
+<p>Once the DEGinfo.csv file created, it can be added to the config.yml file:</p>
+<pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="installation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="running-the-pipeline.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -251,7 +252,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/02-Introduction.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/07-DEAnalysis.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -259,7 +260,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/02-Introduction.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/07-DEAnalysis.Rmd",
 "text": null
 },
 "download": null,

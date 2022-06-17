@@ -1,0 +1,34 @@
+# Differential expression (DE) analysis
+
+Another critical function of the scRNASequest pipeline is the **Differential expression (DE)** analysis. By running the steps in Section 6, we have performed quality control of the data, and generated an integrated dataset. 
+
+Before running the DE analysis, the DEG.csv comparison file needs to be prepared:
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)
+
+In the DEG comparison file above, **“sample”**, **“cluster”**, **“group”** and **“covars”** are the annotation headers, and **“alt”** and **“ref”** are the entries from **“group”** column.
+
+The DEG is performing between **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations.
+
+Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest
+
+## Example 1
+
+
+Here is an example of the DEG comparison file called DEGinfo.csv (header only):
+
+```
+sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+```
+
+## Example 2
+
+## Submit DE analysis
+
+
+Once the DEGinfo.csv file created, it can be added to the config.yml file:
+
+```
+DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv
+```
+
