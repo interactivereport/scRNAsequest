@@ -716,12 +716,12 @@ def runDEG(strConfig,prefix,config):
   if D.shape[0]==0:
     return
   cmd = "Rscript %s/src/scRNAseq_DE.R %s"%(strPipePath,strConfig)
-  #msg = run_cmd(cmd).stdout.decode("utf-8")
-  msg="scDEG task creation completed"
+  msg = run_cmd(cmd).stdout.decode("utf-8")
+  #msg="scDEG task creation completed"
   if "scDEG task creation completed" in msg:
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
-    #submit_cmd(scDEGtask,config,1)
+    submit_cmd(scDEGtask,config,1)
     formatDEG(scDEGtask,prefix)
 def formatDEG(DEGcmds,prefix):
   DEGpaths = list(set([one.split(";")[0].replace("cd ","") for k,one in DEGcmds.items()]))
