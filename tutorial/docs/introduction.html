@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-17" />
+<meta name="date" content="2022-06-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -196,16 +196,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 2</span> Introduction</h1>
 <p>scRNASequest is a semi-automated single cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:</p>
 <ul>
-<li><p>Preprocessing from raw single-cell RNA sequencing data,</p></li>
+<li><p>Pre-processing from raw single-cell RNA sequencing data,</p></li>
 <li><p>Batch correction by one or multiple harmonization methods,</p></li>
 <li><p>Reference dataset based cell type label transfer and embedding projection,</p></li>
 <li><p>Multi-sample multi-condition single-cell level differential gene expression analysis</p></li>
-<li><p>Seamless integration with cellxgene VIP for visualization and with <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> for data hosting and sharing by generating compatible h5ad file. Users have option to run it on local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.</p></li>
+<li><p>Seamless integration with <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">cellxgene VIP</a> for visualization and with <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> for data hosting and sharing by generating compatible h5ad file. Users have option to run it on local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.</p></li>
 </ul>
 <p>This pipeline contains two main programs:</p>
 <ul>
 <li><p><strong>scAnalyzer</strong></p>
-<p>This is the main script in scRNASequest for singl-cell data processing and analysis.</p>
+<p>This is the main script in scRNASequest for single-cell data processing and analysis.</p>
 <p>Through running scAnalyzer, a directory will be generated based on the date of running the pipeline. For example, sc20220506_0 will be created since today is 2022-05-06. If the user runs scAnalyzer again for the same dataset, the last digit will add up to avoid duplications: sc20220328_1.</p>
 <p>Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration.</p></li>
 <li><p><strong>scRef</strong></p>
