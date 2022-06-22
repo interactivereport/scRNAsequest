@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 1 QC plots | Bookdown report of E-MTAB-11115</title>
+  <meta name="description" content="Chapter 1 QC plots | Bookdown report of E-MTAB-11115" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 1 QC plots | Bookdown report of E-MTAB-11115" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 QC plots | Bookdown report of E-MTAB-11115" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="pre-filtering-plots.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">scRNASequest</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#project-overview"><i class="fa fa-check"></i>Project Overview</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="qc-plots.html"><a href="qc-plots.html"><i class="fa fa-check"></i><b>1</b> QC plots</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="qc-plots.html"><a href="qc-plots.html#general-qc"><i class="fa fa-check"></i><b>1.1</b> General QC</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="qc-plots.html"><a href="qc-plots.html#estimated-number-of-cells"><i class="fa fa-check"></i><b>1.1.1</b> Estimated Number of Cells</a></li>
+<li class="chapter" data-level="1.1.2" data-path="qc-plots.html"><a href="qc-plots.html#median-umi-counts-per-cell"><i class="fa fa-check"></i><b>1.1.2</b> Median UMI Counts per Cell</a></li>
+<li class="chapter" data-level="1.1.3" data-path="qc-plots.html"><a href="qc-plots.html#median-genes-per-cell"><i class="fa fa-check"></i><b>1.1.3</b> Median Genes per Cell</a></li>
+<li class="chapter" data-level="1.1.4" data-path="qc-plots.html"><a href="qc-plots.html#number-of-reads"><i class="fa fa-check"></i><b>1.1.4</b> Number of Reads</a></li>
+<li class="chapter" data-level="1.1.5" data-path="qc-plots.html"><a href="qc-plots.html#mean-reads-per-cell"><i class="fa fa-check"></i><b>1.1.5</b> Mean Reads per Cell</a></li>
+<li class="chapter" data-level="1.1.6" data-path="qc-plots.html"><a href="qc-plots.html#total-genes-detected"><i class="fa fa-check"></i><b>1.1.6</b> Total Genes Detected</a></li>
+<li class="chapter" data-level="1.1.7" data-path="qc-plots.html"><a href="qc-plots.html#valid-barcodes"><i class="fa fa-check"></i><b>1.1.7</b> Valid Barcodes%</a></li>
+<li class="chapter" data-level="1.1.8" data-path="qc-plots.html"><a href="qc-plots.html#sequencing-saturation"><i class="fa fa-check"></i><b>1.1.8</b> Sequencing Saturation%</a></li>
+<li class="chapter" data-level="1.1.9" data-path="qc-plots.html"><a href="qc-plots.html#fraction-reads-in-cells"><i class="fa fa-check"></i><b>1.1.9</b> Fraction Reads in Cells%</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-percentage"><i class="fa fa-check"></i><b>1.2</b> Q30 Bases Percentage</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-in-barcode"><i class="fa fa-check"></i><b>1.2.1</b> Q30 Bases in Barcode%</a></li>
+<li class="chapter" data-level="1.2.2" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-in-rna-read"><i class="fa fa-check"></i><b>1.2.2</b> Q30 Bases in RNA Read%</a></li>
+<li class="chapter" data-level="1.2.3" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-in-umi"><i class="fa fa-check"></i><b>1.2.3</b> Q30 Bases in UMI%</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="qc-plots.html"><a href="qc-plots.html#reads-mapping-summary"><i class="fa fa-check"></i><b>1.3</b> Reads Mapping Summary</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="qc-plots.html"><a href="qc-plots.html#genome"><i class="fa fa-check"></i><b>1.3.1</b> Genome%</a></li>
+<li class="chapter" data-level="1.3.2" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-genome"><i class="fa fa-check"></i><b>1.3.2</b> Confidently to Genome%</a></li>
+<li class="chapter" data-level="1.3.3" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-intergenic-regions"><i class="fa fa-check"></i><b>1.3.3</b> Confidently to Intergenic Regions%</a></li>
+<li class="chapter" data-level="1.3.4" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-intronic-regions"><i class="fa fa-check"></i><b>1.3.4</b> Confidently to Intronic Regions%</a></li>
+<li class="chapter" data-level="1.3.5" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-exonic-regions"><i class="fa fa-check"></i><b>1.3.5</b> Confidently to Exonic Regions%</a></li>
+<li class="chapter" data-level="1.3.6" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-transcriptome"><i class="fa fa-check"></i><b>1.3.6</b> Confidently to Transcriptome%</a></li>
+<li class="chapter" data-level="1.3.7" data-path="qc-plots.html"><a href="qc-plots.html#antisense-to-gene"><i class="fa fa-check"></i><b>1.3.7</b> Antisense to Gene%</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html"><i class="fa fa-check"></i><b>2</b> Pre-filtering Plots</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#counts-and-genes"><i class="fa fa-check"></i><b>2.1</b> Counts and Genes</a></li>
+<li class="chapter" data-level="2.2" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#number-of-genes"><i class="fa fa-check"></i><b>2.2</b> Number of Genes</a></li>
+<li class="chapter" data-level="2.3" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#top-genes"><i class="fa fa-check"></i><b>2.3</b> Top Genes</a></li>
+<li class="chapter" data-level="2.4" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-50-genes"><i class="fa fa-check"></i><b>2.4</b> Percentage of Top 50 Genes</a></li>
+<li class="chapter" data-level="2.5" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-100-genes"><i class="fa fa-check"></i><b>2.5</b> Percentage of Top 100 Genes</a></li>
+<li class="chapter" data-level="2.6" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-200-genes"><i class="fa fa-check"></i><b>2.6</b> Percentage of Top 200 Genes</a></li>
+<li class="chapter" data-level="2.7" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-500-genes"><i class="fa fa-check"></i><b>2.7</b> Percentage of Top 500 Genes</a></li>
+<li class="chapter" data-level="2.8" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-mitochondria"><i class="fa fa-check"></i><b>2.8</b> Percentage of Mitochondria</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html"><i class="fa fa-check"></i><b>3</b> Post-filtering Plots</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#counts-and-genes-1"><i class="fa fa-check"></i><b>3.1</b> Counts and Genes</a></li>
+<li class="chapter" data-level="3.2" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#number-of-genes-1"><i class="fa fa-check"></i><b>3.2</b> Number of Genes</a></li>
+<li class="chapter" data-level="3.3" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#top-genes-1"><i class="fa fa-check"></i><b>3.3</b> Top Genes</a></li>
+<li class="chapter" data-level="3.4" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-50-genes-1"><i class="fa fa-check"></i><b>3.4</b> Percentage of Top 50 Genes</a></li>
+<li class="chapter" data-level="3.5" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-100-genes-1"><i class="fa fa-check"></i><b>3.5</b> Percentage of Top 100 Genes</a></li>
+<li class="chapter" data-level="3.6" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-200-genes-1"><i class="fa fa-check"></i><b>3.6</b> Percentage of Top 200 Genes</a></li>
+<li class="chapter" data-level="3.7" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-500-genes-1"><i class="fa fa-check"></i><b>3.7</b> Percentage of Top 500 Genes</a></li>
+<li class="chapter" data-level="3.8" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-mitochondria-1"><i class="fa fa-check"></i><b>3.8</b> Percentage of Mitochondria</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Bookdown report of E-MTAB-11115</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="qc-plots" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> QC plots<a href="qc-plots.html#qc-plots" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><strong>Quality control (QC)</strong> is of single-cell RNA-Seq experiment is critical to downstream analyses. In this section, we present a series of QC plots for better understanding of data quality.</p>
+<p>In total there are 19 figures showing different aspects of the data. These plots can be further grouped into the following categories:</p>
+<ul>
+<li><p><strong>General QC</strong></p>
+<ul>
+<li><p>Estimated Number of Cells</p></li>
+<li><p>Median UMI Counts per Cell</p></li>
+<li><p>Median Genes per Cell</p></li>
+<li><p>Number of Reads</p></li>
+<li><p>Mean Reads per Cell</p></li>
+<li><p>Total Genes Detected</p></li>
+<li><p>Valid Barcodes%</p></li>
+<li><p>Sequencing Saturation%</p></li>
+<li><p>Fraction Reads in Cells%</p></li>
+</ul></li>
+<li><p><strong>Q30 Bases Percentage</strong></p>
+<ul>
+<li><p>Q30 Bases in Barcode%</p></li>
+<li><p>Q30 Bases in RNA Read%</p></li>
+<li><p>Q30 Bases in UMI%</p></li>
+</ul></li>
+<li><p><strong>Reads Mapping Summary</strong></p>
+<ul>
+<li><p>Reads Mapped to Genome%</p></li>
+<li><p>Reads Mapped Confidently to Genome%</p></li>
+<li><p>Reads Mapped Confidently to Intergenic Regions%</p></li>
+<li><p>Reads Mapped Confidently to Intronic Regions%</p></li>
+<li><p>Reads Mapped Confidently to Exonic Regions%</p></li>
+<li><p>Reads Mapped Confidently to Transcriptome%</p></li>
+<li><p>Reads Mapped Antisense to Gene%</p></li>
+</ul></li>
+</ul>
+<div id="general-qc" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> General QC<a href="qc-plots.html#general-qc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The General QC plot section includes nine bar plots to visualize general metrics of the current single-cell project.</p>
+<div id="estimated-number-of-cells" class="section level3 hasAnchor" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> Estimated Number of Cells<a href="qc-plots.html#estimated-number-of-cells" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Estimated_Number_of_Cells.png" width="80%" /></p>
+</div>
+<div id="median-umi-counts-per-cell" class="section level3 hasAnchor" number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span> Median UMI Counts per Cell<a href="qc-plots.html#median-umi-counts-per-cell" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Median_UMI_Counts_per_Cell.png" width="80%" /></p>
+</div>
+<div id="median-genes-per-cell" class="section level3 hasAnchor" number="1.1.3">
+<h3><span class="header-section-number">1.1.3</span> Median Genes per Cell<a href="qc-plots.html#median-genes-per-cell" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Median_Genes_per_Cell.png" width="80%" /></p>
+</div>
+<div id="number-of-reads" class="section level3 hasAnchor" number="1.1.4">
+<h3><span class="header-section-number">1.1.4</span> Number of Reads<a href="qc-plots.html#number-of-reads" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Number_of_Reads.png" width="80%" /></p>
+</div>
+<div id="mean-reads-per-cell" class="section level3 hasAnchor" number="1.1.5">
+<h3><span class="header-section-number">1.1.5</span> Mean Reads per Cell<a href="qc-plots.html#mean-reads-per-cell" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Mean_Reads_per_Cell.png" width="80%" /></p>
+</div>
+<div id="total-genes-detected" class="section level3 hasAnchor" number="1.1.6">
+<h3><span class="header-section-number">1.1.6</span> Total Genes Detected<a href="qc-plots.html#total-genes-detected" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Total_Genes_Detected.png" width="80%" /></p>
+</div>
+<div id="valid-barcodes" class="section level3 hasAnchor" number="1.1.7">
+<h3><span class="header-section-number">1.1.7</span> Valid Barcodes%<a href="qc-plots.html#valid-barcodes" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Valid_Barcodes.png" width="80%" /></p>
+</div>
+<div id="sequencing-saturation" class="section level3 hasAnchor" number="1.1.8">
+<h3><span class="header-section-number">1.1.8</span> Sequencing Saturation%<a href="qc-plots.html#sequencing-saturation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Sequencing_Saturation.png" width="80%" /></p>
+</div>
+<div id="fraction-reads-in-cells" class="section level3 hasAnchor" number="1.1.9">
+<h3><span class="header-section-number">1.1.9</span> Fraction Reads in Cells%<a href="qc-plots.html#fraction-reads-in-cells" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Fraction_Reads_in_Cells.png" width="80%" /></p>
+</div>
+</div>
+<div id="q30-bases-percentage" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> Q30 Bases Percentage<a href="qc-plots.html#q30-bases-percentage" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The Q30 Bases Percentage includes three Q30 plots showing Barcode%, RNA Read% and UMI%.</p>
+<div id="q30-bases-in-barcode" class="section level3 hasAnchor" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span> Q30 Bases in Barcode%<a href="qc-plots.html#q30-bases-in-barcode" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Q30_Bases_in_Barcode.png" width="80%" /></p>
+</div>
+<div id="q30-bases-in-rna-read" class="section level3 hasAnchor" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span> Q30 Bases in RNA Read%<a href="qc-plots.html#q30-bases-in-rna-read" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Q30_Bases_in_RNA_Read.png" width="80%" /></p>
+</div>
+<div id="q30-bases-in-umi" class="section level3 hasAnchor" number="1.2.3">
+<h3><span class="header-section-number">1.2.3</span> Q30 Bases in UMI%<a href="qc-plots.html#q30-bases-in-umi" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Q30_Bases_in_UMI.png" width="80%" /></p>
+</div>
+</div>
+<div id="reads-mapping-summary" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> Reads Mapping Summary<a href="qc-plots.html#reads-mapping-summary" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The Reads Mapping Summary section includes seven plots showing the percentage of reads mapped to different genomic features. Ideally, most of the reads should map to the Genome, as well as the Transcriptome. For single-nucleus RNA-seq data, we expect to see more reads mapped to the intronic region, compared to a single-cell RNA-seq data.</p>
+<div id="genome" class="section level3 hasAnchor" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> Genome%<a href="qc-plots.html#genome" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_to_Genome.png" width="80%" /></p>
+</div>
+<div id="confidently-to-genome" class="section level3 hasAnchor" number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> Confidently to Genome%<a href="qc-plots.html#confidently-to-genome" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Genome.png" width="80%" /></p>
+</div>
+<div id="confidently-to-intergenic-regions" class="section level3 hasAnchor" number="1.3.3">
+<h3><span class="header-section-number">1.3.3</span> Confidently to Intergenic Regions%<a href="qc-plots.html#confidently-to-intergenic-regions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Intergenic_Regions.png" width="80%" /></p>
+</div>
+<div id="confidently-to-intronic-regions" class="section level3 hasAnchor" number="1.3.4">
+<h3><span class="header-section-number">1.3.4</span> Confidently to Intronic Regions%<a href="qc-plots.html#confidently-to-intronic-regions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Intronic_Regions.png" width="80%" /></p>
+</div>
+<div id="confidently-to-exonic-regions" class="section level3 hasAnchor" number="1.3.5">
+<h3><span class="header-section-number">1.3.5</span> Confidently to Exonic Regions%<a href="qc-plots.html#confidently-to-exonic-regions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Exonic_Regions.png" width="80%" /></p>
+</div>
+<div id="confidently-to-transcriptome" class="section level3 hasAnchor" number="1.3.6">
+<h3><span class="header-section-number">1.3.6</span> Confidently to Transcriptome%<a href="qc-plots.html#confidently-to-transcriptome" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Transcriptome.png" width="80%" /></p>
+</div>
+<div id="antisense-to-gene" class="section level3 hasAnchor" number="1.3.7">
+<h3><span class="header-section-number">1.3.7</span> Antisense to Gene%<a href="qc-plots.html#antisense-to-gene" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="images/sequencingQC_Reads_Mapped_Antisense_to_Gene.png" width="80%" /></p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="pre-filtering-plots.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/01_QC.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/01_QC.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

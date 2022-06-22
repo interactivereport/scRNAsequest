@@ -60,6 +60,8 @@ highGene.cutoff: 3000    #any cells with higher number of detected genes to be r
 
 The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.
 
+Please find an example of the bookdown report here: [E-MTAB-11115](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html)
+
 ## Run the full analysis
 
 After the filtering step is done, we are ready to turn on the *runAnalysis* parameter and run the full pipeline:

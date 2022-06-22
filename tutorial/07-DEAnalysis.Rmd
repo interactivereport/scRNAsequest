@@ -10,7 +10,7 @@ In the DEG comparison file above, **“sample”**, **“cluster”**, **“grou
 
 The DEG is performing between **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations.
 
-Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest
+Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:
 
 ## Example 1
 

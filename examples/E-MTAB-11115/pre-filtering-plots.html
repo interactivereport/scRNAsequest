@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Pre-filtering Plots | Bookdown report of E-MTAB-11115</title>
+  <meta name="description" content="Chapter 2 Pre-filtering Plots | Bookdown report of E-MTAB-11115" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Pre-filtering Plots | Bookdown report of E-MTAB-11115" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Pre-filtering Plots | Bookdown report of E-MTAB-11115" />
+  
+  
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="qc-plots.html"/>
+<link rel="next" href="post-filtering-plots.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">scRNASequest</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#project-overview"><i class="fa fa-check"></i>Project Overview</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="qc-plots.html"><a href="qc-plots.html"><i class="fa fa-check"></i><b>1</b> QC plots</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="qc-plots.html"><a href="qc-plots.html#general-qc"><i class="fa fa-check"></i><b>1.1</b> General QC</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="qc-plots.html"><a href="qc-plots.html#estimated-number-of-cells"><i class="fa fa-check"></i><b>1.1.1</b> Estimated Number of Cells</a></li>
+<li class="chapter" data-level="1.1.2" data-path="qc-plots.html"><a href="qc-plots.html#median-umi-counts-per-cell"><i class="fa fa-check"></i><b>1.1.2</b> Median UMI Counts per Cell</a></li>
+<li class="chapter" data-level="1.1.3" data-path="qc-plots.html"><a href="qc-plots.html#median-genes-per-cell"><i class="fa fa-check"></i><b>1.1.3</b> Median Genes per Cell</a></li>
+<li class="chapter" data-level="1.1.4" data-path="qc-plots.html"><a href="qc-plots.html#number-of-reads"><i class="fa fa-check"></i><b>1.1.4</b> Number of Reads</a></li>
+<li class="chapter" data-level="1.1.5" data-path="qc-plots.html"><a href="qc-plots.html#mean-reads-per-cell"><i class="fa fa-check"></i><b>1.1.5</b> Mean Reads per Cell</a></li>
+<li class="chapter" data-level="1.1.6" data-path="qc-plots.html"><a href="qc-plots.html#total-genes-detected"><i class="fa fa-check"></i><b>1.1.6</b> Total Genes Detected</a></li>
+<li class="chapter" data-level="1.1.7" data-path="qc-plots.html"><a href="qc-plots.html#valid-barcodes"><i class="fa fa-check"></i><b>1.1.7</b> Valid Barcodes%</a></li>
+<li class="chapter" data-level="1.1.8" data-path="qc-plots.html"><a href="qc-plots.html#sequencing-saturation"><i class="fa fa-check"></i><b>1.1.8</b> Sequencing Saturation%</a></li>
+<li class="chapter" data-level="1.1.9" data-path="qc-plots.html"><a href="qc-plots.html#fraction-reads-in-cells"><i class="fa fa-check"></i><b>1.1.9</b> Fraction Reads in Cells%</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-percentage"><i class="fa fa-check"></i><b>1.2</b> Q30 Bases Percentage</a>
+<ul>
+<li class="chapter" data-level="1.2.1" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-in-barcode"><i class="fa fa-check"></i><b>1.2.1</b> Q30 Bases in Barcode%</a></li>
+<li class="chapter" data-level="1.2.2" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-in-rna-read"><i class="fa fa-check"></i><b>1.2.2</b> Q30 Bases in RNA Read%</a></li>
+<li class="chapter" data-level="1.2.3" data-path="qc-plots.html"><a href="qc-plots.html#q30-bases-in-umi"><i class="fa fa-check"></i><b>1.2.3</b> Q30 Bases in UMI%</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="qc-plots.html"><a href="qc-plots.html#reads-mapping-summary"><i class="fa fa-check"></i><b>1.3</b> Reads Mapping Summary</a>
+<ul>
+<li class="chapter" data-level="1.3.1" data-path="qc-plots.html"><a href="qc-plots.html#genome"><i class="fa fa-check"></i><b>1.3.1</b> Genome%</a></li>
+<li class="chapter" data-level="1.3.2" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-genome"><i class="fa fa-check"></i><b>1.3.2</b> Confidently to Genome%</a></li>
+<li class="chapter" data-level="1.3.3" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-intergenic-regions"><i class="fa fa-check"></i><b>1.3.3</b> Confidently to Intergenic Regions%</a></li>
+<li class="chapter" data-level="1.3.4" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-intronic-regions"><i class="fa fa-check"></i><b>1.3.4</b> Confidently to Intronic Regions%</a></li>
+<li class="chapter" data-level="1.3.5" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-exonic-regions"><i class="fa fa-check"></i><b>1.3.5</b> Confidently to Exonic Regions%</a></li>
+<li class="chapter" data-level="1.3.6" data-path="qc-plots.html"><a href="qc-plots.html#confidently-to-transcriptome"><i class="fa fa-check"></i><b>1.3.6</b> Confidently to Transcriptome%</a></li>
+<li class="chapter" data-level="1.3.7" data-path="qc-plots.html"><a href="qc-plots.html#antisense-to-gene"><i class="fa fa-check"></i><b>1.3.7</b> Antisense to Gene%</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html"><i class="fa fa-check"></i><b>2</b> Pre-filtering Plots</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#counts-and-genes"><i class="fa fa-check"></i><b>2.1</b> Counts and Genes</a></li>
+<li class="chapter" data-level="2.2" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#number-of-genes"><i class="fa fa-check"></i><b>2.2</b> Number of Genes</a></li>
+<li class="chapter" data-level="2.3" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#top-genes"><i class="fa fa-check"></i><b>2.3</b> Top Genes</a></li>
+<li class="chapter" data-level="2.4" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-50-genes"><i class="fa fa-check"></i><b>2.4</b> Percentage of Top 50 Genes</a></li>
+<li class="chapter" data-level="2.5" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-100-genes"><i class="fa fa-check"></i><b>2.5</b> Percentage of Top 100 Genes</a></li>
+<li class="chapter" data-level="2.6" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-200-genes"><i class="fa fa-check"></i><b>2.6</b> Percentage of Top 200 Genes</a></li>
+<li class="chapter" data-level="2.7" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-top-500-genes"><i class="fa fa-check"></i><b>2.7</b> Percentage of Top 500 Genes</a></li>
+<li class="chapter" data-level="2.8" data-path="pre-filtering-plots.html"><a href="pre-filtering-plots.html#percentage-of-mitochondria"><i class="fa fa-check"></i><b>2.8</b> Percentage of Mitochondria</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html"><i class="fa fa-check"></i><b>3</b> Post-filtering Plots</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#counts-and-genes-1"><i class="fa fa-check"></i><b>3.1</b> Counts and Genes</a></li>
+<li class="chapter" data-level="3.2" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#number-of-genes-1"><i class="fa fa-check"></i><b>3.2</b> Number of Genes</a></li>
+<li class="chapter" data-level="3.3" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#top-genes-1"><i class="fa fa-check"></i><b>3.3</b> Top Genes</a></li>
+<li class="chapter" data-level="3.4" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-50-genes-1"><i class="fa fa-check"></i><b>3.4</b> Percentage of Top 50 Genes</a></li>
+<li class="chapter" data-level="3.5" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-100-genes-1"><i class="fa fa-check"></i><b>3.5</b> Percentage of Top 100 Genes</a></li>
+<li class="chapter" data-level="3.6" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-200-genes-1"><i class="fa fa-check"></i><b>3.6</b> Percentage of Top 200 Genes</a></li>
+<li class="chapter" data-level="3.7" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-top-500-genes-1"><i class="fa fa-check"></i><b>3.7</b> Percentage of Top 500 Genes</a></li>
+<li class="chapter" data-level="3.8" data-path="post-filtering-plots.html"><a href="post-filtering-plots.html#percentage-of-mitochondria-1"><i class="fa fa-check"></i><b>3.8</b> Percentage of Mitochondria</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Bookdown report of E-MTAB-11115</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="pre-filtering-plots" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Pre-filtering Plots<a href="pre-filtering-plots.html#pre-filtering-plots" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>In this section, we present 8 figures to visualize the statistics of genes and counts across multiple datasets in the current project. In a typical single-cell data, usually several thousand genes can be detected. However, the detection of many genes (i.e. over 10,000) may indicate more than one cells were sequenced. The plots shown here can be used as a guidance to determine the cutoff. If you have turned on “filter_step: True” in the config.yml file, you will also see post-filtering plots in the next section.</p>
+<div id="counts-and-genes" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Counts and Genes<a href="pre-filtering-plots.html#counts-and-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, before filtering.</p>
+<p><img src="images/prefilter.QC_couts_genes.png" width="100%" /></p>
+</div>
+<div id="number-of-genes" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Number of Genes<a href="pre-filtering-plots.html#number-of-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows Number of Genes (Y axis) detected in each data, before filtering.</p>
+<p><img src="images/prefilter.QC_genes.png" width="80%" /></p>
+</div>
+<div id="top-genes" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Top Genes<a href="pre-filtering-plots.html#top-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows Top Genes and % of Total Counts in each data, before filtering.</p>
+<p><img src="images/prefilter.QC_topGene.png" width="80%" /></p>
+</div>
+<div id="percentage-of-top-50-genes" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Percentage of Top 50 Genes<a href="pre-filtering-plots.html#percentage-of-top-50-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows % of Total Counts of top 50 genes, before filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_50_genes.png" width="80%" /></p>
+</div>
+<div id="percentage-of-top-100-genes" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Percentage of Top 100 Genes<a href="pre-filtering-plots.html#percentage-of-top-100-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows % of Total Counts of top 100 genes, before filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_100_genes.png" width="80%" /></p>
+</div>
+<div id="percentage-of-top-200-genes" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Percentage of Top 200 Genes<a href="pre-filtering-plots.html#percentage-of-top-200-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows % of Total Counts of top 200 genes, before filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_200_genes.png" width="80%" /></p>
+</div>
+<div id="percentage-of-top-500-genes" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> Percentage of Top 500 Genes<a href="pre-filtering-plots.html#percentage-of-top-500-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows % of Total Counts of top 500 genes, before filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_500_genes.png" width="80%" /></p>
+</div>
+<div id="percentage-of-mitochondria" class="section level2 hasAnchor" number="2.8">
+<h2><span class="header-section-number">2.8</span> Percentage of Mitochondria<a href="pre-filtering-plots.html#percentage-of-mitochondria" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This plot shows % of Mitochondria, before filtering.</p>
+<p><img src="images/prefilter.QC_pct_MT.png" width="80%" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="qc-plots.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="post-filtering-plots.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/02_PreFiltering.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/02_PreFiltering.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
