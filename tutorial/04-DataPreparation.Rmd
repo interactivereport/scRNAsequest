@@ -18,7 +18,7 @@ There are total 6 data, with 6 corresponding *raw_feature_bc_matrix.h5 files. Th
 -rwxrwxr--. 1 zouyang ngs 177M Oct 25  2021 5705STDY8058285.raw_feature_bc_matrix.h5
 ```
 
-This dataset also has cell type annotation files associated with each data. These files are optional to the pipeline, but if you would like to use their cell type labels, it would be better to include them in the sample meta file (See section 5.2).
+This dataset also has cell type annotation files associated with each data. These files are optional to the pipeline, but if you would like to use their cell type labels, it would be better to include them in the sample meta file (See section \@ref(section52)).
 
 ```
 #Annotation files (optional to the pipeline)
@@ -114,7 +114,7 @@ Project/
     ...
 ```
 
-The file hierarchy for [MEX files](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices):
+The file hierarchy for [MEX files](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices){target="_blank"}:
 
 ```
 Project/

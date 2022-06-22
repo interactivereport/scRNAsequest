@@ -153,7 +153,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>5</b> Input configuration</a>
 <ul>
 <li class="chapter" data-level="5.1" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-sample-meta-file"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
+<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
 <ul>
 <li class="chapter" data-level="5.2.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>5.2.1</b> h5 input</a></li>
 <li class="chapter" data-level="5.2.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>5.2.2</b> MEX input</a></li>
@@ -237,7 +237,7 @@ min.features: 50         #filtering cells by minimal genes
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with higher number of detected genes to be removed</code></pre>
 <p>The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.</p>
-<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html">E-MTAB-11115</a></p>
+<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html" target="_blank">E-MTAB-11115</a></p>
 </div>
 <div id="run-the-full-analysis" class="section level2" number="6.3">
 <h2><span class="header-section-number">6.3</span> Run the full analysis</h2>
@@ -246,7 +246,7 @@ highGene.cutoff: 3000    #any cells with higher number of detected genes to be r
 runAnalysis: True</code></pre>
 <p>Please also pay attention to the <strong>reference</strong> data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example using <strong>mouse_spinalCord</strong> as the reference:</p>
 <pre><code>ref_name: mouse_spinalCord    #To check all references, run scAnalyzer without any parameter</code></pre>
-<p>THen run the same command again. This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
+<p>THen run the same command again. This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483" target="_blank">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="running-the-pipeline.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
 <span id="cb26-2"><a href="running-the-pipeline.html#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="running-the-pipeline.html#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
@@ -292,7 +292,9 @@ runAnalysis: True</code></pre>
     ├── prefilter.QC.pdf
     ├── Rmarkdown/
     └── sampleMeta.csv</code></pre>
-<p>Please review the <strong>ProjName.h5ad</strong> file for the harmonization result. If you have <a href="https://github.com/interactivereport/cellxgene_VIP">Cellxgene VIP</a> installed, the visualization will be easier.</p>
+<p>Please review the <strong>ProjName.h5ad</strong> file for the harmonization result. If you have <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a> installed, the visualization will be easier.</p>
+<p>An example of the ProjName.h5ad project:</p>
+<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
 
 </div>
 </div>

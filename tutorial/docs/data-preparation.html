@@ -153,7 +153,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>5</b> Input configuration</a>
 <ul>
 <li class="chapter" data-level="5.1" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-sample-meta-file"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
+<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
 <ul>
 <li class="chapter" data-level="5.2.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>5.2.1</b> h5 input</a></li>
 <li class="chapter" data-level="5.2.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>5.2.2</b> MEX input</a></li>
@@ -206,7 +206,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 -rwxrwxr--. 1 zouyang ngs 162M Oct 25  2021 5705STDY8058283.raw_feature_bc_matrix.h5
 -rwxrwxr--. 1 zouyang ngs 149M Oct 25  2021 5705STDY8058284.raw_feature_bc_matrix.h5
 -rwxrwxr--. 1 zouyang ngs 177M Oct 25  2021 5705STDY8058285.raw_feature_bc_matrix.h5</code></pre>
-<p>This dataset also has cell type annotation files associated with each data. These files are optional to the pipeline, but if you would like to use their cell type labels, it would be better to include them in the sample meta file (See section 5.2).</p>
+<p>This dataset also has cell type annotation files associated with each data. These files are optional to the pipeline, but if you would like to use their cell type labels, it would be better to include them in the sample meta file (See section <a href="input-configuration.html#section52">5.2</a>).</p>
 <pre><code>#Annotation files (optional to the pipeline)
 -rwxrwx---. 1 zouyang ngs 440K Apr 21 16:59 5705STDY8058280.annotation.csv
 -rwxrwx---. 1 zouyang ngs 446K Apr 21 16:59 5705STDY8058281.annotation.csv
@@ -281,7 +281,7 @@ $ ls -l
     ├── Data2.annotation.csv                 (optional)
     ├── Data2.metrics_summary.csv            (optional)
     ...</code></pre>
-<p>The file hierarchy for <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices">MEX files</a>:</p>
+<p>The file hierarchy for <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices" target="_blank">MEX files</a>:</p>
 <pre><code>Project/
     ├── Data1
         ├── barcodes.tsv.gz

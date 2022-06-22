@@ -60,7 +60,7 @@ highGene.cutoff: 3000    #any cells with higher number of detected genes to be r
 
 The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.
 
-Please find an example of the bookdown report here: [E-MTAB-11115](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html)
+Please find an example of the bookdown report here: [E-MTAB-11115](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html){target="_blank"}
 
 ## Run the full analysis
 
@@ -77,7 +77,7 @@ Please also pay attention to the **reference** data, and if the user would like 
 ref_name: mouse_spinalCord    #To check all references, run scAnalyzer without any parameter
 ```
 
-THen run the same command again. This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/) data (final cell number: 29511) to finish. For a larger dataset, such as [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483) (final cell number: 111,011), the full pipeline took ~7 hours.
+THen run the same command again. This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"} data (final cell number: 29511) to finish. For a larger dataset, such as [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483){target="_blank"} (final cell number: 111,011), the full pipeline took ~7 hours.
 
 ```{bash, eval=FALSE}
 scAnalyzer Path/to/a/config/file
@@ -130,4 +130,8 @@ outputdir
     └── sampleMeta.csv
 ```
 
-Please review the **ProjName.h5ad** file for the harmonization result. If you have [Cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP) installed, the visualization will be easier.
+Please review the **ProjName.h5ad** file for the harmonization result. If you have [Cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"} installed, the visualization will be easier.
+
+An example of the ProjName.h5ad project:
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)

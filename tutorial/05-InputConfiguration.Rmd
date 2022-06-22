@@ -10,7 +10,7 @@ ls ~/scRNAsequest/src/.env
 
 To run the scRNAsequest pipeline, a config.yml file is required to be filled in. Please use the following template as an example to prepare this file:
 
-[config.yml](https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml)
+[config.yml](https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml){target="_blank"}
 
 ```
 ## Project info and filtering parameters
@@ -77,13 +77,13 @@ runAnalysis: True
 overwrite: True
 ```
 
-## Prepare the sample meta file
+## Prepare the sample meta file {#section52}
 
 The sample meta file, usually named as **sampleMeta.csv**, is a csv file storing data information. The minimal columns for this file are **Sample_Name** (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and **h5path**. If you have the celltype annotation information, you can provide is by adding a column called **metapath**. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.
 
 ### h5 input
 
-Here is an example with minimal information for the public dataset [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/) (10X h5 format):
+Here is an example with minimal information for the public dataset [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"} (10X h5 format):
 
 ```
 Sample_Name,h5path

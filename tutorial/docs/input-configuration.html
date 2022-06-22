@@ -153,7 +153,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>5</b> Input configuration</a>
 <ul>
 <li class="chapter" data-level="5.1" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-sample-meta-file"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
+<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
 <ul>
 <li class="chapter" data-level="5.2.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>5.2.1</b> h5 input</a></li>
 <li class="chapter" data-level="5.2.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>5.2.2</b> MEX input</a></li>
@@ -199,7 +199,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="prepare-the-config.yml-file" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> Prepare the config.yml file</h2>
 <p>To run the scRNAsequest pipeline, a config.yml file is required to be filled in. Please use the following template as an example to prepare this file:</p>
-<p><a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml">config.yml</a></p>
+<p><a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml" target="_blank">config.yml</a></p>
 <pre><code>## Project info and filtering parameters
 prj_name: E-MTAB-11115            #required, project name
 prj_title: &quot;Cell2location maps fine-grained cell types in spatial transcriptomics&quot; #required, and quotes might be needed
@@ -257,12 +257,12 @@ publish: False</code></pre>
 <pre><code>runAnalysis: True
 overwrite: True</code></pre>
 </div>
-<div id="prepare-the-sample-meta-file" class="section level2" number="5.2">
+<div id="section52" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> Prepare the sample meta file</h2>
 <p>The sample meta file, usually named as <strong>sampleMeta.csv</strong>, is a csv file storing data information. The minimal columns for this file are <strong>Sample_Name</strong> (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and <strong>h5path</strong>. If you have the celltype annotation information, you can provide is by adding a column called <strong>metapath</strong>. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.</p>
 <div id="h5-input" class="section level3" number="5.2.1">
 <h3><span class="header-section-number">5.2.1</span> h5 input</h3>
-<p>Here is an example with minimal information for the public dataset <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/">E-MTAB-11115</a> (10X h5 format):</p>
+<p>Here is an example with minimal information for the public dataset <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> (10X h5 format):</p>
 <pre><code>Sample_Name,h5path
 5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280.filtered_feature_bc_matrix.h5
 5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281.filtered_feature_bc_matrix.h5

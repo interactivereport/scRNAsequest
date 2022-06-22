@@ -10,7 +10,7 @@ public-data-in-10x-mex-format
 self-prepared-files
 input-configuration
 prepare-the-config.yml-file
-prepare-the-sample-meta-file
+section52
 h5-input
 mex-input
 file-hierarchy
