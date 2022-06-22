@@ -49,5 +49,6 @@ R6_pseudo.bulk.cpm.filter: FALSE
 R6_min.cells.per.subj: 3
 
 ## publish to celldepot
-publish: False
+## please use "Create Project" on CellDepot to add this project "File Name" is <prj_name>.h5ad
+#publish: False
 

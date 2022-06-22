@@ -703,7 +703,7 @@ def moveCellDepot(prefix):
     shutil.copy("%s.db"%prefix, sysConfig['celldepotDir'])
     print("scDEG is available in VIP")
   print("\nTo check the result, please visit: %s%s.h5ad/"%(sysConfig['celldepotHttp'],os.path.basename(prefix)))
-  print("\nAfter confirm the results, please update the publish section of config file before running scAnalyzer with 'publish: True' ")
+  print("\nAfter confirm the results, please use 'Create Project' on CellDepot to add this project with 'File Name' of %s.h5ad."%os.path.basename(prefix))
   print("=== scAnalyzer is completed ===")
 
 def runDEG(strConfig,prefix,config):
