@@ -273,7 +273,10 @@ scRNAseq_DE_one <- function(
     #system(paste("mkdir -p",strOut))
     strOut <- env$output
     if(!is.null(env$column_group)){
-        strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",gsub("_",".",paste(env$column_cluster,cluster_interest,sep=":")),".QC.pdf"))
+        strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",
+                                        gsub("_",".",paste(env$column_cluster,cluster_interest,sep=":")),"_",
+                                        env$method,
+                                        ".QC.pdf"))
         sce <- BiostatsSingleCell$new(count_data = counts,
                                       meta_data = allMeta,
                                       sampleId_col = env$column_sample,

@@ -1,4 +1,4 @@
-import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser
+import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3
 import pandas as pd
 from datetime import datetime
 import scanpy as sc
@@ -302,8 +302,8 @@ def runPipe(strConfig):
   if not os.path.isfile("%s.h5ad"%prefix) or config["newProcess"]:
     methods = runMethods(prefix,strConfig)
     combine(methods,prefix,config)
-    moveCellDepot(prefix)
   runDEG(strConfig,prefix,config)
+  moveCellDepot(prefix)
   MsgPower()
 def checkConfig(config):
   global beRaster
@@ -699,22 +699,54 @@ def integrateH5ad(strH5ad,methods,prefix):
 def moveCellDepot(prefix):
   sysConfig = getConfig()
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
+  if os.path.isfile("%s.db"%prefix):
+    shutil.copy("%s.db"%prefix, sysConfig['celldepotDir'])
+    print("scDEG is available in VIP")
   print("\nTo check the result, please visit: %s%s.h5ad/"%(sysConfig['celldepotHttp'],os.path.basename(prefix)))
   print("\nAfter confirm the results, please update the publish section of config file before running scAnalyzer with 'publish: True' ")
   print("=== scAnalyzer is completed ===")
 
 def runDEG(strConfig,prefix,config):
+  if os.path.isfile("%s.db"%prefix) and not config["newProcess"]:
+    print("Skip scDEG, db file exists: %s.db"%prefix)
+    return
   if config['DEG_desp'] is None or not os.path.isfile(config['DEG_desp']):
     return
   D = pd.read_csv(config['DEG_desp'],header=0)
   if D.shape[0]==0:
     return
   cmd = "Rscript %s/src/scRNAseq_DE.R %s"%(strPipePath,strConfig)
-  msg = run_cmd(cmd).stdout.decode("utf-8")
+  #msg = run_cmd(cmd).stdout.decode("utf-8")
+  msg="scDEG task creation completed"
   if "scDEG task creation completed" in msg:
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
-    submit_cmd(scDEGtask,config,1)
+    #submit_cmd(scDEGtask,config,1)
+    formatDEG(scDEGtask,prefix)
+def formatDEG(DEGcmds,prefix):
+  DEGpaths = list(set([one.split(";")[0].replace("cd ","") for k,one in DEGcmds.items()]))
+  csv = []
+  for onePath in DEGpaths:
+    for f in os.listdir(onePath):
+      strCSV = os.path.join(onePath,f)
+      if not os.path.isfile(strCSV) or not f.endswith("csv"):
+        continue
+      tab = pd.read_csv(strCSV).iloc[:,0:4]
+      tab.columns = ["gene","log2fc","pval","qval"]
+      tags = f[:-4].split("_")
+      tab["contrast"] = tags[0]
+      tab["tags"] = ";".join(tags[1:])
+      csv += [tab]
+  if len(csv)==0:
+    return
+  data = pd.concat(csv,ignore_index=True)
+  data = data.dropna()
+  D = data[["log2fc","pval","qval"]]
+  D.index = pd.MultiIndex.from_frame(data[["gene","contrast","tags"]])
+  
+  conn = sqlite3.connect('%s.db'%prefix)
+  D.to_sql("DEG",conn,if_exists="replace")
+  conn.close()
 
 def main():
   global strPipePath
