@@ -21,7 +21,7 @@ def calc_sil_pca50(prefix,oneM):
   adata = sc.read(strH5ad,backed=True)
   sil_coeff = None
   if not 'X_pca' in adata.obsm.keys():
-    print("%s is missing obsm 'X_pca'")
+    print("%s is missing obsm 'X_pca'"%strH5ad)
     return oneM,sil_coeff
   cKey = [one for one in adata.obs.keys() if 'louvain' in one]
   if len(cKey)==0:
@@ -49,7 +49,7 @@ def main():
   prefix = sys.argv[1]
   methods = sys.argv[2].split(",")
   
-  coeff_pca50 = [calc_sil_pca50(prefix,m) for m in methods]
+  coeff_pca50 = [one for one in [calc_sil_pca50(prefix,m) for m in methods] if one[1] is not None]
   coeff_pca50_dfs = list(map(make_df, coeff_pca50))
   ## bind
   coeff_pca50_df = pd.concat(coeff_pca50_dfs)
