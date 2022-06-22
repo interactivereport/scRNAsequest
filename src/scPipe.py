@@ -14,6 +14,7 @@ UMIcol="h5path"
 ANNcol="metapath"
 batchKey="library_id"
 Rmarkdown="Rmarkdown"
+beRaster=True
 # maximum number of a parallel job can be re-submited is 5
 maxJobSubmitRepN=5 
 logging.disable()
@@ -294,16 +295,18 @@ def initMsg(strConfig):
 def runPipe(strConfig):
   sc.settings.n_jobs=1
   config = getConfig(strConfig,bSys=False)
-  checkConfig(config)
+  config = checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
   prefix = runQC(config,meta)
   
-  methods = runMethods(prefix,strConfig)
-  combine(methods,prefix,config)
-  moveCellDepot(prefix)
+  if not os.path.isfile("%s.h5ad"%prefix) or config["newProcess"]:
+    methods = runMethods(prefix,strConfig)
+    combine(methods,prefix,config)
+    moveCellDepot(prefix)
   runDEG(strConfig,prefix,config)
   MsgPower()
 def checkConfig(config):
+  global beRaster
   if config["prj_name"] is None:
     Exit("'prj_name' is required in config file!")
   if config['sample_meta'] is None:
@@ -312,7 +315,10 @@ def checkConfig(config):
     Exit("Please update the 'prj_name' in the config file")
   if 'initPrjTitle' in config["prj_title"]:
     Exit("Please update the 'prj_title' in the config file")
-  
+  if not "rasterizeFig" in config.keys():
+    config["rasterizeFig"] = True
+  beRaster = config["rasterizeFig"]
+  return config
 def runQC(config,meta):
   plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
   prefix = os.path.join(config["output"],config["prj_name"])
@@ -557,53 +563,51 @@ def plotQC(adata,strPDF,grp=None):
   print("plotting UMI QC ...")
   strRmark = os.path.join(Rmarkdown,os.path.splitext(os.path.basename(strPDF))[0])
   with PdfPages(strPDF) as pdf:
-    sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=batchKey,alpha=0.5)
-    pdf.savefig(bbox_inches="tight")
-    plt.savefig("%s_couts_genes.png"%strRmark,bbox_inches="tight")
-    plt.close()
-    
-    sc.pl.highest_expr_genes(adata, n_top=20)
-    pdf.savefig(bbox_inches="tight")
-    plt.savefig("%s_topGene.png"%strRmark,bbox_inches="tight")
-    plt.close()
-    
+    savePDF_PNG(sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=batchKey,alpha=0.5,show=False),
+      pdf,"%s_couts_genes.png"%strRmark)
+    savePDF_PNG(sc.pl.highest_expr_genes(adata, n_top=20,show=False),
+      pdf,"%s_topGene.png"%strRmark)
+
     w = max(6.4,adata.obs[batchKey].nunique()*2/10)
     plt.rcParams["figure.figsize"] = (w,4.8)
     
-    sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90)
-    pdf.savefig(bbox_inches="tight")
-    plt.savefig("%s_genes.png"%strRmark,bbox_inches="tight")
-    plt.close()
-    
+    savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=batchKey,rotation=90,show=False),
+      pdf,"%s_counts.png"%strRmark)
+    savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90,show=False),
+      pdf,"%s_genes.png"%strRmark)
+
     for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
-      sc.pl.violin(adata, keys =k,groupby=batchKey,rotation=90)
-      pdf.savefig(bbox_inches="tight")
-      plt.savefig("%s_%s.png"%(strRmark,k),bbox_inches="tight")
-      plt.close()
-      
+      savePDF_PNG(sc.pl.violin(adata, keys =k,groupby=batchKey,rotation=90,show=False),
+        pdf,"%s_%s.png"%(strRmark,k))
+
     plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
     
     if not grp==None:
       for oneG in grp:
         if oneG in adata.obs.columns:
-          sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=oneG,alpha=0.5)
-          pdf.savefig(bbox_inches="tight")
-          plt.savefig("%s_%s_couts_genes.png"%(strRmark,oneG),bbox_inches="tight")
-          plt.close()
-          
+          savePDF_PNG(sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=oneG,alpha=0.5,show=False),
+                      pdf,"%s_%s_couts_genes.png"%(strRmark,oneG))
+
           w = max(6.4,adata.obs[oneG].nunique()*2/10)
           plt.rcParams["figure.figsize"] = (w,4.8)
           
-          sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90)
-          pdf.savefig(bbox_inches="tight")
-          plt.savefig("%s_%s_genes.png"%(strRmark,oneG),bbox_inches="tight")
-          plt.close()
+          savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
+                      pdf,"%s_%s_genes.png"%(strRmark,oneG))
+          savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
+                      pdf,"%s_%s_counts.png"%(strRmark,oneG))
+
           for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
-            sc.pl.violin(adata, keys =k,groupby=oneG,rotation=90)
-            pdf.savefig(bbox_inches="tight")
-            plt.savefig("%s_%s_%s.png"%(strRmark,oneG,k),bbox_inches="tight")
-            plt.close()
+            savePDF_PNG(sc.pl.violin(adata, keys =k,groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
+                        pdf,"%s_%s_%s.png"%(strRmark,oneG,k))
           plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
+def savePDF_PNG(ax,pdf,strPNG):
+  if beRaster:
+    for one in ax.get_children():
+      if 'PathCollection' in str(one):
+        one.set_rasterized(True)
+  pdf.savefig(bbox_inches="tight")
+  plt.savefig(strPNG,bbox_inches="tight")
+  plt.close()
 
 def runMethods(prefix,strConfig):
   print("starting the process by each method ...")
@@ -700,7 +704,6 @@ def moveCellDepot(prefix):
   print("=== scAnalyzer is completed ===")
 
 def runDEG(strConfig,prefix,config):
-  #Rscript /home/zouyang/projects/scRNAsequest/src/scRNAseq_DE.R
   if config['DEG_desp'] is None or not os.path.isfile(config['DEG_desp']):
     return
   D = pd.read_csv(config['DEG_desp'],header=0)
@@ -709,7 +712,7 @@ def runDEG(strConfig,prefix,config):
   cmd = "Rscript %s/src/scRNAseq_DE.R %s"%(strPipePath,strConfig)
   msg = run_cmd(cmd).stdout.decode("utf-8")
   if "scDEG task creation completed" in msg:
-    with open("%_scDEG.cmd.json"%prefix,"r") as f:
+    with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
     submit_cmd(scDEGtask,config,1)
 

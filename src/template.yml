@@ -19,8 +19,9 @@ min.cells: 3 #filtering genes by minimal cell
 min.features: 50 #filtering cells by minimal genes
 highCount.cutoff: 10000 # any cells with higher total counts to be removed
 highGene.cutoff: 3000 # any cells with higher number of detected genes to be removed
-
 group: #if provided, a 10X QC box plot will be ploted in QC plot
+rasterizeFig: True # should image in pdf be rasterized
+
 runAnalysis: False
 newProcess: False
 parallel: False #"sge" or "slurm"

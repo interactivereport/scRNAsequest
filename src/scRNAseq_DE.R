@@ -15,7 +15,7 @@ checkFileExist <- function(strF,msg="file"){
 }
 main <- function(strConfig){
   suppressMessages(suppressWarnings(PKGloading()))
-  message("\tscDEG starting ...")
+  message("scDEG starting ...")
   config <- yaml::read_yaml(strConfig)
   prefix <- paste0(config$output,"/",config$prj_name)
   strDEG <- checkFileExist(config$DEG_desp,"DEG description file")
@@ -29,7 +29,7 @@ main <- function(strConfig){
     q()
   }
   colnames(compInfo) <- sapply(strsplit(colnames(compInfo),"[[:punct:]]"),head,1)
-  meta <- getobs(strH5ad)
+  meta <- getMeta(strH5ad)
   ## check compInfo against meta
   message("\tComparison description file checking ...")
   selCol <- apply(compInfo,1,function(x){
@@ -50,19 +50,19 @@ main <- function(strConfig){
     }
     return(hh)
   })
-  meta <- meta[,unique(unlist(selCol,use.names=F))]
+  #meta <- meta[,unique(unlist(selCol,use.names=F))]
   # obtain the raw counts
-  X <- getX(strH5adraw)
-  X <- X[,rownames(meta)]
+  #X <- getX(strH5adraw)
+  #X <- X[,rownames(meta)]
   
   ## create scDEG folder
-  message("\tsaving counts and meta ...")
+  message("\tcreating scDEG folder ...")
   scDEGpath <- paste0(prefix,"_scDEG/")
   dir.create(scDEGpath,showWarnings=F)
-  strCounts <- paste0(scDEGpath,"counts.rds")
-  strMeta <- paste0(scDEGpath,"meta.rds")
-  saveRDS(X,strCounts)
-  saveRDS(meta,strMeta)
+  #strCounts <- paste0(scDEGpath,"counts.rds")
+  #strMeta <- paste0(scDEGpath,"meta.rds")
+  #saveRDS(X,strCounts)
+  #saveRDS(meta,strMeta)
   
   ## enumerate all comparisons
   message("\tcreating scDEG tasks ...")
@@ -73,8 +73,9 @@ main <- function(strConfig){
     }
     coV <- NULL
     if(!is.na(x["covars"]) && nchar(x["covars"])>2) coV <- unlist(strsplit(x["covars"],"\\+"),use.name=F)
-    strOut <- file.path(scDEGpath,paste(gsub("_",".",x[c("cluster","group","method","model")]),collapse="_"))
-    return(scRNAseq_DE(strCounts,strMeta,strOut,x["method"],
+    strOut <- file.path(scDEGpath,paste(c(paste0("deg",sample(10000,1)),gsub("_",".",x[c("cluster","group","method","model")])),collapse="_"))
+    system(paste("rm -rf",strOut))
+    return(scRNAseq_DE(strH5adraw,strH5ad,strOut,x["method"],
                 x["sample"],x["cluster"],
                 x["group"],x["ref"],x["alt"],
                 x["model"],coV,
@@ -97,47 +98,17 @@ main <- function(strConfig){
                 R6_min.cells.per.subj = config$R6_min.cells.per.subj))
   })
   cmds <- unlist(cmds)#,use.names=F
+  #message(paste(paste(names(cmds),cmds,sep=": "),collapse="\n"))
   write(rjson::toJSON(cmds),paste0(prefix,"_scDEG.cmd.json"))
   #print(head(cmds))
   #writeLines(paste(cmds,collapse="\n"),paste0(prefix,"_scDEG.cmd"))
   cat("scDEG task creation completed")
   
 }
-getobs <- function(strH5ad){
-  message("\tobtainning obs ...")
-  obs <- h5read(strH5ad,"obs")
-  meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
-  if(!"_index"%in%names(obs)) dimnames(meta) <- list(obs[[1]],grep("^_",names(obs),invert=T,value=T))
-  else dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
-  
-  if("__categories"%in%names(obs)){
-    for(one in names(obs[["__categories"]])){
-      meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
-    }
-  }
-  return(meta)
-}
-getX <- function(strH5ad){
-  message("\tobtainning X ...")
-  X <- h5read(strH5ad,"X")
-  gID <- h5read(strH5ad,"var/_index")
-  cID <- h5read(strH5ad,"obs/_index")
-  if((max(X$indices)+1)==length(gID)){ # CSR sparse matrix
-    M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }else if((max(X$indices)+1)==length(cID)){#CSC sparse matrix
-    M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }
-  return(M)
-}
-
 
 scRNAseq_DE <- function(
-    countRDS,
-    metaRDS,
+    strCount,
+    strMeta,
     output,
     method,
     column_sample,
@@ -173,22 +144,92 @@ scRNAseq_DE <- function(
     checkInput(env)
     saveRDS(env,file=file.path(output,"env.rds"))
 
-    meta <- readRDS(metaRDS)
+    meta <- getMeta(strMeta)
     cmd <- c()
     for(one in unique(meta[,column_cluster])){
       #"Rscript cmdPath/scRNAseq_DE.R cmdPath grpInterest" paste(jID,one,addSRC)
-      cmd <- c(cmd,paste("cd",output,";Rscript",paste0(scRNAseq_DE_path,"/scRNAseq_DE.R"),
-                         scRNAseq_DE_path,one))
+      cmd <- c(cmd,paste0("cd ",output,"; Rscript ",scRNAseq_DE_path,"/scRNAseq_DE.R ",
+                         scRNAseq_DE_path," ",one))
     }
     names(cmd) <- paste(basename(output),unique(meta[,column_cluster]),grp_alt,grp_ref,sep="_")
-    return(cmd)
+    
+    return(list(cmd))
+}
+
+getobs <- function(strH5ad){
+  message("\tobtainning obs ...")
+  obs <- h5read(strH5ad,"obs")
+  meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
+  dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
+  for(one in names(obs[["__categories"]])){
+    meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
+  }
+  return(meta)
+}
+getX <- function(strH5ad){
+  message("\tobtainning X ...")
+  keys <- h5ls(strH5ad)
+  if(sum(grepl("/raw/X",keys$group))>0){
+    message("\t\tFound .raw.X, extracting counts")
+    X <- h5read(strH5ad,"/raw/X")
+  }else{
+    X <- h5read(strH5ad,"X")
+  }
+  if(sum(grepl("/raw/var",keys$group))>0){
+    message("\t\tFound .raw.var, extracting gene name")
+    gID <- h5read(strH5ad,"/raw/var/_index")
+  }else{
+    gID <- h5read(strH5ad,"/var/_index")
+  }
+  if(sum(grepl("/raw/obs",keys$group))>0){
+    message("\t\tFound .raw.obs, extracting cell name")
+    cID <- h5read(strH5ad,"/raw/obs/_index")
+  }else{
+    cID <- h5read(strH5ad,"/obs/_index")
+  }
+  gID <- as.vector(gID)
+  cID <- as.vector(cID)
+  if((max(X$indices)+1)==length(gID)){ # CSR sparse matrix
+    if((length(X$indptr)-1)!=length(cID)) stop("unmatching cell number in CSR!")
+    M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
+                      dims=c(length(gID),length(cID)),
+                      dimnames=list(gID,cID))
+  }else if((max(X$indices)+1)==length(cID)){#CSC sparse matrix
+    if((length(X$indptr)-1)!=length(gID)) stop("unmatching gene number in CSC!")
+    M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
+                      dims=c(length(gID),length(cID)),
+                      dimnames=list(gID,cID))
+  }else{
+    stop("unknown h5ad format!")
+  }
+  return(M)
+}
+getMeta <- function(strMeta){
+  if(grepl("rds$",strMeta)){
+    meta <- readRDS(strMeta)
+  }else if(grepl("h5ad$",strMeta)){
+    meta <- getobs(strMeta)
+  }else{
+    stop(paste("unknown meta format:",strMeta))
+  }
+  return(meta)
+}
+getUMI <- function(strUMI){
+  if(grepl("rds$",strUMI)){
+    UMI <- readRDS(strUMI)
+  }else if(grepl("h5ad$",strUMI)){
+    UMI <- getX(strUMI)
+  }else{
+    stop(paste("unknown UMI format:",strUMI))
+  }
+  return(UMI)
 }
 
 checkInput <- function(env){
-    if(!file.exists(env$countRDS) || !file.exists(env$metaRDS)){
+    if(!file.exists(env$strCount) || !file.exists(env$strMeta)){
         stop("Either count RDS file or meta RDS file is missing!")
     }
-    meta <- readRDS(env$metaRDS)
+    meta <- getMeta(env$strMeta)
     for(one in c(env$column_sample,env$column_cluster,env$column_group,env$column_covars)){
         if(!one%in%colnames(meta))
             stop(paste(one,"is not in the sample meta table!"))
@@ -221,17 +262,18 @@ scRNAseq_DE_one <- function(
     cluster_interest,
     strSrc=NULL
 ){
+    suppressMessages(suppressWarnings(PKGloading()))
     if(!is.null(strSrc)) source(paste0(strSrc,"/pipeline_class.R"))
     message("===== read counts and meta information =====")
-    counts <- readRDS(env$countRDS)
-    allMeta <- readRDS(env$metaRDS)[colnames(counts),]
+    counts <- getUMI(env$strCount)
+    allMeta <- getMeta(env$strMeta)[colnames(counts),]
     allMeta$cell <- rownames(allMeta)
     message("===== ",env$method,":",cluster_interest," =====")
     #strOut <- paste0(env$output,"/",env$method,"_",env$column_cluster,"/")
     #system(paste("mkdir -p",strOut))
     strOut <- env$output
     if(!is.null(env$column_group)){
-        strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",gsub("_",".",cluster_interest),".QC.pdf"))
+        strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",gsub("_",".",paste(env$column_cluster,cluster_interest,sep=":")),".QC.pdf"))
         sce <- BiostatsSingleCell$new(count_data = counts,
                                       meta_data = allMeta,
                                       sampleId_col = env$column_sample,

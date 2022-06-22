@@ -18,7 +18,7 @@ suppressMessages(library(doMC))
 suppressMessages(library(biomaRt))
 suppressMessages(library(emmeans))
 suppressMessages(library(nebula))
-
+suppressMessages(library(scater))
 # ---------------------
 # make helper functions
 # ---------------------
@@ -258,32 +258,34 @@ BiostatsSingleCell =
                                                 colData = data.frame(cluster = private$meta_data[, private$cluster_col],
                                                                      sample = private$meta_data[, private$sampleId_col],
                                                                      treatment = private$meta_data[, private$treatment_col]))
-                    
                     if (length(private$MT_rows)>0)
                     {
-                        sce <- calculateQCMetrics(sce, feature_controls=list(Mt=private$MT_rows))
+                        #sce <- calculateQCMetrics(sce, feature_controls=list(Mt=private$MT_rows))
+                        sce <- cbind(colData(sce),scuttle::perCellQCMetrics(sce, subsets=list(Mt=private$MT_rows),percent.top=50))
                         
                         sce_mt <- SingleCellExperiment(assays = list(counts=private$counts[-private$MT_rows,]),
                                                        colData = data.frame(cluster = private$meta_data[, private$cluster_col],
                                                                             sample = private$meta_data[, private$sampleId_col],
                                                                             treatment = private$meta_data[, private$treatment_col]))
-                        sce_mt <- calculateQCMetrics(sce_mt)
+                        #sce_mt <- calculateQCMetrics(sce_mt)
+                        sce_mt <- cbind(colData(sce_mt),scuttle::perCellQCMetrics(sce_mt,percent.top=50))
                     } else {
-                        sce <- calculateQCMetrics(sce)
+                        #sce <- calculateQCMetrics(sce)
+                        sce <- cbind(colData(sce),scuttle::perCellQCMetrics(sce,percent.top=50))
                     }
-                    
+                    # the folowing is updated for newer scater package (1.18.6)
+
                     # Frequency histogram of total UMI counts per column
-                    
                     if (length(private$MT_rows)>0)
                     {
                         par(mfrow=c(1,2))
-                        hist(sce$total_counts/1e3, xlab="Library sizes (thousands)", main="Histogram of total UMI counts",
+                        hist(sce$total/1e3, xlab="Library sizes (thousands)", main="Histogram of total UMI counts",
                              breaks=20, col="grey80", ylab="Number of cells")
                         
-                        hist(sce_mt$total_counts/1e3, xlab="Library sizes (thousands)", main="Histogram of total UMI counts (exclude MT)",
+                        hist(sce_mt$total/1e3, xlab="Library sizes (thousands)", main="Histogram of total UMI counts (exclude MT)",
                              breaks=20, col="grey80", ylab="Number of cells")
                     } else {
-                        hist(sce$total_counts/1e3, xlab="Library sizes (thousands)", main="Histogram of total UMI counts",
+                        hist(sce$total/1e3, xlab="Library sizes (thousands)", main="Histogram of total UMI counts",
                              breaks=20, col="grey80", ylab="Number of cells")
                     }
                     
@@ -292,13 +294,13 @@ BiostatsSingleCell =
                     if (length(private$MT_rows)>0)
                     {
                         par(mfrow=c(1,2))
-                        hist(sce$total_features_by_counts, xlab="Number of expressed genes", main="Number of expressed genes for each cell",
+                        hist(sce$detected, xlab="Number of expressed genes", main="Number of expressed genes for each cell",
                              breaks=20, col="grey80", ylab="Number of cells")
-                        hist(sce_mt$total_features_by_counts, xlab="Number of expressed genes",
+                        hist(sce_mt$detected, xlab="Number of expressed genes",
                              main="Number of expressed genes for each cell", sub="excluded MT",
                              breaks=20, col="grey80", ylab="Number of cells")
                     } else {
-                        hist(sce$total_features_by_counts, xlab="Number of expressed genes", main="Number of expressed genes for each cell",
+                        hist(sce$detected, xlab="Number of expressed genes", main="Number of expressed genes for each cell",
                              breaks=20, col="grey80", ylab="Number of cells")
                     }
                     
@@ -306,9 +308,9 @@ BiostatsSingleCell =
                     if (length(private$MT_rows)>0)
                     {
                         par(mfrow=c(1,2))
-                        hist(sce$pct_counts_Mt, xlab="Mitochondrial proportion (%)",
+                        hist(sce$subsets_Mt_percent, xlab="Mitochondrial proportion (%)",
                              ylab="Number of cells", breaks=20, main="Mitochondrial proportion for each cell", col="grey80")
-                        plot(sce$total_features_by_counts, sce$pct_counts_Mt,
+                        plot(sce$detected, sce$subsets_Mt_percent,
                              xlab="Number of expressed genes",
                              ylab="percentage of total count due to MT",
                              main = "MT percentage vs number of expressed genes") # % of total UMI count due to MT UMI vs total features for each cell
@@ -341,10 +343,10 @@ BiostatsSingleCell =
                     if (length(private$MT_rows)>0)
                     {
                         par(mfrow=c(1,2))
-                        hist(sce$pct_counts_in_top_50_features,breaks=20,sub="included MT genes",main="Percentage of top 50 features")
-                        hist(sce_mt$pct_counts_in_top_50_features,breaks=20,sub="excluded MT genes",main="Percentage of top 50 features")
+                        hist(sce$percent.top_50,breaks=20,sub="included MT genes",main="Percentage of top 50 features")
+                        hist(sce_mt$percent.top_50,breaks=20,sub="excluded MT genes",main="Percentage of top 50 features")
                     } else {
-                        hist(sce$pct_counts_in_top_50_features,breaks=20,main="Percentage of top 50 features")
+                        hist(sce$percent.top_50,breaks=20,main="Percentage of top 50 features")
                     }
                     
                     # How many cells/percentage of cells have UMI count > 0 for each gene
@@ -374,7 +376,7 @@ BiostatsSingleCell =
                     par(mfrow=c(1,2))
                     par(mar=c(8, 8, 1, 1))
                     barplot(table(sce$sample), las = 3, main = "Number of cells per sample")
-                    boxplot(total_counts ~ sample, data = colData(sce), las = 3, log = "y", main = "Library size (log scale) by sample")
+                    boxplot(total ~ sample, data = sce, las = 3, log = "y", main = "Library size (log scale) by sample")
                     
                     dev.off()
                 },
