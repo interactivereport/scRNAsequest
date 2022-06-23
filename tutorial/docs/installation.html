@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-22" />
+<meta name="date" content="2022-06-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -171,8 +171,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
 <li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
-<li class="chapter" data-level="7.3" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#submit-de-analysis"><i class="fa fa-check"></i><b>7.3</b> Submit DE analysis</a></li>
 </ul></li>
+<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -224,12 +224,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If the installation is successful, scAnalyzer and scRef should be able to run without passing any parameters:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="installation.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scAnalyzer</span>
 <span id="cb2-2"><a href="installation.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="installation.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-06-16 14:40:21 <span class="pp">*****</span></span>
+<span id="cb2-3"><a href="installation.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-06-23 17:40:17 <span class="pp">*****</span></span>
 <span id="cb2-4"><a href="installation.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
 <span id="cb2-5"><a href="installation.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
 <span id="cb2-6"><a href="installation.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /camhpc/ngs/tools/scRNAsequest</span></span>
-<span id="cb2-7"><a href="installation.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-06-07 13:38:23 -0400</span></span>
-<span id="cb2-8"><a href="installation.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 1cb8ecc6461d2a1ecc5a2a90679f7e5669971ac8</span></span>
+<span id="cb2-7"><a href="installation.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-06-23 15:00:23 -0400</span></span>
+<span id="cb2-8"><a href="installation.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248</span></span>
 <span id="cb2-9"><a href="installation.html#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
 <span id="cb2-10"><a href="installation.html#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-11"><a href="installation.html#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file</span>
@@ -252,26 +252,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Typing scRef directly without any parameters will activate the user manual page:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="installation.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
 <span id="cb3-2"><a href="installation.html#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="installation.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-06-16 14:40:59 <span class="pp">*****</span></span>
+<span id="cb3-3"><a href="installation.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-06-23 17:38:28 <span class="pp">*****</span></span>
 <span id="cb3-4"><a href="installation.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
 <span id="cb3-5"><a href="installation.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
 <span id="cb3-6"><a href="installation.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /camhpc/ngs/tools/scRNAsequest</span></span>
-<span id="cb3-7"><a href="installation.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-06-07 13:38:23 -0400</span></span>
-<span id="cb3-8"><a href="installation.html#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 1cb8ecc6461d2a1ecc5a2a90679f7e5669971ac8</span></span>
+<span id="cb3-7"><a href="installation.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-06-23 15:00:23 -0400</span></span>
+<span id="cb3-8"><a href="installation.html#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248</span></span>
 <span id="cb3-9"><a href="installation.html#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
 <span id="cb3-10"><a href="installation.html#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="installation.html#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
-<span id="cb3-12"><a href="installation.html#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="installation.html#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
-<span id="cb3-14"><a href="installation.html#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="installation.html#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder will be created if it does not exist.</span>
-<span id="cb3-16"><a href="installation.html#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
-<span id="cb3-17"><a href="installation.html#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
-<span id="cb3-18"><a href="installation.html#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
-<span id="cb3-19"><a href="installation.html#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
-<span id="cb3-20"><a href="installation.html#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="installation.html#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
-<span id="cb3-22"><a href="installation.html#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<span id="cb3-11"><a href="installation.html#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="installation.html#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb3-13"><a href="installation.html#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="installation.html#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
+<span id="cb3-15"><a href="installation.html#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="installation.html#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
+<span id="cb3-17"><a href="installation.html#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
+<span id="cb3-18"><a href="installation.html#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
+<span id="cb3-19"><a href="installation.html#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
+<span id="cb3-20"><a href="installation.html#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
+<span id="cb3-21"><a href="installation.html#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="installation.html#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb3-23"><a href="installation.html#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 </div>
 <div id="install-cellxgene_vip" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Install cellxgene_VIP</h2>

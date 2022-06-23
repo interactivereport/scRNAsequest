@@ -29,7 +29,7 @@ outputdir
     ├── config.yml
     ├── config.yml.20220617.log        #log file
     ├── ProjName_BookdownReport.tar.gz #Bookdown report tar ball. 
-                                       #Please download this file and open the index.html file for the report
+                                       #Please download this file and open the index.html file to view the report
     ├── ProjName_raw_prefilter.h5ad    #h5ad after pre-filtering
     ├── prefilter.QC.pdf               #QC plots before filtering. These plots are included in the Bookdown report
     ├── postfilter.QC.pdf              #QC plots after filtering
@@ -69,15 +69,18 @@ After the filtering step is done, we are ready to turn on the *runAnalysis* para
 ```
 # Change the following setting in the config.yml file:
 runAnalysis: True
+overwrite: True    #Overwrite the previous results if we run this again, for example, after adjusting some parameters.
 ```
 
-Please also pay attention to the **reference** data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example using **mouse_spinalCord** as the reference:
+Please also pay attention to the **reference** data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example, using **mouse_spinalCord** as the reference:
 
 ```
-ref_name: mouse_spinalCord    #To check all references, run scAnalyzer without any parameter
+ref_name: mouse_spinalCord
 ```
 
-THen run the same command again. This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"} data (final cell number: 29511) to finish. For a larger dataset, such as [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483){target="_blank"} (final cell number: 111,011), the full pipeline took ~7 hours.
+To check all available references, run scAnalyzer without any parameter. To add new references, please see section 8: [Reference Building].
+
+Then run the following command again:
 
 ```{bash, eval=FALSE}
 scAnalyzer Path/to/a/config/file
@@ -85,6 +88,8 @@ scAnalyzer Path/to/a/config/file
 #Example:
 scAnalyzer ~/E-MTAB-11115/processing/config.yml
 ```
+
+This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"} data (final cell number: 29511) to finish. For a larger dataset, such as [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483){target="_blank"} (final cell number: 111,011), the full pipeline took ~7 hours.
 
 ## Visualize the harmonized results
 
@@ -132,6 +137,6 @@ outputdir
 
 Please review the **ProjName.h5ad** file for the harmonization result. If you have [Cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"} installed, the visualization will be easier.
 
-An example of the ProjName.h5ad project:
+Here is an example of the ProjName.h5ad project visualized by [Cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"}:
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)

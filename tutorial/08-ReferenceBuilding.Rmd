@@ -1,0 +1,31 @@
+# Reference Building
+
+Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.
+
+By running the following command, the reference will be added to the pipeline for future use:
+
+```{bash, eval=FALSE}
+$ scRef
+
+***** 2022-06-23 17:38:28 *****
+###########
+## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
+## Pipeline Path: /camhpc/ngs/tools/scRNAsequest
+## Pipeline Date: 2022-06-23 15:00:23 -0400
+## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248
+###########
+
+
+Loading resources
+
+scRef /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file
+
+The folder has to be existed.
+The Ref config file will be generated automatically when a path is provided
+===== CAUTION =====
+	1. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!
+	2. Make sure the data provided for reference building is SCT transformed!
+
+Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
+------------
+```

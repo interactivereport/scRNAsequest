@@ -1,34 +1,110 @@
 # Differential expression (DE) analysis
 
-Another critical function of the scRNASequest pipeline is the **Differential expression (DE)** analysis. By running the steps in Section 6, we have performed quality control of the data, and generated an integrated dataset. 
+Another critical function of the scRNASequest pipeline is the **Differential expression (DE)** analysis. By running the steps in Section 6: [Running the pipeline], we have performed quality control of the data, and generated an integrated dataset. 
 
-Before running the DE analysis, the DEG.csv comparison file needs to be prepared:
+Before running the DE analysis, the **DEGinfo.csv** comparison file needs to be prepared:
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)
 
-In the DEG comparison file above, **“sample”**, **“cluster”**, **“group”** and **“covars”** are the annotation headers, and **“alt”** and **“ref”** are the entries from **“group”** column.
+In the DEG comparison file above, **“sample”**, **“cluster”**, **“group”** and **“covars”** are the annotation headers, and **“alt”** and **“ref”** are the two entries from **“group”** column. The **“covars”** is optional and can be empty.
 
-The DEG is performing between **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations.
+The DEG is performing between **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations. The **“group”** variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DEG analysis between **“alt”** v.s. **“ref”**.
 
 Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:
 
+We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than original clusters assigned by the software:
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)
+
 ## Example 1
 
+In the first example, we would like to run DE analysis between **'Female'** and **'Male'** for each cluster annotated by **predicted.celltype1**. In the first column, we input the header name **library_id** which annotates the data sources. Then we add **predicted.celltype1** in the *cluster* column, which allows the pipeline to loop through each cluster in **predicted.celltype1**. The *group* column contains the header name storing the comparison groups, and here we use the **Sex** annotation. Each time, the pipeline can only compare two conditions, such as **'Female'** and **'Male'**. If the *group* column contains more groups, please list them in multiple lines in the DEGinfo.csv file.
 
-Here is an example of the DEG comparison file called DEGinfo.csv (header only):
+We can also add *covars* if needed, but this is optional.
+
+The default DE analysis is perform by [**NEBULA**](https://www.nature.com/articles/s42003-021-02146-6){target="_blank"}. As for the model, NEBULA provides two choices: **HL** and **LN**. For more details about them, please refer the [NEBULA manual](https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl){target="_blank"}.
+
+Here is the DEGinfo.csv we described above:
 
 ```
 sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL
 ```
 
-## Example 2
-
-## Submit DE analysis
-
-
-Once the DEGinfo.csv file created, it can be added to the config.yml file:
+After preparing the DEGinfo.csv file, simply add it to the config.yml file:
 
 ```
 DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv
 ```
 
+Then rerun the pipeline. The pipeline won't run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.
+
+```{bash, eval=FALSE}
+scAnalyzer Path/to/a/config/file
+
+#Example:
+scAnalyzer ~/E-MTAB-11115/processing/config.yml
+```
+
+This step may take a few hours to run. The output files will be generated in the directory:
+
+```
+outputdir
+    ... previous results         #Omitted, see section 6.4
+    ├── ProjName_scDEG           #Folder containing DEG results
+      ├── deg6601_predicted.celltype1_Sex_NEBULA_HL
+        ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.csv    #Each comparison has three associated files
+        ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.png
+        ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.QC.pdf
+        ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.csv
+        ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.png
+        ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.QC.pdf
+        ...
+        ├── env.rds
+    ├── ProjName_scDEG.cmd.json
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_astrocytes_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_meninges_schwann_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_microglia_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_discarded_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_endo_vascular_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_neurons_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_OPC_Female_Male.error
+    └── ProjName_scDEG.db
+```
+
+## Example 2
+
+In the second example, we are going to show how to perform DE analysis directly on two cell types. To achieve this, we added one artificial column (called 'SelectAll') in the sampleMeta.csv file, and assign same values ('Everything') to all the data:
+
+```
+Sample_Name,h5path,Sex,SelectAll
+5705STDY8058280,/home/ysun4/testSinglecell/ExternalData/5705STDY8058280_filtered_feature_bc_matrix.h5,Female,Everything
+5705STDY8058281,/home/ysun4/testSinglecell/ExternalData/5705STDY8058281_filtered_feature_bc_matrix.h5,Female,Everything
+5705STDY8058282,/home/ysun4/testSinglecell/ExternalData/5705STDY8058282_filtered_feature_bc_matrix.h5,Female,Everything
+5705STDY8058283,/home/ysun4/testSinglecell/ExternalData/5705STDY8058283_filtered_feature_bc_matrix.h5,Male,Everything
+5705STDY8058284,/home/ysun4/testSinglecell/ExternalData/5705STDY8058284_filtered_feature_bc_matrix.h5,Male,Everything
+5705STDY8058285,/home/ysun4/testSinglecell/ExternalData/5705STDY8058285_filtered_feature_bc_matrix.h5,Male,Everything
+```
+
+We prepare the DEGinfo.csv file in this way. The *cluster* column has 'SelectAll', and since it only has one value, it actually selects all cells when running the pipeline. Then it performs **astrocytes** to **Oligos** comparison.
+
+```
+sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL
+```
+
+Then we need to run the scRNASequest pipeline from the beginning, which allows the 'SelectAll' column to be embedded into the harmonized h5ad output.
+
+```
+outputdir
+    ... previous results         #Omitted, see section 6.4
+    ├── ProjName_scDEG           #Folder containing DEG results
+      ├── deg6601_SelectAll_predicted.celltype1_NEBULA_HL
+        ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.csv    #Each comparison has three associated files
+        ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png
+        ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.QC.pdf
+        ├── env.rds
+    ├── ProjName_scDEG.cmd.json
+    ├── deg6601_SelectAll_predicted.celltype1_NEBULA_HL_Everything_astrocytes_Oligos.error
+    └── ProjName_scDEG.db
+```

@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-22" />
+<meta name="date" content="2022-06-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -171,8 +171,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
 <li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
-<li class="chapter" data-level="7.3" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#submit-de-analysis"><i class="fa fa-check"></i><b>7.3</b> Submit DE analysis</a></li>
 </ul></li>
+<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -212,7 +212,7 @@ runAnalysis: False</code></pre>
     ├── config.yml
     ├── config.yml.20220617.log        #log file
     ├── ProjName_BookdownReport.tar.gz #Bookdown report tar ball. 
-                                       #Please download this file and open the index.html file for the report
+                                       #Please download this file and open the index.html file to view the report
     ├── ProjName_raw_prefilter.h5ad    #h5ad after pre-filtering
     ├── prefilter.QC.pdf               #QC plots before filtering. These plots are included in the Bookdown report
     ├── postfilter.QC.pdf              #QC plots after filtering
@@ -243,14 +243,17 @@ highGene.cutoff: 3000    #any cells with higher number of detected genes to be r
 <h2><span class="header-section-number">6.3</span> Run the full analysis</h2>
 <p>After the filtering step is done, we are ready to turn on the <em>runAnalysis</em> parameter and run the full pipeline:</p>
 <pre><code># Change the following setting in the config.yml file:
-runAnalysis: True</code></pre>
-<p>Please also pay attention to the <strong>reference</strong> data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example using <strong>mouse_spinalCord</strong> as the reference:</p>
-<pre><code>ref_name: mouse_spinalCord    #To check all references, run scAnalyzer without any parameter</code></pre>
-<p>THen run the same command again. This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483" target="_blank">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
+runAnalysis: True
+overwrite: True    #Overwrite the previous results if we run this again, for example, after adjusting some parameters.</code></pre>
+<p>Please also pay attention to the <strong>reference</strong> data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example, using <strong>mouse_spinalCord</strong> as the reference:</p>
+<pre><code>ref_name: mouse_spinalCord</code></pre>
+<p>To check all available references, run scAnalyzer without any parameter. To add new references, please see section 8: <a href="reference-building.html#reference-building">Reference Building</a>.</p>
+<p>Then run the following command again:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="running-the-pipeline.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
 <span id="cb26-2"><a href="running-the-pipeline.html#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb26-3"><a href="running-the-pipeline.html#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
 <span id="cb26-4"><a href="running-the-pipeline.html#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<p>This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483" target="_blank">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
 </div>
 <div id="visualize-the-harmonized-results" class="section level2" number="6.4">
 <h2><span class="header-section-number">6.4</span> Visualize the harmonized results</h2>
@@ -293,7 +296,7 @@ runAnalysis: True</code></pre>
     ├── Rmarkdown/
     └── sampleMeta.csv</code></pre>
 <p>Please review the <strong>ProjName.h5ad</strong> file for the harmonization result. If you have <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a> installed, the visualization will be easier.</p>
-<p>An example of the ProjName.h5ad project:</p>
+<p>Here is an example of the ProjName.h5ad project visualized by <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a>:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
 
 </div>
