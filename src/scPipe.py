@@ -418,7 +418,7 @@ def getSampleMeta(strMeta):
     Exit("'%s' columns is required in meta file (%s)"%(UMIcol,strMeta))
   for oneH5 in meta[UMIcol]:
     if not os.path.isdir(oneH5) and not (os.path.isfile(oneH5) and oneH5.endswith(".h5")):
-      Exit("The UMI file %s does not exist, please correct the sample sheet"%oneH5)
+      Exit("The UMI file %s is not supported (only supports .h5 matrix and mtx folder)"%oneH5)
   return(meta)
 def getData(meta,sID):
   print("processing sample UMI ...")
