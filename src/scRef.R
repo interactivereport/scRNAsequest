@@ -26,7 +26,7 @@ MsgPower <- function(){
 }
 MsgHelp <- function(){
   message("\nscRef /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file\n")
-  message("The folder will be created if it does not exist.")
+  message("The folder has to be existed.")
   message("The Ref config file will be generated automatically when a path is provided")
   message("===== CAUTION =====")
   message("\t1. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!")
