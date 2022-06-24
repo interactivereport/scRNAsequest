@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-23" />
+<meta name="date" content="2022-06-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -201,7 +201,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The DEG is performing between <strong>“alt”</strong> and <strong>“ref”</strong> cells from <strong>“group”</strong> within each entry of <strong>“cluster”</strong> considering <strong>“sample”</strong> variations. The <strong>“group”</strong> variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DEG analysis between <strong>“alt”</strong> v.s. <strong>“ref”</strong>.</p>
 <p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:</p>
 <p>We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than original clusters assigned by the software:</p>
-<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png" /></a></p>
 <div id="example-1" class="section level2" number="7.1">
 <h2><span class="header-section-number">7.1</span> Example 1</h2>
 <p>In the first example, we would like to run DE analysis between <strong>‘Female’</strong> and <strong>‘Male’</strong> for each cluster annotated by <strong>predicted.celltype1</strong>. In the first column, we input the header name <strong>library_id</strong> which annotates the data sources. Then we add <strong>predicted.celltype1</strong> in the <em>cluster</em> column, which allows the pipeline to loop through each cluster in <strong>predicted.celltype1</strong>. The <em>group</em> column contains the header name storing the comparison groups, and here we use the <strong>Sex</strong> annotation. Each time, the pipeline can only compare two conditions, such as <strong>‘Female’</strong> and <strong>‘Male’</strong>. If the <em>group</em> column contains more groups, please list them in multiple lines in the DEGinfo.csv file.</p>

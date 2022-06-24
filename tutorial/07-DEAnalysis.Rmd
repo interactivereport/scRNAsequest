@@ -14,8 +14,6 @@ Here, this tutorial provides several examples to illustrate the DE analysis in s
 
 We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than original clusters assigned by the software:
 
-[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)
-
 ## Example 1
 
 In the first example, we would like to run DE analysis between **'Female'** and **'Male'** for each cluster annotated by **predicted.celltype1**. In the first column, we input the header name **library_id** which annotates the data sources. Then we add **predicted.celltype1** in the *cluster* column, which allows the pipeline to loop through each cluster in **predicted.celltype1**. The *group* column contains the header name storing the comparison groups, and here we use the **Sex** annotation. Each time, the pipeline can only compare two conditions, such as **'Female'** and **'Male'**. If the *group* column contains more groups, please list them in multiple lines in the DEGinfo.csv file.

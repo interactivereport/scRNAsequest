@@ -20,8 +20,7 @@ This pipeline contains two main programs:
     
     Through running scAnalyzer, a directory will be generated based on the date of running the pipeline. For example, sc20220506_0 will be created since today is 2022-05-06. If the user runs scAnalyzer again for the same dataset, the last digit will add up to avoid duplications: sc20220328_1.
     
-    Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration.
-    
+    Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration. Moreover, scAnalyzer is embedded with a Bookdown report generator, which can produce a user-friendly, well-structured quality control report after each run.
     
   - **scRef**
   
