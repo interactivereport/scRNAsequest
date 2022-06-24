@@ -72,6 +72,37 @@ outputdir
     └── ProjName_scDEG.db
 ```
 
+An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):
+
+```{r, echo=FALSE, results = "asis"}
+suppressMessages(library(knitr))
+Data <- data.frame(res.tab.ID=c("Xist","Pnpla7","Etnppl","Zbtb16","Sorcs2"),
+                   res.tab.log2FC=c(9.676171398,-1.230034425,-1.592057996,-1.448309033,1.137956234),
+                   res.tab.Pvalue=c(8.87E-114,1.88E-89,1.29E-72,2.12E-60,3.29E-51),
+                   res.tab.FDR=c(4.16E-110,4.40E-86,2.01E-69,2.49E-57,3.08E-48),
+                   res.tab.algorithm=rep("HL",5),
+                   res.tab.convergence=rep(1,5),
+                   res.tab.metric=c(6115.17801,1653.155284,525.8328005,1260.951787,1398.088133),
+                   res.ls.summary.logFC_.Intercept.=c(-6.693213224,-9.32119215,-8.511808196,-9.896064065,-8.573612795),
+                   res.ls.summary.logFC_.GrouPalt=c(0.127673738,-0.169455002,0.091793885,-0.091801372,-0.225284796),
+                   res.ls.summary.se_.Intercept.=c(0.023462196,0.053417992,0.028283189,0.058472814,0.030386881),
+                   res.ls.summary.se_.GrouPalt=c(0.046939517,0.106517692,0.05650592,0.116554902,0.060462474),
+                   res.ls.summary.p_.Intercept.=rep(0,5),
+                   res.ls.summary.p_.GrouPalt=c(0.006528926,0.111640522,0.10426907,0.430917004,0.000194522),
+                   res.ls.summary.gene_id=1:5,
+                   res.ls.summary.gene=c("Rgs20","Atp6v1h","Rb1cc1","4732440D04Rik","Pcmtd1"),
+                   res.ls.overdispersion.Subject=c(0.001672827,0.006432008,1.00E-04,0.001474488,1.00E-04),
+                   res.ls.overdispersion.Cell=c(0.43931521,0.332731593,0.172511335,0.728850422,0.350258671),
+                   res.ls.convergence=c(1,1,1,1,-10),
+                   res.ls.algorithm=rep("NBGMM (HL)",5)
+                   )
+kable(Data, caption = "DEG analysis of Female.vs.Male in astrocytes", align = "c", booktabs = TRUE)
+```
+
+An example of the DE png file (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.png):
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png)
+
 ## Example 2
 
 In the second example, we are going to show how to perform DE analysis directly on two cell types. To achieve this, we added one artificial column (called 'SelectAll') in the sampleMeta.csv file, and assigned the same values ('Everything') to all the data:
@@ -93,13 +124,13 @@ sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[de
 library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL
 ```
 
-Then we need to run the scRNASequest pipeline from the beginning, which allows the 'SelectAll' column to be embedded into the harmonized h5ad output.
+Then we need to run the scRNASequest pipeline from the beginning, which allows the 'SelectAll' column to be embedded into the harmonized h5ad output. As long as we have DEGinfo.csv included in the config.yml, it will run through the DE analysis and produce the following results:
 
 ```
 outputdir
     ... previous results         #Omitted, see section 6.4
     ├── ProjName_scDEG           #Folder containing DEG results
-      ├── deg6601_SelectAll_predicted.celltype1_NEBULA_HL
+      ├── deg6602_SelectAll_predicted.celltype1_NEBULA_HL
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.csv    #Each comparison has three associated files
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.QC.pdf
@@ -108,3 +139,35 @@ outputdir
     ├── deg6601_SelectAll_predicted.celltype1_NEBULA_HL_Everything_astrocytes_Oligos.error
     └── ProjName_scDEG.db
 ```
+
+An example of the DE csv table (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.csv, top 5 rows):
+
+```{r, echo=FALSE, results = "asis"}
+suppressMessages(library(knitr))
+Data <- data.frame(res.tab.ID=c("Xkr4","Rgs20","St18","Adhfe1","Prex2"),
+                   res.tab.log2FC=c(-3.327922728,6.386204605,-5.129500223,4.842191486,8.368190343),
+                   res.tab.Pvalue=rep(0,5),
+                   res.tab.FDR=rep(0,5),
+                   res.tab.algorithm=rep("HL",5),
+                   res.tab.convergence=rep(1,5),
+                   res.tab.metric=c(4177.155918,5561.771074,14283.48725,12162.13605,8249.837425),
+                   res.ls.summary.logFC_.Intercept.=c(-8.168075319,-9.825702638,-10.32269605,-10.16999644,-10.29222068),
+                   res.ls.summary.logFC_.GrouPalt=c(-2.306740256,-2.50660294,0.217648395,0.111911715,4.426579716),
+                   res.ls.summary.se_.Intercept.=c(0.036792379,0.089054801,0.031092244,0.029267929,0.051346211),
+                   res.ls.summary.se_.GrouPalt=c(0.056102205,0.135391605,0.0690489,0.066976238,0.056385976),
+                   res.ls.summary.p_.Intercept.=rep(0,5),
+                   res.ls.summary.p_.GrouPalt=c(0,1.60E-76,0.001621059,0.09473813,0),
+                   res.ls.summary.gene_id=1:5,
+                   res.ls.summary.gene=c("Xkr4","Gm1992","Mrpl15","Tcea1","Rgs20"),
+                   res.ls.overdispersion.Subject=c(0.006729713,0.039810264,1.00E-04,1.00E-04,0.004776775),
+                   res.ls.overdispersion.Cell=c(0.607630339,1.494756075,0.418872119,0.721244774,0.456359428),
+                   res.ls.convergence=c(1,1,1,1,1),
+                   res.ls.algorithm=rep("NBGMM (HL)",5)
+                   )
+kable(Data, caption = "DEG analysis of astrocytes.vs.Oligos", align = "c", booktabs = TRUE)
+
+```
+
+An example of the DE png file (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png):
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Astrocytes_Oligos.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Astrocytes_Oligos.png)
