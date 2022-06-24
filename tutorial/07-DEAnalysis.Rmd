@@ -62,7 +62,7 @@ outputdir
         ...
         ├── env.rds
     ├── ProjName_scDEG.cmd.json
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_astrocytes_Female_Male.error
+    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_astrocytes_Female_Male.error  #Standard error messages
     ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_meninges_schwann_Female_Male.error
     ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_microglia_Female_Male.error
     ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_discarded_Female_Male.error
@@ -74,8 +74,11 @@ outputdir
 
 An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):
 
+In the table below, the most significant gene is [Xist](https://www.ncbi.nlm.nih.gov/gene/7503){target="_blank"}, a well-known X-chromosome gene highly expressed in female.
+
 ```{r, echo=FALSE, results = "asis"}
 suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
 Data <- data.frame(res.tab.ID=c("Xist","Pnpla7","Etnppl","Zbtb16","Sorcs2"),
                    res.tab.log2FC=c(9.676171398,-1.230034425,-1.592057996,-1.448309033,1.137956234),
                    res.tab.Pvalue=c(8.87E-114,1.88E-89,1.29E-72,2.12E-60,3.29E-51),
@@ -96,7 +99,9 @@ Data <- data.frame(res.tab.ID=c("Xist","Pnpla7","Etnppl","Zbtb16","Sorcs2"),
                    res.ls.convergence=c(1,1,1,1,-10),
                    res.ls.algorithm=rep("NBGMM (HL)",5)
                    )
-kable(Data, caption = "DEG analysis of Female.vs.Male in astrocytes", align = "c", booktabs = TRUE)
+kable(Data, caption = "DEG analysis of Female.vs.Male in astrocytes", align = "c", booktabs = TRUE) %>%
+  kable_styling() %>%
+  kableExtra::scroll_box(width = "100%")
 ```
 
 An example of the DE png file (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.png):
@@ -136,7 +141,7 @@ outputdir
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.QC.pdf
         ├── env.rds
     ├── ProjName_scDEG.cmd.json
-    ├── deg6601_SelectAll_predicted.celltype1_NEBULA_HL_Everything_astrocytes_Oligos.error
+    ├── deg6602_SelectAll_predicted.celltype1_NEBULA_HL_Everything_astrocytes_Oligos.error  #Standard error messages
     └── ProjName_scDEG.db
 ```
 
@@ -144,6 +149,7 @@ An example of the DE csv table (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA
 
 ```{r, echo=FALSE, results = "asis"}
 suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
 Data <- data.frame(res.tab.ID=c("Xkr4","Rgs20","St18","Adhfe1","Prex2"),
                    res.tab.log2FC=c(-3.327922728,6.386204605,-5.129500223,4.842191486,8.368190343),
                    res.tab.Pvalue=rep(0,5),
@@ -164,8 +170,9 @@ Data <- data.frame(res.tab.ID=c("Xkr4","Rgs20","St18","Adhfe1","Prex2"),
                    res.ls.convergence=c(1,1,1,1,1),
                    res.ls.algorithm=rep("NBGMM (HL)",5)
                    )
-kable(Data, caption = "DEG analysis of astrocytes.vs.Oligos", align = "c", booktabs = TRUE)
-
+kable(Data, caption = "DEG analysis of astrocytes.vs.Oligos", align = "c", booktabs = TRUE) %>%
+  kable_styling() %>%
+  kableExtra::scroll_box(width = "100%")
 ```
 
 An example of the DE png file (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png):

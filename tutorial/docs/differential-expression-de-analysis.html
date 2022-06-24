@@ -52,6 +52,8 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 
 <style type="text/css">
@@ -240,160 +242,372 @@ library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
     ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_OPC_Female_Male.error
     └── ProjName_scDEG.db</code></pre>
 <p>An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):</p>
-<table>
-<caption><span id="tab:unnamed-chunk-7">Table 7.1: </span>DEG analysis of Female.vs.Male in astrocytes</caption>
-<colgroup>
-<col width="2%" />
-<col width="3%" />
-<col width="3%" />
-<col width="2%" />
-<col width="4%" />
-<col width="4%" />
-<col width="3%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="6%" />
-<col width="6%" />
-<col width="6%" />
-<col width="5%" />
-<col width="4%" />
-<col width="7%" />
-<col width="6%" />
-<col width="4%" />
-<col width="4%" />
-</colgroup>
+<p>In the table below, the most significant gene is <a href="https://www.ncbi.nlm.nih.gov/gene/7503" target="_blank">Xist</a>, a well-known X-chromosome gene highly expressed in female.</p>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-7">Table 7.1: </span>DEG analysis of Female.vs.Male in astrocytes
+</caption>
 <thead>
-<tr class="header">
-<th align="center">res.tab.ID</th>
-<th align="center">res.tab.log2FC</th>
-<th align="center">res.tab.Pvalue</th>
-<th align="center">res.tab.FDR</th>
-<th align="center">res.tab.algorithm</th>
-<th align="center">res.tab.convergence</th>
-<th align="center">res.tab.metric</th>
-<th align="center">res.ls.summary.logFC_.Intercept.</th>
-<th align="center">res.ls.summary.logFC_.GrouPalt</th>
-<th align="center">res.ls.summary.se_.Intercept.</th>
-<th align="center">res.ls.summary.se_.GrouPalt</th>
-<th align="center">res.ls.summary.p_.Intercept.</th>
-<th align="center">res.ls.summary.p_.GrouPalt</th>
-<th align="center">res.ls.summary.gene_id</th>
-<th align="center">res.ls.summary.gene</th>
-<th align="center">res.ls.overdispersion.Subject</th>
-<th align="center">res.ls.overdispersion.Cell</th>
-<th align="center">res.ls.convergence</th>
-<th align="center">res.ls.algorithm</th>
+<tr>
+<th style="text-align:center;">
+res.tab.ID
+</th>
+<th style="text-align:center;">
+res.tab.log2FC
+</th>
+<th style="text-align:center;">
+res.tab.Pvalue
+</th>
+<th style="text-align:center;">
+res.tab.FDR
+</th>
+<th style="text-align:center;">
+res.tab.algorithm
+</th>
+<th style="text-align:center;">
+res.tab.convergence
+</th>
+<th style="text-align:center;">
+res.tab.metric
+</th>
+<th style="text-align:center;">
+res.ls.summary.logFC_.Intercept.
+</th>
+<th style="text-align:center;">
+res.ls.summary.logFC_.GrouPalt
+</th>
+<th style="text-align:center;">
+res.ls.summary.se_.Intercept.
+</th>
+<th style="text-align:center;">
+res.ls.summary.se_.GrouPalt
+</th>
+<th style="text-align:center;">
+res.ls.summary.p_.Intercept.
+</th>
+<th style="text-align:center;">
+res.ls.summary.p_.GrouPalt
+</th>
+<th style="text-align:center;">
+res.ls.summary.gene_id
+</th>
+<th style="text-align:center;">
+res.ls.summary.gene
+</th>
+<th style="text-align:center;">
+res.ls.overdispersion.Subject
+</th>
+<th style="text-align:center;">
+res.ls.overdispersion.Cell
+</th>
+<th style="text-align:center;">
+res.ls.convergence
+</th>
+<th style="text-align:center;">
+res.ls.algorithm
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="center">Xist</td>
-<td align="center">9.676171</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">6115.1780</td>
-<td align="center">-6.693213</td>
-<td align="center">0.1276737</td>
-<td align="center">0.0234622</td>
-<td align="center">0.0469395</td>
-<td align="center">0</td>
-<td align="center">0.0065289</td>
-<td align="center">1</td>
-<td align="center">Rgs20</td>
-<td align="center">0.0016728</td>
-<td align="center">0.4393152</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Xist
+</td>
+<td style="text-align:center;">
+9.676171
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+6115.1780
+</td>
+<td style="text-align:center;">
+-6.693213
+</td>
+<td style="text-align:center;">
+0.1276737
+</td>
+<td style="text-align:center;">
+0.0234622
+</td>
+<td style="text-align:center;">
+0.0469395
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0065289
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+Rgs20
+</td>
+<td style="text-align:center;">
+0.0016728
+</td>
+<td style="text-align:center;">
+0.4393152
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="even">
-<td align="center">Pnpla7</td>
-<td align="center">-1.230034</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">1653.1553</td>
-<td align="center">-9.321192</td>
-<td align="center">-0.1694550</td>
-<td align="center">0.0534180</td>
-<td align="center">0.1065177</td>
-<td align="center">0</td>
-<td align="center">0.1116405</td>
-<td align="center">2</td>
-<td align="center">Atp6v1h</td>
-<td align="center">0.0064320</td>
-<td align="center">0.3327316</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Pnpla7
+</td>
+<td style="text-align:center;">
+-1.230034
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1653.1553
+</td>
+<td style="text-align:center;">
+-9.321192
+</td>
+<td style="text-align:center;">
+-0.1694550
+</td>
+<td style="text-align:center;">
+0.0534180
+</td>
+<td style="text-align:center;">
+0.1065177
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.1116405
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+Atp6v1h
+</td>
+<td style="text-align:center;">
+0.0064320
+</td>
+<td style="text-align:center;">
+0.3327316
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="odd">
-<td align="center">Etnppl</td>
-<td align="center">-1.592058</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">525.8328</td>
-<td align="center">-8.511808</td>
-<td align="center">0.0917939</td>
-<td align="center">0.0282832</td>
-<td align="center">0.0565059</td>
-<td align="center">0</td>
-<td align="center">0.1042691</td>
-<td align="center">3</td>
-<td align="center">Rb1cc1</td>
-<td align="center">0.0001000</td>
-<td align="center">0.1725113</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Etnppl
+</td>
+<td style="text-align:center;">
+-1.592058
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+525.8328
+</td>
+<td style="text-align:center;">
+-8.511808
+</td>
+<td style="text-align:center;">
+0.0917939
+</td>
+<td style="text-align:center;">
+0.0282832
+</td>
+<td style="text-align:center;">
+0.0565059
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.1042691
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+Rb1cc1
+</td>
+<td style="text-align:center;">
+0.0001000
+</td>
+<td style="text-align:center;">
+0.1725113
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="even">
-<td align="center">Zbtb16</td>
-<td align="center">-1.448309</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">1260.9518</td>
-<td align="center">-9.896064</td>
-<td align="center">-0.0918014</td>
-<td align="center">0.0584728</td>
-<td align="center">0.1165549</td>
-<td align="center">0</td>
-<td align="center">0.4309170</td>
-<td align="center">4</td>
-<td align="center">4732440D04Rik</td>
-<td align="center">0.0014745</td>
-<td align="center">0.7288504</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Zbtb16
+</td>
+<td style="text-align:center;">
+-1.448309
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1260.9518
+</td>
+<td style="text-align:center;">
+-9.896064
+</td>
+<td style="text-align:center;">
+-0.0918014
+</td>
+<td style="text-align:center;">
+0.0584728
+</td>
+<td style="text-align:center;">
+0.1165549
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.4309170
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+4732440D04Rik
+</td>
+<td style="text-align:center;">
+0.0014745
+</td>
+<td style="text-align:center;">
+0.7288504
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="odd">
-<td align="center">Sorcs2</td>
-<td align="center">1.137956</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">1398.0881</td>
-<td align="center">-8.573613</td>
-<td align="center">-0.2252848</td>
-<td align="center">0.0303869</td>
-<td align="center">0.0604625</td>
-<td align="center">0</td>
-<td align="center">0.0001945</td>
-<td align="center">5</td>
-<td align="center">Pcmtd1</td>
-<td align="center">0.0001000</td>
-<td align="center">0.3502587</td>
-<td align="center">-10</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Sorcs2
+</td>
+<td style="text-align:center;">
+1.137956
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1398.0881
+</td>
+<td style="text-align:center;">
+-8.573613
+</td>
+<td style="text-align:center;">
+-0.2252848
+</td>
+<td style="text-align:center;">
+0.0303869
+</td>
+<td style="text-align:center;">
+0.0604625
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0001945
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+Pcmtd1
+</td>
+<td style="text-align:center;">
+0.0001000
+</td>
+<td style="text-align:center;">
+0.3502587
+</td>
+<td style="text-align:center;">
+-10
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>An example of the DE png file (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.png):</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png" /></a></p>
 </div>
@@ -423,160 +637,371 @@ library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL</code></pr
     ├── deg6601_SelectAll_predicted.celltype1_NEBULA_HL_Everything_astrocytes_Oligos.error
     └── ProjName_scDEG.db</code></pre>
 <p>An example of the DE csv table (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.csv, top 5 rows):</p>
-<table>
-<caption><span id="tab:unnamed-chunk-8">Table 7.2: </span>DEG analysis of astrocytes.vs.Oligos</caption>
-<colgroup>
-<col width="2%" />
-<col width="3%" />
-<col width="3%" />
-<col width="2%" />
-<col width="4%" />
-<col width="4%" />
-<col width="3%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="6%" />
-<col width="6%" />
-<col width="6%" />
-<col width="5%" />
-<col width="4%" />
-<col width="7%" />
-<col width="6%" />
-<col width="4%" />
-<col width="4%" />
-</colgroup>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-8">Table 7.2: </span>DEG analysis of astrocytes.vs.Oligos
+</caption>
 <thead>
-<tr class="header">
-<th align="center">res.tab.ID</th>
-<th align="center">res.tab.log2FC</th>
-<th align="center">res.tab.Pvalue</th>
-<th align="center">res.tab.FDR</th>
-<th align="center">res.tab.algorithm</th>
-<th align="center">res.tab.convergence</th>
-<th align="center">res.tab.metric</th>
-<th align="center">res.ls.summary.logFC_.Intercept.</th>
-<th align="center">res.ls.summary.logFC_.GrouPalt</th>
-<th align="center">res.ls.summary.se_.Intercept.</th>
-<th align="center">res.ls.summary.se_.GrouPalt</th>
-<th align="center">res.ls.summary.p_.Intercept.</th>
-<th align="center">res.ls.summary.p_.GrouPalt</th>
-<th align="center">res.ls.summary.gene_id</th>
-<th align="center">res.ls.summary.gene</th>
-<th align="center">res.ls.overdispersion.Subject</th>
-<th align="center">res.ls.overdispersion.Cell</th>
-<th align="center">res.ls.convergence</th>
-<th align="center">res.ls.algorithm</th>
+<tr>
+<th style="text-align:center;">
+res.tab.ID
+</th>
+<th style="text-align:center;">
+res.tab.log2FC
+</th>
+<th style="text-align:center;">
+res.tab.Pvalue
+</th>
+<th style="text-align:center;">
+res.tab.FDR
+</th>
+<th style="text-align:center;">
+res.tab.algorithm
+</th>
+<th style="text-align:center;">
+res.tab.convergence
+</th>
+<th style="text-align:center;">
+res.tab.metric
+</th>
+<th style="text-align:center;">
+res.ls.summary.logFC_.Intercept.
+</th>
+<th style="text-align:center;">
+res.ls.summary.logFC_.GrouPalt
+</th>
+<th style="text-align:center;">
+res.ls.summary.se_.Intercept.
+</th>
+<th style="text-align:center;">
+res.ls.summary.se_.GrouPalt
+</th>
+<th style="text-align:center;">
+res.ls.summary.p_.Intercept.
+</th>
+<th style="text-align:center;">
+res.ls.summary.p_.GrouPalt
+</th>
+<th style="text-align:center;">
+res.ls.summary.gene_id
+</th>
+<th style="text-align:center;">
+res.ls.summary.gene
+</th>
+<th style="text-align:center;">
+res.ls.overdispersion.Subject
+</th>
+<th style="text-align:center;">
+res.ls.overdispersion.Cell
+</th>
+<th style="text-align:center;">
+res.ls.convergence
+</th>
+<th style="text-align:center;">
+res.ls.algorithm
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="center">Xkr4</td>
-<td align="center">-3.327923</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">4177.156</td>
-<td align="center">-8.168075</td>
-<td align="center">-2.3067403</td>
-<td align="center">0.0367924</td>
-<td align="center">0.0561022</td>
-<td align="center">0</td>
-<td align="center">0.0000000</td>
-<td align="center">1</td>
-<td align="center">Xkr4</td>
-<td align="center">0.0067297</td>
-<td align="center">0.6076303</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Xkr4
+</td>
+<td style="text-align:center;">
+-3.327923
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+4177.156
+</td>
+<td style="text-align:center;">
+-8.168075
+</td>
+<td style="text-align:center;">
+-2.3067403
+</td>
+<td style="text-align:center;">
+0.0367924
+</td>
+<td style="text-align:center;">
+0.0561022
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+Xkr4
+</td>
+<td style="text-align:center;">
+0.0067297
+</td>
+<td style="text-align:center;">
+0.6076303
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="even">
-<td align="center">Rgs20</td>
-<td align="center">6.386205</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">5561.771</td>
-<td align="center">-9.825703</td>
-<td align="center">-2.5066029</td>
-<td align="center">0.0890548</td>
-<td align="center">0.1353916</td>
-<td align="center">0</td>
-<td align="center">0.0000000</td>
-<td align="center">2</td>
-<td align="center">Gm1992</td>
-<td align="center">0.0398103</td>
-<td align="center">1.4947561</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Rgs20
+</td>
+<td style="text-align:center;">
+6.386205
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+5561.771
+</td>
+<td style="text-align:center;">
+-9.825703
+</td>
+<td style="text-align:center;">
+-2.5066029
+</td>
+<td style="text-align:center;">
+0.0890548
+</td>
+<td style="text-align:center;">
+0.1353916
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+Gm1992
+</td>
+<td style="text-align:center;">
+0.0398103
+</td>
+<td style="text-align:center;">
+1.4947561
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="odd">
-<td align="center">St18</td>
-<td align="center">-5.129500</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">14283.487</td>
-<td align="center">-10.322696</td>
-<td align="center">0.2176484</td>
-<td align="center">0.0310922</td>
-<td align="center">0.0690489</td>
-<td align="center">0</td>
-<td align="center">0.0016211</td>
-<td align="center">3</td>
-<td align="center">Mrpl15</td>
-<td align="center">0.0001000</td>
-<td align="center">0.4188721</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+St18
+</td>
+<td style="text-align:center;">
+-5.129500
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+14283.487
+</td>
+<td style="text-align:center;">
+-10.322696
+</td>
+<td style="text-align:center;">
+0.2176484
+</td>
+<td style="text-align:center;">
+0.0310922
+</td>
+<td style="text-align:center;">
+0.0690489
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0016211
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+Mrpl15
+</td>
+<td style="text-align:center;">
+0.0001000
+</td>
+<td style="text-align:center;">
+0.4188721
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="even">
-<td align="center">Adhfe1</td>
-<td align="center">4.842192</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">12162.136</td>
-<td align="center">-10.169996</td>
-<td align="center">0.1119117</td>
-<td align="center">0.0292679</td>
-<td align="center">0.0669762</td>
-<td align="center">0</td>
-<td align="center">0.0947381</td>
-<td align="center">4</td>
-<td align="center">Tcea1</td>
-<td align="center">0.0001000</td>
-<td align="center">0.7212448</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Adhfe1
+</td>
+<td style="text-align:center;">
+4.842192
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+12162.136
+</td>
+<td style="text-align:center;">
+-10.169996
+</td>
+<td style="text-align:center;">
+0.1119117
+</td>
+<td style="text-align:center;">
+0.0292679
+</td>
+<td style="text-align:center;">
+0.0669762
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0947381
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+Tcea1
+</td>
+<td style="text-align:center;">
+0.0001000
+</td>
+<td style="text-align:center;">
+0.7212448
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
-<tr class="odd">
-<td align="center">Prex2</td>
-<td align="center">8.368190</td>
-<td align="center">0</td>
-<td align="center">0</td>
-<td align="center">HL</td>
-<td align="center">1</td>
-<td align="center">8249.837</td>
-<td align="center">-10.292221</td>
-<td align="center">4.4265797</td>
-<td align="center">0.0513462</td>
-<td align="center">0.0563860</td>
-<td align="center">0</td>
-<td align="center">0.0000000</td>
-<td align="center">5</td>
-<td align="center">Rgs20</td>
-<td align="center">0.0047768</td>
-<td align="center">0.4563594</td>
-<td align="center">1</td>
-<td align="center">NBGMM (HL)</td>
+<tr>
+<td style="text-align:center;">
+Prex2
+</td>
+<td style="text-align:center;">
+8.368190
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+HL
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+8249.837
+</td>
+<td style="text-align:center;">
+-10.292221
+</td>
+<td style="text-align:center;">
+4.4265797
+</td>
+<td style="text-align:center;">
+0.0513462
+</td>
+<td style="text-align:center;">
+0.0563860
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.0000000
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+Rgs20
+</td>
+<td style="text-align:center;">
+0.0047768
+</td>
+<td style="text-align:center;">
+0.4563594
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+NBGMM (HL)
+</td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>An example of the DE png file (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png):</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Astrocytes_Oligos.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Astrocytes_Oligos.png" /></a></p>
 
