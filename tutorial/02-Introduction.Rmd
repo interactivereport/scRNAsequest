@@ -1,16 +1,16 @@
 # Introduction
 
-scRNASequest is a semi-automated single cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:
+scRNASequest is a semi-automated single-cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:
 
 - Pre-processing from raw single-cell RNA sequencing data, 
 
 - Batch correction by one or multiple harmonization methods, 
 
-- Reference dataset based cell type label transfer and embedding projection, 
+- Reference-dataset-based cell type label transfer and embedding projection, 
 
 - Multi-sample multi-condition single-cell level differential gene expression analysis
 
-- Seamless integration with [cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"} for visualization and with [CellDepot](https://github.com/interactivereport/CellDepot){target="_blank"} for data hosting and sharing by generating compatible h5ad file. Users have option to run it on local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.
+- Seamless integration with [cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"} for visualization and with [CellDepot](https://github.com/interactivereport/CellDepot){target="_blank"} for data hosting and sharing by generating a compatible h5ad file. Users have the option to run it on a local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.
 
 This pipeline contains two main programs:
 
@@ -26,4 +26,4 @@ This pipeline contains two main programs:
   
     scRef generates a reference dataset for label transfer. 
     
-    For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanant path.
+    For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanent path.

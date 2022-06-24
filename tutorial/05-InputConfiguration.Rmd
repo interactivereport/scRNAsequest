@@ -16,7 +16,7 @@ To run the scRNAsequest pipeline, a config.yml file is required to be filled in.
 ## Project info and filtering parameters
 prj_name: E-MTAB-11115            #required, project name
 prj_title: "Cell2location maps fine-grained cell types in spatial transcriptomics" #required, and quotes might be needed
-ref_name:                         #optional. You can choose one from scAnalyzer call without argument
+ref_name:                         #optional. You can choose one from scAnalyzer call without an argument
 output: /home/ysun4/E-MTAB-11115/ #required, output path
 sample_name: Sample_Name
 sample_meta: ~/E-MTAB-11115/sampleMeta.csv   #required, sample meta information, see section 5.1
@@ -33,7 +33,7 @@ filter_step: True        #if False, the above 'gene_group' filtering will be ski
 min.cells: 3             #filtering genes by minimal cell
 min.features: 50         #filtering cells by minimal genes
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
-highGene.cutoff: 3000    #any cells with higher number of detected genes to be removed
+highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
 
 group:                   #if provided, a 10X QC box plot will be ploted in QC plot
 runAnalysis: True
@@ -68,7 +68,7 @@ publish: False
 
 In the first run (see the below scAnalyzer section on how to run the pipeline), the user can set `runAnalysis: False` and use the above default parameters to perform cell filtering and QC.
 
-Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different dataset may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.
+Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different datasets may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.
 
 Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:
 
@@ -79,7 +79,7 @@ overwrite: True
 
 ## Prepare the sample meta file {#section52}
 
-The sample meta file, usually named as **sampleMeta.csv**, is a csv file storing data information. The minimal columns for this file are **Sample_Name** (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and **h5path**. If you have the celltype annotation information, you can provide is by adding a column called **metapath**. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.
+The sample meta file, usually named as **sampleMeta.csv**, is a csv file storing data information. The minimal columns for this file are **Sample_Name** (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and **h5path**. If you have the cell type annotation information, you can provide is by adding a column called **metapath**. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.
 
 ### h5 input
 

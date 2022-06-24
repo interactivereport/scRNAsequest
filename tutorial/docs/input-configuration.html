@@ -203,7 +203,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## Project info and filtering parameters
 prj_name: E-MTAB-11115            #required, project name
 prj_title: &quot;Cell2location maps fine-grained cell types in spatial transcriptomics&quot; #required, and quotes might be needed
-ref_name:                         #optional. You can choose one from scAnalyzer call without argument
+ref_name:                         #optional. You can choose one from scAnalyzer call without an argument
 output: /home/ysun4/E-MTAB-11115/ #required, output path
 sample_name: Sample_Name
 sample_meta: ~/E-MTAB-11115/sampleMeta.csv   #required, sample meta information, see section 5.1
@@ -220,7 +220,7 @@ filter_step: True        #if False, the above &#39;gene_group&#39; filtering wil
 min.cells: 3             #filtering genes by minimal cell
 min.features: 50         #filtering cells by minimal genes
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
-highGene.cutoff: 3000    #any cells with higher number of detected genes to be removed
+highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
 
 group:                   #if provided, a 10X QC box plot will be ploted in QC plot
 runAnalysis: True
@@ -252,14 +252,14 @@ R6_min.cells.per.subj: 3
 ## publish to celldepot
 publish: False</code></pre>
 <p>In the first run (see the below scAnalyzer section on how to run the pipeline), the user can set <code>runAnalysis: False</code> and use the above default parameters to perform cell filtering and QC.</p>
-<p>Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different dataset may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.</p>
+<p>Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different datasets may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.</p>
 <p>Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:</p>
 <pre><code>runAnalysis: True
 overwrite: True</code></pre>
 </div>
 <div id="section52" class="section level2" number="5.2">
 <h2><span class="header-section-number">5.2</span> Prepare the sample meta file</h2>
-<p>The sample meta file, usually named as <strong>sampleMeta.csv</strong>, is a csv file storing data information. The minimal columns for this file are <strong>Sample_Name</strong> (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and <strong>h5path</strong>. If you have the celltype annotation information, you can provide is by adding a column called <strong>metapath</strong>. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.</p>
+<p>The sample meta file, usually named as <strong>sampleMeta.csv</strong>, is a csv file storing data information. The minimal columns for this file are <strong>Sample_Name</strong> (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and <strong>h5path</strong>. If you have the cell type annotation information, you can provide is by adding a column called <strong>metapath</strong>. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.</p>
 <div id="h5-input" class="section level3" number="5.2.1">
 <h3><span class="header-section-number">5.2.1</span> h5 input</h3>
 <p>Here is an example with minimal information for the public dataset <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> (10X h5 format):</p>

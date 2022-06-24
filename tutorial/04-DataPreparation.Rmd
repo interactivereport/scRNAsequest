@@ -29,7 +29,7 @@ This dataset also has cell type annotation files associated with each data. Thes
 -rwxrwx---. 1 zouyang ngs 157K Apr 21 16:59 5705STDY8058284.annotation.csv
 -rwxrwx---. 1 zouyang ngs 555K Apr 21 16:59 5705STDY8058285.annotation.csv
 
-#A brief look of the annotation file:
+#A brief look at the annotation file:
 $ head -3 5705STDY8058280_annotation.csv
 Cell.ID,sample,annotation_1,annotation_1_print
 AAACCCAAGGAAGTAG-1,5705STDY8058280,Ext_L25,23_Ext_L25
@@ -47,13 +47,13 @@ If **SampleName.metrics_summary.csv** files are available, please also add them 
 5705STDY8058285.metrics_summary.csv
 ```
 
-**!!! Important** Since we don't provide the path of these metrics_summary.csv files to the pipeline, their prefix **SampleName** must be consistent with the **Sample_Name** column in the sample meta file (See section 5.2), so that the pipeline can recognize them automatically. You can certainly rename the files and the corresponding **SampleName** column if you would like to change the data names and how they appear in the final results. Also, for the metrics_summary.csv file names, the concatenator between the **Sample_Name** and "metrics_summary.csv" must be "." so that the pipeline can read them in automatically.
+**!!! Important** Since we don't provide the path of these metrics_summary.csv files to the pipeline, their prefix **SampleName** must be consistent with the **Sample_Name** column in the sample meta file (See section 5.2), so that the pipeline can recognize them automatically. You can certainly rename the files and the corresponding **SampleName** column if you would like to change the data names and how they appear in the final results. Also, for the metrics_summary.csv file names, the concatenator between the **Sample_Name** and "metrics_summary.csv" must be "." so that the pipeline can read them automatically.
 
 ## Public data in 10X MEX format
 
-Another popular format for single-cell RNA-seq is the [**MEX format**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices){target="_blank"}, with a **mtx file** and associated **barcodes** file as well as a **features** file. Here, we use a public dataset from NCBI/GEO: [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483){target="_blank"} to walk through the procedures for pipeline setup.
+Another popular format for single-cell RNA-seq is the [**MEX format**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices){target="_blank"}, with an **mtx file** and associated **barcodes** file as well as a **features** file. Here, we use a public dataset from NCBI/GEO: [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483){target="_blank"} to walk through the procedures for pipeline setup.
 
-There are total 4 data, and all the processed data can be downloaded from the Supplementary file section as a tar ball: GSE205483_RAW.tar:
+There are total 4 data, and all the processed data can be downloaded from the Supplementary file section as a tarball: GSE205483_RAW.tar:
 
 ```
 #Untar the file
@@ -101,7 +101,7 @@ GSE205483/
 
 If you have raw data in [FASTQ format](https://support.illumina.com/bulletins/2016/04/fastq-files-explained.html){target="_blank"}, please process them using the Cell Ranger pipeline to generate the raw_feature_bc_matrix.h5 and metrics_summary.csv files. Please visit [Cell Ranger website here](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count){target="_blank"} for more details about the outputs, in the "Output files" section. 
 
-In short, Cell Ranger outputs **filtered_feature_bc_matrix.h5** (cells after filtering, recommended to use), **raw_feature_bc_matrix.h5** (without filtering), and two folders for MEX format output: **filtered_feature_bc_matrix**, **raw_feature_bc_matrix**. In addition, Cell Ranger also has **metrics_summary.csv** generated which can be provided to scRNASequest. Please organize, and if necessary, rename the Cell Ranger output files into the following file structures before running scRNASequest.
+In short, Cell Ranger outputs **filtered_feature_bc_matrix.h5** (cells after filtering, recommended to use), **raw_feature_bc_matrix.h5** (without filtering), and two folders for MEX format output: **filtered_feature_bc_matrix**, **raw_feature_bc_matrix**. In addition, Cell Ranger also has a **metrics_summary.csv** file generated, which can be provided to scRNASequest. Please re-organize, and if necessary, rename the Cell Ranger output files into the following file structures before running scRNASequest.
 
 Below is the file hierarchy for h5 input files (metrics_summary.csv files are suggested to be included, but not required; If cell type classification annotation.csv files are available, it would be better to include them):
 

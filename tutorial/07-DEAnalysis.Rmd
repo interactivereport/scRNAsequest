@@ -12,15 +12,17 @@ The DEG is performing between **“alt”** and **“ref”** cells from **“gr
 
 Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:
 
-We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than original clusters assigned by the software:
+We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)
 
 ## Example 1
 
-In the first example, we would like to run DE analysis between **'Female'** and **'Male'** for each cluster annotated by **predicted.celltype1**. In the first column, we input the header name **library_id** which annotates the data sources. Then we add **predicted.celltype1** in the *cluster* column, which allows the pipeline to loop through each cluster in **predicted.celltype1**. The *group* column contains the header name storing the comparison groups, and here we use the **Sex** annotation. Each time, the pipeline can only compare two conditions, such as **'Female'** and **'Male'**. If the *group* column contains more groups, please list them in multiple lines in the DEGinfo.csv file.
+In the first example, we would like to run DE analysis between **'Female'** and **'Male'** for each cluster annotated by **predicted.celltype1**. In the first column, we input the header name **library_id**, which annotates the data sources. Then we add **predicted.celltype1** in the *cluster* column, which allows the pipeline to loop through each cluster in **predicted.celltype1**. The *group* column contains the header name storing the comparison groups, and here we use the **Sex** annotation. Each time, the pipeline can only compare two conditions, such as **'Female'** and **'Male'**. If the *group* column contains more groups, please list them in multiple lines in the DEGinfo.csv file.
 
 We can also add *covars* if needed, but this is optional.
 
-The default DE analysis is perform by [**NEBULA**](https://www.nature.com/articles/s42003-021-02146-6){target="_blank"}. As for the model, NEBULA provides two choices: **HL** and **LN**. For more details about them, please refer the [NEBULA manual](https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl){target="_blank"}.
+The default DE analysis is performed by [**NEBULA**](https://www.nature.com/articles/s42003-021-02146-6){target="_blank"}. As for the model, NEBULA provides two choices: **HL** and **LN**. For more details about them, please refer to the [NEBULA manual](https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl){target="_blank"}.
 
 Here is the DEGinfo.csv we described above:
 
@@ -72,7 +74,7 @@ outputdir
 
 ## Example 2
 
-In the second example, we are going to show how to perform DE analysis directly on two cell types. To achieve this, we added one artificial column (called 'SelectAll') in the sampleMeta.csv file, and assign same values ('Everything') to all the data:
+In the second example, we are going to show how to perform DE analysis directly on two cell types. To achieve this, we added one artificial column (called 'SelectAll') in the sampleMeta.csv file, and assigned the same values ('Everything') to all the data:
 
 ```
 Sample_Name,h5path,Sex,SelectAll

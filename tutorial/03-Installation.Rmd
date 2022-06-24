@@ -2,7 +2,7 @@
 
 ## Install scRNASequest
 
-First we install the scRNASequest by downloading the scripts from GitHub:
+First, we install the scRNASequest by downloading the scripts from GitHub:
 
 ```{bash, eval=FALSE}
 git clone https://github.com/interactivereport/scRNAsequest.git
@@ -103,7 +103,7 @@ However, it is up to the user how to visualize the h5ad file, and other tools wi
 
 ## Install CellDepot
 
-Please refer the detailed instructions below to install CellDepot:
+Please refer to the detailed instructions below to install CellDepot:
 
 [https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php](https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php){target="_blank"}
 
