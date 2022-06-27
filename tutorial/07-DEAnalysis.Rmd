@@ -122,7 +122,7 @@ Sample_Name,h5path,Sex,SelectAll
 5705STDY8058285,/home/ysun4/testSinglecell/ExternalData/5705STDY8058285_filtered_feature_bc_matrix.h5,Male,Everything
 ```
 
-Then. we prepare the **DEGinfo.csv** file in this way. The 'SelectAll' was filled into the *cluster* column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs **astrocytes** to **Oligos** comparison.
+Then we prepare the **DEGinfo.csv** file in this way. The 'SelectAll' was filled into the *cluster* column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs **astrocytes** to **Oligos** comparison.
 
 ```
 sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]

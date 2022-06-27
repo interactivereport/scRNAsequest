@@ -621,7 +621,7 @@ NBGMM (HL)
 5705STDY8058283,/home/ysun4/testSinglecell/ExternalData/5705STDY8058283_filtered_feature_bc_matrix.h5,Male,Everything
 5705STDY8058284,/home/ysun4/testSinglecell/ExternalData/5705STDY8058284_filtered_feature_bc_matrix.h5,Male,Everything
 5705STDY8058285,/home/ysun4/testSinglecell/ExternalData/5705STDY8058285_filtered_feature_bc_matrix.h5,Male,Everything</code></pre>
-<p>Then. we prepare the <strong>DEGinfo.csv</strong> file in this way. The ‘SelectAll’ was filled into the <em>cluster</em> column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs <strong>astrocytes</strong> to <strong>Oligos</strong> comparison.</p>
+<p>Then we prepare the <strong>DEGinfo.csv</strong> file in this way. The ‘SelectAll’ was filled into the <em>cluster</em> column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs <strong>astrocytes</strong> to <strong>Oligos</strong> comparison.</p>
 <pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
 library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL</code></pre>
 <p>Then we need to run the scRNASequest pipeline from the beginning, which allows the ‘SelectAll’ column to be embedded into the harmonized h5ad output. As long as we have DEGinfo.csv included in the config.yml, it will run through the DE analysis and produce the following results:</p>
