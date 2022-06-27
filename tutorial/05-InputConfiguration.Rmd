@@ -95,7 +95,7 @@ Sample_Name,h5path
 5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285.filtered_feature_bc_matrix.h5
 ```
 
-Another example if you would like to use the celltype annotation defined by their analysis, which can be included in the **metapath** column. Moreover, the user has the freedom to provide further information such as sex and age:
+Another example if you would like to use the **cell type annotation** defined by their analysis, which can be included in the **metapath** column. Moreover, the user has the freedom to provide further information such as sex and age:
 
 ```
 Sample_Name,h5path,metapath,sex,age

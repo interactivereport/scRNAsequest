@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-24" />
+<meta name="date" content="2022-06-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -212,7 +212,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Here is the DEGinfo.csv we described above:</p>
 <pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
 library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
-<p>After preparing the DEGinfo.csv file, simply add it to the config.yml file:</p>
+<p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="differential-expression-de-analysis.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
@@ -242,7 +242,7 @@ library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
     ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_OPC_Female_Male.error
     └── ProjName_scDEG.db</code></pre>
 <p>An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):</p>
-<p>In the table below, the most significant gene is <a href="https://www.ncbi.nlm.nih.gov/gene/7503" target="_blank">Xist</a>, a well-known X-chromosome gene highly expressed in female.</p>
+<p>In the table below, the most significant gene is <a href="https://www.ncbi.nlm.nih.gov/gene/213742" target="_blank">Xist</a>, a well-known X-chromosome gene highly expressed in female.</p>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -613,7 +613,7 @@ NBGMM (HL)
 </div>
 <div id="example-2" class="section level2" number="7.2">
 <h2><span class="header-section-number">7.2</span> Example 2</h2>
-<p>In the second example, we are going to show how to perform DE analysis directly on two cell types. To achieve this, we added one artificial column (called ‘SelectAll’) in the sampleMeta.csv file, and assigned the same values (‘Everything’) to all the data:</p>
+<p>In the second example, we are going to show how to perform DE analysis <strong>between two cell types</strong>. To achieve this, we added one artificial column (called ‘SelectAll’) in the <strong>sampleMeta.csv</strong> file, and assigned the same values (‘Everything’) to all the data:</p>
 <pre><code>Sample_Name,h5path,Sex,SelectAll
 5705STDY8058280,/home/ysun4/testSinglecell/ExternalData/5705STDY8058280_filtered_feature_bc_matrix.h5,Female,Everything
 5705STDY8058281,/home/ysun4/testSinglecell/ExternalData/5705STDY8058281_filtered_feature_bc_matrix.h5,Female,Everything
@@ -621,7 +621,7 @@ NBGMM (HL)
 5705STDY8058283,/home/ysun4/testSinglecell/ExternalData/5705STDY8058283_filtered_feature_bc_matrix.h5,Male,Everything
 5705STDY8058284,/home/ysun4/testSinglecell/ExternalData/5705STDY8058284_filtered_feature_bc_matrix.h5,Male,Everything
 5705STDY8058285,/home/ysun4/testSinglecell/ExternalData/5705STDY8058285_filtered_feature_bc_matrix.h5,Male,Everything</code></pre>
-<p>We prepare the DEGinfo.csv file in this way. The <em>cluster</em> column has ‘SelectAll’, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs <strong>astrocytes</strong> to <strong>Oligos</strong> comparison.</p>
+<p>Then. we prepare the <strong>DEGinfo.csv</strong> file in this way. The ‘SelectAll’ was filled into the <em>cluster</em> column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs <strong>astrocytes</strong> to <strong>Oligos</strong> comparison.</p>
 <pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
 library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL</code></pre>
 <p>Then we need to run the scRNASequest pipeline from the beginning, which allows the ‘SelectAll’ column to be embedded into the harmonized h5ad output. As long as we have DEGinfo.csv included in the config.yml, it will run through the DE analysis and produce the following results:</p>

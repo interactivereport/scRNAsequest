@@ -31,7 +31,7 @@ sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[de
 library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL
 ```
 
-After preparing the DEGinfo.csv file, simply add it to the config.yml file:
+After preparing the DEGinfo.csv file, simply add it to the **config.yml** file:
 
 ```
 DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv
@@ -74,7 +74,7 @@ outputdir
 
 An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):
 
-In the table below, the most significant gene is [Xist](https://www.ncbi.nlm.nih.gov/gene/7503){target="_blank"}, a well-known X-chromosome gene highly expressed in female.
+In the table below, the most significant gene is [Xist](https://www.ncbi.nlm.nih.gov/gene/213742){target="_blank"}, a well-known X-chromosome gene highly expressed in female.
 
 ```{r, echo=FALSE, results = "asis"}
 suppressMessages(library(knitr))
@@ -110,7 +110,7 @@ An example of the DE png file (Female.vs.Male_predicted.celltype1/astrocytes_NEB
 
 ## Example 2
 
-In the second example, we are going to show how to perform DE analysis directly on two cell types. To achieve this, we added one artificial column (called 'SelectAll') in the sampleMeta.csv file, and assigned the same values ('Everything') to all the data:
+In the second example, we are going to show how to perform DE analysis **between two cell types**. To achieve this, we added one artificial column (called 'SelectAll') in the **sampleMeta.csv** file, and assigned the same values ('Everything') to all the data:
 
 ```
 Sample_Name,h5path,Sex,SelectAll
@@ -122,7 +122,7 @@ Sample_Name,h5path,Sex,SelectAll
 5705STDY8058285,/home/ysun4/testSinglecell/ExternalData/5705STDY8058285_filtered_feature_bc_matrix.h5,Male,Everything
 ```
 
-We prepare the DEGinfo.csv file in this way. The *cluster* column has 'SelectAll', and since it only has one value, it actually selects all cells when running the pipeline. Then it performs **astrocytes** to **Oligos** comparison.
+Then. we prepare the **DEGinfo.csv** file in this way. The 'SelectAll' was filled into the *cluster* column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs **astrocytes** to **Oligos** comparison.
 
 ```
 sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
