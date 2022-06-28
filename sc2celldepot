@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+
+strIn=$1
+src="$(dirname $0)/src"
+
+if [[ ! -f "$src/.env" ]]; then
+  echo "scAnalyzer: Please run ./install to setup necessary env variables"
+  exit
+fi
+
+env -i strIn="$strIn" src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/external2h5ad.R $strIn'
+# 2>&1 | tee -a $strIn.log
