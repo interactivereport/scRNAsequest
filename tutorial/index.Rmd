@@ -4,12 +4,12 @@ author:
   - name: Kejie Li
     email: kejie.li@biogen.com
     affiliation: Biogen
-  - name: Zhengyu Ouyang
-    email: oyoung@bioinforx.com
-    affiliation: BioInfoRx
   - name: Yu (Henry) Sun
     email: yuhenry.sun@biogen.com
     affiliation: Biogen
+  - name: Zhengyu Ouyang
+    email: oyoung@bioinforx.com
+    affiliation: BioInfoRx
   - name: Soumya Negi
     email: soumya.negi@biogen.com
     affiliation: Biogen
@@ -49,7 +49,7 @@ author:
   - name: Baohong Zhang (Corresponding Author)
     email: baohong.zhang@biogen.com
     affiliation: Biogen
-  - name: These authors contribute equally Kejie Li, Zhengyu Ouyang
+  - name: These authors contribute equally Kejie Li, Yu (Henry) Sun, Zhengyu Ouyang
 address:
   - code: Research and Development, Biogen, Inc
     address: 225 Binney St, Cambridge, MA 02142, USA

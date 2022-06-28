@@ -4,6 +4,7 @@ preface
 introduction
 installation
 install-scrnasequest
+configure-sys.yml-file
 install-cellxgene_vip
 install-celldepot
 data-preparation

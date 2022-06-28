@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-27" />
+<meta name="date" content="2022-06-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -143,8 +143,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3" data-path="installation.html"><a href="installation.html"><i class="fa fa-check"></i><b>3</b> Installation</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a></li>
-<li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#install-cellxgene_vip"><i class="fa fa-check"></i><b>3.2</b> Install cellxgene_VIP</a></li>
-<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.3</b> Install CellDepot</a></li>
+<li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#configure-sys.yml-file"><i class="fa fa-check"></i><b>3.2</b> Configure sys.yml file</a></li>
+<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-cellxgene_vip"><i class="fa fa-check"></i><b>3.3</b> Install cellxgene_VIP</a></li>
+<li class="chapter" data-level="3.4" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.4</b> Install CellDepot</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>4</b> Data preparation</a>
 <ul>
@@ -208,19 +209,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb35-8"><a href="reference-building.html#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248</span></span>
 <span id="cb35-9"><a href="reference-building.html#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
 <span id="cb35-10"><a href="reference-building.html#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-11"><a href="reference-building.html#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-12"><a href="reference-building.html#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
-<span id="cb35-13"><a href="reference-building.html#cb35-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-14"><a href="reference-building.html#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
-<span id="cb35-15"><a href="reference-building.html#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-16"><a href="reference-building.html#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
-<span id="cb35-17"><a href="reference-building.html#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
-<span id="cb35-18"><a href="reference-building.html#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
-<span id="cb35-19"><a href="reference-building.html#cb35-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
-<span id="cb35-20"><a href="reference-building.html#cb35-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
-<span id="cb35-21"><a href="reference-building.html#cb35-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-22"><a href="reference-building.html#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
-<span id="cb35-23"><a href="reference-building.html#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<span id="cb35-11"><a href="reference-building.html#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb35-12"><a href="reference-building.html#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-13"><a href="reference-building.html#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
+<span id="cb35-14"><a href="reference-building.html#cb35-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-15"><a href="reference-building.html#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
+<span id="cb35-16"><a href="reference-building.html#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
+<span id="cb35-17"><a href="reference-building.html#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
+<span id="cb35-18"><a href="reference-building.html#cb35-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
+<span id="cb35-19"><a href="reference-building.html#cb35-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
+<span id="cb35-20"><a href="reference-building.html#cb35-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-21"><a href="reference-building.html#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb35-22"><a href="reference-building.html#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 
 </div>
             </section>

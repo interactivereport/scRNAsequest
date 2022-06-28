@@ -15,7 +15,6 @@ $ scRef
 ## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248
 ###########
 
-
 Loading resources
 
 scRef /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file
