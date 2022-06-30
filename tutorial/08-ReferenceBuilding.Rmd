@@ -2,7 +2,7 @@
 
 Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.
 
-By running the following command, the reference will be added to the pipeline for future use:
+By running the following command, we can see the manual page of the reference generator, scRef:
 
 ```{bash, eval=FALSE}
 $ scRef
@@ -27,4 +27,62 @@ The Ref config file will be generated automatically when a path is provided
 
 Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
 ------------
+```
+
+## Initialize scRef
+
+This pipeline can be initialized using an empty directory. for example, we first create a directory called 'Reference_data', then initiate the pipeline pointing to this directory:
+
+```{bash, eval=FALSE}
+scRef /path/to/the/directory
+
+#Example:
+scRef ~/Reference_data
+```
+
+After the run, a config file, **refConfig.yml**, and a log file will be generated in the directory. The **refConfig.yml** is a template of the following scRef run, passing critical parameters to the pipeline. The **refConfig.yml** file will be same as this [template](https://github.com/interactivereport/scRNAsequest/blob/main/src/ref.yml){target="_blank"}, but the output directory will be yours. Here is an example after filling in the configuration file:
+
+```
+# please check wiki page for the details
+output: ~/Reference_data
+# the following is normally located in the same folder of celldepot hosting h5ad files
+ref_h5ad_raw: /path/to/ProjectName_raw_added.h5ad # full path to the h5ad file contains raw UMI along with cell annotation and layout
+ref_batch: library_id
+# above two parameters are ignored, if a seurat object can be located in the project folder
+ref_rds:                                          #full path to the processed seurat object including SCT assay, cell annotation and layout
+
+# All information below are required
+ref_name: Reference_data # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
+ref_link:                # The web link to the information of this reference
+ref_src: sn              # sc/"single cell" or sn/"single nuclei"
+ref_platform: 10X        # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
+#list a PCA to be used for reduction (full name from VIP or one from seurat 'reductions' ) 
+# The PCA was used for the prefered layout (UMAP/tSNE)
+# For instance, if harmony was used, provide 'harmony'-like from reductions slot of seurat
+ref_PCA: pca 
+ref_label: [predicted.celltype1]        # list the annotations (case sensitive) to be used for transferring. Please check this in the data. For our case, the header is called 'predicted.celltype1'
+publish: False                          # should this reference be published (added permanently) into scAnalyzer
+overwrite: False                        # overwrite the existing scAnalyzer reference 
+```
+
+## Submit scRef
+
+After filling in the information in the **refConfig.yml** file, we are ready to submit the full pipeline and build the reference data for label transfer:
+
+```{bash, eval=FALSE}
+scRef /path/to/a/Ref/config/file
+
+#Example:
+scRef ~/Reference_data/refConfig.yml
+```
+
+Output files:
+
+```
+Reference_data
+    ├── init_20220630.log
+    ├── refConfig.yml
+    ├── refConfig.yml.20220630.log
+    ├── ref_notFor_scAnalyzer.rds   #Output rds file for lebel transfer and downstream analysis
+    ...
 ```

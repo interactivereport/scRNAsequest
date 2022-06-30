@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-28" />
+<meta name="date" content="2022-06-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -175,7 +175,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
 <li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a></li>
+<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>8.1</b> Initialize scRef</a></li>
+<li class="chapter" data-level="8.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>8.2</b> Submit scRef</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -304,10 +308,12 @@ miR155cKO_rep2,~/10XGenomicsData/GSM6213402_IT_YZ_0322_3125,miR155cKO,Female</co
 <p>For data downloaded in 10X h5 format:</p>
 <pre><code>E-MTAB-11115/
     ├── data
-        ├── 5705STDY8058280_annotation.csv           (optional)
-        ├── 5705STDY8058280_raw_feature_bc_matrix.h5
-        ├── 5705STDY8058281_annotation.csv           (optional)
-        ├── 5705STDY8058281_raw_feature_bc_matrix.h5
+        ├── 5705STDY8058280.annotation.csv           (optional)
+        ├── 5705STDY8058280.metrics_summary.csv      (optional)
+        ├── 5705STDY8058280.raw_feature_bc_matrix.h5
+        ├── 5705STDY8058281.annotation.csv           (optional)
+        ├── 5705STDY8058281.metrics_summary.csv      (optional)
+        ├── 5705STDY8058281.raw_feature_bc_matrix.h5
         ...
     ├── processing
         ├── config.yml

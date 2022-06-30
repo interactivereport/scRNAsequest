@@ -26,3 +26,5 @@ differential-expression-de-analysis
 example-1
 example-2
 reference-building
+initialize-scref
+submit-scref

@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-28" />
+<meta name="date" content="2022-06-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -175,7 +175,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
 <li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a></li>
+<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>8.1</b> Initialize scRef</a></li>
+<li class="chapter" data-level="8.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>8.2</b> Submit scRef</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -198,7 +202,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="reference-building" class="section level1" number="8">
 <h1><span class="header-section-number">Chapter 8</span> Reference Building</h1>
 <p>Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.</p>
-<p>By running the following command, the reference will be added to the pipeline for future use:</p>
+<p>By running the following command, we can see the manual page of the reference generator, scRef:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="reference-building.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
 <span id="cb35-2"><a href="reference-building.html#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="reference-building.html#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-06-23 17:38:28 <span class="pp">*****</span></span>
@@ -221,7 +225,51 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb35-20"><a href="reference-building.html#cb35-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-21"><a href="reference-building.html#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
 <span id="cb35-22"><a href="reference-building.html#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div id="initialize-scref" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Initialize scRef</h2>
+<p>This pipeline can be initialized using an empty directory. for example, we first create a directory called ‘Reference_data’, then initiate the pipeline pointing to this directory:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="reference-building.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/the/directory</span>
+<span id="cb36-2"><a href="reference-building.html#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="reference-building.html#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb36-4"><a href="reference-building.html#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data</span></code></pre></div>
+<p>After the run, a config file, <strong>refConfig.yml</strong>, and a log file will be generated in the directory. The <strong>refConfig.yml</strong> is a template of the following scRef run, passing critical parameters to the pipeline. The <strong>refConfig.yml</strong> file will be same as this <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/ref.yml" target="_blank">template</a>, but the output directory will be yours. Here is an example after filling in the configuration file:</p>
+<pre><code># please check wiki page for the details
+output: ~/Reference_data
+# the following is normally located in the same folder of celldepot hosting h5ad files
+ref_h5ad_raw: /path/to/ProjectName_raw_added.h5ad # full path to the h5ad file contains raw UMI along with cell annotation and layout
+ref_batch: library_id
+# above two parameters are ignored, if a seurat object can be located in the project folder
+ref_rds:                                          #full path to the processed seurat object including SCT assay, cell annotation and layout
 
+# All information below are required
+ref_name: Reference_data # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
+ref_link:                # The web link to the information of this reference
+ref_src: sn              # sc/&quot;single cell&quot; or sn/&quot;single nuclei&quot;
+ref_platform: 10X        # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
+#list a PCA to be used for reduction (full name from VIP or one from seurat &#39;reductions&#39; ) 
+# The PCA was used for the prefered layout (UMAP/tSNE)
+# For instance, if harmony was used, provide &#39;harmony&#39;-like from reductions slot of seurat
+ref_PCA: pca 
+ref_label: [predicted.celltype1]        # list the annotations (case sensitive) to be used for transferring. Please check this in the data. For our case, the header is called &#39;predicted.celltype1&#39;
+publish: False                          # should this reference be published (added permanently) into scAnalyzer
+overwrite: False                        # overwrite the existing scAnalyzer reference </code></pre>
+</div>
+<div id="submit-scref" class="section level2" number="8.2">
+<h2><span class="header-section-number">8.2</span> Submit scRef</h2>
+<p>After filling in the information in the <strong>refConfig.yml</strong> file, we are ready to submit the full pipeline and build the reference data for label transfer:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="reference-building.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/Ref/config/file</span>
+<span id="cb38-2"><a href="reference-building.html#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-3"><a href="reference-building.html#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb38-4"><a href="reference-building.html#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data/refConfig.yml</span></code></pre></div>
+<p>Output files:</p>
+<pre><code>Reference_data
+    ├── init_20220630.log
+    ├── refConfig.yml
+    ├── refConfig.yml.20220630.log
+    ├── ref_notFor_scAnalyzer.rds   #Output rds file for lebel transfer and downstream analysis
+    ...</code></pre>
+
+</div>
 </div>
             </section>
 

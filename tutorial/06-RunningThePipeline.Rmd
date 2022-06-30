@@ -117,7 +117,7 @@ outputdir
     ├── ProjName_liger.csv                 #Liger
     ├── ProjName_Liger.h5ad
     ├── ProjName_liger_hvg.csv
-    ├── ProjName_raw_added.h5ad
+    ├── ProjName_raw_added.h5ad            
     ├── ProjName_raw.h5ad
     ├── ProjName_raw_prefilter.h5ad
     ├── ProjName_SCT.cID                   #SCT transformation

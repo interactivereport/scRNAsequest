@@ -138,10 +138,12 @@ For data downloaded in 10X h5 format:
 ```
 E-MTAB-11115/
     ├── data
-        ├── 5705STDY8058280_annotation.csv           (optional)
-        ├── 5705STDY8058280_raw_feature_bc_matrix.h5
-        ├── 5705STDY8058281_annotation.csv           (optional)
-        ├── 5705STDY8058281_raw_feature_bc_matrix.h5
+        ├── 5705STDY8058280.annotation.csv           (optional)
+        ├── 5705STDY8058280.metrics_summary.csv      (optional)
+        ├── 5705STDY8058280.raw_feature_bc_matrix.h5
+        ├── 5705STDY8058281.annotation.csv           (optional)
+        ├── 5705STDY8058281.metrics_summary.csv      (optional)
+        ├── 5705STDY8058281.raw_feature_bc_matrix.h5
         ...
     ├── processing
         ├── config.yml
