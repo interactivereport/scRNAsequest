@@ -11,10 +11,11 @@ ref_name: # please provide a unique name prefer to include species and tissue (c
 ref_link: # The web link to the information of this reference
 ref_src: # sc/"single cell" or sn/"single nuclei"
 ref_platform: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
-#list a PCA to be used for reduction (full name from VIP or one from seurat 'reductions' ) 
-# The PCA was used for the prefered layout (UMAP/tSNE)
-# For instance, if harmony was used, provide 'harmony'-like from reductions slot of seurat
-ref_PCA: pca 
+#list a reduction to be used (at least 50 dimensions full name from VIP or one from seurat 'reductions' ) 
+# details: https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
+# this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
+# For instance, if harmony was prefered layout then providing either 'harmony' (50 dimention) or 'harmony-PCA'
+ref_reduction: pca 
 ref_label: [] # list the annotations (case sensitive) to be used for transferring
 publish: False #should this reference be published into scAnalyzer
 overwrite: False #overwrite the existing scAnalyzer reference 

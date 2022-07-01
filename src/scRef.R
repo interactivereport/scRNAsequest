@@ -101,7 +101,7 @@ checkExist <- function(strF){
 checkConfig <- function(strConfig,sysConfig){
   message("Checking config file ...")
   config <- yaml::read_yaml(strConfig)
-  sapply(c("ref_name","ref_link","ref_src","ref_platform","ref_PCA","ref_label"),
+  sapply(c("ref_name","ref_link","ref_src","ref_platform","ref_reduction","ref_label"),
          function(x,sInfo){
            a <- sInfo[[x]]
            if(length(a)==0 || nchar(a[1])==0) MsgExit(paste0("Please provided required infomraiton @",x))
@@ -117,8 +117,10 @@ checkConfig <- function(strConfig,sysConfig){
   return(config)
 }
 checkH5adRefSetting <- function(config){
-  xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
-  if(is.null(xy)) MsgExit(paste0("The 'ref_PCA' (",config$ref_PCA,") is not in the h5ad file"))
+  xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_reduction))
+  if(is.null(xy)) MsgExit(paste0("The 'ref_reduction' (",config$ref_reduction,") is not in the h5ad file"))
+  
+  if(ncol(xy)<50) MsgExit(paste("At least 50 dimentions are required in reduction where",config$ref_reduction,"only contains",ncol(xy)))
   
   meta <- getobs(config$ref_h5ad)
   if(sum(!config$ref_label%in%colnames(meta))>0)
@@ -126,14 +128,18 @@ checkH5adRefSetting <- function(config){
                    paste(config$ref_label[!config$ref_label%in%colnames(meta)],collapse=", ")))
 }
 checkRDSRefSeting <- function(config,D){
-  if(!"SCT" %in% names(D@assays)) MsgExit(paste0("The 'SCT' assay is required but not in the rds file"))
-  if(!config$ref_PCA %in% names(D@reductions)) MsgExit(paste0("The 'ref_PCA' (",config$ref_PCA,") is not in the rds file"))
+  if(!"SCT" %in% names(D)) MsgExit(paste0("The 'SCT' assay is required but not in the rds file"))
+  if(!config$ref_reduction %in% names(D)) MsgExit(paste0("The 'ref_reduction' (",config$ref_reduction,") is not in the rds file"))
+  if(ncol(D[[config$ref_reduction]])<50) MsgExit(paste0("At least 50 dimentions are required in reduction where ",config$ref_reduction," only contains ",ncol(D[[config$ref_reduction]])))
+  if(D@reductions[[config$ref_reduction]]@assay.used!="SCT") MsgExit(paste0("The specified PCA (",config$ref_reduction,") did NOT derived from SCT but ",D@reductions$pca@assay.used))
+  if(sum(dim(D@assays$SCT@data)==dim(D@assays$SCT@scale.data))!=2)
+    MsgExit(paste0("Both of 'data' and 'scale.data' are required in SCT assay with the same dimensions"))
+
   if(sum(!config$ref_label%in%colnames(D@meta.data))>0)
     MsgExit(paste0("The following annotation labels (case sensitive) are not in the rds file:\n",
                    paste(config$ref_label[!config$ref_label%in%colnames(D@meta.data)],collapse=", ")))
   #https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
-  if(ncol(D[[config$ref_PCA]])<50)
-    MsgExit(paste0(config$ref_PCA," should contain at least 50 dimensions for use with Azimuth"))
+  if(!"SCT_snn"%in%names(D)) warning(paste("SCT_snn neighber is not available, will be calculated based on SCT assay and provided reduction",config$ref_reduction))
 }
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
@@ -208,9 +214,9 @@ unifySCTmodel <- function(SCT){
   # obtain one unified SCT model for Azimuth, and the SCT model is not used for mapping which cause problem of normalizing
   Dtmp <- SCTransform(SCT,method = 'glmGamPoi',new.assay.name="SCT",return.only.var.genes = FALSE,verbose = FALSE)
   if(is.null(levels(SCT[["SCT"]]))){
-    Dtmp[["SCT"]]$data <- SCT[["SCT"]]$data
-    Dtmp[["SCT"]]$scale.data <- SCT[["SCT"]]$scale.data
-    Dtmp[["SCT"]]$var.features <- SCT[["SCT"]]$var.features
+    if(min(dim(SCT[["SCT"]]@data))>100) Dtmp[["SCT"]]@data <- SCT[["SCT"]]@data
+    if(sum(dim(SCT[["SCT"]]@scale.data)==dim(SCT[["SCT"]]@data))==2) Dtmp[["SCT"]]@scale.data <- SCT[["SCT"]]@scale.data
+    if(length(SCT[["SCT"]]@var.features)>100) Dtmp[["SCT"]]@var.features <- SCT[["SCT"]]@var.features
     SCT <- Dtmp
   }else{
     SCT[["SCT"]]@SCTModel.list <- Dtmp[["SCT"]]@SCTModel.list
@@ -268,22 +274,22 @@ createRef <- function(strConfig){
     strTemp <- file.path(config$output,"ref_notFor_scAnalyzer.rds")
     if(!file.exists(strTemp)){
       if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
-        message("Reading rds file @",config$ref_rds," ...")
+        message("Reading rds file @",config$ref_rds)
         D <- readRDS(config$ref_rds)
         DefaultAssay(D) <- "SCT"
         checkRDSRefSeting(config,D)
         if(length(D@assays$SCT@var.features)==0){
-          VariableFeatures(D) <- D@assays[[D@reductions[[config$ref_PCA]]@assay.used]]@var.features
+          VariableFeatures(D) <- D@assays[[D@reductions[[config$ref_reduction]]@assay.used]]@var.features
         }
-        D@reductions[[config$ref_PCA]]@assay.used <- "SCT"
+        D@reductions[[config$ref_reduction]]@assay.used <- "SCT"
       }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
         message("Reading h5ad file ...")
         checkH5adRefSetting(config)
         D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
         DefaultAssay(D) <- "SCT"
-        xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_PCA))
+        xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_reduction))
         rownames(xy) <- colnames(D)
-        D[[config$ref_PCA]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
+        D[[config$ref_reduction]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
                                                     key="PC_",
                                                     assay="SCT")
       }else{
@@ -291,10 +297,14 @@ createRef <- function(strConfig){
       }
       
       message("Processing ...")
+      #https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
       D <- unifySCTmodel(D)
-      D <- FindNeighbors(D, dims = 1:30, reduction=config$ref_PCA,verbose = FALSE)
-      D <- RunSPCA(D, npcs=ncol(D[[config$ref_PCA]]), graph = 'SCT_snn')
-      D <- RunUMAP(D, dims = 1:30, reduction="spca",return.model=TRUE)
+      if(!"SCT_snn"%in%names(D)) D <- FindNeighbors(D, dims = 1:50, reduction=config$ref_reduction,verbose = FALSE)
+      D <- RunSPCA(D, npcs=ncol(D[[config$ref_reduction]]), graph = 'SCT_snn')
+      
+      D <- FindNeighbors(D, dims = 1:50, reduction="spca",verbose = FALSE)
+      D <- RunUMAP(D, dims = 1:50, reduction="spca",umap.method = "uwot",
+                   return.model=TRUE)
       saveRDS(D,strTemp)
     }else{
       message("Previous tmp file found @",strTemp,"\nPlease remove it if all new reference is needed.\nLoading ...")
@@ -307,7 +317,7 @@ createRef <- function(strConfig){
       refUMAP = "umap",
       refDR = "spca",
       refAssay = "SCT",
-      dims = 1:ncol(D[[config$ref_PCA]]),
+      dims = 1:ncol(D[[config$ref_reduction]]),
       plotref = "umap",
       metadata = config$ref_label #c('genotype','age','sex','cluster',"celltype")
     )
