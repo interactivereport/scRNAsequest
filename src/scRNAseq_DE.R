@@ -149,7 +149,7 @@ scRNAseq_DE <- function(
     for(one in unique(meta[,column_cluster])){
       #"Rscript cmdPath/scRNAseq_DE.R cmdPath grpInterest" paste(jID,one,addSRC)
       cmd <- c(cmd,paste0("cd ",output,"; Rscript ",scRNAseq_DE_path,"/scRNAseq_DE.R ",
-                         scRNAseq_DE_path," '",one,"'"))
+                         scRNAseq_DE_path,' "',one,'"'))
     }
     names(cmd) <- gsub(" ",".",paste(basename(output),unique(meta[,column_cluster]),grp_alt,grp_ref,sep="_"))
     
@@ -348,6 +348,7 @@ if(length(args)==1){
 }
 if(length(args)>1){
   selGrp <- paste(args[-1],collapse=" ")
+  #message("\n\n\n",args[-1],": ",selGrp,"\n\n\n")
   print(system.time(
     scRNAseq_DE_one(readRDS("env.rds"),
                     selGrp,
