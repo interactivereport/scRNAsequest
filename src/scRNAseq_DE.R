@@ -151,7 +151,7 @@ scRNAseq_DE <- function(
       cmd <- c(cmd,paste0("cd ",output,"; Rscript ",scRNAseq_DE_path,"/scRNAseq_DE.R ",
                          scRNAseq_DE_path," '",one,"'"))
     }
-    names(cmd) <- paste(basename(output),unique(meta[,column_cluster]),grp_alt,grp_ref,sep="_")
+    names(cmd) <- gsub(" ",".",paste(basename(output),unique(meta[,column_cluster]),grp_alt,grp_ref,sep="_"))
     
     return(list(cmd))
 }
