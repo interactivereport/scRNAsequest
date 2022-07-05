@@ -491,14 +491,8 @@ data filtering.</p>
 </section>
 <section id="qc-plots" class="slide level2">
 <h2>QC plots</h2>
-<p>In this section, we present a series of QC plots for better
-understanding of data quality.</p>
-<p>Please be aware that these figures were generated based on the
-metrics_summary.csv files associated with each sample. For the processed
-data directly downloaded from NCBI/GEO or EBI, they may not have these
-information, and thus no QC plots will be generated here.</p>
-<p>In total there are 19 figures showing different aspects of the QC,
-which can be further grouped into the following categories:</p>
+<p>This section presents a series of QC plots.</p>
+<p>These QC plots can be grouped into the following categories:</p>
 <ul>
 <li><p><strong>General QC</strong></p></li>
 <li><p><strong>Q30 Bases Percentage</strong></p></li>
@@ -565,11 +559,8 @@ RNA Read% and UMI%.</p>
 </section>
 <section id="reads-mapping-summary" class="slide level2">
 <h2>Reads Mapping Summary</h2>
-<p>The Reads Mapping Summary section includes seven plots showing the
-percentage of reads mapped to different genomic features. Ideally, most
-of the reads should map to the Genome, as well as the Transcriptome. For
-single-nucleus RNA-seq data, we expect to see more reads mapped to the
-intronic region, compared to a single-cell RNA-seq data.</p>
+<p>This Reads Mapping Summary section shows the percentage of reads
+mapped to different genomic features.</p>
 </section>
 <section id="genome" class="slide level2">
 <h2>Genome%</h2>
@@ -601,17 +592,8 @@ intronic region, compared to a single-cell RNA-seq data.</p>
 </section>
 <section id="pre-filtering-plots" class="slide level2">
 <h2>Pre-filtering Plots</h2>
-<p>In this section, we present 8 figures to visualize the statistics of
-genes and counts across multiple datasets in the current project. In a
-typical single-cell data, usually several thousand genes can be
-detected. However, the detection of many genes (i.e. over 10,000) may
-indicate more than one cells were sequenced. The plots shown here can be
-used as a guidance to determine the cutoff. If you have turned on
-“filter_step: True” in the config.yml file, you will also see
-post-filtering plots in the next section.</p>
-</section>
-<section id="counts-and-genes" class="slide level2">
-<h2>Counts and Genes</h2>
+<p>In this section, we present 8 pre-filtering figures. ## Counts and
+Genes</p>
 <p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in
 each data, before filtering.</p>
 <p><img src="images/prefilter.QC_couts_genes.png" width="50%" /></p>
@@ -648,8 +630,9 @@ filtering.</p>
 </section>
 <section id="percentage-of-top-500-genes" class="slide level2">
 <h2>Percentage of Top 500 Genes</h2>
-<p>This plot shows % of Total Counts of top 500 genes, before filtering.
-<img src="images/prefilter.QC_pct_counts_in_top_500_genes.png" width="50%" /></p>
+<p>This plot shows % of Total Counts of top 500 genes, before
+filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_500_genes.png" width="50%" /></p>
 </section>
 <section id="percentage-of-mitochondria" class="slide level2">
 <h2>Percentage of Mitochondria</h2>
@@ -658,10 +641,9 @@ filtering.</p>
 </section>
 <section id="post-filtering-plots" class="slide level2">
 <h2>Post-filtering Plots</h2>
-<p>These post-filtering plots can be used to examine the filtering
-cutoff. A summary of filtering cutoffs, and number of cells and genes
-after each filtering step.</p>
-<p>The last row shows the final number after all steps.</p>
+<p>Post-filtering plots can be used to examine the filtering cutoff.</p>
+<p>This table summarizes number of cells and genes after each filtering
+step. The last row shows the final number after all steps.</p>
 <table>
 <caption>Data filtering</caption>
 <thead>
@@ -706,7 +688,7 @@ after each filtering step.</p>
 </tbody>
 </table>
 </section>
-<section id="counts-and-genes-1" class="slide level2">
+<section id="counts-and-genes" class="slide level2">
 <h2>Counts and Genes</h2>
 <p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in
 each data, after filtering.</p>
