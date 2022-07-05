@@ -101,6 +101,8 @@ checkExist <- function(strF){
 checkConfig <- function(strConfig,sysConfig){
   message("Checking config file ...")
   config <- yaml::read_yaml(strConfig)
+  ## compatible with 1st version
+  if("ref_pca" %in%names(config)) config$ref_reduction=config$ref_pca
   sapply(c("ref_name","ref_link","ref_src","ref_platform","ref_reduction","ref_label"),
          function(x,sInfo){
            a <- sInfo[[x]]
