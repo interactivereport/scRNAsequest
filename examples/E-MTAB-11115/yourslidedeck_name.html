@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>scRNAsequest Slide Deck</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="yourslidedeck_name_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+
+<link rel="stylesheet" href="yourslidedeck_name_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal .slide-menu-button {
+      left: 105px !important;
+    }
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <script src="yourslidedeck_name_files/header-attrs-2.13/header-attrs.js"></script>
+    <link href="yourslidedeck_name_files/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="yourslidedeck_name_files/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">scRNAsequest Slide Deck</h1>
+</section>
+
+<section class="slide level2">
+
+<style type="text/css">
+.reveal section img {
+  border: 0px;
+}
+</style>
+</section>
+<section id="navigation-buttons" class="slide level2">
+<h2>Navigation buttons</h2>
+<ul>
+<li>
+Press “Esc” or “o” key to enter the the slide overview
+<li>
+Alt + mouse click to zoom in/out
+<li>
+Press “s” key to speaker view to see notes
+</ul>
+<p><aside class="notes">Here are some notes.</aside></p>
+</section>
+<section id="qc-plots" class="slide level2">
+<h2>QC plots</h2>
+<p><strong>Quality control (QC)</strong> is of single-cell RNA-Seq
+experiment is critical to downstream analyses. In this section, we
+present a series of QC plots for better understanding of data
+quality.</p>
+<p>Please be aware that these figures were generated based on the
+metrics_summary.csv files associated with each sample. For the processed
+data directly downloaded from NCBI/GEO or EBI, they may not have these
+information, and thus no QC plots will be generated here.</p>
+<p>In total there are 19 figures showing different aspects of the data.
+These plots can be further grouped into the following categories:</p>
+<ul>
+<li><p><strong>General QC</strong></p>
+<ul>
+<li><p>Estimated Number of Cells</p></li>
+<li><p>Median UMI Counts per Cell</p></li>
+<li><p>Median Genes per Cell</p></li>
+<li><p>Number of Reads</p></li>
+<li><p>Mean Reads per Cell</p></li>
+<li><p>Total Genes Detected</p></li>
+<li><p>Valid Barcodes%</p></li>
+<li><p>Sequencing Saturation%</p></li>
+<li><p>Fraction Reads in Cells%</p></li>
+</ul></li>
+<li><p><strong>Q30 Bases Percentage</strong></p>
+<ul>
+<li><p>Q30 Bases in Barcode%</p></li>
+<li><p>Q30 Bases in RNA Read%</p></li>
+<li><p>Q30 Bases in UMI%</p></li>
+</ul></li>
+<li><p><strong>Reads Mapping Summary</strong></p>
+<ul>
+<li><p>Reads Mapped to Genome%</p></li>
+<li><p>Reads Mapped Confidently to Genome%</p></li>
+<li><p>Reads Mapped Confidently to Intergenic Regions%</p></li>
+<li><p>Reads Mapped Confidently to Intronic Regions%</p></li>
+<li><p>Reads Mapped Confidently to Exonic Regions%</p></li>
+<li><p>Reads Mapped Confidently to Transcriptome%</p></li>
+<li><p>Reads Mapped Antisense to Gene%</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="general-qc" class="slide level2">
+<h2>General QC</h2>
+<p>The General QC plot section includes nine bar plots to visualize
+general metrics of the current single-cell project.</p>
+</section>
+<section id="estimated-number-of-cells" class="slide level2">
+<h2>Estimated Number of Cells</h2>
+<p><img src="images/sequencingQC_Estimated_Number_of_Cells.png" width="80%" /></p>
+</section>
+<section id="median-umi-counts-per-cell" class="slide level2">
+<h2>Median UMI Counts per Cell</h2>
+<p><img src="images/sequencingQC_Median_UMI_Counts_per_Cell.png" width="80%" /></p>
+</section>
+<section id="median-genes-per-cell" class="slide level2">
+<h2>Median Genes per Cell</h2>
+<p><img src="images/sequencingQC_Median_Genes_per_Cell.png" width="80%" /></p>
+</section>
+<section id="number-of-reads" class="slide level2">
+<h2>Number of Reads</h2>
+<p><img src="images/sequencingQC_Number_of_Reads.png" width="80%" /></p>
+</section>
+<section id="mean-reads-per-cell" class="slide level2">
+<h2>Mean Reads per Cell</h2>
+<p><img src="images/sequencingQC_Mean_Reads_per_Cell.png" width="80%" /></p>
+</section>
+<section id="total-genes-detected" class="slide level2">
+<h2>Total Genes Detected</h2>
+<p><img src="images/sequencingQC_Total_Genes_Detected.png" width="80%" /></p>
+</section>
+<section id="valid-barcodes" class="slide level2">
+<h2>Valid Barcodes%</h2>
+<p><img src="images/sequencingQC_Valid_Barcodes.png" width="80%" /></p>
+</section>
+<section id="sequencing-saturation" class="slide level2">
+<h2>Sequencing Saturation%</h2>
+<p><img src="images/sequencingQC_Sequencing_Saturation.png" width="80%" /></p>
+</section>
+<section id="fraction-reads-in-cells" class="slide level2">
+<h2>Fraction Reads in Cells%</h2>
+<p><img src="images/sequencingQC_Fraction_Reads_in_Cells.png" width="80%" /></p>
+</section>
+<section id="q30-bases-percentage" class="slide level2">
+<h2>Q30 Bases Percentage</h2>
+<p>The Q30 Bases Percentage includes three Q30 plots showing Barcode%,
+RNA Read% and UMI%.</p>
+</section>
+<section id="q30-bases-in-barcode" class="slide level2">
+<h2>Q30 Bases in Barcode%</h2>
+<p><img src="images/sequencingQC_Q30_Bases_in_Barcode.png" width="80%" /></p>
+</section>
+<section id="q30-bases-in-rna-read" class="slide level2">
+<h2>Q30 Bases in RNA Read%</h2>
+<p><img src="images/sequencingQC_Q30_Bases_in_RNA_Read.png" width="80%" /></p>
+</section>
+<section id="q30-bases-in-umi" class="slide level2">
+<h2>Q30 Bases in UMI%</h2>
+<p><img src="images/sequencingQC_Q30_Bases_in_UMI.png" width="80%" /></p>
+</section>
+<section id="reads-mapping-summary" class="slide level2">
+<h2>Reads Mapping Summary</h2>
+<p>The Reads Mapping Summary section includes seven plots showing the
+percentage of reads mapped to different genomic features. Ideally, most
+of the reads should map to the Genome, as well as the Transcriptome. For
+single-nucleus RNA-seq data, we expect to see more reads mapped to the
+intronic region, compared to a single-cell RNA-seq data.</p>
+</section>
+<section id="genome" class="slide level2">
+<h2>Genome%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_to_Genome.png" width="80%" /></p>
+</section>
+<section id="confidently-to-genome" class="slide level2">
+<h2>Confidently to Genome%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Genome.png" width="80%" /></p>
+</section>
+<section id="confidently-to-intergenic-regions" class="slide level2">
+<h2>Confidently to Intergenic Regions%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Intergenic_Regions.png" width="80%" /></p>
+</section>
+<section id="confidently-to-intronic-regions" class="slide level2">
+<h2>Confidently to Intronic Regions%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Intronic_Regions.png" width="80%" /></p>
+</section>
+<section id="confidently-to-exonic-regions" class="slide level2">
+<h2>Confidently to Exonic Regions%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Exonic_Regions.png" width="80%" /></p>
+</section>
+<section id="confidently-to-transcriptome" class="slide level2">
+<h2>Confidently to Transcriptome%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_Confidently_to_Transcriptome.png" width="80%" /></p>
+</section>
+<section id="antisense-to-gene" class="slide level2">
+<h2>Antisense to Gene%</h2>
+<p><img src="images/sequencingQC_Reads_Mapped_Antisense_to_Gene.png" width="80%" /></p>
+</section>
+<section id="pre-filtering-plots" class="slide level2">
+<h2>Pre-filtering Plots</h2>
+<p>In this section, we present 8 figures to visualize the statistics of
+genes and counts across multiple datasets in the current project. In a
+typical single-cell data, usually several thousand genes can be
+detected. However, the detection of many genes (i.e. over 10,000) may
+indicate more than one cells were sequenced. The plots shown here can be
+used as a guidance to determine the cutoff. If you have turned on
+“filter_step: True” in the config.yml file, you will also see
+post-filtering plots in the next section.</p>
+</section>
+<section id="counts-and-genes" class="slide level2">
+<h2>Counts and Genes</h2>
+<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in
+each data, before filtering.</p>
+<p><img src="images/prefilter.QC_couts_genes.png" width="100%" /></p>
+</section>
+<section id="number-of-genes" class="slide level2">
+<h2>Number of Genes</h2>
+<p>This plot shows Number of Genes (Y axis) detected in each data,
+before filtering.</p>
+<p><img src="images/prefilter.QC_genes.png" width="80%" /></p>
+</section>
+<section id="top-genes" class="slide level2">
+<h2>Top Genes</h2>
+<p>This plot shows Top Genes and % of Total Counts in each data, before
+filtering.</p>
+<p><img src="images/prefilter.QC_topGene.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-50-genes" class="slide level2">
+<h2>Percentage of Top 50 Genes</h2>
+<p>This plot shows % of Total Counts of top 50 genes, before
+filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_50_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-100-genes" class="slide level2">
+<h2>Percentage of Top 100 Genes</h2>
+<p>This plot shows % of Total Counts of top 100 genes, before
+filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_100_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-200-genes" class="slide level2">
+<h2>Percentage of Top 200 Genes</h2>
+<p>This plot shows % of Total Counts of top 200 genes, before
+filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_200_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-500-genes" class="slide level2">
+<h2>Percentage of Top 500 Genes</h2>
+<p>This plot shows % of Total Counts of top 500 genes, before
+filtering.</p>
+<p><img src="images/prefilter.QC_pct_counts_in_top_500_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-mitochondria" class="slide level2">
+<h2>Percentage of Mitochondria</h2>
+<p>This plot shows % of Mitochondria, before filtering.</p>
+<p><img src="images/prefilter.QC_pct_MT.png" width="80%" /></p>
+</section>
+<section id="post-filtering-plots" class="slide level2">
+<h2>Post-filtering Plots</h2>
+<p>These post-filtering plots can be used to examine the filtering
+cutoff. If any of the cutoffs were not ideal, please adjust the cutoff
+parameters in the config.yml file, then rerun scAnalyzer to generate
+this report again. This step is designed as semi-automatic, which allows
+the users to fine-tune the cutoffs and understand the data.</p>
+<p>A summary of filtering cutoffs, and number of cells and genes after
+each filtering step.</p>
+<p>The last row shows the final number after all steps.</p>
+<table>
+<caption>Data filtering</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Filter</th>
+<th style="text-align: center;">cutoff</th>
+<th style="text-align: center;">cell_number</th>
+<th style="text-align: center;">gene_number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">MT</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">44419</td>
+<td style="text-align: center;">31040</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">min cell</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">44419</td>
+<td style="text-align: center;">25276</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">min gene</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">44419</td>
+<td style="text-align: center;">25276</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">max gene</td>
+<td style="text-align: center;">3000</td>
+<td style="text-align: center;">31653</td>
+<td style="text-align: center;">25276</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">max UMI</td>
+<td style="text-align: center;">10000</td>
+<td style="text-align: center;">31648</td>
+<td style="text-align: center;">25276</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="counts-and-genes-1" class="slide level2">
+<h2>Counts and Genes</h2>
+<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in
+each data, after filtering.</p>
+<p><img src="images/postfilter.QC_couts_genes.png" width="100%" /></p>
+</section>
+<section id="number-of-genes-1" class="slide level2">
+<h2>Number of Genes</h2>
+<p>This plot shows Number of Genes (Y axis) detected in each data, after
+filtering.</p>
+<p><img src="images/postfilter.QC_genes.png" width="80%" /></p>
+</section>
+<section id="top-genes-1" class="slide level2">
+<h2>Top Genes</h2>
+<p>This plot shows Top Genes and % of Total Counts in each data, after
+filtering.</p>
+<p><img src="images/postfilter.QC_topGene.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-50-genes-1" class="slide level2">
+<h2>Percentage of Top 50 Genes</h2>
+<p>This plot shows % of Total Counts of top 50 genes, after
+filtering.</p>
+<p><img src="images/postfilter.QC_pct_counts_in_top_50_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-100-genes-1" class="slide level2">
+<h2>Percentage of Top 100 Genes</h2>
+<p>This plot shows % of Total Counts of top 100 genes, after
+filtering.</p>
+<p><img src="images/postfilter.QC_pct_counts_in_top_100_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-200-genes-1" class="slide level2">
+<h2>Percentage of Top 200 Genes</h2>
+<p>This plot shows % of Total Counts of top 200 genes, after
+filtering.</p>
+<p><img src="images/postfilter.QC_pct_counts_in_top_200_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-top-500-genes-1" class="slide level2">
+<h2>Percentage of Top 500 Genes</h2>
+<p>This plot shows % of Total Counts of top 500 genes, after
+filtering.</p>
+<p><img src="images/postfilter.QC_pct_counts_in_top_500_genes.png" width="80%" /></p>
+</section>
+<section id="percentage-of-mitochondria-1" class="slide level2">
+<h2>Percentage of Mitochondria</h2>
+<p>This plot shows % of Mitochondria, after filtering.</p>
+<p><img src="images/postfilter.QC_pct_MT.png" width="80%" /></p>
+</section>
+<section id="quality-control-qc-plots" class="slide level2">
+<h2>Quality control (QC) plots</h2>
+<p>QC: top expressed genes. Top gene by TPM</p>
+</section>
+<section id="quality-control-qc-plots-1" class="slide level2">
+<h2>Quality control (QC) plots</h2>
+<p>QC: top expressed genes. Top gene by counts</p>
+</section>
+    </div>
+  </div>
+
+  <script src="yourslidedeck_name_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="yourslidedeck_name_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+        // Display a presentation progress bar
+        progress: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+        // Enable the slide overview mode
+        overview: true,
+        // Vertical centering of slides
+        center: false,
+        // Enables touch navigation on devices with touch input
+        touch: true,
+        // Turns fragments on and off globally
+        fragments: true,
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        menu: {
+   
+          numbers: true,
+    
+    
+    
+    
+    
+    
+ 
+          custom: false,
+          themes: false,
+          transitions: false
+        },
+
+
+
+        chalkboard: {
+          toggleNotesButton: true,
+          theme: 'chalkboard',
+        },
+
+        keyboard: {
+          67: function() { RevealChalkboard.toggleNotesCanvas() },    // toggle notes canvas when 'c' is pressed
+          66: function() { RevealChalkboard.toggleChalkboard() }, // toggle chalkboard when 'b' is pressed
+          46: function() { RevealChalkboard.clear() },    // clear chalkboard when 'DEL' is pressed
+           8: function() { RevealChalkboard.reset() },    // reset chalkboard data on current slide when 'BACKSPACE' is pressed
+          68: function() { RevealChalkboard.download() }, // downlad recorded chalkboard drawing when 'd' is pressed
+        },
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'yourslidedeck_name_files/reveal.js-3.3.0.1/plugin/notes/notes.js', async: true },
+          { src: 'yourslidedeck_name_files/reveal.js-3.3.0.1/plugin/search/search.js', async: true },
+          { src: 'yourslidedeck_name_files/reveal.js-3.3.0.1/plugin/zoom-js/zoom.js', async: true },
+          { src: 'yourslidedeck_name_files/reveal.js-3.3.0.1/plugin/chalkboard/chalkboard.js', async: true },
+          { src: 'yourslidedeck_name_files/reveal.js-3.3.0.1/plugin/menu/menu.js', async: true },
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>
