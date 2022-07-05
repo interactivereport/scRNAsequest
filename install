@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+appEnvName="scRNAsequest"
 
 condaPath=$(which conda)
 if [[ ${#condaPath} -lt 3 ]]; then
@@ -10,13 +11,17 @@ else
 fi
 
 src="$(dirname $0)/src"
-if { conda env list | grep '^scRNAsequest'; } >/dev/null 2>/dev/null; then conda env remove -n scRNAsequest; fi
-conda env create -f install.yml
+if { conda env list | grep "^$appEnvName"; } >/dev/null 2>/dev/null; then conda env remove -n $appEnvName; fi
+# mamba is not in the base conda
+conda create -y -n $appEnvName "python=3.8.13" "mamba=0.24.0" -c conda-forge
+#conda env create -f install.yml
 condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
-. $condaPath/etc/profile.d/conda.sh
-conda activate scRNAsequest
-echo "export condaEnv='. $condaPath/etc/profile.d/conda.sh;conda activate $CONDA_PREFIX'" > $src/.env
+source $condaPath/etc/profile.d/conda.sh
+conda activate $appEnvName
+mamba env update -f install.yml
+
+echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $CONDA_PREFIX'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
 echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
 echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
@@ -25,7 +30,10 @@ echo "export SGE_ROOT=$SGE_ROOT" >> $src/.env
 conda deactivate
 
 ## additional packages which are not available on anaconda
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade_dependencies=F)})'"'"
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula@v1.1.7",upgrade_dependencies=F)})'"'"
-# the Azimuth trys to upgrad seurat,... causing problems
-#env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth@v0.4.1",upgrade_dependencies=F)})'"'"
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade="never",upgrade_dependencies=F)})'"'"
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v1.1.7",upgrade="never",upgrade_dependencies=F)})'"'"
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.4.1",upgrade="never",upgrade_dependencies=F)})'"'"
+
+echo "If no errors above, scRNAsequest installation is successful!
+
+"

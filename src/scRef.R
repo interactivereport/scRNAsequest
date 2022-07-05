@@ -9,10 +9,10 @@ loadingPKG <- function(){
   require(sctransform)
   require(rhdf5)
   require(Matrix)
-  #require(Azimuth)
+  require(Azimuth)
   require(scales)
   options(future.globals.maxsize=3145728000,stringsAsFactors=F)
-  source(paste0(strPipePath,"/src/azimuth.R"))
+  #source(paste0(strPipePath,"/src/azimuth.R"))
 }
 ## msg -----
 MsgExit <- function(msg=""){

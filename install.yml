@@ -1,5 +1,4 @@
 ---
-name: scRNAsequest
 channels:
   - conda-forge
   - bioconda
