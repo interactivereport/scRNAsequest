@@ -62,6 +62,24 @@ The user may need to adjust the thresholds and rerun scAnalyzer to visualize the
 
 Please find an example of the bookdown report here: [E-MTAB-11115](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html){target="_blank"}
 
+## Generate a slide deck
+
+The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the **Slidedeck.Rmd** file under the /src folder and follow the steps below:
+
+```
+# Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file
+cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/
+
+# Source the environment
+src="~/scRNAsequest/src/.env"
+source $src/.env;eval $condaEnv
+
+# Run the Slidedeck script, and set the output file name using 'output_file' parameter
+Rscript -e 'rmarkdown::render("Slidedeck.Rmd", output_file="Output.html")'
+```
+
+Please download the Output.html and open in a web browser. 
+
 ## Run the full analysis
 
 After the filtering step is done, we are ready to turn on the *runAnalysis* parameter and run the full pipeline:

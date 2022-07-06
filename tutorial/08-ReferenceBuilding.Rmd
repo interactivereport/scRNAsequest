@@ -49,21 +49,26 @@ output: ~/Reference_data
 ref_h5ad_raw: /path/to/ProjectName_raw_added.h5ad # full path to the h5ad file contains raw UMI along with cell annotation and layout
 ref_batch: library_id
 # above two parameters are ignored, if a seurat object can be located in the project folder
-ref_rds:                                          #full path to the processed seurat object including SCT assay, cell annotation and layout
+ref_rds:                                          # full path to the processed seurat object including SCT assay, cell annotation and layout
 
 # All information below are required
-ref_name: Reference_data # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
-ref_link:                # The web link to the information of this reference
-ref_src: sn              # sc/"single cell" or sn/"single nuclei"
-ref_platform: 10X        # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
+ref_name: Reference_data                # Please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
+ref_link:                               # The web link to the information of this reference. For scAnalyzer processed data, you could provide a Cellxgene VIP link here.
+ref_src: sn                             # sc/"single cell" or sn/"single nuclei"
+ref_platform: 10X                       # Single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
 #list a PCA to be used for reduction (full name from VIP or one from seurat 'reductions' ) 
 # The PCA was used for the prefered layout (UMAP/tSNE)
 # For instance, if harmony was used, provide 'harmony'-like from reductions slot of seurat
 ref_PCA: pca 
-ref_label: [predicted.celltype1]        # list the annotations (case sensitive) to be used for transferring. Please check this in the data. For our case, the header is called 'predicted.celltype1'
-publish: False                          # should this reference be published (added permanently) into scAnalyzer
-overwrite: False                        # overwrite the existing scAnalyzer reference 
+ref_label: [predicted.celltype1]        # List the annotations (case sensitive) to be used for transferring. Please check this in the data. For our case, the header is called 'predicted.celltype1'
+                                        # The cell type label/header name you would like to transfer
+publish: False                          # Should this reference be published (added permanently) into scAnalyzer
+overwrite: False                        # Overwrite the existing scAnalyzer reference 
 ```
+
+For the input data, scRef can take either a h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have funished running a dataset using scAnalyzer, then you can directly use the Filename_raw_added.h5ad (not Filename_raw.h5ad file) as input, and attach its path to **ref_h5ad_raw**. Alternatively, you can provide an RDS file using **ref_rds**. Either providing **ref_h5ad_raw** or **ref_rds** would be sufficient to the pipeline.
+
+The **ref_label** is critical for label transfer if you would like to use this data as a reference in the future. It tells the program to use the cell type information in these (can be one more more) headers to perform label transfer. For a h5ad data, the easiest way is to open it using Cellxgene VIP, and identify the header that contains cell type labels, e.g. predicted.celltype1 in our case. For an RDS data, you could read it in R using the [readRDS](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS){target="_blank"} function and identify the column names containing cell type annotation.
 
 ## Submit scRef
 
@@ -82,7 +87,20 @@ Output files:
 Reference_data
     ├── init_20220630.log
     ├── refConfig.yml
-    ├── refConfig.yml.20220630.log
-    ├── ref_notFor_scAnalyzer.rds   #Output rds file for lebel transfer and downstream analysis
+    ├── refConfig.yml.20220630.log               # Output log information
+    ├── Reference_data_for_scAnalyzer.rds        # The data to use for label transfer
+    ├── ref_notFor_scAnalyzer.rds                # Output rds file for lebel transfer and downstream analysis
     ...
 ```
+
+Please also check the information in the refConfig.yml.20220630.log file, and pay attention to the last few lines:
+
+```
+...  #log of the running process omitted
+
+The private reference could be used by provide the following full path to 'ref_name' in scAnalyzer config file:
+	~/Reference_data/Reference_data_for_scAnalyzer.rds
+...
+```
+
+This indicates that the reference has been successfully generated, and it can be passed to scAnalyzer through the config.yml file. If you turned on **"publish: True"** in the **refConfig.yml**, this reference will be added to scAnalyzer, and you can use its name to refer it when running scAnalyzer.

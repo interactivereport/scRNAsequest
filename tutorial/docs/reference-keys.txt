@@ -20,6 +20,7 @@ file-hierarchy
 running-the-pipeline
 initial-scanalyzer-run
 review-the-bookdown-report
+generate-a-slide-deck
 run-the-full-analysis
 visualize-the-harmonized-results
 differential-expression-de-analysis

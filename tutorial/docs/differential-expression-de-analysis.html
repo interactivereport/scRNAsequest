@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-06-30" />
+<meta name="date" content="2022-07-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -167,8 +167,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="6.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>6.1</b> Initial scAnalyzer run</a></li>
 <li class="chapter" data-level="6.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>6.2</b> Review the bookdown report</a></li>
-<li class="chapter" data-level="6.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>6.3</b> Run the full analysis</a></li>
-<li class="chapter" data-level="6.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>6.4</b> Visualize the harmonized results</a></li>
+<li class="chapter" data-level="6.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>6.3</b> Generate a slide deck</a></li>
+<li class="chapter" data-level="6.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>6.4</b> Run the full analysis</a></li>
+<li class="chapter" data-level="6.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>6.5</b> Visualize the harmonized results</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>7</b> Differential expression (DE) analysis</a>
 <ul>
@@ -220,10 +221,10 @@ library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
 <p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="differential-expression-de-analysis.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb30-2"><a href="differential-expression-de-analysis.html#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="differential-expression-de-analysis.html#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb30-4"><a href="differential-expression-de-analysis.html#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="differential-expression-de-analysis.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb31-2"><a href="differential-expression-de-analysis.html#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="differential-expression-de-analysis.html#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb31-4"><a href="differential-expression-de-analysis.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step may take a few hours to run. The output files will be generated in the directory:</p>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4
