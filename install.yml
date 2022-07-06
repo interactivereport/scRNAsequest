@@ -2,6 +2,7 @@
 channels:
   - conda-forge
   - bioconda
+  - r
   - defaults
 dependencies:
   - r-base=4.0.5
@@ -56,4 +57,3 @@ dependencies:
   - multicore-tsne=0.1
   - r-bookdown=0.26
   - r-knitr=1.39
-  
