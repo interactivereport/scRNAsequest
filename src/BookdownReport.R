@@ -4,6 +4,7 @@
 #By running BookdownReport.R, a bookdown report will be generated in the working directory
 
 args = commandArgs(trailingOnly=T)
+Sys.setenv(HOME = tempdir())
 
 if(length(args)<1){
   message("'scAnalyzer' can be used to create a config file for an single-cell RNA-seq project")
