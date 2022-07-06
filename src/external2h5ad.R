@@ -164,7 +164,7 @@ saveHdf5 <- function(X,strH5){
 }
 ## seperated files (express/meta/reduction) to h5ad ------
 createH5ad <- function(config){
-  strRDS <- paste0(config$output,config$prefix,".rds")
+  strRDS <- paste0(config$output,"/",config$prefix,".rds")
   if(file.exists(strRDS)){
     message("\n*** Using existing processed data found: ",strRDS,"! ***")
     D <- readRDS(strRDS)
