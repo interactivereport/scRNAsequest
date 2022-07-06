@@ -245,13 +245,19 @@ min.features: 50         #filtering cells by minimal genes
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed</code></pre>
 <p>The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.</p>
-<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html" target="_blank">E-MTAB-11115</a></p>
+<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/bookdown/index.html" target="_blank">E-MTAB-11115 bookdown</a></p>
 </div>
 <div id="generate-a-slide-deck" class="section level2" number="6.3">
 <h2><span class="header-section-number">6.3</span> Generate a slide deck</h2>
 <p>The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the <strong>Slidedeck.Rmd</strong> file under the /src folder and follow the steps below:</p>
-<pre><code># Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file
-cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/
+<pre><code># create a new directory inside the project, and link the existed files and folder:
+cd ~/E-MTAB-11115/processing/
+mkdir Slidedeck &amp;&amp; cd Slidedeck
+ln -s ../BookdownReport/images
+ln -s ../BookdownReport/bookdown.info.txt
+
+# Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file
+cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/Slidedeck
 
 # Source the environment
 src=&quot;~/scRNAsequest/src/.env&quot;
@@ -259,7 +265,8 @@ source $src/.env;eval $condaEnv
 
 # Run the Slidedeck script, and set the output file name using &#39;output_file&#39; parameter
 Rscript -e &#39;rmarkdown::render(&quot;Slidedeck.Rmd&quot;, output_file=&quot;Output.html&quot;)&#39;</code></pre>
-<p>Please download the Output.html and open in a web browser.</p>
+<p>Please download the whole Slidedeck and open the Output.html file in a web browser.</p>
+<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html" target="_blank">E-MTAB-11115 slidedeck</a></p>
 </div>
 <div id="run-the-full-analysis" class="section level2" number="6.4">
 <h2><span class="header-section-number">6.4</span> Run the full analysis</h2>

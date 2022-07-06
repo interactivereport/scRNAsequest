@@ -43,7 +43,6 @@ scRef ~/Reference_data
 After the run, a config file, **refConfig.yml**, and a log file will be generated in the directory. The **refConfig.yml** is a template of the following scRef run, passing critical parameters to the pipeline. The **refConfig.yml** file will be same as this [template](https://github.com/interactivereport/scRNAsequest/blob/main/src/ref.yml){target="_blank"}, but the output directory will be yours. Here is an example after filling in the configuration file:
 
 ```
-# please check wiki page for the details
 output: ~/Reference_data
 # the following is normally located in the same folder of celldepot hosting h5ad files
 ref_h5ad_raw: /path/to/ProjectName_raw_added.h5ad # full path to the h5ad file contains raw UMI along with cell annotation and layout
@@ -56,17 +55,18 @@ ref_name: Reference_data                # Please provide a unique name prefer to
 ref_link:                               # The web link to the information of this reference. For scAnalyzer processed data, you could provide a Cellxgene VIP link here.
 ref_src: sn                             # sc/"single cell" or sn/"single nuclei"
 ref_platform: 10X                       # Single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
-#list a PCA to be used for reduction (full name from VIP or one from seurat 'reductions' ) 
-# The PCA was used for the prefered layout (UMAP/tSNE)
-# For instance, if harmony was used, provide 'harmony'-like from reductions slot of seurat
-ref_PCA: pca 
+#list a reduction to be used (at least 50 dimensions full name from VIP or one from seurat 'reductions' ) 
+# details: https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
+# this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
+# For instance, if harmony was prefered layout then providing either 'harmony' (50 dimention) or 'harmony-PCA'
+ref_reduction: pca 
 ref_label: [predicted.celltype1]        # List the annotations (case sensitive) to be used for transferring. Please check this in the data. For our case, the header is called 'predicted.celltype1'
                                         # The cell type label/header name you would like to transfer
 publish: False                          # Should this reference be published (added permanently) into scAnalyzer
 overwrite: False                        # Overwrite the existing scAnalyzer reference 
 ```
 
-For the input data, scRef can take either a h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have funished running a dataset using scAnalyzer, then you can directly use the Filename_raw_added.h5ad (not Filename_raw.h5ad file) as input, and attach its path to **ref_h5ad_raw**. Alternatively, you can provide an RDS file using **ref_rds**. Either providing **ref_h5ad_raw** or **ref_rds** would be sufficient to the pipeline.
+For the input data, scRef can take either a h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have finished running a dataset using scAnalyzer, then you can directly use the Filename_raw_added.h5ad (not Filename_raw.h5ad file) as input, and attach its path to **ref_h5ad_raw**. Alternatively, you can provide an RDS file using **ref_rds**. Either providing **ref_h5ad_raw** or **ref_rds** would be sufficient to the pipeline.
 
 The **ref_label** is critical for label transfer if you would like to use this data as a reference in the future. It tells the program to use the cell type information in these (can be one more more) headers to perform label transfer. For a h5ad data, the easiest way is to open it using Cellxgene VIP, and identify the header that contains cell type labels, e.g. predicted.celltype1 in our case. For an RDS data, you could read it in R using the [readRDS](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS){target="_blank"} function and identify the column names containing cell type annotation.
 

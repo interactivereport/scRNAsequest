@@ -60,15 +60,21 @@ highGene.cutoff: 3000    #any cells with a higher number of detected genes to be
 
 The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.
 
-Please find an example of the bookdown report here: [E-MTAB-11115](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/index.html){target="_blank"}
+Please find an example of the bookdown report here: [E-MTAB-11115 bookdown](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/bookdown/index.html){target="_blank"}
 
 ## Generate a slide deck
 
 The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the **Slidedeck.Rmd** file under the /src folder and follow the steps below:
 
 ```
+# create a new directory inside the project, and link the existed files and folder:
+cd ~/E-MTAB-11115/processing/
+mkdir Slidedeck && cd Slidedeck
+ln -s ../BookdownReport/images
+ln -s ../BookdownReport/bookdown.info.txt
+
 # Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file
-cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/
+cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/Slidedeck
 
 # Source the environment
 src="~/scRNAsequest/src/.env"
@@ -78,7 +84,9 @@ source $src/.env;eval $condaEnv
 Rscript -e 'rmarkdown::render("Slidedeck.Rmd", output_file="Output.html")'
 ```
 
-Please download the Output.html and open in a web browser. 
+Please download the whole Slidedeck and open the Output.html file in a web browser.
+
+Please find an example of the bookdown report here: [E-MTAB-11115 slidedeck](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html){target="_blank"}
 
 ## Run the full analysis
 
