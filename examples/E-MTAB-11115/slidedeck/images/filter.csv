@@ -1,0 +1,6 @@
+Filter,cutoff,cell_number,gene_number
+MT,20.000000,44419,31040
+min cell,3,44419,25276
+min gene,50,44419,25276
+max gene,3000,31653,25276
+max UMI,10000,31648,25276
