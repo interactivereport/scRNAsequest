@@ -26,7 +26,7 @@ knitr::opts_chunk$set(fig.width=6, fig.height=5, dev='svg', echo=FALSE, warning=
 ```{r, echo=FALSE}
 #Retrieve information from the previously saved bookdown.info.txt file
 PWD <- system("pwd", intern = TRUE)
-Info <- paste0(PWD, "/BookdownTemplates/bookdown.info.txt")
+Info <- paste0(PWD, "/BookdownReport/bookdown.info.txt")
 Data <- read.table(Info)
 Source_code <- Data$V2[1]
 Working_dir <- Data$V2[2]
