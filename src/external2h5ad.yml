@@ -15,7 +15,7 @@ annotation: [] # full path to the cell annotation file, first column is the cell
 annotationUse: [] # the column names in the annotation file to be extracted for h5ad, empty list means all columns
 sample_column: #one column header from annotation file, if the one expression file needs to be splited into each sample
 # cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
-reduction: #key 'files' required but other keys can be removed or added new ones, keys will be used in h5ad
+reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
   files: [] #full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
   umap: [] # column headers from layout file to be used
   tsne: [] # column headers from layout file to be used

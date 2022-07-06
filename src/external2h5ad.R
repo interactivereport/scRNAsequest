@@ -50,7 +50,8 @@ MsgComplete <- function(strh5ad){
   message("2. Fill the 'Create Projects' page, and click 'Save'")
 }
 MsgPower <- function(){
-  message("\nPowered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]")
+  sysConfig <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))
+  message("\nPowered by ",sysConfig$powerby)
   message("------------")
 }
 
@@ -60,15 +61,17 @@ initConfig <- function(strD){
   dir.create(strD,showWarnings=F)
   config <- readLines(file.path(strPipePath,"src/external2h5ad.yml"))
   config <- gsub("OUTPUT_DIR",normalizePath(strD),config)
-  writeLines(config,file.path(strD,"sc2celldepot.config"))
-  message("Please complete the config file @",file.path(strD,"sc2celldepot.config"))
+  writeLines(config,file.path(strD,"sc2celldepot.yml"))
+  message("Please complete the config file @",file.path(strD,"sc2celldepot.yml"))
 }
 
 # process --------
 process2H5ad <- function(strConfig){
-  loadingPKG()
+  suppressMessages(suppressWarnings(loadingPKG()))
   config <- yaml::read_yaml(strConfig)
+  if(is.null(config$prefix)||nchar(config$prefix)<2) MsgExit(paste("Please specify the prefix of result h5ad file"))
   if(!is.null(config$seuratObj)) return(seurat2h5ad(config))
+  return(createH5ad(config))
   
 }
 ## seurat to h5ad ------
@@ -90,7 +93,7 @@ transformH5ad <- function(D,strOut,prefix,expAssay,umiAssay=NULL,selMeta=NULL){
   strTemp <- file.path(strOut,paste0("tmp",sample(100000,1)))
   if(!dir.exists(strTemp)) dir.create(strTemp)
   strH5ad <- file.path(strOut,paste0(prefix,".h5ad"))
-  message("Trasforming ...")
+  message("\tH5ad trasforming ...")
   a <- tryCatch(saveH5AD(D,strTemp,strH5ad,
                          selAssay=expAssay,
                          umiAssay=umiAssay,
@@ -161,24 +164,33 @@ saveHdf5 <- function(X,strH5){
 }
 ## seperated files (express/meta/reduction) to h5ad ------
 createH5ad <- function(config){
-  message("Creating h5ad from expression and cell meta inforamtion")
-  checkConfig(config)
-  meta <- getData(config$annotation)
-  selMeta <- checkUse(meta,config$annotationUse)
-  X <- getX(config$expression)
-  reduction <- getData(config$reduction$files)
-  D <- createSeuratObj(X,meta,selMeta,config)
-  
-  rawAssay <- NULL
-  expAssay <- "RNA"
-  if(config$dataUMI){
-    if(is.null(config$sample_column))
-      config$sample_column <- "orig.ident"
-    D <- processSCT(D,config$sample_column)
-    rawAssay <- "RNA"
-    expAssay <- "SCT"
+  strRDS <- paste0(config$output,config$prefix,".rds")
+  if(file.exists(strRDS)){
+    message("\n*** Using existing processed data found: ",strRDS,"! ***")
+    D <- readRDS(strRDS)
+  }else{
+    message("Creating h5ad from expression and cell meta inforamtion")
+    checkConfig(config)
+    message("\tObtain meta information")
+    meta <- getData(config$annotation)
+    selMeta <- checkUse(meta,config$annotationUse)
+    X <- getX(config$expression)
+    reduction <- getData(config$reduction$files)
+    D <- createSeuratObj(X,meta,selMeta,config)
+    
+    rawAssay <- NULL
+    expAssay <- "RNA"
+    if(config$dataUMI){
+      if(is.null(config$sample_column))
+        config$sample_column <- "orig.ident"
+      D <- processSCT(D,config$sample_column)
+      rawAssay <- "RNA"
+      expAssay <- "SCT"
+    }
+    D <- processLayout(D,reduction,config)
+    saveRDS(D,file=strRDS)
   }
-  D <- processLayout(D,reduction,config)
+  
   return(transformH5ad(D,config$output,config$prefix,
                        expAssay,rawAssay))
 }
@@ -186,15 +198,21 @@ checkConfig <- function(config){
   message("")
   if(is.null(config$expression) || length(config$expression)==0) MsgExit(paste("Missing Expression file"))
   if(is.null(config$annotation) || length(config$annotation)==0) MsgExit(paste("Missing cell annotation file"))
-  for(one in config$expression)
+  for(one in config$expression){
+    #message(one)
     if(!file.exists(one)) MsgExit(paste("Missing Expression file:\n",one))
-  for(one in config$annotation)
+  }
+    
+  for(one in config$annotation){
+    #message(one)
     if(!file.exists(one)) MsgExit(paste("Missing Expression file:\n",one))
-  if(!is.null(config$reduction) && length(config$annotation)>0)
-    for(one in config$reduction)
+  }
+  if(!is.null(config$reduction$files) && length(config$reduction$files)>0)
+    for(one in config$reduction$files)
       if(!file.exists(one)) MsgExit(paste("Missing reduction file:\n",one))
 }
 getX <- function(strFs){
+  message("\tObtain expression")
   X <- list()
   for(one in strFs){
     if(dir.exists(one)){
@@ -216,29 +234,34 @@ getData <- function(strFs){
   }
   return(meta)
 }
-checkUse(meta,selMeta){
+checkUse <- function(meta,selMeta){
   comm <- Reduce(intersect,lapply(meta,colnames))
-  if(length(comm)) MsgExit(paste("No common columns among all annotation files"))
-  if(is.null(selMeta)) return(comm)
+  if(length(comm)==0) MsgExit(paste("No common columns among all annotation files"))
+  if(is.null(selMeta) || length(selMeta)==0) return(comm)
   selMeta <- interaction(selMeta,comm)
-  if(length(selMeta)) MsgExit(paste("No sepesified annotations are common columns among all annotation files"))
+  if(length(selMeta)==0) MsgExit(paste("No sepesified annotations are common columns among all annotation files"))
   return(selMeta)
 }
 createSeuratObj <- function(X,meta,selMeta,config){
-  message("Creating seurat object from expression and annotation files...")
+  #save(X,meta,selMeta,config,file="data.RData")
+  message("\tCreating seurat object from expression and annotation files...")
   meta <- lapply(meta, function(x)return(x[,selMeta]))
   if(length(X)==length(meta)){
     Dlist <- list()
     for(i in 1:length(X)){
       cID <- intersect(colnames(X[[i]]),rownames(meta[[i]]))
-      message("\t\t",length(cID)," cells overlapped between expression and annotation for ",basenames(config$expression[i]))
+      message("\t\t",length(cID)," cells overlapped between expression and annotation for ",basename(config$expression[i]))
       if(length(cID)<10){
-        message("\t\t\tskip!")
+        message("\t\t\tLess than 10 cells! SKIP!")
         next
       }
       Dlist[[i]] <- CreateSeuratObject(counts=X[[i]][,cID],
-                                       project=basenames(config$expression[i]),
-                                       meta.data=meta[[i]][cID,])
+                                       project=basename(config$expression[i]),
+                                       meta.data=meta[[i]][cID,,drop=F])
+      #UMI <- X[[i]][,colnames(X[[i]])%in%cID]
+      #Dlist[[i]] <- CreateSeuratObject(counts=UMI,
+      #                                 project=basename(config$expression[i]),
+      #                                 meta.data=meta[[i]][colnames(UMI),,drop=F])
     }
     if(is.null(Dlist)) MsgExit(paste("Too few matching cell IDs"))
     if(length(Dlist)==1){
@@ -258,13 +281,13 @@ createSeuratObj <- function(X,meta,selMeta,config){
       MsgExit(paste("Too few matching cell IDs"))
     }
     D <- CreateSeuratObject(counts=X[,cID],
-                            project=basenames(config$expression[i]),
+                            project=basename(config$expression[i]),
                             meta.data=meta[cID,])
   }
   return(D)
 }
 processSCT <- function(D,batch=NULL){
-  message("Using SCT to normalize and scale the data ...")
+  message("\tUsing SCT to normalize and scale the data ...")
   Dmedian <- median(colSums(D@assays$RNA@counts))
   if(!is.null(batch)) Dlist <- SplitObject(D,split.by=batch)
   else Dlist <- list(D)
@@ -290,7 +313,7 @@ processSCT <- function(D,batch=NULL){
   return(D)
 }
 processLayout <- function(D,reduction,config){
-  message("Processing reduction ...")
+  message("\tobtain the layout reduction")
   if(length(reduction)==0){
     message()
     if(length(VariableFeatures(D))<50) D <- FindVariableFeatures(D, nfeatures = 3000)
