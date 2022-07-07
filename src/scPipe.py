@@ -1,4 +1,4 @@
-import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3
+import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3, glob
 import pandas as pd
 from datetime import datetime
 import scanpy as sc
@@ -12,6 +12,7 @@ sc.set_figure_params(vector_friendly=True, dpi_save=300)
 strPipePath=""
 UMIcol="h5path"
 ANNcol="metapath"
+IntronExon="intron_exon_count_path"
 batchKey="library_id"
 Rmarkdown="Rmarkdown"
 beRaster=True
@@ -201,7 +202,7 @@ def initProject(strDNAnexus):
     initMsg(strConfig)
     exit()
 def initMeta(strInput):
-  print("Procing sample meta information ...")
+  print("Processing sample meta information ...")
   strMeta = "%s/samplesheet.tsv"%strInput
   if not os.path.isfile(strMeta):
     return None
@@ -214,11 +215,30 @@ def initMeta(strInput):
     if not 'notMeta' in sysConfig.keys():
       sysConfig['notMeta'] = []
     meta = meta[[one for one in meta.columns if not one in sysConfig['notMeta']]].dropna(1,'all')
+  # if intron/exon count files are available
+  strInEx = findIntronExon(list(meta[config["sample_name"]]),strInput)
+  if strInEx is not None:
+    meta.insert(0,IntronExon,strInEx)
+
   meta.insert(0,UMIcol,["%s/%s.filtered_feature_bc_matrix.h5"%(strInput,one) for one in meta[config["sample_name"]]])
+  
   for oneH5 in meta[UMIcol]:
     if not os.path.isfile(oneH5):
       Exit("The UMI h5 file %s does not exist, please correct the sample sheet"%oneH5)
   return meta
+def findIntronExon(sNames,strInput):
+  sFile = []
+  n = 0
+  for i in sNames:
+    oneF = glob.glob("%s/%s.intron_exon_UMI*"%(strInput,i))
+    if len(oneF)>0:
+      n +=1
+      sFile.append(oneF[0])
+    else:
+      sFile.append("")
+  if n>0:
+    return(sFile)
+  return(None)
 def initSave(meta,strInput):
   print("Saving the initialized project ...")
   ix = 0
@@ -432,6 +452,11 @@ def getData(meta,sID):
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
+    
+    ## add intro/exon counts/ratio if exists
+    if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
+      IE = getIntronExon(meta[IntronExon][i],adata.obs_names)
+      adata.obs = adata.obs.merge(IE,left_index=True,right_index=True)
 
     if ANNcol in meta.columns:
       annMeta = pd.read_csv(meta[ANNcol][i],index_col=0)
@@ -453,6 +478,15 @@ def getData(meta,sID):
   adata.var = adata.var.iloc[:,varInx]
   adata.var.columns=[varCol[i] for i in varInx]
   return(adata)
+def getIntronExon(strF,cID):
+  IEcount = pd.read_csv(strF,sep=None,index_col=0)
+  if len(list(set(IEcount.index) & set(cID)))<len(cID):
+    IEcount.index = list(IEcount.index+"-1")
+  IEcount = IEcount.loc[cID,:]
+  IErate = IEcount.apply(lambda x:x/sum(x),axis=1)
+  IErate.columns = [a.replace("count","rate") for a in IErate.columns]
+  IE = IEcount.merge(IErate,left_index=True,right_index=True)
+  return(IE)
 def preprocess(adata,config):
   print("preprocessing ...")
   sc.pp.calculate_qc_metrics(adata, inplace=True)
