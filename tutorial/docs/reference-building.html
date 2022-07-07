@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 8 Reference Building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 8 Reference Building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 8 Reference Building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,14 +16,14 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 8 Reference Building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
 
 
 
-<meta name="date" content="2022-07-06" />
+<meta name="date" content="2022-07-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="differential-expression-de-analysis.html"/>
-
+<link rel="next" href="celldepot-publishing.html"/>
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -176,10 +176,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
 <li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference Building</a>
+<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference building</a>
 <ul>
 <li class="chapter" data-level="8.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>8.1</b> Initialize scRef</a></li>
 <li class="chapter" data-level="8.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>8.2</b> Submit scRef</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>9</b> CellDepot publishing</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>9.1</b> Initialize sc2celldepot</a></li>
+<li class="chapter" data-level="9.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#publish-to-celldepot"><i class="fa fa-check"></i><b>9.2</b> Publish to CellDepot</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -201,7 +206,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="reference-building" class="section level1" number="8">
-<h1><span class="header-section-number">Chapter 8</span> Reference Building</h1>
+<h1><span class="header-section-number">Chapter 8</span> Reference building</h1>
 <p>Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.</p>
 <p>By running the following command, we can see the manual page of the reference generator, scRef:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="reference-building.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
@@ -270,8 +275,8 @@ overwrite: False                        # Overwrite the existing scAnalyzer refe
     ├── init_20220630.log
     ├── refConfig.yml
     ├── refConfig.yml.20220630.log               # Output log information
-    ├── Reference_data_for_scAnalyzer.rds        # The data to use for label transfer
-    ├── ref_notFor_scAnalyzer.rds                # Output rds file for lebel transfer and downstream analysis
+    ├── Reference_data_for_scAnalyzer.rds        # The data to use for label transfer and downstream analysis
+    ├── ref_notFor_scAnalyzer.rds                # Output rds file NOT for lebel transfer
     ...</code></pre>
 <p>Please also check the information in the refConfig.yml.20220630.log file, and pay attention to the last few lines:</p>
 <pre><code>...  #log of the running process omitted
@@ -288,8 +293,8 @@ The private reference could be used by provide the following full path to &#39;r
           </div>
         </div>
       </div>
-<a href="differential-expression-de-analysis.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="differential-expression-de-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="celldepot-publishing.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

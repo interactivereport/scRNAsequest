@@ -84,7 +84,7 @@ source $src/.env;eval $condaEnv
 Rscript -e 'rmarkdown::render("Slidedeck.Rmd", output_file="Output.html")'
 ```
 
-Please download the whole Slidedeck and open the Output.html file in a web browser.
+Please download the whole Slidedeck and open the **Output.html** file in a web browser.
 
 Please find an example of the bookdown report here: [E-MTAB-11115 slidedeck](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html){target="_blank"}
 

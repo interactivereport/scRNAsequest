@@ -1,4 +1,4 @@
-# Reference Building
+# Reference building
 
 Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.
 
@@ -88,8 +88,8 @@ Reference_data
     ├── init_20220630.log
     ├── refConfig.yml
     ├── refConfig.yml.20220630.log               # Output log information
-    ├── Reference_data_for_scAnalyzer.rds        # The data to use for label transfer
-    ├── ref_notFor_scAnalyzer.rds                # Output rds file for lebel transfer and downstream analysis
+    ├── Reference_data_for_scAnalyzer.rds        # The data to use for label transfer and downstream analysis
+    ├── ref_notFor_scAnalyzer.rds                # Output rds file NOT for lebel transfer
     ...
 ```
 

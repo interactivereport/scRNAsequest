@@ -1,0 +1,106 @@
+# CellDepot publishing
+
+[CellDepot](https://www.sciencedirect.com/science/article/pii/S0022283621006665){target="_blank"} is a comprehensive data management platform for single-cell RNA-seq datasets. Publishing to CellDepot allows easy navigation and visualization of the data, and facilitates big data deposition. Thus, scRNASequest pipeline offers a function to publish a dataset to CellDepot using **sc2celldepot**. This workflow will use the existing cell type labels and create **h5ad** and **RDS** that are compatible with the CellDepot platform. If you are interested in hosting any public datasets withour re-analyzing it using the full scRNAsequest pipeline (e.g. filtering, harmonization, DE analysis), you can easily run **sc2celldepot** to convert and publish it on CellDepot.
+
+By running the following command, we can see the manual page of the script:
+
+```{bash, eval=FALSE}
+***** 2022-07-07 11:10:44 *****
+###########
+## ExpressionAnalysis: https://github.com/interactivereport/scRNAsequest.git
+## Pipeline Path: /camhpc/ngs/tools/scRNAsequest
+## Pipeline Date: 2022-07-06 17:43:20 -0400
+## git HEAD: c9f0ba5e860c269fb632bee22ef312371e0e3143
+###########
+
+
+Loading resources
+
+sc2celldepot /path/to/a/output/folder === or === sc2celldepot /path/to/a/config/file
+
+The folder will be created if it does not exist.
+The data config file will be generated automatically when a path is provided
+
+Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
+------------
+```
+
+## Initialize sc2celldepot
+
+Running **sc2celldepot** by providing a working directory will initiate the project and generate a template of config file. The config file template can be found: [template](https://github.com/interactivereport/scRNAsequest/blob/main/src/external2h5ad.yml){target="_blank"}.
+
+First, we create a new directory under the project. Then we run the **sc2celldepot** command:
+
+```
+mkdir ~/E-MTAB-11115/CellDepot_publish
+sc2celldepot ~/E-MTAB-11115/CellDepot_publish
+
+E-MTAB-11115/
+    ├── data
+        ├── 5705STDY8058280.annotation.csv           (optional)
+        ├── 5705STDY8058280.metrics_summary.csv      (optional)
+        ├── 5705STDY8058280.raw_feature_bc_matrix.h5
+        ...
+    ├── processing
+        ├── config.yml
+        ...
+    └── CellDepot_publish
+        └── sc2celldepot.yml
+```
+
+Here is an example after filling in the configuration **sc2celldepot.yml** file:
+
+```
+## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
+output: ~/E-MTAB-11115/CellDepot_publish
+prefix: E-MTAB-11115                      # the prefix of the file name of the h5ad
+# seurat RDS is avaiable, otherwise please move to next section
+seuratObj:                                # the full path to the seurat RDS file with SCT & RNA assay along with meta.data and reduction
+seuratUMI: RNA                            # the name of the assay stores raw UMI
+seuratSCT: SCT                            # the name of the assay stores SCT
+seuratMeta: []                            # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
+# Expression when the seurat RDS is not available (row gene/column cell)
+# if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
+expression: [~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5] 
+                                          # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by ','
+dataUMI: True                             # if the above expression is UMI, if the value in expression file should be used directly, please set "False"
+# cell annotation (cell intersection will be used, first column is the cell ID)
+annotation: [~/E-MTAB-11115/data/5705STDY8058280_annotation.csv,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv]                             # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
+annotationUse: []                         # the column names in the annotation file to be extracted for h5ad, empty list means all columns
+sample_column:                            # one column header from annotation file, if the one expression file needs to be splited into each sample
+# cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
+reduction:                                # key 'files' required but other keys can be removed or added new ones, keys will be used in h5ad
+  files: []                               # full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
+  umap: []                                # column headers from layout file to be used
+  tsne: []                                # column headers from layout file to be used
+  pca: []                                 # column headers from layout file to be used (can be more than 2 dimentions though only first two will be shown in VIP)
+```
+
+The **expression** and **annotation** information are critical to create the project.
+
+## Publish to CellDepot
+
+After preparing the **sc2celldepot.yml** file, we are ready to run the pipeline by the following command:
+
+```
+sc2celldepot ~/E-MTAB-11115/CellDepot_publish/sc2celldepot.yml
+```
+
+This workflow will generate the output files in the working directory, **CellDepot_publish**:
+
+The output prefix is determined by the **prefix** parameter in the sc2celldepot.yml file.
+
+```
+E-MTAB-11115/
+    ├── data
+        ...
+    ├── processing
+        ...
+    └── CellDepot_publish
+        ├── E-MTAB-11115.h5ad
+        ├── E-MTAB-11115.raw_added.h5ad
+        ├── E-MTAB-11115.rds
+        └── sc2celldepot.yml
+```
+
+Finally, copy the **E-MTAB-11115.h5ad** to the [CellDepot](https://github.com/interactivereport/CellDepot){target="_blank"} folder and follow the [instructions](https://interactivereport.github.io/CellDepot/bookdown/docs/){target="_blank"} for publishing it.

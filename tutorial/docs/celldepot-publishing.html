@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 9 CellDepot publishing | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 9 CellDepot publishing | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 9 CellDepot publishing | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 9 CellDepot publishing | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="installation.html"/>
+<link rel="prev" href="reference-building.html"/>
+
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -205,34 +205,99 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="introduction" class="section level1" number="2">
-<h1><span class="header-section-number">Chapter 2</span> Introduction</h1>
-<p>scRNASequest is a semi-automated single-cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:</p>
-<ul>
-<li><p>Pre-processing from raw single-cell RNA sequencing data,</p></li>
-<li><p>Batch correction by one or multiple harmonization methods,</p></li>
-<li><p>Reference-dataset-based cell type label transfer and embedding projection,</p></li>
-<li><p>Multi-sample multi-condition single-cell level differential gene expression analysis</p></li>
-<li><p>Seamless integration with <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">cellxgene VIP</a> for visualization and with <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> for data hosting and sharing by generating a compatible h5ad file. Users have the option to run it on a local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.</p></li>
-</ul>
-<p>This pipeline contains two main programs:</p>
-<ul>
-<li><p><strong>scAnalyzer</strong></p>
-<p>This is the main script in scRNASequest for single-cell data processing and analysis.</p>
-<p>Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration. Moreover, scAnalyzer is embedded with a Bookdown report generator, named <strong>scReport</strong>, which can produce a user-friendly, well-structured quality control report after each run.</p></li>
-<li><p><strong>scRef</strong></p>
-<p>scRef generates a reference dataset for label transfer.</p>
-<p>For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanent path.</p></li>
-</ul>
+<div id="celldepot-publishing" class="section level1" number="9">
+<h1><span class="header-section-number">Chapter 9</span> CellDepot publishing</h1>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0022283621006665" target="_blank">CellDepot</a> is a comprehensive data management platform for single-cell RNA-seq datasets. Publishing to CellDepot allows easy navigation and visualization of the data, and facilitates big data deposition. Thus, scRNASequest pipeline offers a function to publish a dataset to CellDepot using <strong>sc2celldepot</strong>. This workflow will use the existing cell type labels and create <strong>h5ad</strong> and <strong>RDS</strong> that are compatible with the CellDepot platform. If you are interested in hosting any public datasets withour re-analyzing it using the full scRNAsequest pipeline (e.g. filtering, harmonization, DE analysis), you can easily run <strong>sc2celldepot</strong> to convert and publish it on CellDepot.</p>
+<p>By running the following command, we can see the manual page of the script:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb42-1"><a href="celldepot-publishing.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-07-07 11:10:44 <span class="pp">*****</span></span>
+<span id="cb42-2"><a href="celldepot-publishing.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb42-3"><a href="celldepot-publishing.html#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co">## ExpressionAnalysis: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb42-4"><a href="celldepot-publishing.html#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /camhpc/ngs/tools/scRNAsequest</span></span>
+<span id="cb42-5"><a href="celldepot-publishing.html#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-07-06 17:43:20 -0400</span></span>
+<span id="cb42-6"><a href="celldepot-publishing.html#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: c9f0ba5e860c269fb632bee22ef312371e0e3143</span></span>
+<span id="cb42-7"><a href="celldepot-publishing.html#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb42-8"><a href="celldepot-publishing.html#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="celldepot-publishing.html#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="celldepot-publishing.html#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb42-11"><a href="celldepot-publishing.html#cb42-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-12"><a href="celldepot-publishing.html#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> /path/to/a/output/folder === or === sc2celldepot /path/to/a/config/file</span>
+<span id="cb42-13"><a href="celldepot-publishing.html#cb42-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-14"><a href="celldepot-publishing.html#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder will be created if it does not exist.</span>
+<span id="cb42-15"><a href="celldepot-publishing.html#cb42-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> data config file will be generated automatically when a path is provided</span>
+<span id="cb42-16"><a href="celldepot-publishing.html#cb42-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-17"><a href="celldepot-publishing.html#cb42-17" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
+<span id="cb42-18"><a href="celldepot-publishing.html#cb42-18" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div id="initialize-sc2celldepot" class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> Initialize sc2celldepot</h2>
+<p>Running <strong>sc2celldepot</strong> by providing a working directory will initiate the project and generate a template of config file. The config file template can be found: <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/external2h5ad.yml" target="_blank">template</a>.</p>
+<p>First, we create a new directory under the project. Then we run the <strong>sc2celldepot</strong> command:</p>
+<pre><code>mkdir ~/E-MTAB-11115/CellDepot_publish
+sc2celldepot ~/E-MTAB-11115/CellDepot_publish
 
+E-MTAB-11115/
+    ├── data
+        ├── 5705STDY8058280.annotation.csv           (optional)
+        ├── 5705STDY8058280.metrics_summary.csv      (optional)
+        ├── 5705STDY8058280.raw_feature_bc_matrix.h5
+        ...
+    ├── processing
+        ├── config.yml
+        ...
+    └── CellDepot_publish
+        └── sc2celldepot.yml</code></pre>
+<p>Here is an example after filling in the configuration <strong>sc2celldepot.yml</strong> file:</p>
+<pre><code>## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
+output: ~/E-MTAB-11115/CellDepot_publish
+prefix: E-MTAB-11115                      # the prefix of the file name of the h5ad
+# seurat RDS is avaiable, otherwise please move to next section
+seuratObj:                                # the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction
+seuratUMI: RNA                            # the name of the assay stores raw UMI
+seuratSCT: SCT                            # the name of the assay stores SCT
+seuratMeta: []                            # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
+# Expression when the seurat RDS is not available (row gene/column cell)
+# if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
+expression: [~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5] 
+                                          # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;
+dataUMI: True                             # if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;
+# cell annotation (cell intersection will be used, first column is the cell ID)
+annotation: [~/E-MTAB-11115/data/5705STDY8058280_annotation.csv,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv]                             # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
+annotationUse: []                         # the column names in the annotation file to be extracted for h5ad, empty list means all columns
+sample_column:                            # one column header from annotation file, if the one expression file needs to be splited into each sample
+# cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
+reduction:                                # key &#39;files&#39; required but other keys can be removed or added new ones, keys will be used in h5ad
+  files: []                               # full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
+  umap: []                                # column headers from layout file to be used
+  tsne: []                                # column headers from layout file to be used
+  pca: []                                 # column headers from layout file to be used (can be more than 2 dimentions though only first two will be shown in VIP)</code></pre>
+<p>The <strong>expression</strong> and <strong>annotation</strong> information are critical to create the project.</p>
+</div>
+<div id="publish-to-celldepot" class="section level2" number="9.2">
+<h2><span class="header-section-number">9.2</span> Publish to CellDepot</h2>
+<p>After preparing the <strong>sc2celldepot.yml</strong> file, we are ready to run the pipeline by the following command:</p>
+<pre><code>sc2celldepot ~/E-MTAB-11115/CellDepot_publish/sc2celldepot.yml</code></pre>
+<p>This workflow will generate the output files in the working directory, <strong>CellDepot_publish</strong>:</p>
+<p>The output prefix is determined by the <strong>prefix</strong> parameter in the sc2celldepot.yml file.</p>
+<pre><code>E-MTAB-11115/
+    ├── data
+        ...
+    ├── processing
+        ...
+    └── CellDepot_publish
+        ├── E-MTAB-11115.h5ad
+        ├── E-MTAB-11115.raw_added.h5ad
+        ├── E-MTAB-11115.rds
+        └── sc2celldepot.yml</code></pre>
+<p>Finally, copy the <strong>E-MTAB-11115.h5ad</strong> to the <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> folder and follow the <a href="https://interactivereport.github.io/CellDepot/bookdown/docs/" target="_blank">instructions</a> for publishing it.</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="installation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="reference-building.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -263,7 +328,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/02-Introduction.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/09-PublishCellDepot.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -271,7 +336,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/02-Introduction.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/09-PublishCellDepot.Rmd",
 "text": null
 },
 "download": null,

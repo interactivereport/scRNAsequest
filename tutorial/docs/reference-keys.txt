@@ -29,3 +29,6 @@ example-2
 reference-building
 initialize-scref
 submit-scref
+celldepot-publishing
+initialize-sc2celldepot
+publish-to-celldepot
