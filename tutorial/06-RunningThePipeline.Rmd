@@ -47,16 +47,18 @@ gene_group:
     startwith: ["MT-","Mt-","mt-"]
     cutoff: 20           #percentage cutoff to filter out the cells (larger than this cutoff)
     rm: False
-  RP:
+  RP:                    #for ribosomal genes if you would like to filter them
     startwith: []
     cutoff: 20
     rm: False
 filter_step: True        #if False, the above 'gene_group' filtering will be skipped as well
-min.cells: 3             #filtering genes by minimal cell
-min.features: 50         #filtering cells by minimal genes
+min.cells: 3             #filtering genes by minimum number of cells with non-zero count for a gene
+min.features: 50         #filtering cells by minimal genes detected
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
 ```
+
+The **min.cells** cutoff is to filter out *genes* that have low representation in cells, and the **min.features** cutoff is to filter out *cells* that have low number of genes (features) detected. The last two cutoffs, **highCount.cutoff** and **highGene.cutoff** can be used to filter cells if they have too many total counts or UMI detected, possibly due to multiplets.
 
 The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.
 
