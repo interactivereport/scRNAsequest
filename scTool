@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+src="$(dirname $0)/src"
+
+if [[ ! -f "$src/.env" ]]; then
+  echo "scAnalyzer: Please run ./install to setup necessary env variables"
+  exit
+fi
+
+echo -n "$@" > .scTool
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scTool.py .scTool'
+rm .scTool
+
+
