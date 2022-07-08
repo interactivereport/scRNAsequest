@@ -6,7 +6,7 @@ In this section, we present 8 figures to visualize the statistics of genes and c
 
 ```{r echo=FALSE, out.width = '100%', results = "asis"}
 if (file.exists("images/prefilter.QC_couts_genes.png")){
-   cat("This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, before filtering.\n\n")
+   cat("This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each sample, before filtering.\n\n")
    knitr::include_graphics("images/prefilter.QC_couts_genes.png")
 }else{
   cat("Missing figure: prefilter.QC_couts_genes.png") 
@@ -17,7 +17,7 @@ if (file.exists("images/prefilter.QC_couts_genes.png")){
 
 ```{r echo=FALSE, out.width = '80%', results = "asis"}
 if (file.exists("images/prefilter.QC_genes.png")){
-   cat("This plot shows Number of Genes (Y axis) detected in each data, before filtering.\n\n")
+   cat("This plot shows Number of Genes (Y axis) detected in each sample, before filtering.\n\n")
    knitr::include_graphics("images/prefilter.QC_genes.png")
 }else{
   cat("Missing figure: prefilter.QC_genes.png")
@@ -28,7 +28,9 @@ if (file.exists("images/prefilter.QC_genes.png")){
 
 ```{r echo=FALSE, out.width = '80%', results = "asis"}
 if (file.exists("images/prefilter.QC_topGene.png")){
-   cat("This plot shows Top Genes and % of Total Counts in each data, before filtering.\n\n")
+   cat("This plot shows Top Genes and % of Total Counts in each sample, before filtering.\n\n")
+   cat("Please refer to the following link for more information about top genes: https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.calculate_qc_metrics.html.\n\n")
+   cat("percent_top parameter: which proportions of top genes to cover. If empty or None don’t calculate. Values are considered 1-indexed, percent_top=[50] finds cumulative proportion to the 50th most expressed gene.\n\n")
    knitr::include_graphics("images/prefilter.QC_topGene.png")
 }else{
   cat("Missing figure: prefilter.QC_topGene.png")
@@ -84,6 +86,7 @@ if (file.exists("images/prefilter.QC_pct_counts_in_top_500_genes.png")){
 ```{r echo=FALSE, out.width = '80%', results = "asis"}
 if (file.exists("images/prefilter.QC_pct_MT.png")){
    cat("This plot shows % of Mitochondria, before filtering.\n\n")
+   cat("Each dot represents the mitochondria reads percentage within the total reads of that cell.\n\n")
    knitr::include_graphics("images/prefilter.QC_pct_MT.png")
 }else{
   cat("Missing figure: prefilter.QC_pct_MT.png")

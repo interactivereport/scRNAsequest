@@ -32,11 +32,21 @@ if (file.exists(paste0(PNG_dir, "filter.csv"))){
 
 ```
 
+The **MT** row reflects the results after mitochondria percentage reads filtering in each cell
+
+The **min cell** parameter indicates minimum number of cells with non-zero count for a gene.
+
+The **min gene** parameter indicates minimum number of genes detected in each cell.
+
+The **max gene** parameter indicates maximum number of genes detected in each cell.
+
+The **max UMI** parameter indicates maximum UMI counts in each cell.
+
 ## Counts and Genes
 
 ```{r echo=FALSE, out.width = '100%', results = "asis"}
 if (file.exists("images/postfilter.QC_couts_genes.png")){
-  cat("This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, after filtering.\n\n")
+  cat("This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each sample, after filtering.\n\n")
   knitr::include_graphics("images/postfilter.QC_couts_genes.png")
 }else{
   cat("No filtering was performed.")
@@ -47,7 +57,7 @@ if (file.exists("images/postfilter.QC_couts_genes.png")){
 
 ```{r echo=FALSE, out.width = '80%', results = "asis"}
 if (file.exists("images/postfilter.QC_genes.png")){
-  cat("This plot shows Number of Genes (Y axis) detected in each data, after filtering.\n\n")
+  cat("This plot shows Number of Genes (Y axis) detected in each sample, after filtering.\n\n")
   knitr::include_graphics("images/postfilter.QC_genes.png")
 }else{
   cat("No filtering was performed.")
@@ -58,7 +68,9 @@ if (file.exists("images/postfilter.QC_genes.png")){
 
 ```{r echo=FALSE, out.width = '80%', results = "asis"}
 if (file.exists("images/postfilter.QC_topGene.png")){
-  cat("This plot shows Top Genes and % of Total Counts in each data, after filtering.\n\n")
+  cat("This plot shows Top Genes and % of Total Counts in each sample, after filtering.\n\n")
+  cat("Please refer to the following link for more information about top genes: https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.calculate_qc_metrics.html.\n\n")
+  cat("percent_top parameter: which proportions of top genes to cover. If empty or None don’t calculate. Values are considered 1-indexed, percent_top=[50] finds cumulative proportion to the 50th most expressed gene.\n\n")
   knitr::include_graphics("images/postfilter.QC_topGene.png")
 }else{
   cat("No filtering was performed.")
@@ -114,6 +126,7 @@ if (file.exists("images/postfilter.QC_pct_counts_in_top_500_genes.png")){
 ```{r echo=FALSE, out.width = '80%', results = "asis"}
 if (file.exists("images/postfilter.QC_pct_MT.png")){
   cat("This plot shows % of Mitochondria, after filtering.\n\n")
+  cat("Each dot represents the mitochondria reads percentage within the total reads of that cell.\n\n")
   knitr::include_graphics("images/postfilter.QC_pct_MT.png")
 }else{
   cat("No filtering was performed.")
