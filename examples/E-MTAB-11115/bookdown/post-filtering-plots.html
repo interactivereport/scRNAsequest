@@ -194,19 +194,26 @@
 </tr>
 </tbody>
 </table>
+<p>The <strong>MT</strong> row reflects the results after mitochondria percentage reads filtering in each cell</p>
+<p>The <strong>min cell</strong> parameter indicates minimum number of cells with non-zero count for a gene.</p>
+<p>The <strong>min gene</strong> parameter indicates minimum number of genes detected in each cell.</p>
+<p>The <strong>max gene</strong> parameter indicates maximum number of genes detected in each cell.</p>
+<p>The <strong>max UMI</strong> parameter indicates maximum UMI counts in each cell.</p>
 <div id="counts-and-genes-1" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Counts and Genes<a href="post-filtering-plots.html#counts-and-genes-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, after filtering.</p>
+<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each sample, after filtering.</p>
 <p><img src="images/postfilter.QC_couts_genes.png" width="100%" /></p>
 </div>
 <div id="number-of-genes-1" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Number of Genes<a href="post-filtering-plots.html#number-of-genes-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This plot shows Number of Genes (Y axis) detected in each data, after filtering.</p>
+<p>This plot shows Number of Genes (Y axis) detected in each sample, after filtering.</p>
 <p><img src="images/postfilter.QC_genes.png" width="80%" /></p>
 </div>
 <div id="top-genes-1" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Top Genes<a href="post-filtering-plots.html#top-genes-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This plot shows Top Genes and % of Total Counts in each data, after filtering.</p>
+<p>This plot shows Top Genes and % of Total Counts in each sample, after filtering.</p>
+<p>Please refer to the following link for more information about top genes: <a href="https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.calculate_qc_metrics.html" class="uri">https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.calculate_qc_metrics.html</a>.</p>
+<p>percent_top parameter: which proportions of top genes to cover. If empty or None don’t calculate. Values are considered 1-indexed, percent_top=[50] finds cumulative proportion to the 50th most expressed gene.</p>
 <p><img src="images/postfilter.QC_topGene.png" width="80%" /></p>
 </div>
 <div id="percentage-of-top-50-genes-1" class="section level2 hasAnchor" number="3.4">
@@ -232,6 +239,7 @@
 <div id="percentage-of-mitochondria-1" class="section level2 hasAnchor" number="3.8">
 <h2><span class="header-section-number">3.8</span> Percentage of Mitochondria<a href="post-filtering-plots.html#percentage-of-mitochondria-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This plot shows % of Mitochondria, after filtering.</p>
+<p>Each dot represents the mitochondria reads percentage within the total reads of that cell.</p>
 <p><img src="images/postfilter.QC_pct_MT.png" width="80%" /></p>
 
 </div>

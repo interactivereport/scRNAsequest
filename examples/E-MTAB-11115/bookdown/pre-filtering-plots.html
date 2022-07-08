@@ -151,17 +151,19 @@
 <p>In this section, we present 8 figures to visualize the statistics of genes and counts across multiple datasets in the current project. In a typical single-cell data, usually several thousand genes can be detected. However, the detection of many genes (i.e. over 10,000) may indicate more than one cells were sequenced. The plots shown here can be used as a guidance to determine the cutoff. If you have turned on “filter_step: True” in the config.yml file, you will also see post-filtering plots in the next section.</p>
 <div id="counts-and-genes" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Counts and Genes<a href="pre-filtering-plots.html#counts-and-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each data, before filtering.</p>
+<p>This plot shows Total Counts (X axis) v.s. Genes (Y axis) detected in each sample, before filtering.</p>
 <p><img src="images/prefilter.QC_couts_genes.png" width="100%" /></p>
 </div>
 <div id="number-of-genes" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Number of Genes<a href="pre-filtering-plots.html#number-of-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This plot shows Number of Genes (Y axis) detected in each data, before filtering.</p>
+<p>This plot shows Number of Genes (Y axis) detected in each sample, before filtering.</p>
 <p><img src="images/prefilter.QC_genes.png" width="80%" /></p>
 </div>
 <div id="top-genes" class="section level2 hasAnchor" number="2.3">
 <h2><span class="header-section-number">2.3</span> Top Genes<a href="pre-filtering-plots.html#top-genes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This plot shows Top Genes and % of Total Counts in each data, before filtering.</p>
+<p>This plot shows Top Genes and % of Total Counts in each sample, before filtering.</p>
+<p>Please refer to the following link for more information about top genes: <a href="https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.calculate_qc_metrics.html" class="uri">https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.calculate_qc_metrics.html</a>.</p>
+<p>percent_top parameter: which proportions of top genes to cover. If empty or None don’t calculate. Values are considered 1-indexed, percent_top=[50] finds cumulative proportion to the 50th most expressed gene.</p>
 <p><img src="images/prefilter.QC_topGene.png" width="80%" /></p>
 </div>
 <div id="percentage-of-top-50-genes" class="section level2 hasAnchor" number="2.4">
@@ -187,6 +189,7 @@
 <div id="percentage-of-mitochondria" class="section level2 hasAnchor" number="2.8">
 <h2><span class="header-section-number">2.8</span> Percentage of Mitochondria<a href="pre-filtering-plots.html#percentage-of-mitochondria" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This plot shows % of Mitochondria, before filtering.</p>
+<p>Each dot represents the mitochondria reads percentage within the total reads of that cell.</p>
 <p><img src="images/prefilter.QC_pct_MT.png" width="80%" /></p>
 
 </div>
