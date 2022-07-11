@@ -17,7 +17,7 @@ batchKey="library_id"
 Rmarkdown="Rmarkdown"
 beRaster=True
 # maximum number of a parallel job can be re-submited is 5
-maxJobSubmitRepN=5 
+maxJobSubmitRepN=2 
 logging.disable()
 def run_cmd(cmd):
   #print(cmd)
