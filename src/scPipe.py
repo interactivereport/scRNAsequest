@@ -684,17 +684,18 @@ def checkLock(config,sysConfig):
 def combine(mIDs,prefix,config):
   print("Evaluating all methods ...")
   CKmethods = [one for one in mIDs if os.path.isfile("%s_%s.h5ad"%(prefix,one))]+['raw']
+  if not "SCT" in CKmethods:
+    Exit("SCT is missing! and it is required expression for visualization!")
+  
   cmd="Rscript %s/src/kBET.R %s %s"%(strPipePath,prefix,",".join(CKmethods))
   submit_cmd({"kBET":cmd,
               "silhouette":"%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods))},
             config)
   #run_cmd("%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods)))
-  if not "SCT" in CKmethods:
-    Exit("SCT is missing! and it is required expression for visualization!")
   
   print("combining all methods results ...")
-  D = integrateH5ad("%s_SCT.h5ad"%prefix,CKmethods,prefix)
-  Draw = integrateH5ad("%s_raw.h5ad"%prefix,CKmethods,prefix)
+  D = integrateH5ad("%s_SCT.h5ad"%prefix,CKmethods,prefix,config.get("major_cluster_rate"))
+  Draw = integrateH5ad("%s_raw.h5ad"%prefix,CKmethods,prefix,config.get("major_cluster_rate"))
   print("saving combined results ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -702,9 +703,10 @@ def combine(mIDs,prefix,config):
     Draw.write("%s_raw_added.h5ad"%prefix)
     if os.path.isfile("%s.h5ad.lock"%prefix):
       os.remove("%s.h5ad.lock"%prefix)
-def integrateH5ad(strH5ad,methods,prefix):
+def integrateH5ad(strH5ad,methods,prefix,majorR=None):
   D = ad.read_h5ad(strH5ad)
   obsm = pd.DataFrame(index=D.obs.index)
+  seuratRefLab = None
   for one in methods:
     if one in ["SCT","raw"]:
       continue
@@ -714,14 +716,22 @@ def integrateH5ad(strH5ad,methods,prefix):
     D1 = ad.read_h5ad("%s_%s.h5ad"%(prefix,one),backed=True)
     obs = D1.obs.copy()
     addObs = [one for one in obs.columns if not one in D.obs.columns]
+    if one == "SeuratRef":
+      seuratRefLab = [i for i in addObs if not i.endswith("score")]
     if len(addObs)>0:
       D.obs=D.obs.merge(obs[addObs],how="left",left_index=True,right_index=True)
-      
     # check the order of cells
     for k in D1.obsm.keys():
       kname = k.replace("X_","X_%s_"%one)
       obsm1 = obsm.merge(pd.DataFrame(D1.obsm[k],index=D1.obs.index),how="left",left_index=True,right_index=True)
       D.obsm[kname] = obsm1.fillna(0).to_numpy()
+  ## assign seurat labels to other integration clusters
+  if majorR is not None and seuratRefLab is not None:
+    print("----- Reassign cluster/louvain to seurat label transfer")
+    for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
+      for aLabel in seuratRefLab:
+        D.obs["%s_%s"%(aCluster,aLabel)] = findMajor(D.obs[[aCluster,aLabel]],majorR)
+    
   ## remove NA/nan
   for one in D.obs.columns:
     if D.obs[one].isna().sum()>0:
@@ -730,6 +740,16 @@ def integrateH5ad(strH5ad,methods,prefix):
         D.obs[one] = list(D.obs[one])
         D.obs[one].fillna("NA")
   return D
+def findMajor(X,majorR):
+  # first column is the cluster number, second column is the label
+  colName = list(X.columns)
+  Xsize = X.groupby(colName).size().reset_index().rename(columns={0:'count'})
+  Xmax = (Xsize[Xsize.groupby(colName[0])['count'].transform(max)==Xsize['count']]
+    .merge(Xsize.groupby(colName[0])['count'].sum().reset_index().rename(columns={'count':'sum'}),on=colName[0]))
+  Xmax["name"] = Xmax.apply(lambda x:x[colName[1]] if x['count']/x['sum']>0.7 else x[colName[0]],axis=1)
+  Xsel = Xmax.set_index(colName[0])['name'].to_dict()
+  return(X[colName[0]].map(Xsel))
+  
 def moveCellDepot(prefix):
   sysConfig = getConfig()
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
