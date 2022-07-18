@@ -35,4 +35,4 @@ publish-to-celldepot
 additional-tools
 remove-annotations
 add-annotations
-export-gene-expressions-along-with-all-annotations
+export-gene-expressions

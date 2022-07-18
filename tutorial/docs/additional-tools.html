@@ -190,7 +190,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.1</b> Remove annotations</a></li>
 <li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2</b> Add annotations</a></li>
-<li class="chapter" data-level="10.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions-along-with-all-annotations"><i class="fa fa-check"></i><b>10.3</b> Export gene expressions along with all annotations</a></li>
+<li class="chapter" data-level="10.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.3</b> Export gene expressions</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -258,8 +258,9 @@ AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos
 
 scTool add ProjName_raw_added.h5ad manual.curated.labels.csv</code></pre>
 </div>
-<div id="export-gene-expressions-along-with-all-annotations" class="section level2" number="10.3">
-<h2><span class="header-section-number">10.3</span> Export gene expressions along with all annotations</h2>
+<div id="export-gene-expressions" class="section level2" number="10.3">
+<h2><span class="header-section-number">10.3</span> Export gene expressions</h2>
+<p>This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.</p>
 <pre><code>scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12</code></pre>
 <p>The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png" /></a></p>
