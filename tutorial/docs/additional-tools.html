@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="input-configuration.html"/>
-<link rel="next" href="differential-expression-de-analysis.html"/>
+<link rel="prev" href="celldepot-publishing.html"/>
+
 <script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -211,136 +211,58 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="running-the-pipeline" class="section level1" number="6">
-<h1><span class="header-section-number">Chapter 6</span> Running the pipeline</h1>
-<p>After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.</p>
-<div id="initial-scanalyzer-run" class="section level2" number="6.1">
-<h2><span class="header-section-number">6.1</span> Initial scAnalyzer run</h2>
-<p>The initial scAnalyzer run intends to test the default filtering parameters on the single-cell RNA-seq data. We suggest the following settings in the config.yml file to activate the filtering step, but pause the pipeline from additional analysis (such as data integration, harmonization, etc.):</p>
-<pre><code># Change the following settings in the config.yml file:
-filter_step: True
-runAnalysis: False</code></pre>
-<p>To run scAnalyzer, simply pass the path to the config.yml file to the program:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="running-the-pipeline.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb21-2"><a href="running-the-pipeline.html#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="running-the-pipeline.html#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb21-4"><a href="running-the-pipeline.html#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
-<p>Output files:</p>
-<pre><code>outputdir
-    ├── BookdownReport/                #Full bookdown report folder. This is same as the BookdownReport.tar.gz below
-    ├── config.yml
-    ├── config.yml.20220617.log        #log file
-    ├── ProjName_BookdownReport.tar.gz #Bookdown report tar ball. 
-                                       #Please download this file and open the index.html file to view the report
-    ├── ProjName_raw_prefilter.h5ad    #h5ad after pre-filtering
-    ├── prefilter.QC.pdf               #QC plots before filtering. These plots are included in the Bookdown report
-    ├── postfilter.QC.pdf              #QC plots after filtering
-    └── Rmarkdown/                     #Source files for the Bookdown report</code></pre>
-</div>
-<div id="review-the-bookdown-report" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Review the bookdown report</h2>
-<p>After the initial scAnalyzer run, a bookdown report, named <strong>ProjName_BookdownReport.tar.gz</strong> will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:</p>
-<pre><code># Cell filtering parameters in the config.yml file:
-gene_group:
-  MT:
-    startwith: [&quot;MT-&quot;,&quot;Mt-&quot;,&quot;mt-&quot;]
-    cutoff: 20           #percentage cutoff to filter out the cells (larger than this cutoff)
-    rm: False
-  RP:                    #for ribosomal genes if you would like to filter them
-    startwith: []
-    cutoff: 20
-    rm: False
-filter_step: True        #if False, the above &#39;gene_group&#39; filtering will be skipped as well
-min.cells: 3             #filtering genes by minimum number of cells with non-zero count for a gene
-min.features: 50         #filtering cells by minimal genes detected
-highCount.cutoff: 10000  #any cells with higher total counts to be removed
-highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed</code></pre>
-<p>The <strong>min.cells</strong> cutoff is to filter out <em>genes</em> that have low representation in cells, and the <strong>min.features</strong> cutoff is to filter out <em>cells</em> that have low number of genes (features) detected. The last two cutoffs, <strong>highCount.cutoff</strong> and <strong>highGene.cutoff</strong> can be used to filter cells if they have too many total counts or UMI detected, possibly due to multiplets.</p>
-<p>The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.</p>
-<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/bookdown/index.html" target="_blank">E-MTAB-11115 bookdown</a></p>
-</div>
-<div id="generate-a-slide-deck" class="section level2" number="6.3">
-<h2><span class="header-section-number">6.3</span> Generate a slide deck</h2>
-<p>The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the <strong>Slidedeck.Rmd</strong> file under the /src folder and follow the steps below:</p>
-<pre><code># create a new directory inside the project, and link the existed files and folder:
-cd ~/E-MTAB-11115/processing/
-mkdir Slidedeck &amp;&amp; cd Slidedeck
-ln -s ../BookdownReport/images
-ln -s ../BookdownReport/bookdown.info.txt
-
-# Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file
-cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/Slidedeck
-
-# Source the environment
-src=&quot;~/scRNAsequest/src/.env&quot;
-source $src/.env;eval $condaEnv
-
-# Run the Slidedeck script, and set the output file name using &#39;output_file&#39; parameter
-Rscript -e &#39;rmarkdown::render(&quot;Slidedeck.Rmd&quot;, output_file=&quot;Output.html&quot;)&#39;</code></pre>
-<p>Please download the whole Slidedeck and open the <strong>Output.html</strong> file in a web browser.</p>
-<p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html" target="_blank">E-MTAB-11115 slidedeck</a></p>
-</div>
-<div id="run-the-full-analysis" class="section level2" number="6.4">
-<h2><span class="header-section-number">6.4</span> Run the full analysis</h2>
-<p>After the filtering step is done, we are ready to turn on the <em>runAnalysis</em> parameter and run the full pipeline:</p>
-<pre><code># Change the following setting in the config.yml file:
-runAnalysis: True
-overwrite: True    #Overwrite the previous results if we run this again, for example, after adjusting some parameters.</code></pre>
-<p>Please also pay attention to the <strong>reference</strong> data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example, using <strong>mouse_spinalCord</strong> as the reference:</p>
-<pre><code>ref_name: mouse_spinalCord</code></pre>
-<p>To check all available references, run scAnalyzer without any parameter. To add new references, please see section 8: <a href="reference-building.html#reference-building">Reference Building</a>.</p>
-<p>Then run the following command again:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="running-the-pipeline.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb27-2"><a href="running-the-pipeline.html#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="running-the-pipeline.html#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb27-4"><a href="running-the-pipeline.html#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
-<p>This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483" target="_blank">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
-</div>
-<div id="visualize-the-harmonized-results" class="section level2" number="6.5">
-<h2><span class="header-section-number">6.5</span> Visualize the harmonized results</h2>
-<p>After running the pipeline, the following files will be generated for each harmonization method (Harmony, Seurat, Liger):</p>
-<pre><code>outputdir
-    ├── BookdownReport
-    ├── config.yml
-    ├── config.yml.20220615.log
-    ├── Harmony.error                      #Error messages
-    ├── kBET.error
-    ├── Liger.error
-    ├── SCT.error
-    ├── Seurat.error
-    ├── SeuratRef.error
-    ├── silhouette.error
-    ├── ProjName_BookdownReport.tar.gz     #Bookdown report
-    ├── ProjName.h5ad                      #Final h5 file
-    ├── ProjName_Harmony.h5ad              #Harmony
-    ├── ProjName_harmony_py2r_batch.Rdata
-    ├── ProjName_harmony_py2r_pca.Rdata
-    ├── ProjName_harmony_r2py.Rdata
-    ├── ProjName_kBET_umap_k0_100.pdf      #kBET score 
-    ├── ProjName_liger.csv                 #Liger
-    ├── ProjName_Liger.h5ad
-    ├── ProjName_liger_hvg.csv
-    ├── ProjName_raw_added.h5ad            
-    ├── ProjName_raw.h5ad
-    ├── ProjName_raw_prefilter.h5ad
-    ├── ProjName_SCT.cID                   #SCT transformation
-    ├── ProjName_SCT.gID
-    ├── ProjName_SCT.h5
-    ├── ProjName_SCT.h5ad
-    ├── ProjName_SCT.h5.rds
-    ├── ProjName_Seurat.h5ad               #Seurat
-    ├── ProjName_seurat_r2py_integrated.csv.gz
-    ├── ProjName_seurat_r2py_integrated.genes.csv.gz
-    ├── ProjName_Silhouette_boxplot_pc50.pdf
-    ├── postfilter.QC.pdf
-    ├── prefilter.QC.pdf
-    ├── Rmarkdown/
-    └── sampleMeta.csv</code></pre>
-<p><a href="https://www.nature.com/articles/s41592-018-0254-1" target="_blank">kBET</a> is a useful metric to evaluate and compare the harmonization results. Here is an example of the <strong>ProjName_kBET_umap_k0_100.pdf</strong> result:</p>
-<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/kBET.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/kBET.png" /></a></p>
-<p>Please review the <strong>ProjName.h5ad</strong> file for the harmonization result. If you have <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a> installed, the visualization will be easier.</p>
-<p>Here is an example of the ProjName.h5ad project visualized by <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a>:</p>
+<div id="additional-tools" class="section level1" number="10">
+<h1><span class="header-section-number">Chapter 10</span> Additional tools</h1>
+<p>We also provide <strong>scTool</strong>, a user-friendly toolkit for modifying the h5ad file. With <strong>scTool</strong>, the user can:</p>
+<ul>
+<li><p>Remove existing annotations in the data, such as the cell type annotation.</p></li>
+<li><p>Add cell type annotation by providing a two-column csv file, specifying the cell type category of each single cell.</p></li>
+<li><p>Export a list of genes along with all annotation.</p></li>
+</ul>
+<p>By running the <strong>scTool</strong> without providing any parameters, we can see the manual page of the script:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb47-1"><a href="additional-tools.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scTool</span>
+<span id="cb47-2"><a href="additional-tools.html#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="additional-tools.html#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> scTool.py [-h] <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span> h5ad [changes]</span>
+<span id="cb47-4"><a href="additional-tools.html#cb47-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="additional-tools.html#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Additional</span> sc tools. WARNING: The input h5ad files will be over-written!</span>
+<span id="cb47-6"><a href="additional-tools.html#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="additional-tools.html#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="ex">positional</span> arguments:</span>
+<span id="cb47-8"><a href="additional-tools.html#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span>  Modify the h5ad by either <span class="st">&quot;rm&quot;</span>, <span class="st">&quot;add&quot;</span> or <span class="st">&quot;export&quot;</span> cell level annotations.</span>
+<span id="cb47-9"><a href="additional-tools.html#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">h5ad</span>             Path to a h5ad file to be modified</span>
+<span id="cb47-10"><a href="additional-tools.html#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">changes</span>          Options:</span>
+<span id="cb47-11"><a href="additional-tools.html#cb47-11" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">1.</span> A list of annotaions to be removed <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span><span class="kw">)</span> </span>
+<span id="cb47-12"><a href="additional-tools.html#cb47-12" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">2.</span> A path to a csv file contains cell level annotations <span class="er">(</span><span class="ex">first</span> column is the cell ID<span class="kw">)</span></span>
+<span id="cb47-13"><a href="additional-tools.html#cb47-13" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">3.</span> A list of genes <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span>, empty or max 50<span class="kw">)</span> <span class="ex">to</span> be exported along with all annotations.</span>
+<span id="cb47-14"><a href="additional-tools.html#cb47-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-15"><a href="additional-tools.html#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="ex">optional</span> arguments:</span>
+<span id="cb47-16"><a href="additional-tools.html#cb47-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>       show this help message and exit</span>
+<span id="cb47-17"><a href="additional-tools.html#cb47-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-18"><a href="additional-tools.html#cb47-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
+<span id="cb47-19"><a href="additional-tools.html#cb47-19" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<p>We use this pubic E-MTAB-11115 data as an example:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
+<div id="remove-annotations" class="section level2" number="10.1">
+<h2><span class="header-section-number">10.1</span> Remove annotations</h2>
+<p>To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.</p>
+<pre><code>scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location</code></pre>
+</div>
+<div id="add-annotations" class="section level2" number="10.2">
+<h2><span class="header-section-number">10.2</span> Add annotations</h2>
+<p>To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a <strong>manual.curated.labels</strong> cell type labelling to the original data:</p>
+<pre><code>$ head -2 manual.curated.labels.csv
+
+AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons
+AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos
+
+#Run the scTool:
+
+scTool add ProjName_raw_added.h5ad manual.curated.labels.csv</code></pre>
+</div>
+<div id="export-gene-expressions-along-with-all-annotations" class="section level2" number="10.3">
+<h2><span class="header-section-number">10.3</span> Export gene expressions along with all annotations</h2>
+<pre><code>scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12</code></pre>
+<p>The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:</p>
+<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png" /></a></p>
 
 </div>
 </div>
@@ -349,8 +271,8 @@ overwrite: True    #Overwrite the previous results if we run this again, for exa
           </div>
         </div>
       </div>
-<a href="input-configuration.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="differential-expression-de-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="celldepot-publishing.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -381,7 +303,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/06-RunningThePipeline.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/10-AdditionalTools.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -389,7 +311,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/06-RunningThePipeline.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/10-AdditionalTools.Rmd",
 "text": null
 },
 "download": null,

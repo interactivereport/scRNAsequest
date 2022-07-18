@@ -1,0 +1,73 @@
+# Additional tools
+
+We also provide **scTool**, a user-friendly toolkit for modifying the h5ad file. With **scTool**, the user can:
+
+- Remove existing annotations in the data, such as the cell type annotation.
+
+- Add cell type annotation by providing a two-column csv file, specifying the cell type category of each single cell.
+
+- Export a list of genes along with all annotation.
+
+By running the **scTool** without providing any parameters, we can see the manual page of the script:
+
+```{bash, eval=FALSE}
+$ scTool
+
+usage: scTool.py [-h] {rm,add,export} h5ad [changes]
+
+Additional sc tools. WARNING: The input h5ad files will be over-written!
+
+positional arguments:
+  {rm,add,export}  Modify the h5ad by either "rm", "add" or "export" cell level annotations.
+  h5ad             Path to a h5ad file to be modified
+  changes          Options:
+                   1. A list of annotaions to be removed (separated by ",") 
+                   2. A path to a csv file contains cell level annotations (first column is the cell ID)
+                   3. A list of genes (separated by ",", empty or max 50) to be exported along with all annotations.
+
+optional arguments:
+  -h, --help       show this help message and exit
+
+Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
+------------
+
+```
+
+We use this pubic E-MTAB-11115 data as an example:
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)
+
+## Remove annotations
+
+To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.
+
+```
+scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location
+```
+
+## Add annotations
+
+To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a **manual.curated.labels** cell type labelling to the original data:
+
+```
+$ head -2 manual.curated.labels.csv
+
+AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons
+AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos
+
+#Run the scTool:
+
+scTool add ProjName_raw_added.h5ad manual.curated.labels.csv
+```
+
+## Export gene expressions
+
+This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.
+
+```
+scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12
+```
+
+The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:
+
+[![](https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png)

@@ -5,6 +5,8 @@
 By running the following command, we can see the manual page of the script:
 
 ```{bash, eval=FALSE}
+$ sc2celldepot
+
 ***** 2022-07-07 11:10:44 *****
 ###########
 ## ExpressionAnalysis: https://github.com/interactivereport/scRNAsequest.git

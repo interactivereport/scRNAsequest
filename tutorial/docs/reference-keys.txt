@@ -32,3 +32,7 @@ submit-scref
 celldepot-publishing
 initialize-sc2celldepot
 publish-to-celldepot
+additional-tools
+remove-annotations
+add-annotations
+export-gene-expressions-along-with-all-annotations
