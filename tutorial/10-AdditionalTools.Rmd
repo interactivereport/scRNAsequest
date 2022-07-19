@@ -39,7 +39,7 @@ We use this pubic E-MTAB-11115 data as an example:
 
 ## Remove annotations
 
-To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.
+To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.
 
 ```
 scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location
@@ -47,7 +47,7 @@ scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location
 
 ## Add annotations
 
-To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a **manual.curated.labels** cell type labelling to the original data:
+To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a **manual.curated.labels** cell type labeling to the original data:
 
 ```
 $ head -2 manual.curated.labels.csv

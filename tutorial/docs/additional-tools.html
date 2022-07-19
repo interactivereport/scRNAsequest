@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-07-18" />
+<meta name="date" content="2022-07-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -243,12 +243,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
 <div id="remove-annotations" class="section level2" number="10.1">
 <h2><span class="header-section-number">10.1</span> Remove annotations</h2>
-<p>To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.</p>
+<p>To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.</p>
 <pre><code>scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location</code></pre>
 </div>
 <div id="add-annotations" class="section level2" number="10.2">
 <h2><span class="header-section-number">10.2</span> Add annotations</h2>
-<p>To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a <strong>manual.curated.labels</strong> cell type labelling to the original data:</p>
+<p>To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a <strong>manual.curated.labels</strong> cell type labeling to the original data:</p>
 <pre><code>$ head -2 manual.curated.labels.csv
 
 AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons
