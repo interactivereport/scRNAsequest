@@ -24,43 +24,47 @@ gene_group:
   MT:
     startwith: ["MT-","Mt-","mt-"]
     cutoff: 20           # percentage cutoff to filter out the cells (larger than this cutoff)
-    rm: False
+    rm: False            # this means the genes specified "startwith" will be REMOVED from the downstream analysis
   RP:
-    startwith: []
-    cutoff: 20
+    startwith: [MRPL,MRPS,RPL,RPS]
+    cutoff: 50
     rm: False
 filter_step: True        #if False, the above 'gene_group' filtering will be skipped as well
 min.cells: 3             #filtering genes by minimal cell
 min.features: 50         #filtering cells by minimal genes
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
-
 group:                   #if provided, a 10X QC box plot will be ploted in QC plot
+rasterizeFig: True       # should image in pdf be rasterized
+
 runAnalysis: True
 newProcess: False
 parallel: False          #"sge" or "slurm"
 core: 2
 overwrite: True
-#parallelTime: 180       #for a job (not the entire pipeline) in minutes, default 3hr
+major_cluster_rate: 0.7  # the proportion of cells of an integration cluster to be assigned to a seurat reference label
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp:  ~/E-MTAB-11115/DEGinfo.csv         #required for DEG analysis, but you can leave this empty if not going to run DEG
 # Please be causion of changing the following default filtering
-min.cells.per.gene: 3
-min.genes.per.cell: 250
-min.perc.cells.per.gene: 0.00
-perc_filter: TRUE
-R6_min.cells.per.gene: 3
-R6_min.perc.cells.per.gene: 0.1
-R6_min.cells.per.gene.type: "or"
-R6_cells.per.gene.filter: TRUE
-R6_perc.cells.filter: TRUE
-R6_perc.filter: FALSE
-R6_perc.filter.type: "and"
-R6_perc_threshold: 0.90
-R6_min.ave.pseudo.bulk.cpm: 1
-R6_pseudo.bulk.cpm.filter: FALSE
-R6_min.cells.per.subj: 3
+# More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/
+# Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment
+min.cells.per.gene: 3                         # if `perc_filter` is FALSE, then keep only genes that have expression in at least min.cells.per.gene
+min.genes.per.cell: 250                       # keep cells with expression in at least min.genes.per.cell genes.
+min.perc.cells.per.gene: 0.00 #if 'perc_filter'`' is TRUE, then keep only genes that have expression in at least min.per.cells.per.gene * 100 percent of cells
+perc_filter: TRUE                             # if TRUE, apply the cells.per.gene filter using percentages (expressed as a decimal) rather than an absolute threshold
+# Apply the 2nd round of biostats filtering.  For "group" mode, the filtering is applied to `ref_group` and `alt_group` for the given cell type of interest.
+R6_min.cells.per.gene: 3                      # minimum cells expressed per gene.  This filter is applied if `R6_perc.cells.filter` is FALSE
+R6_min.perc.cells.per.gene: 0.1               # minimum % cells expressed per gene filtering (use decimal form of percentage).  This threshold is applied if 'R6_perc.cells.filter' is TRUE and 'R6_cells.per.gene.filter' is TRUE
+R6_min.cells.per.gene.type: "or"              # The type of cell per gene filtering.  If it has the value "and" then it requires the gene be expressed in both reference and non-reference groups. If it has the value "or" then it requires the gene be expressed in either group
+R6_cells.per.gene.filter: TRUE                # TRUE means apply cells per gene filtering
+R6_perc.cells.filter: TRUE                    # TRUE means apply cell.per.gene filtering by use of a percentage rather than absolute threshold.  If the percentage results in a number less than R6_min.cells.per.gene, the code will automatically switch to min.cells.per.gene absolute thresholding
+R6_perc.filter: FALSE                         # If TRUE, then apply the 75th percentile gene filtering
+R6_perc.filter.type: "and"                    # The type of percentile gene filtering.  If it has the value "and" then any gene that has 75th percentile of zero in both groups will be filtered out.  If it has the value "or" then any gene that has a 75th percentile of zero in either group will be filtered out.
+R6_perc_threshold: 0.90                       # Percentile threshold, 75th percentile is default.  Express percentile as a decimal value.
+R6_min.ave.pseudo.bulk.cpm: 1 #cpm filtering threshold
+R6_pseudo.bulk.cpm.filter: FALSE              # if TRUE, then apply a cpm filter on the pseudo-bulk counts
+R6_min.cells.per.subj: 3                      # Minimum cells required per subject, must be a nonzero number
 
 ## publish to celldepot
 publish: False
