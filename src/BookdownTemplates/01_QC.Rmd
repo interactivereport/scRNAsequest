@@ -90,17 +90,17 @@ cat("\n\n")
 
 - **Estimated.Number.of.Cells**: Total cells estimated. 10X strategy can target up to 10,000 cells per sample. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/115001800523-What-is-the-minimum-number-of-cells-that-can-be-profiled-){target="_blank"}.
 
-- **Mean.Reads.per.Cell**: 10X recommends 30,000 and 70,000 reads per cell. Usually, 50,000 would be a good number.
+- **Mean.Reads.per.Cell**: 10X recommends 30,000-70,000 reads per cell. Usually, >50,000 would be a good number.
 
 - **Median.Genes.per.Cell**: This depends on the biology that how many genes expressed, and how many genes in the annotation. For mouse datasets, it is usually ~2,000 genes.
 
-- **Sequencing.Saturation**: This measures how saturate is the sequencing. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/115005062366-What-is-sequencing-saturation-){target="_blank"}.
+- **Sequencing.Saturation**: This measures how saturate the sequencing is. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/115005062366-What-is-sequencing-saturation-){target="_blank"}.
 
-- **Reads.Mapped.Confidently.to.Intronic.Regions**: Percentage of reads mapped to annotated introns. This rate is expected to be higher in single-nucleus RNAseq experiments, usually >50%. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/360000087552-Why-do-I-have-a-high-percentage-of-reads-mapping-to-intronic-regions-){target="_blank"}.
+- **Reads.Mapped.Confidently.to.Intronic.Regions**: This measures the percentage of reads mapped to annotated introns. This rate is expected to be higher in single-nucleus RNAseq experiments, usually >50%. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/360000087552-Why-do-I-have-a-high-percentage-of-reads-mapping-to-intronic-regions-){target="_blank"}.
 
-- **Reads.Mapped.Antisense.to.Gene**: It it also common to see antisense mapping reads to genes. In mouse data, this rate can be >40%, but it also depends on your data.
+- **Reads.Mapped.Antisense.to.Gene**: It it also common to see antisense mapping reads to genes. In mouse data, this rate can be >40%, but it may vary from sample to sample
 
-- **Median.UMI.Counts.per.Cell**: The median UMI per cell is a metric independent to the annotation. It would be good to see 3,000-4,000 UMI per cell.
+- **Median.UMI.Counts.per.Cell**: The median UMI per cell is a metric independent to the annotation, counting how many UMI in each cell. It would be ideal to see 3,000-4,000 UMI per cell.
 
 ## General QC
 
