@@ -1,3 +1,19 @@
+```{r, echo=FALSE}
+
+#Retrieve information from the previously saved bookdown.info.txt file
+PWD <- system("pwd", intern = TRUE)
+Info <- paste0(PWD, "/bookdown.info.txt")
+Data <- read.table(Info)
+Source_code <- Data$V2[1]
+Working_dir <- Data$V2[2]
+Config_file <- Data$V2[3]
+PNG_dir <- Data$V2[4]
+
+#Extract information from the Config_file
+config <- sapply(yaml::read_yaml(Config_file),unlist)
+ProjectName <- config$prj_name
+```
+
 # QC plots
 
 **Quality control (QC)** is of single-cell RNA-Seq experiment is critical to downstream analyses. In this section, we present a series of QC plots for better understanding of data quality.
@@ -50,6 +66,42 @@ In total there are 19 figures showing different aspects of the data. These plots
    
    - Reads Mapped Antisense to Gene%
    
+## QC summary table
+
+The following table shows a summary of all QC metrics if provided to the pipeline.
+
+```{r, echo=FALSE, results = "asis"}
+suppressMessages(library(knitr))
+suppressMessages(library(kableExtra))
+
+if (file.exists(paste0(Working_dir, "sequencingQC.csv"))){
+  Data <- read.csv(paste0(Working_dir, "sequencingQC.csv"))
+  kable(Data, caption = "Summary of sqeuencing QC metrics", align = "c", booktabs = TRUE, format.args = list(big.mark = ",")) %>% 
+     kable_styling(full_width = F) %>%
+     kableExtra::scroll_box(width = "100%")
+}else{
+  cat("No table generated because the sequencingQC.csv is not provided.") 
+}
+```
+
+```{r, echo=FALSE, results = "asis"}
+cat("\n\n")
+```
+
+- **Estimated.Number.of.Cells**: Total cells estimated. 10X strategy can target up to 10,000 cells per sample. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/115001800523-What-is-the-minimum-number-of-cells-that-can-be-profiled-){target="_blank"}.
+
+- **Mean.Reads.per.Cell**: 10X recommends 30,000 and 70,000 reads per cell. Usually, 50,000 would be a good number.
+
+- **Median.Genes.per.Cell**: This depends on the biology that how many genes expressed, and how many genes in the annotation. For mouse datasets, it is usually ~2,000 genes.
+
+- **Sequencing.Saturation**: This measures how saturate is the sequencing. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/115005062366-What-is-sequencing-saturation-){target="_blank"}.
+
+- **Reads.Mapped.Confidently.to.Intronic.Regions**: Percentage of reads mapped to annotated introns. This rate is expected to be higher in single-nucleus RNAseq experiments, usually >50%. For more information, see [here](https://kb.10xgenomics.com/hc/en-us/articles/360000087552-Why-do-I-have-a-high-percentage-of-reads-mapping-to-intronic-regions-){target="_blank"}.
+
+- **Reads.Mapped.Antisense.to.Gene**: It it also common to see antisense mapping reads to genes. In mouse data, this rate can be >40%, but it also depends on your data.
+
+- **Median.UMI.Counts.per.Cell**: The median UMI per cell is a metric independent to the annotation. It would be good to see 3,000-4,000 UMI per cell.
+
 ## General QC
 
 The General QC plot section includes nine bar plots to visualize general metrics of the current single-cell project.
