@@ -1,5 +1,8 @@
-tab:unnamed-chunk-30
+tab:unnamed-chunk-2
+tab:unnamed-chunk-4
+tab:unnamed-chunk-34
 qc-plots
+qc-summary-table
 general-qc
 estimated-number-of-cells
 median-umi-counts-per-cell
