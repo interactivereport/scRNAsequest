@@ -778,6 +778,7 @@ def runDEG(strConfig,prefix,config):
     submit_cmd(scDEGtask,config,1)
     formatDEG(scDEGtask,prefix)
 def formatDEG(DEGcmds,prefix):
+  print("=== Formating scDEG results to create the db file ===")
   DEGpaths = list(set([one.split(";")[0].replace("cd ","") for k,one in DEGcmds.items()]))
   csv = []
   for onePath in DEGpaths:
@@ -797,7 +798,6 @@ def formatDEG(DEGcmds,prefix):
   data = data.dropna()
   D = data[["log2fc","pval","qval"]]
   D.index = pd.MultiIndex.from_frame(data[["gene","contrast","tags"]])
-  
   conn = sqlite3.connect('%s.db'%prefix)
   D.to_sql("DEG",conn,if_exists="replace")
   conn.close()

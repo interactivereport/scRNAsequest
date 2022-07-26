@@ -221,7 +221,7 @@ getX <- function(strFs){
       X[[length(X)+1]] <- Read10X_h5(one)
     }else{
       tmp <- data.table::fread(one)
-      X[[length(X)+1]] <- Matrix(data.frame(tmp[,-1],row.names=unlist(tmp[,1])),sparse=T)
+      X[[length(X)+1]] <- Matrix(as.matrix(data.table::fread(one),rownames=1),sparse=T)
     }
   }
   return(X)
