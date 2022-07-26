@@ -32,6 +32,8 @@ main <- function(strConfig){
   meta <- getMeta(strH5ad)
   ## check compInfo against meta
   message("\tComparison description file checking ...")
+  if("comparisonName"%in%colnames(compInfo) && length(unique(compInfo$comparisonName))!=nrow(compInfo))
+    stop("Unique comparison names are required!")
   selCol <- apply(compInfo,1,function(x){
     hh <- unlist(x[c("sample","cluster","group")])
     if(!is.na(x["covars"]) && nchar(x["covars"])>2){
@@ -50,20 +52,12 @@ main <- function(strConfig){
     }
     return(hh)
   })
-  #meta <- meta[,unique(unlist(selCol,use.names=F))]
-  # obtain the raw counts
-  #X <- getX(strH5adraw)
-  #X <- X[,rownames(meta)]
-  
+
   ## create scDEG folder
   message("\tcreating scDEG folder ...")
   scDEGpath <- paste0(prefix,"_scDEG/")
   dir.create(scDEGpath,showWarnings=F)
-  #strCounts <- paste0(scDEGpath,"counts.rds")
-  #strMeta <- paste0(scDEGpath,"meta.rds")
-  #saveRDS(X,strCounts)
-  #saveRDS(meta,strMeta)
-  
+
   ## enumerate all comparisons
   message("\tcreating scDEG tasks ...")
   cmds <- apply(compInfo,1,function(x){
@@ -73,8 +67,16 @@ main <- function(strConfig){
     }
     coV <- NULL
     if(!is.na(x["covars"]) && nchar(x["covars"])>2) coV <- unlist(strsplit(x["covars"],"\\+"),use.name=F)
-    strOut <- file.path(scDEGpath,paste(c(paste0("deg",sample(10000,1)),gsub("_",".",x[c("cluster","group","method","model")])),collapse="_"))
-    system(paste("rm -rf",strOut))
+    if("comparisonName"%in%names(x)){
+      strOut <- file.path(scDEGpath,x["comparisonName"])
+    }else{
+      strD <- paste(c(gsub("_",".",x[c("cluster","group","method","model")])),collapse="_")
+      strOut <- list.files(scDEGpath,strD)
+      if(length(strOut)>0) strOut <- file.path(scDEGpath,strOut[1])
+      else strOut <- file.path(scDEGpath,strD)
+    }
+    if(dir.exists(strOut)) message("\tUsing existing: ",strOut)
+    #system(paste("rm -rf",strOut))
     return(scRNAseq_DE(strH5adraw,strH5ad,strOut,x["method"],
                 x["sample"],x["cluster"],
                 x["group"],x["ref"],x["alt"],
@@ -264,45 +266,45 @@ scRNAseq_DE_one <- function(
 ){
     suppressMessages(suppressWarnings(PKGloading()))
     if(!is.null(strSrc)) source(paste0(strSrc,"/pipeline_class.R"))
+    message("===== ",env$method,":",cluster_interest," =====")
+    strOut <- env$output
+    if(!is.null(env$column_group)){
+      strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",
+                                      gsub("_",".",paste(env$column_cluster,cluster_interest,sep=":")),"_",
+                                      env$method,
+                                      ".csv"))
+    }else{
+      strF <- file.path(strOut,paste0(cluster_interest,".vs.Rest","_",gsub("_",".",env$column_cluster),".csv"))
+      intrestGrp <- as.character(allMeta[,env$column_cluster])
+      intrestGrp[intrestGrp!=cluster_interest] <- "Rest"
+      allMeta <- cbind(allMeta,all="all",intrestGrp=intrestGrp)
+      env$column_cluster <- "all"
+      env$column_group <- "intrestGrp"
+      env$grp_ref <- "Rest"
+      env$grp_alt <- cluster_interest
+      cluster_interest <- "all"
+    }
+    if(file.exists(strF)){
+      message("\tSkip: ",strF," exists!")
+      return()
+    }
+
     message("===== read counts and meta information =====")
     counts <- getUMI(env$strCount)
     allMeta <- getMeta(env$strMeta)[colnames(counts),]
     allMeta$cell <- rownames(allMeta)
-    message("===== ",env$method,":",cluster_interest," =====")
     #strOut <- paste0(env$output,"/",env$method,"_",env$column_cluster,"/")
     #system(paste("mkdir -p",strOut))
-    strOut <- env$output
-    if(!is.null(env$column_group)){
-        strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",
-                                        gsub("_",".",paste(env$column_cluster,cluster_interest,sep=":")),"_",
-                                        env$method,
-                                        ".QC.pdf"))
-        sce <- BiostatsSingleCell$new(count_data = counts,
-                                      meta_data = allMeta,
-                                      sampleId_col = env$column_sample,
-                                      cluster_col = env$column_cluster,
-                                      treatment_col = env$column_group)
-        sce$set_group_mode(cluster_of_interest = cluster_interest, ref_group = env$grp_ref, alt_group =env$grp_alt)
-
-    }else{
-        strF <- file.path(strOut,paste0(cluster_interest,".vs.Rest","_",gsub("_",".",env$column_cluster),".QC.pdf"))
-        intrestGrp <- as.character(allMeta[,env$column_cluster])
-        intrestGrp[intrestGrp!=cluster_interest] <- "others"
-        meta <- cbind(allMeta,all="all",intrestGrp=intrestGrp)
-        
-        sce <- BiostatsSingleCell$new(count_data = counts,
-                                      meta_data = meta,
-                                      sampleId_col = env$column_sample,
-                                      cluster_col = "all",
-                                      treatment_col = "intrestGrp")
-        sce$set_group_mode(cluster_of_interest = "all", ref_group = "others", alt_group = cluster_interest)
-        
-    }
-    sce$make_QCplots(strF)
+    sce <- BiostatsSingleCell$new(count_data = counts,
+                                  meta_data = allMeta,
+                                  sampleId_col = env$column_sample,
+                                  cluster_col = env$column_cluster,
+                                  treatment_col = env$column_group)
+    sce$set_group_mode(cluster_of_interest = cluster_interest, ref_group = env$grp_ref, alt_group =env$grp_alt)
+    sce$make_QCplots(gsub("csv$","QC.pdf",strF))
     sce$apply_filter(min.cells.per.gene = env$min.cells.per.gene, min.genes.per.cell = env$min.genes.per.cell,
                      min.perc.cells.per.gene = env$min.perc.cells.per.gene,perc_filter = env$perc_filter) # 0% expression requirement
-    strF <- gsub("QC.pdf","csv",strF)
-    
+
     if(tryCatch({
         sce_qc <- sce$apply_filter_contrasts_R6(min.cells.per.gene = env$R6_min.cells.per.gene,
                                                 min.perc.cells.per.gene = env$R6_min.perc.cells.per.gene,
@@ -336,7 +338,7 @@ scRNAseq_DE_one <- function(
         p <- sce_qc$volcanoPlot(FDR_threshold = 0.05, FC_threshold = 2, title = env$method)
         ggsave(gsub("csv","png",strF))
     }
-    message("Successful!")
+    
 }
 
 args <- commandArgs(trailingOnly=TRUE)
@@ -349,10 +351,11 @@ if(length(args)==1){
 if(length(args)>1){
   selGrp <- paste(args[-1],collapse=" ")
   #message("\n\n\n",args[-1],": ",selGrp,"\n\n\n")
-  print(system.time(
+  print(system.time({
     scRNAseq_DE_one(readRDS("env.rds"),
                     selGrp,
                     args[1])
-  ))
+    message("Successful!")
+  }))
 }
 

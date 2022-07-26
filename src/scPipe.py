@@ -70,7 +70,7 @@ def submit_cmd(cmds,config,core=None):
         print("%s process error return: @%s"%(one,strError))
   elif parallel=="sge":
     jID = qsub(cmds,config['output'],core)
-    print("----- Monitoring all submitted SGE jobs ...")
+    print("----- Monitoring all submitted SGE jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
     cmdN = {one:1 for one in cmds.keys()}
     while True:
@@ -255,7 +255,7 @@ def initSave(meta,strInput):
   # save empty DE csv table
   strDEG = os.path.join(strOut,"DEGinfo.csv")
   with open(strDEG,"w") as f:
-    f.write("sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
+    f.write("comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
 
   # save config file
   config = getConfig("template.yml",True)
@@ -288,7 +288,7 @@ def initExternal(strInput):
   # save empty DE csv table
   strDEG = os.path.join(strInput,"DEGinfo.csv")
   with open(strDEG,"w") as f:
-    f.write("sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
+    f.write("comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
 
   configL = getConfig("template.yml",blines=True)
   configL = [one.replace("initOutput",strInput) for one in configL]
@@ -777,9 +777,11 @@ def runDEG(strConfig,prefix,config):
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
     submit_cmd(scDEGtask,config,1)
-    formatDEG(scDEGtask,prefix)
-def formatDEG(DEGcmds,prefix):
+    formatDEG(prefix)
+def formatDEG(prefix):
   print("=== Formating scDEG results to create the db file ===")
+  with open("%s_scDEG.cmd.json"%prefix,"r") as f:
+      DEGcmds = json.load(f)
   DEGpaths = list(set([one.split(";")[0].replace("cd ","") for k,one in DEGcmds.items()]))
   csv = []
   for onePath in DEGpaths:
@@ -787,6 +789,7 @@ def formatDEG(DEGcmds,prefix):
       strCSV = os.path.join(onePath,f)
       if not os.path.isfile(strCSV) or not f.endswith("csv"):
         continue
+      print("\tprocessing: ",f)
       tab = pd.read_csv(strCSV).iloc[:,0:4]
       tab.columns = ["gene","log2fc","pval","qval"]
       tags = f[:-4].split("_")
