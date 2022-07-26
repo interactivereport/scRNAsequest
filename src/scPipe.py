@@ -17,7 +17,7 @@ batchKey="library_id"
 Rmarkdown="Rmarkdown"
 beRaster=True
 # maximum number of a parallel job can be re-submited is 5
-maxJobSubmitRepN=2 
+maxJobSubmitRepN=2
 logging.disable()
 def run_cmd(cmd):
   #print(cmd)
@@ -49,7 +49,7 @@ def checkInstallSetting():
     print("=====\nPlease contact admin to set the sys.yml in %s.\nAn Example is 'sys_example.yml'.\n====="%strPipePath)
     exit()
 
-## parallel job management 
+## parallel job management
 def submit_cmd(cmds,config,core=None):
   #cmds = {k:v for i, (k,v) in enumerate(cmds.items()) if not v is None}
   if len(cmds)==0:
@@ -161,7 +161,7 @@ def qstat(jID,strPath,cmds,cmdN,core):
   #  ## wait for 1 min if any running jobs
   #  time.sleep(60)
   #  qstat(jID,strPath,cmds,core,iN)
-  
+
 ## msg
 def MsgPower():
   sysConfig = getConfig()
@@ -182,14 +182,14 @@ def MsgInit():
     gitConfig = configparser.ConfigParser()
     tmp = gitConfig.read(os.path.join(strPipePath,".git","config"))
     url = gitConfig['remote "origin"']['url']
-    
+
     gitLog = pd.read_csv(os.path.join(strPipePath,".git","logs","HEAD"),sep="\t",header=None)
     gitLog = gitLog.iloc[-1,0].split(" ")
     print("###########\n## scRNAsequest: %s"%url)
     print("## Pipeline Path: %s"%strPipePath)
     print("## Pipeline Date: %s %s"%(datetime.fromtimestamp(int(gitLog[4])).strftime('%Y-%m-%d %H:%M:%S'),gitLog[5]))
     print("## git HEAD: %s\n###########\n"%gitLog[1])
-    
+
 ## init projects
 def initProject(strDNAnexus):
   if os.path.isdir(strDNAnexus):
@@ -209,7 +209,7 @@ def initMeta(strInput):
   meta = pd.read_csv(strMeta,sep="\t")
   sysConfig = getConfig()
   config = getConfig("template.yml")
-  
+
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     if not 'notMeta' in sysConfig.keys():
@@ -221,7 +221,7 @@ def initMeta(strInput):
     meta.insert(0,IntronExon,strInEx)
 
   meta.insert(0,UMIcol,["%s/%s.filtered_feature_bc_matrix.h5"%(strInput,one) for one in meta[config["sample_name"]]])
-  
+
   for oneH5 in meta[UMIcol]:
     if not os.path.isfile(oneH5):
       Exit("The UMI h5 file %s does not exist, please correct the sample sheet"%oneH5)
@@ -247,11 +247,11 @@ def initSave(meta,strInput):
     ix +=1
     strOut="%s/sc%s_%d"%(strInput,datetime.today().strftime('%Y%m%d'),ix)
   os.makedirs(strOut)
-  
+
   # save meta file
   strMeta = os.path.join(strOut,"sampleMeta.csv")
   meta.to_csv(strMeta,index=False)
-  
+
   # save empty DE csv table
   strDEG = os.path.join(strOut,"DEGinfo.csv")
   with open(strDEG,"w") as f:
@@ -311,14 +311,14 @@ def initMsg(strConfig):
     print("\n===> scAnalyzer %s"%strConfig)
     MsgPower()
 
-## pipeline run 
+## pipeline run
 def runPipe(strConfig):
   sc.settings.n_jobs=1
   config = getConfig(strConfig,bSys=False)
   config = checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
   prefix = runQC(config,meta)
-  
+
   if not os.path.isfile("%s.h5ad"%prefix) or config["newProcess"]:
     methods = runMethods(prefix,strConfig)
     combine(methods,prefix,config)
@@ -383,11 +383,12 @@ def plotSeqQC(meta,sID,strOut,grp=None):
   Rmarkdown = os.path.join(strOut,Rmarkdown)
   if not os.path.isdir(Rmarkdown):
     os.mkdir(Rmarkdown)
-  
+
   seqQC = []
   for i in range(meta.shape[0]):
     strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
     if os.path.isfile(strF):
+      print("QC: %s"%strF)
       one = pd.read_csv(strF,thousands=",")
       one.index=[meta[sID][i]]
       seqQC.append(one)
@@ -404,7 +405,7 @@ def plotSeqQC(meta,sID,strOut,grp=None):
   QC['sample'] = QC.index
   h = 4.8
   w = max(6.4,QC.shape[0]*2/10)
-  
+
   with PdfPages("%s/sequencingQC.pdf"%strOut) as pdf:
     for one in k:
       ax = QC.plot.bar(x='sample',y=one,rot=90,legend=False,figsize=(w,h))
@@ -452,7 +453,7 @@ def getData(meta,sID):
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
-    
+
     ## add intro/exon counts/ratio if exists
     if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
       IE = getIntronExon(meta[IntronExon][i],adata.obs_names)
@@ -463,12 +464,12 @@ def getData(meta,sID):
       adata = adata[adata.obs.index.isin(list(annMeta.index))]
       adata.obs = pd.merge(adata.obs,annMeta,left_index=True,right_index=True)
       print("\t\tCell level meta available, cell number: %d"%adata.shape[0])
-      
+
     for one in meta.columns:
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
     adatals.append(adata)
-  
+
   adata = sc.AnnData.concatenate(*adatals,
     batch_categories=meta[sID],
     batch_key=batchKey)
@@ -521,7 +522,7 @@ def preprocess(adata,config):
         adata = adata[:, np.invert(gList)]
   else:
     Exit("Unknown config format! Either 'MTstring' or 'gene_group' is required")
-  
+
   return adata
 def filtering(adata,config):
   print("filtering ...")
@@ -530,9 +531,9 @@ def filtering(adata,config):
   min_features=config["min.features"]
   highCount_cutoff=config["highCount.cutoff"]
   highGene_cutoff=config["highGene.cutoff"]
-  
+
   filterRes=["Filter,cutoff,cell_number,gene_number\n"]
-  
+
   print("\tfiltering cells and genes")
   if "mt.cutoff" in config.keys():
     mt_cutoff=config["mt.cutoff"]
@@ -549,7 +550,7 @@ def filtering(adata,config):
       print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],adata.shape[0]))
   else:
     Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
-  
+
   ## filtering low content cells and low genes
   sc.pp.filter_genes(adata,min_cells=min_cells)
   filterRes.append("min cell,%d,%d,%d\n"%(min_cells,adata.shape[0],adata.shape[1]))
@@ -579,7 +580,7 @@ def obtainRAWobsm(D,reg=None):
   D = D[:, D.var.highly_variable]
   if not reg is None:
     sc.pp.regress_out(D, reg)#['total_counts', 'pct_counts_mt']
-  
+
   sc.pp.scale(D, max_value=10)
   sc.tl.pca(D, svd_solver='arpack',n_comps = 100)
   npcs = 50
@@ -587,7 +588,7 @@ def obtainRAWobsm(D,reg=None):
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     sc.tl.louvain(D,key_added="raw.louvain")
-    ## umap embedding 
+    ## umap embedding
     print("\tembedding ...")
     sc.tl.umap(D, init_pos='spectral')
     sc.tl.rank_genes_groups(D, 'raw.louvain')
@@ -604,7 +605,7 @@ def plotQC(adata,strPDF,grp=None):
 
     w = max(6.4,adata.obs[batchKey].nunique()*2/10)
     plt.rcParams["figure.figsize"] = (w,4.8)
-    
+
     savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=batchKey,rotation=90,show=False),
       pdf,"%s_counts.png"%strRmark)
     savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90,show=False),
@@ -615,7 +616,7 @@ def plotQC(adata,strPDF,grp=None):
         pdf,"%s_%s.png"%(strRmark,k))
 
     plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
-    
+
     if not grp==None:
       for oneG in grp:
         if oneG in adata.obs.columns:
@@ -624,7 +625,7 @@ def plotQC(adata,strPDF,grp=None):
 
           w = max(6.4,adata.obs[oneG].nunique()*2/10)
           plt.rcParams["figure.figsize"] = (w,4.8)
-          
+
           savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
                       pdf,"%s_%s_genes.png"%(strRmark,oneG))
           savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
@@ -648,17 +649,17 @@ def runMethods(prefix,strConfig):
   sysConfig = getConfig()
   config = getConfig(strConfig,bSys=False)
   checkLock(config,sysConfig)
-  
+
   cmds = {}
   allM = sysConfig['methods']
   for m in allM.keys():
     if not config["newProcess"] and os.path.isfile("%s_%s.h5ad"%(prefix,m)):
       continue
-    # /home/zouyang/projects/scRNAsequest/src/SCT.py 
+    # /home/zouyang/projects/scRNAsequest/src/SCT.py
     # /home/zouyang/projects/scRNAsequest/src/harmony.py
     # /home/zouyang/projects/scRNAsequest/src/seurat.py
     # /home/zouyang/projects/scRNAsequest/src/seuratRef.py
-    
+
     # /camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_raw.h5ad config.yml
     cmd="%s/src/%s %s_%s.h5ad %s"%(strPipePath,
                                     allM[m][0],
@@ -686,13 +687,13 @@ def combine(mIDs,prefix,config):
   CKmethods = [one for one in mIDs if os.path.isfile("%s_%s.h5ad"%(prefix,one))]+['raw']
   if not "SCT" in CKmethods:
     Exit("SCT is missing! and it is required expression for visualization!")
-  
+
   cmd="Rscript %s/src/kBET.R %s %s"%(strPipePath,prefix,",".join(CKmethods))
   submit_cmd({"kBET":cmd,
               "silhouette":"%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods))},
             config)
   #run_cmd("%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods)))
-  
+
   print("combining all methods results ...")
   D = integrateH5ad("%s_SCT.h5ad"%prefix,CKmethods,prefix,config.get("major_cluster_rate"))
   Draw = integrateH5ad("%s_raw.h5ad"%prefix,CKmethods,prefix,config.get("major_cluster_rate"))
@@ -731,7 +732,7 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None):
     for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
       for aLabel in seuratRefLab:
         D.obs["%s_%s"%(aCluster,aLabel)] = findMajor(D.obs[[aCluster,aLabel]],majorR)
-    
+
   ## remove NA/nan
   for one in D.obs.columns:
     if D.obs[one].isna().sum()>0:
@@ -749,7 +750,7 @@ def findMajor(X,majorR):
   Xmax["name"] = Xmax.apply(lambda x:x[colName[1]] if x['count']/x['sum']>0.7 else x[colName[0]],axis=1)
   Xsel = Xmax.set_index(colName[0])['name'].to_dict()
   return(X[colName[0]].map(Xsel))
-  
+
 def moveCellDepot(prefix):
   sysConfig = getConfig()
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
@@ -807,10 +808,10 @@ def main():
   strPipePath=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
   checkInstallSetting()
   MsgInit()
-  
+
   if len(sys.argv)<2:
     MsgHelp()
-    
+
   strPath = sys.argv[1]
   if os.path.isdir(strPath):
     initProject(strPath)
@@ -818,7 +819,7 @@ def main():
     runPipe(os.path.realpath(strPath))
   else:
     print("The config file is required, and %s doesn't exist!"%strPath)
-  
+
 qsubScript='''#!/bin/bash
 #$ -N jID_jName
 #$ -wd wkPath
@@ -830,7 +831,7 @@ qsubScript='''#!/bin/bash
 cat $PE_HOSTFILE
 echo 'end of HOST'
 
-# exit 
+# exit
 set -e
 
 env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
