@@ -70,7 +70,8 @@ main <- function(strConfig){
     if("comparisonName"%in%names(x)){
       strOut <- file.path(scDEGpath,x["comparisonName"])
     }else{
-      strD <- paste(c(gsub("_",".",x[c("cluster","group","method","model")])),collapse="_")
+      strD <- paste(c(gsub("_",".",c(paste(x[c("alt","ref")],collapse=".vs."),
+                                     x[c("cluster","group","method","model")]))),collapse="_")
       strOut <- list.files(scDEGpath,strD)
       if(length(strOut)>0) strOut <- file.path(scDEGpath,strOut[1])
       else strOut <- file.path(scDEGpath,strD)

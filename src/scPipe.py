@@ -50,7 +50,7 @@ def checkInstallSetting():
     exit()
 
 ## parallel job management
-def submit_cmd(cmds,config,core=None):
+def submit_cmd(cmds,config,core=None,memG=0):
   #cmds = {k:v for i, (k,v) in enumerate(cmds.items()) if not v is None}
   if len(cmds)==0:
     return
@@ -69,12 +69,12 @@ def submit_cmd(cmds,config,core=None):
       except subprocess.CalledProcessError as e:
         print("%s process error return: @%s"%(one,strError))
   elif parallel=="sge":
-    jID = qsub(cmds,config['output'],core)
+    jID = qsub(cmds,config['output'],core,memG=memG)
     print("----- Monitoring all submitted SGE jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
     cmdN = {one:1 for one in cmds.keys()}
     while True:
-      qstat(jID,config['output'],cmds,cmdN,core)
+      qstat(jID,config['output'],cmds,cmdN,core,memG)
       if len(cmds)==0:
         break
       ## wait for 1 min if any running jobs
@@ -85,7 +85,7 @@ def submit_cmd(cmds,config,core=None):
     print("ERROR: unknown parallel setting: %s"%parallel)
     exit()
 
-def qsub(cmds,strPath,core,jID=None):
+def qsub(cmds,strPath,core,memG=0,jID=None):
   if jID is None:
     jID = "j%d"%random.randint(10,99)
   strWD = os.path.join(strPath,jID)
@@ -94,8 +94,12 @@ def qsub(cmds,strPath,core,jID=None):
   except FileExistsError:
     pass
   noRun = []
+  if memG==0:
+    qsubTmp = "\n".join([i for i in qsubScript.split("\n") if not "MEMFREE" in i])
+  else:
+    qsubTmp = qsubScript.replace('MEMFREE',str(memG))
   for one in cmds.keys():
-    oneScript = (qsubScript.replace('qsubCore',str(core))
+    oneScript = (qsubTmp.replace('qsubCore',str(core))
                             .replace('jName',one)
                             .replace('wkPath',strWD)
                             .replace("jID",jID)
@@ -108,7 +112,7 @@ def qsub(cmds,strPath,core,jID=None):
   for one in noRun:
     del cmds[one]
   return jID
-def qstat(jID,strPath,cmds,cmdN,core):
+def qstat(jID,strPath,cmds,cmdN,core,memG):
   print(".",end="")
   strWD = os.path.join(strPath,jID)
   qstateCol=4 # make sure the state of qstat is the 4th column (0-index)
@@ -152,7 +156,7 @@ def qstat(jID,strPath,cmds,cmdN,core):
         print("\tFinished: %s"%one)
         finishedJob.append(one)
   if len(resub)>0:
-    re1=qsub(resub,strPath,core,jID)
+    re1=qsub(resub,strPath,core,memG,jID)
     time.sleep(5) #might not needed for the qsub to get in
   for one in finishedJob:
     del cmds[one]
@@ -770,13 +774,15 @@ def runDEG(strConfig,prefix,config):
   D = pd.read_csv(config['DEG_desp'],header=0)
   if D.shape[0]==0:
     return
+  
   cmd = "Rscript %s/src/scRNAseq_DE.R %s"%(strPipePath,strConfig)
   msg = run_cmd(cmd).stdout.decode("utf-8")
   #msg="scDEG task creation completed"
   if "scDEG task creation completed" in msg:
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
-    submit_cmd(scDEGtask,config,1)
+    memG = math.ceil(os.path.getsize("%s_raw.h5ad"%prefix)*5/1e9)
+    submit_cmd(scDEGtask,config,1,memG)
     formatDEG(prefix)
 def formatDEG(prefix):
   print("=== Formating scDEG results to create the db file ===")
@@ -827,6 +833,7 @@ qsubScript='''#!/bin/bash
 #$ -N jID_jName
 #$ -wd wkPath
 #$ -pe node qsubCore
+#$ -l m_mem_free=MEMFREEG
 #$ -o jName.log
 #$ -e jName.log
 #- End UGE embedded arguments
