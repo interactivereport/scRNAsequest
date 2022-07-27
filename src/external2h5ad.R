@@ -317,7 +317,7 @@ processSCT <- function(D,batch=NULL){
 processLayout <- function(D,reduction,config){
   message("\tobtain the layout reduction")
   if(length(reduction)==0){
-    message()
+    stop("Empty reduction layout")
     if(length(VariableFeatures(D))<50) D <- FindVariableFeatures(D, nfeatures = 3000)
     D <- RunPCA(D, features = VariableFeatures(D))
     D <- RunUMAP(D,dims=1:50)

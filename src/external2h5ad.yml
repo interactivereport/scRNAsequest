@@ -17,6 +17,6 @@ sample_column: #one column header from annotation file, if the one expression fi
 # cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
 reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
   files: [] #full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
-  umap: [] # column headers from layout file to be used
-  tsne: [] # column headers from layout file to be used
-  pca: [] # column headers from layout file to be used (can be more than 2 dimentions though only first two will be shown in VIP)
+  umap: [] # column headers from layout file to be used, please use quote for each column header
+  tsne: [] # column headers from layout file to be used, please use quote for each column header
+  pca: [] # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)
