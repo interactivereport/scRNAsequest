@@ -310,6 +310,8 @@ processSCT <- function(D,batch=NULL){
     D <- merge(Dlist[[1]], y=Dlist[-1])
     VariableFeatures(D) <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
   }
+  if(length(D@reductions)==0)
+    stop("No reduction layout is extracted successfully")
   return(D)
 }
 processLayout <- function(D,reduction,config){
