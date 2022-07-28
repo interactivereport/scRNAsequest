@@ -38,7 +38,7 @@ MsgInit <- function(){
 }
 MsgHelp <- function(){
   message("\nsc2celldepot /path/to/a/output/folder === or === sc2celldepot /path/to/a/config/file\n")
-  message("The folder will be created if it does not exist.")
+  message("Please create the folder before running sc2celldepot.")
   message("The data config file will be generated automatically when a path is provided")
   MsgPower()
   q()
@@ -310,8 +310,6 @@ processSCT <- function(D,batch=NULL){
     D <- merge(Dlist[[1]], y=Dlist[-1])
     VariableFeatures(D) <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
   }
-  if(length(D@reductions)==0)
-    stop("No reduction layout is extracted successfully")
   return(D)
 }
 processLayout <- function(D,reduction,config){
@@ -324,9 +322,15 @@ processLayout <- function(D,reduction,config){
   }else{
     commKey <- Reduce(intersect,lapply(reduction,colnames))
     if(length(config$expression)==length(reduction)){
-      message("\tmatching cell ID ...")
+      message("\t\tmatching cell ID ...")
+      cID <- rownames(D@meta.data)
       for(i in 1:length(reduction)){
-        rownames(reduction[[i]]) <- paste0("S",i,"_",rownames(reduction[[i]]))
+        cID1 <- rownames(reduction[[i]])
+        cID2 <- paste0("S",i,"_",rownames(reduction[[i]]))
+        if(sum(cID1%in%cID)<sum(cID2%in%cID)){
+          rownames(reduction[[i]]) <- cID2
+          message("\t\t\tupdating cell name to:": paste(head(cID2),collapse=", "))
+        }
       }
     }
     reduction <- lapply(reduction,function(x)return(x[,commKey]))
@@ -335,27 +339,30 @@ processLayout <- function(D,reduction,config){
     for(one in names(config$reduction)){
       if(one=="files") next
       if(sum(config$reduction[[one]]%in%commKey)<2){
-        message("Less than 2 dimension for ",one,"--- skip ---")
+        message("\t\t",one,": Less than 2 dimension --- skip ---")
         next
       }
       oneReduction <- as.matrix(reduction[rownames(reduction)%in%rownames(D@meta.data),
                                     colnames(reduction)%in%config$reduction[[one]]])
-      message("\t",nrow(oneReduction)," cells overlap with expression and annotation")
+      message("\t\t",one,": ",nrow(oneReduction)," cells overlap with expression and annotation")
       if(nrow(oneReduction)<10){
-        message("\t\t--- skip ---")
+        message("\t\t\t--- skip ---")
         next
       }
-      if(sum(!rownames(D@meta.data)%in%rownames(oneReduction))){
+      if(sum(!rownames(D@meta.data)%in%rownames(oneReduction))>0){
         message("adding 0 for missing cells in reduction ",one)
         cID <- rownames(D@meta.data)[!rownames(D@meta.data)%in%rownames(oneReduction)]
         oneReduction <- rbind(oneReduction,matrix(0,nrow=length(cID),ncol=ncol(oneReduction),
                                             dimnames=list(cID,colnames(oneReduction))))
       }
-
+      colnames(oneReduction) <- paste(one,1:ncol(oneReduction),sep="_")
       D[[one]] <- CreateDimReducObject(embeddings=oneReduction,
-                                       key=paste0(one,"_"))
+                                       key=paste0(one,"_"),
+                                       assay=D@active.assay)
     }
   }
+  if(length(D@reductions)==0)
+    stop("No reduction layout is extracted successfully")
   return(D)
 }
 ## main ---------

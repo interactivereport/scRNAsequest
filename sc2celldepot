@@ -9,5 +9,15 @@ if [[ ! -f "$src/.env" ]]; then
   exit
 fi
 
-env -i strIn="$strIn" src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/external2h5ad.R $strIn'
-# 2>&1 | tee -a $strIn.log
+
+if [[ -f "$strIn" ]]; then
+  env -i strIn="$strIn" src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/external2h5ad.R $strIn 2>&1 | tee -a $(dirname $strIn)/sc2celldepot.$(date +%Y%m%d).log'
+elif [[ -d "$strIn" ]]; then
+  env -i strIn="$strIn" src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/external2h5ad.R $strIn 2>&1 | tee -a $(dirname $strIn)/sc2celldepot.$(date +%Y%m%d).log'
+elif [[ ${#strIn} -gt 1 ]]; then
+  echo "$strIn does NOT exist!"
+else
+  env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;Rscript $src/external2h5ad.R'
+fi
+
+
