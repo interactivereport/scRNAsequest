@@ -95,6 +95,12 @@ def addAnnotation(args):
 def exportAnnotation(args):
   D = ad.read_h5ad(args.h5ad,backed="r")
   X = D.obs
+  # first two embedding
+  for one in D.obsm_keys():
+    emBed = pd.DataFrame(D.obsm[one],index=D.obs_names).iloc[:,range(2)]
+    emBed.columns = ["%s_%d"%(one,i+1) for i in range(2)]
+    X= X.merge(emBed,"left",left_index=True,right_index=True)
+  
   if len(args.changes)>0:
     genes = args.changes.split(",")
     lackG = [one for one in genes if not one in D.var_names]
