@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-appEnvName="scRNAsequest1"
+appEnvName="scRNAsequest"
 
 condaPath=$(which conda)
 if [[ ${#condaPath} -lt 3 ]]; then
