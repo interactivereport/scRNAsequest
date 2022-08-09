@@ -27,6 +27,7 @@ echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
 echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
 echo "export SGE_QMASTER_PORT=$SGE_QMASTER_PORT" >> $src/.env
 echo "export SGE_ROOT=$SGE_ROOT" >> $src/.env
+echo "export SLURM_CONF=$SLURM_CONF" >> $src/.env
 conda deactivate
 
 ## additional packages which are not available on anaconda
@@ -35,6 +36,4 @@ env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppress
 env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v1.1.7",upgrade="never",upgrade_dependencies=F)})'"'"
 env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.4.1",upgrade="never",upgrade_dependencies=F)})'"'"
 
-echo "If no errors above, scRNAsequest installation is successful!
-
-"
+echo "If no errors above, scRNAsequest installation is successful!"
