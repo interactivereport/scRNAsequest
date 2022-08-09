@@ -231,7 +231,7 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs):
     jName=jobDetail.get('JobName')
     if jName is None:
       continue
-    jNames.append(jName)
+    jNames.append(jName.replace(jID+"_",""))
   # check the finished job, resubmit if not sucessfully finished
   resub = {}
   finishedJob = []
@@ -794,18 +794,19 @@ def runMethods(prefix,strConfig):
   submit_cmd(cmds,config)
   return allM.keys()
 def checkLock(config,sysConfig):
-  strH5ad = os.path.join(sysConfig['celldepotDir'],"%s.h5ad"%config['prj_name'])
-  strLock = "%s.lock"%strH5ad
-  if not config['overwrite']:
-    if os.path.isfile(strH5ad):
-      uName = pwd.getpwuid(os.stat(strH5ad).st_uid).pw_name
-      Exit("ERROR: The project %s (owned by %s) does already exist! If you are sure to overwrite, please update config with 'overwrite: True'!"%(config['prj_name'],uName))
+  if sysConfig['celldepotDir'] is not None:
+    strH5ad = os.path.join(sysConfig['celldepotDir'],"%s.h5ad"%config['prj_name'])
+    strLock = "%s.lock"%strH5ad
+    if not config['overwrite']:
+      if os.path.isfile(strH5ad):
+        uName = pwd.getpwuid(os.stat(strH5ad).st_uid).pw_name
+        Exit("ERROR: The project %s (owned by %s) does already exist! If you are sure to overwrite, please update config with 'overwrite: True'!"%(config['prj_name'],uName))
+      if os.path.isfile(strLock):
+        uName = pwd.getpwuid(os.stat(strLock).st_uid).pw_name
+        Exit("ERROR: User %s is in the process of project %s. If you are sure to overwrite, please update config with 'overwrite: True'!"%(uName,config['prj_name']))
     if os.path.isfile(strLock):
-      uName = pwd.getpwuid(os.stat(strLock).st_uid).pw_name
-      Exit("ERROR: User %s is in the process of project %s. If you are sure to overwrite, please update config with 'overwrite: True'!"%(uName,config['prj_name']))
-  if os.path.isfile(strLock):
-    os.remove(strLock)
-  run_cmd("touch %s"%strLock)
+      os.remove(strLock)
+    run_cmd("touch %s"%strLock)
 def combine(mIDs,prefix,config):
   print("Evaluating all methods ...")
   CKmethods = [one for one in mIDs if os.path.isfile("%s_%s.h5ad"%(prefix,one))]+['raw']
@@ -877,6 +878,10 @@ def findMajor(X,majorR):
 
 def moveCellDepot(prefix):
   sysConfig = getConfig()
+  if sysConfig['celldepotDir'] is None:
+    print("*** CellDeport is NOT setup ***")
+    print("=== scAnalyzer is completed ===")
+    return()
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
   if os.path.isfile("%s.db"%prefix):
     shutil.copy("%s.db"%prefix, sysConfig['celldepotDir'])
@@ -970,11 +975,12 @@ echo 'DONE'
 sbatchScript='''#!/bin/bash
 #SBATCH -J jID_jName
 #SBATCH -D wkPath
-#SBATCH -n node qsubCore
+#SBATCH -n CoreNum
+#SBATCH -t 72:0:0
 #SBATCH --mem=MEMFREEG
 #SBATCH -o jName.log
 #SBATCH -e jName.log
-#- End UGE embedded arguments
+#- End embedded arguments
 echo $SLURM_JOB_NODELIST
 echo 'end of HOST'
 
