@@ -73,12 +73,19 @@ def submit_cmd(cmds,config,core=None,memG=0):
     print("----- Monitoring all submitted SGE jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
     cmdN = {one:1 for one in cmds.keys()}
+    failedJobs = {}
     while True:
-      qstat(jID,config['output'],cmds,cmdN,core,memG)
+      qstat(jID,config['output'],cmds,cmdN,core,memG,failedJobs)
       if len(cmds)==0:
         break
       ## wait for 1 min if any running jobs
       time.sleep(60)
+    if len(failedJobs)>0:
+      print("\n\n*** The following jobs failed:")
+      for k,one in failedJobs.items():
+        print("\t--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
+      print("\n*** Please check log files in %s folder and consider rerun the analysis!"%jID)
+
   elif parallel=="slurm":
     pass
   else:
@@ -112,7 +119,7 @@ def qsub(cmds,strPath,core,memG=0,jID=None):
   for one in noRun:
     del cmds[one]
   return jID
-def qstat(jID,strPath,cmds,cmdN,core,memG):
+def qstat(jID,strPath,cmds,cmdN,core,memG,failedJobs):
   print(".",end="")
   strWD = os.path.join(strPath,jID)
   qstateCol=4 # make sure the state of qstat is the 4th column (0-index)
@@ -145,7 +152,8 @@ def qstat(jID,strPath,cmds,cmdN,core,memG):
       if not "DONE" in run_cmd("tail -n 1 %s"%strLog).stdout.decode("utf-8"):
         cmdN[one] += 1
         if cmdN[one]>maxJobSubmitRepN:
-          print("\n--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
+          #print("\n--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
+          failedJobs[len(failedJobs)+1] = one
           finishedJob.append(one)
           continue
         resub[one] = cmds[one]
@@ -781,7 +789,7 @@ def runDEG(strConfig,prefix,config):
   if "scDEG task creation completed" in msg:
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
-    memG = math.ceil(os.path.getsize("%s_raw.h5ad"%prefix)*5/1e9)
+    memG = math.ceil(os.path.getsize("%s_raw.h5ad"%prefix)*50/1e9)
     submit_cmd(scDEGtask,config,1,memG)
     formatDEG(prefix)
 def formatDEG(prefix):
