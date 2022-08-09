@@ -57,3 +57,4 @@ dependencies:
   - multicore-tsne=0.1
   - r-bookdown=0.26
   - r-knitr=1.39
+  - r-kableextra=1.3.4
