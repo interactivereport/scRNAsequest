@@ -2,7 +2,7 @@ import sys, argparse, time, os, warnings, yaml, gc, h5py
 import anndata as ad
 import pandas as pd
 
-maxG=50 # maximun number of genes can be exported
+maxG=500 # maximun number of genes can be exported
 def MsgPower():
   strConfig = "%s/src/sys.yml"%strPipePath
   with open(strConfig,"r") as f:
