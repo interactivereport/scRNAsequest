@@ -10,14 +10,18 @@ PKGloading <- function(){
   options(future.globals.maxsize=3145728000)
 }
 
-processH5ad <- function(strH5ad,batch,strOut){
+processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   X <- getX(strH5ad)
   gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
   rownames(X) <- names(gID) #gsub("_","-",rownames(X))
   D <- CreateSeuratObject(counts=X,
                           project="SCT",
                           meta.data=getobs(strH5ad))
-  Dmedian <- median(colSums(D@assays$RNA@counts))
+  Dmedian <- NA
+  if(!bPrepSCT){
+    message("\t***median UMI is used to normalize across samples by scale_factor from vst***")
+    Dmedian <- median(colSums(D@assays$RNA@counts))#min(colSums(D@assays$RNA@counts))#
+  }
   Dlist <- SplitObject(D,split.by=batch)
   Dlist <- sapply(Dlist,function(one,medianUMI){
     message("\t\tSCT one ...")
@@ -36,6 +40,10 @@ processH5ad <- function(strH5ad,batch,strOut){
     SCT <- Dlist[[1]]
   }else{
     SCT <- merge(Dlist[[1]], y=Dlist[-1])
+    if(!is.null(bPrepSCT) && bPrepSCT){
+      message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
+      SCT <- PrepSCTFindMarkers(SCT)
+    }
   }
   saveX(SCT,strOut,gID)
 }
@@ -86,12 +94,19 @@ main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
   args = commandArgs(trailingOnly=TRUE)
-  if(length(args)<2) stop("Path to h5ad file and the output file are required!")
+  if(length(args)<3) stop("Path to h5ad file, the output file and config file are required!")
   strH5ad <- args[1]
   if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
   strOut <- args[2]
-  if(length(args)>2) batchKey <- args[3]
-  print(system.time(processH5ad(strH5ad,batchKey,strOut)))
+  strConfig <- args[3]
+  if(!file.exists(strConfig)){
+    stop(paste0("Config file (",strConfig,") does not exist!"))
+  }else{
+    config <- yaml::read_yaml(strConfig)
+  }
+  if(length(args)>3) batchKey <- args[4]
+  
+  print(system.time(processH5ad(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
 }
 
 main()

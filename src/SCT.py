@@ -20,9 +20,12 @@ def main():
   if not strH5ad.endswith("raw.h5ad"):
     msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
   strH5 = strH5ad.replace("raw.h5ad","SCT.h5")
+  strConfig = sys.argv[2]
+  if not os.path.isfile(strConfig):
+    msgError("ERROR: %s does not exist!"%strConfig)
   
-  cmd = "Rscript %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"SCT.R"),
-                            strH5ad,strH5)
+  cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"SCT.R"),
+                            strH5ad,strH5,strConfig)
   subprocess.run(cmd,shell=True,check=True)
   if not os.path.isfile(strH5):
     msgError("".join(cmdR.stdout.decode("utf-8"))+"\nERROR: SCTransform failed!")

@@ -26,6 +26,7 @@ rasterizeFig: True # should image in pdf be rasterized
 
 runAnalysis: False
 newProcess: False
+PrepSCTFindMarkers: True # should the "PrepSCTFindMarkers" applied on SCT to be exported for visualization expression
 parallel: False #"sge" or "slurm"
 core: 2
 overwrite: False
