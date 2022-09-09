@@ -49,7 +49,6 @@ main <- function(){
   if(length(args)<2) stop("Path to 3 files are required!")
   strH5ad <- args[1]
 
-  print(Sys.time())
   print(system.time({
     D <- CreateSeuratObject(counts=getX(strH5ad),
                                  project="SCT",
@@ -57,7 +56,7 @@ main <- function(){
     # split cells based on project id
     Dlist <- SplitObject(D, split.by = batchKey)
     ## following https://satijalab.org/seurat/articles/integration_rpca.html (with SCTransform)
-    Dmedian <- median(colSums(D@assays$RNA@counts))
+    #Dmedian <- median(colSums(D@assays$RNA@counts))
     rm(D)
     gc()
     Dlist <- sapply(Dlist,function(one,medianUMI){
@@ -69,7 +68,7 @@ main <- function(){
         SCTransform(one,method = 'glmGamPoi',
                     new.assay.name="SCT",
                     return.only.var.genes = FALSE,
-                    scale_factor=medianUMI,
+                    #scale_factor=medianUMI,
                     verbose = FALSE)
       )))
     },Dmedian)

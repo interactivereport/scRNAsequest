@@ -11,6 +11,7 @@ PKGloading <- function(){
 }
 
 processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
+  if(is.null(bPrepSCT)) bPrepSCT <- F
   X <- getX(strH5ad)
   gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
   rownames(X) <- names(gID) #gsub("_","-",rownames(X))
