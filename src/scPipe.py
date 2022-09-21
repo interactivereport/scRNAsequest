@@ -562,8 +562,11 @@ def getSampleMeta(strMeta):
   if not UMIcol in meta.columns:
     Exit("'%s' columns is required in meta file (%s)"%(UMIcol,strMeta))
   for oneH5 in meta[UMIcol]:
-    if not os.path.isdir(oneH5) and not (os.path.isfile(oneH5) and oneH5.endswith(".h5")):
-      Exit("The UMI file %s is not supported (only supports .h5 matrix and mtx folder)"%oneH5)
+    if os.path.isdir(oneH5):
+      continue
+    elif os.path.isfile(oneH5) and (oneH5.endswith(".h5") or oneH5.endswith(".csv") or oneH5.endswith(".tsv")):
+      continue
+    Exit("The UMI file %s is not supported (only supports .h5/csv/tsv matrix and mtx folder)"%oneH5)
   return(meta)
 def getData(meta,sID):
   print("processing sample UMI ...")
@@ -574,6 +577,10 @@ def getData(meta,sID):
       adata = sc.read_10x_mtx(meta[UMIcol][i])
     elif meta[UMIcol][i].endswith('.h5'):
       adata = sc.read_10x_h5(meta[UMIcol][i])
+    elif meta[UMIcol][i].endswith('.csv')
+      adata = sc.read_csv(meta[UMIcol][i])
+    elif meta[UMIcol][i].endswith('.tsv')
+      adata = sc.read_csv(meta[UMIcol][i],'\t')
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
