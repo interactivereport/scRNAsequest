@@ -7,6 +7,7 @@ import numpy as np
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
+from scipy.sparse import csc_matrix
 
 sc.set_figure_params(vector_friendly=True, dpi_save=300)
 strPipePath=""
@@ -485,6 +486,7 @@ def runQC(config,meta):
       runQCmsg(config)
       exit()
     with warnings.catch_warnings():
+      warnings.simplefilter("ignore")
       if "MTstring" in config.keys():
         regress_out = ['total_counts', 'pct_counts_mt']
       elif "gene_group" in config.keys():
@@ -578,12 +580,13 @@ def getData(meta,sID):
     elif meta[UMIcol][i].endswith('.h5'):
       adata = sc.read_10x_h5(meta[UMIcol][i])
     elif meta[UMIcol][i].endswith('.csv'):
-      adata = sc.read_csv(meta[UMIcol][i])
+      adata = sc.read_csv(meta[UMIcol][i]).transpose()
     elif meta[UMIcol][i].endswith('.tsv'):
-      adata = sc.read_csv(meta[UMIcol][i],'\t')
+      adata = sc.read_csv(meta[UMIcol][i],'\t').transpose()
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
+    adata.X = csc_matrix(adata.X)
 
     ## add intro/exon counts/ratio if exists
     if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
@@ -647,6 +650,7 @@ def preprocess(adata,config):
       if gList.sum()==0:
         print("\tNo genes found for %s"%k)
         continue
+      print("\tGene group %s contains %d genes"%(k,gList.sum()))
       adata.obs['pct_%s'%k] = np.sum(adata[:, gList].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
       if config['gene_group'][k]['rm']:
         print("\t%s genes are removed"%k)
