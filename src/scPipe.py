@@ -577,9 +577,9 @@ def getData(meta,sID):
       adata = sc.read_10x_mtx(meta[UMIcol][i])
     elif meta[UMIcol][i].endswith('.h5'):
       adata = sc.read_10x_h5(meta[UMIcol][i])
-    elif meta[UMIcol][i].endswith('.csv')
+    elif meta[UMIcol][i].endswith('.csv'):
       adata = sc.read_csv(meta[UMIcol][i])
-    elif meta[UMIcol][i].endswith('.tsv')
+    elif meta[UMIcol][i].endswith('.tsv'):
       adata = sc.read_csv(meta[UMIcol][i],'\t')
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
