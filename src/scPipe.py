@@ -512,14 +512,18 @@ def plotSeqQC(meta,sID,strOut,grp=None):
 
   seqQC = []
   for i in range(meta.shape[0]):
-    strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
-    if os.path.isfile(strF):
-      print("QC: %s"%strF)
+    strF = glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
+    #strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
+    #if os.path.isfile(strF):
+    if len(strF)>0:
+      strF = strF[0]
+      print("\tQC: %s"%strF)
       one = pd.read_csv(strF,thousands=",")
       one.index=[meta[sID][i]]
       seqQC.append(one)
     else:
-      return
+      print("\tMissing QC: ",meta[sID][i])
+      #return
   QC = pd.concat(seqQC)
   k=list(QC.columns)
   for i,one in enumerate(k):
