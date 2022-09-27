@@ -74,8 +74,8 @@ The following table shows a summary of all QC metrics if provided to the pipelin
 suppressMessages(library(knitr))
 suppressMessages(library(kableExtra))
 
-if (file.exists(paste0(Working_dir, "sequencingQC.csv"))){
-  Data <- read.csv(paste0(Working_dir, "sequencingQC.csv"))
+if (file.exists(paste0(Working_dir, "../sequencingQC.csv"))){
+  Data <- read.csv(paste0(Working_dir, "../sequencingQC.csv"))
   kable(Data, caption = "Summary of sqeuencing QC metrics", align = "c", booktabs = TRUE, format.args = list(big.mark = ",")) %>% 
      kable_styling(full_width = F) %>%
      kableExtra::scroll_box(width = "100%")
