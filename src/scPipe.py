@@ -448,7 +448,7 @@ def runPipe(strConfig):
     methods = runMethods(prefix,strConfig)
     combine(methods,prefix,config)
   runDEG(strConfig,prefix,config)
-  moveCellDepot(prefix)
+  moveCellDepot(prefix,config)
   MsgPower()
 def checkConfig(config):
   global beRaster
@@ -891,13 +891,27 @@ def findMajor(X,majorR):
   Xsel = Xmax.set_index(colName[0])['name'].to_dict()
   return(X[colName[0]].map(Xsel))
 
-def moveCellDepot(prefix):
+def description(strF,strDesc):
+  print(strF)
+  with open(strF,"w") as f:
+    f.write(strDesc)
+  os.chmod(strF,0o664)
+  
+def moveCellDepot(prefix,config):
   sysConfig = getConfig()
   if sysConfig['celldepotDir'] is None:
     print("*** CellDeport is NOT setup ***")
     print("=== scAnalyzer is completed ===")
     return()
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
+  shutil.copy("%s_raw_added.h5ad"%prefix, sysConfig['celldepotDir'])
+  
+  # create description file
+  description("%s/%s.txt"%(sysConfig['celldepotDir'],os.path.basename(prefix)),
+    "Description: %s\nData: ln(SCT normalized count)"%config['prj_title'])
+  description("%s/%s_raw_added.txt"%(sysConfig['celldepotDir'],os.path.basename(prefix)),
+    "Description: %s\nData: UMI"%config['prj_title'])
+
   if os.path.isfile("%s.db"%prefix):
     shutil.copy("%s.db"%prefix, sysConfig['celldepotDir'])
     print("scDEG is available in VIP")
