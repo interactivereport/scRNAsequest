@@ -867,7 +867,6 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None):
       kname = k.replace("X_","X_%s_"%one)
       obsm1 = obsm.merge(pd.DataFrame(D1.obsm[k],index=D1.obs.index),how="left",left_index=True,right_index=True)
       D.obsm[kname] = obsm1.fillna(0).to_numpy()
-  return D,seuratRefLab
   ## assign seurat labels to other integration clusters
   if majorR is not None and seuratRefLab is not None:
     print("----- Reassign cluster/louvain to seurat label transfer")
