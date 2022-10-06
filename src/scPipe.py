@@ -854,6 +854,7 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None):
     if not os.path.isfile("%s_%s.h5ad"%(prefix,one)):
       print("Warning: ignore missing h5ad for method %s"%one)
       continue
+    print("\tmerging ",one)
     D1 = ad.read_h5ad("%s_%s.h5ad"%(prefix,one),backed=True)
     obs = D1.obs.copy()
     addObs = [one for one in obs.columns if not one in D.obs.columns]
@@ -866,13 +867,15 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None):
       kname = k.replace("X_","X_%s_"%one)
       obsm1 = obsm.merge(pd.DataFrame(D1.obsm[k],index=D1.obs.index),how="left",left_index=True,right_index=True)
       D.obsm[kname] = obsm1.fillna(0).to_numpy()
+  return D,seuratRefLab
   ## assign seurat labels to other integration clusters
   if majorR is not None and seuratRefLab is not None:
     print("----- Reassign cluster/louvain to seurat label transfer")
     for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
+      if aCluster in seuratRefLab:
+        continue
       for aLabel in seuratRefLab:
         D.obs["%s_%s"%(aCluster,aLabel)] = findMajor(D.obs[[aCluster,aLabel]],majorR)
-
   ## remove NA/nan
   for one in D.obs.columns:
     if D.obs[one].isna().sum()>0:
