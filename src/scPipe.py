@@ -524,6 +524,9 @@ def plotSeqQC(meta,sID,strOut,grp=None):
     else:
       print("\tMissing QC: ",meta[sID][i])
       #return
+  if len(seqQC)<1:
+    print("***NO sequence QC***")
+    return
   QC = pd.concat(seqQC)
   k=list(QC.columns)
   for i,one in enumerate(k):
