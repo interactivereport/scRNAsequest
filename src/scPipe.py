@@ -1,4 +1,4 @@
-import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3, glob
+import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3, glob, gzip
 import pandas as pd
 from datetime import datetime
 import scanpy as sc
@@ -583,7 +583,15 @@ def getData(meta,sID):
   for i in range(meta.shape[0]):
     print("\t%s"%meta[sID][i])
     if os.path.isdir(meta[UMIcol][i]):
-      adata = sc.read_10x_mtx(meta[UMIcol][i])
+      for one in glob.glob("%s/*mtx"%meta[UMIcol][i])+glob.glob("%s/*tsv"%meta[UMIcol][i]):
+        if not os.path.isfile("%s.gz"%one):
+          print("\t\tsave %s as gz"%one)
+          with open(one,"rb") as Fin:
+            with gzip.open("%s.gz"%one,"wb") as Fout:
+              shutil.copyfileobj(Fin, Fout)
+      with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        adata = sc.read_10x_mtx(meta[UMIcol][i])
     elif meta[UMIcol][i].endswith('.h5'):
       adata = sc.read_10x_h5(meta[UMIcol][i])
     elif meta[UMIcol][i].endswith('.csv'):
@@ -594,23 +602,19 @@ def getData(meta,sID):
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
     adata.X = csc_matrix(adata.X)
-
     ## add intro/exon counts/ratio if exists
     if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
       IE = getIntronExon(meta[IntronExon][i],adata.obs_names)
       adata.obs = adata.obs.merge(IE,left_index=True,right_index=True)
-
     if ANNcol in meta.columns:
       annMeta = pd.read_csv(meta[ANNcol][i],index_col=0)
       adata = adata[adata.obs.index.isin(list(annMeta.index))]
       adata.obs = pd.merge(adata.obs,annMeta,left_index=True,right_index=True)
       print("\t\tCell level meta available, cell number: %d"%adata.shape[0])
-
     for one in meta.columns:
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
     adatals.append(adata)
-
   adata = sc.AnnData.concatenate(*adatals,
     batch_categories=meta[sID],
     batch_key=batchKey)
