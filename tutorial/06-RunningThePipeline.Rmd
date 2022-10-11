@@ -121,46 +121,72 @@ This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](htt
 
 ## Visualize the harmonized results
 
-After running the pipeline, the following files will be generated for each harmonization method (Harmony, Seurat, Liger):
+After running the pipeline, you will see the following files in the working directory. Each harmonization method (Harmony, Seurat, Liger) will also generate corresponding files.
 
 ```
 outputdir
-    ├── BookdownReport
-    ├── config.yml
-    ├── config.yml.20220615.log
-    ├── Harmony.error                      #Error messages
-    ├── kBET.error
-    ├── Liger.error
-    ├── SCT.error
-    ├── Seurat.error
-    ├── SeuratRef.error
-    ├── silhouette.error
-    ├── ProjName_BookdownReport.tar.gz     #Bookdown report
-    ├── ProjName.h5ad                      #Final h5 file
-    ├── ProjName_Harmony.h5ad              #Harmony
-    ├── ProjName_harmony_py2r_batch.Rdata
-    ├── ProjName_harmony_py2r_pca.Rdata
-    ├── ProjName_harmony_r2py.Rdata
-    ├── ProjName_kBET_umap_k0_100.pdf      #kBET score 
-    ├── ProjName_liger.csv                 #Liger
-    ├── ProjName_Liger.h5ad
-    ├── ProjName_liger_hvg.csv
-    ├── ProjName_raw_added.h5ad            
-    ├── ProjName_raw.h5ad
-    ├── ProjName_raw_prefilter.h5ad
-    ├── ProjName_SCT.cID                   #SCT transformation
-    ├── ProjName_SCT.gID
-    ├── ProjName_SCT.h5
-    ├── ProjName_SCT.h5ad
-    ├── ProjName_SCT.h5.rds
-    ├── ProjName_Seurat.h5ad               #Seurat
-    ├── ProjName_seurat_r2py_integrated.csv.gz
-    ├── ProjName_seurat_r2py_integrated.genes.csv.gz
-    ├── ProjName_Silhouette_boxplot_pc50.pdf
-    ├── postfilter.QC.pdf
-    ├── prefilter.QC.pdf
-    ├── Rmarkdown/
-    └── sampleMeta.csv
+    # Input files
+        ├── config.yml:     The analysis config file specify the scAnalyzer parameters
+        ├── sampleMeta.csv: List all sample information including expression matrix (and sample/cell level meta information)
+        └── DEGinfo.csv:    Define the sc DEG (between phenotypes within a cluster annotatino)
+    # Log files:
+        ├── config.yml.[date].log: All stdout/stderr will be recorded in this dated log file
+        └── [Software].error       Standard error files of multiple software, including: 
+                                        Harmony, Liger, SeuratRPCA, SeuratRef, SCT, sctHarmony, silhouette, 
+    # QC files:
+        ├── sequencingQC.csv:  Merged all sequence QC files from individual samples if available
+        ├── sequencingQC.pdf:  Plots of sequence QC if they are available
+        ├── prefilter.QC.pdf:  Initial data QC plots without filtering
+        └── postfilter.QC.pdf: Data QC plots after filtering
+    # Initial files:
+        ├── [prj_name]_raw_prefilter.h5ad: The internal temporary raw counts created/merged directly from sample before filtering 
+        └── [prj_name]_raw.h5ad:           The internal temporary raw counts after the cell/gene filtering
+    # SCT:
+        ├── [prj_name]_SCT.h5:     The sparse matrix contains SCT expression values
+        ├── [prj_name]_SCT.h5.rds: The Seurat object contains counts (RNA assay) and 
+                                      SCT expression (SCT assay) along with original meta information from SampleMeta file
+        └── [prj_name]_SCT.h5ad:   The SCT expression, along with PCA, tSNE, UMAP reduction layout, will be 
+                                      merged into [prj_name].h5ad
+    # Seurat_integration:
+        ├── [prj_name]_seurat_r2py_integrated.csv.gz:       Expression matrix from seurat integration assay of data entry 
+        ├── [prj_name]_seurat_r2py_integrated.genes.csv.gz: Variable genes from integration assay
+        └── [prj_name]_Seurat.h5ad:                         The seurat integration with reduction embedding and clustering, 
+                                      will be merged into [prj_name].h5ad
+    # Seurat_RPCA_integration:
+        ├── [prj_name]_seurat_rpca.csv.gz: The reuction embedding and clustering results from seurat RPCA integration 
+        └── [prj_name]_SeuratRPCA.h5ad:    The seurat RPCA integration with reduction embedding and clustering, 
+                                      will be merged into [prj_name].h5ad
+    # Seurat_refMapping:
+        ├── [prj_name]_seuratRef.csv:  The reuction embedding and label transfer results from seurat RPCA integration 
+        └── [prj_name]_SeuratRef.h5ad: The seurat reference mapping results with reduction embedding, will be merged into [prj_name].h5ad
+    # Harmony:
+        ├── [prj_name]_harmony_py2r_batch.Rdata: The library/batch information of each cell
+        ├── [prj_name]_harmony_py2r_pca.Rdata:   The PCA of each cell
+        ├── [prj_name]_harmony_r2py.Rdata:       The harmony PCA results
+        └── [prj_name]_Harmony.h5ad:             The harmony integration with reduction embedding and clustering, 
+                                      will be merged into [prj_name].h5ad
+    # Liger:
+        ├── [prj_name]_liger_hvg.csv:  High variable gene list
+        ├── [prj_name]_liger.csv":     The liger integration embedding and cluster
+        └── [prj_name]_Liger.h5ad":    The liger integration with reduction embedding and clustering, 
+                                          will be merged into [prj_name].h5ad
+    # scDEG (if you ran the DEG step):
+        ├── [prj_name]_scDEG.cmd.json: The scDEG cmd jobs, if scDEG jobs defined in DEGinfo.csv are available
+        ├── [prj_name]_scDEG":         The folder contains all scDEG jobs, each sub folder contains scDEG csv files from one entry in DEGinfo.csv
+        └── [comparison].error         Standard error files for all comparison groups
+    # Other output:
+        ├── [prj_name].h5ad:           The final h5ad file which is used for cellxgene VIP load (will be copied into celldepot folder)
+        ├── [prj_name].db:             The final h5ad file which is used for cellxgene VIP load (will be copied into celldepot folder)
+        └── [prj_name]_raw_added.h5ad: The h5ad file contains raw counts in X along with all annotation and embeding 
+                                          (will be copied into celldepot folder)
+        ├── [prj_name]_kBET_umap_k0_100.pdf": The kBET evaluation plot for all integration methods
+        └── [prj_name]_Silhouette_boxplot_pc50.pdf": The Silhouette evaluation plot for all integration methods
+    # Rbookdown:
+        ├── Rmarkdown:                 The folder contains png files for R bookdown
+        ├── [prj_name]_BookdownReport.tar.gz: R bookdown document tarball for downloading and sharing
+        └── BookdownReport:            The folder contains R bookdown reports
+    # Parallel directory (if you ran the pipeline in parallel mode):
+        └── j[numeric]:                A colder contains parallel jobs submit script and log file
 ```
 
 [kBET](https://www.nature.com/articles/s41592-018-0254-1){target="_blank"} is a useful metric to evaluate and compare the harmonization results. Here is an example of the **ProjName_kBET_umap_k0_100.pdf** result:
