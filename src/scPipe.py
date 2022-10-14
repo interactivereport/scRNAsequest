@@ -935,9 +935,9 @@ def moveCellDepot(prefix,config,scaleF=None):
   # create description file
   expScaler = config.get('expScaler')
   if expScaler is None or expScaler==0:
-    descTxt = "Description: %s\nData: ln(SCT normalized)"%config['prj_title']
+    descTxt = "Description: %s\nData: SCT normalized in 'ln' scale"%config['prj_title']
   else:
-    descTxt = "Description: %s\nData: ln(LogNormalize)"%config['prj_title']
+    descTxt = "Description: %s\nData: LogNormalize in 'ln' scale"%config['prj_title']
   if scaleF is not None:
     descTxt += "\nScale Factor:%d"%round(scaleF)
   description("%s/%s.txt"%(sysConfig['celldepotDir'],os.path.basename(prefix)),descTxt)
