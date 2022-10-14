@@ -26,6 +26,7 @@ rasterizeFig: True # should image in pdf be rasterized
 
 runAnalysis: False
 newProcess: False
+expScaler: 10000 #integer value, 0: SCT (along with following option); 1-100: logNormal with scale.factor to be the specified quantile; >100: logNormal with scale.factor to be the specified value
 PrepSCTFindMarkers: True # should the "PrepSCTFindMarkers" applied on SCT to be exported for visualization expression
 parallel: False #"sge" or "slurm"
 core: 2

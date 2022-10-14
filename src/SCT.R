@@ -10,7 +10,7 @@ PKGloading <- function(){
   options(future.globals.maxsize=3145728000)
 }
 
-processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
+processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
   if(is.null(bPrepSCT)) bPrepSCT <- F
   X <- getX(strH5ad)
   gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
@@ -18,35 +18,45 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   D <- CreateSeuratObject(counts=X,
                           project="SCT",
                           meta.data=getobs(strH5ad))
-  Dmedian <- NA
-  if(!bPrepSCT){
-    message("\t***median UMI is used to normalize across samples by scale_factor from vst***")
-    Dmedian <- median(colSums(D@assays$RNA@counts))#min(colSums(D@assays$RNA@counts))#
-  }
-  Dlist <- SplitObject(D,split.by=batch)
-  Dlist <- sapply(Dlist,function(one,medianUMI){
-    message("\t\tSCT one ...")
-    #after checking/testing, the above would return proper SCT nomralized data
-    #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
-    #https://github.com/satijalab/sctransform/issues/128
-    return(suppressMessages(suppressWarnings(
-      SCTransform(one,method = 'glmGamPoi',
-                  new.assay.name="SCT",
-                  return.only.var.genes = FALSE,
-                  scale_factor=medianUMI,
-                  verbose = FALSE)
-    )))
-  },Dmedian)
-  if(length(Dlist)==1){
-    SCT <- Dlist[[1]]
-  }else{
-    SCT <- merge(Dlist[[1]], y=Dlist[-1])
-    if(!is.null(bPrepSCT) && bPrepSCT){
-      message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
-      SCT <- PrepSCTFindMarkers(SCT)
+  if(is.null(expScale) || expScale==0){
+    message("\n\n===== SCT normalization is selected =====")
+    Dmedian <- NA
+    if(!bPrepSCT){
+      message("\t***median UMI is used to normalize across samples by scale_factor from vst***")
+      expScale <- Dmedian <- median(colSums(D@assays$RNA@counts))#min(colSums(D@assays$RNA@counts))#
     }
+    Dlist <- SplitObject(D,split.by=batch)
+    Dlist <- sapply(Dlist,function(one,medianUMI){
+      message("\t\tSCT ",one@meta.data[1,batch]," ...")
+      #after checking/testing, the above would return proper SCT nomralized data
+      #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
+      #https://github.com/satijalab/sctransform/issues/128
+      return(suppressMessages(suppressWarnings(
+        SCTransform(one,method = 'glmGamPoi',
+                    new.assay.name="SCT",
+                    return.only.var.genes = FALSE,
+                    scale_factor=medianUMI,
+                    verbose = FALSE)
+      )))
+    },Dmedian)
+    if(length(Dlist)==1){
+      D <- Dlist[[1]]
+    }else{
+      D <- merge(Dlist[[1]], y=Dlist[-1])
+      if(!is.null(bPrepSCT) && bPrepSCT){
+        message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
+        D <- PrepSCTFindMarkers(D)
+        expScale <- D@assays$SCT@SCTModel.list[[1]]@median_umi
+      }
+    }
+  }else{
+    message("\n\n===== LogNormal normalization is selected =====")
+    if(expScale<=100)
+      expScale <- round(quantile(D@meta.data$nCount_RNA,expScale/100)/1e3)*1e3
+    message("\tScale: ",expScale)
+    D <- NormalizeData(D,assay="RNA",normalization.method = "LogNormalize", scale.factor = expScale)
   }
-  saveX(SCT,strOut,gID)
+  saveX(D,strOut,gID,expScale)
 }
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
@@ -63,21 +73,27 @@ getX <- function(strH5ad){
   X <- h5read(strH5ad,"X")
   gID <- h5read(strH5ad,"var/_index")
   cID <- h5read(strH5ad,"obs/_index")
-  if((max(X$indices)+1)==length(gID)){ # CSR sparse matrix
+  if((max(X$indices)+1)==length(gID) || (length(X$indptr)-1)==length(cID)){ # CSR sparse matrix
     M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
                       dimnames=list(gID,cID))
-  }else if((max(X1$indices)+1)==length(cID)){#CSC sparse matrix
+  }else if((max(X$indices)+1)==length(cID) || (length(X$indptr)-1)==length(gID)){#CSC sparse matrix
     M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                        dims=c(length(gID),length(cID)),
                        dimnames=list(gID,cID))
+  }else{
+    stop(paste("Error in reading X from h5ad:",strH5ad))
   }
   return(M)
 }
-saveX <- function(SCT,strH5,gID){
-  message("\tsaving SCT ...")
-  saveRDS(SCT,paste0(strH5,".rds"))
-  X <- Matrix::t(Matrix::Matrix(SCT@assays$SCT@data,sparse=T))
+saveX <- function(D,strH5,gID,expScale){
+  message("\tsaving expression ...")
+  saveRDS(D,paste0(strH5,".rds"))
+  if("SCT"%in%names(D)){
+    X <- Matrix::t(Matrix::Matrix(D@assays$SCT@data,sparse=T))
+  }else{
+    X <- Matrix::t(Matrix::Matrix(D@assays$RNA@data,sparse=T))
+  }
   suppressMessages(suppressWarnings({
     a <- file.remove(strH5)
     h5write(X@x,file=strH5,name="data")
@@ -88,8 +104,17 @@ saveX <- function(SCT,strH5,gID){
   #h5write(rownames(X),file=strH5,name="row_names")
   #h5write(colnames(X),file=strH5,name="col_names")
   h5closeAll()
+  
+  #strF <- gsub("h5$","info.h5",strH5)
+  #a <- file.remove(strF)
+  #h5write(rownames(X),file=strF,name="cID")
+  #h5write(gID[colnames(X)],file=strF,name="gID")
+  #h5write(expScale,file=strF,name="scaleFactor")
+  #h5closeAll()
+  
   cat(paste(rownames(X),collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
   cat(paste(gID[colnames(X)],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
+  cat(expScale,file=gsub("h5$","scaleF",strH5))
 }
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
@@ -107,7 +132,7 @@ main <- function(){
   }
   if(length(args)>3) batchKey <- args[4]
   
-  print(system.time(processH5ad(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
+  print(system.time(processH5ad(strH5ad,batchKey,strOut,config$expScaler,config$PrepSCTFindMarkers)))
 }
 
 main()

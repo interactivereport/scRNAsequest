@@ -35,6 +35,7 @@ def main():
   #cID = [one.decode('utf-8') for one in f['row_names']]
   #gID = [one.decode('utf-8') for one in f['col_names']]
   f.close()
+
   cID = pd.read_csv(re.sub("h5$","cID",strH5),header=None,index_col=0)
   gID = pd.read_csv(re.sub("h5$","gID",strH5),header=None,index_col=0)
 
@@ -43,7 +44,12 @@ def main():
   #D.var_names = pd.Index(gID)
   D.obs_names = list(cID.index)
   D.var_names = list(gID.index)
-  
+  D.uns['scaleF'] = pd.read_csv(re.sub("h5$","scaleF",strH5),header=None,index_col=0).index[0]
+  #with h5py.File(re.sub("h5$","info.h5",strH5),"r") as f:
+  #  D.obs_names = [i.decode() for i in list(f['cID'])]
+  #  D.var_names = [i.decode() for i in list(f['gID'])]
+  #  scaleF = list(f['scaleFactor'])[0]
+
   Draw = sc.read_h5ad(strH5ad)
   D.obs=pd.concat([D.obs,Draw.obs],axis=1,join="inner")
   D.var=pd.concat([D.var,Draw.var],axis=1,join='inner')
@@ -53,10 +59,10 @@ def main():
     sc.tl.pca(D, svd_solver='arpack', n_comps = 100)
     npc = 50
     sc.pp.neighbors(D, n_neighbors=10, n_pcs=npc)
-    sc.tl.louvain(D,key_added="SCT.louvain")
+    sc.tl.louvain(D,key_added="normalized.louvain")
     print("\tembedding ...")
     sc.tl.umap(D)
-    sc.tl.rank_genes_groups(D, 'SCT.louvain')
+    sc.tl.rank_genes_groups(D, 'normalized.louvain')
     sc.tl.tsne(D, n_pcs=npc)
     print("\tsaving ...")
     D.write(strH5ad.replace("raw.h5ad","SCT.h5ad"))

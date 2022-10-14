@@ -446,9 +446,12 @@ def runPipe(strConfig):
 
   if not os.path.isfile("%s.h5ad"%prefix) or config["newProcess"]:
     methods = runMethods(prefix,strConfig)
-    combine(methods,prefix,config)
+    scaleF = combine(methods,prefix,config)
+  else:
+    D = ad.read_h5ad("%s.h5ad"%prefix,backed="r")
+    scaleF = D.uns.get('scaleF')
   runDEG(strConfig,prefix,config)
-  moveCellDepot(prefix,config)
+  moveCellDepot(prefix,config,scaleF)
   MsgPower()
 def checkConfig(config):
   global beRaster
@@ -482,6 +485,7 @@ def runQC(config,meta):
       if config["filter_step"]:
         adata = filtering(adata,config)
         plotQC(adata,os.path.join(config["output"],"postfilter.QC.pdf"),config["group"])
+    checkCells(adata)
     if not config["runAnalysis"]:
       runQCmsg(config)
       exit()
@@ -494,6 +498,7 @@ def runQC(config,meta):
         regress_out.append("total_counts")
       adata.obs,adata.obsm=obtainRAWobsm(adata.copy(),regress_out)
       adata.write("%s_raw.h5ad"%prefix)
+      
   return prefix
 def runQCmsg(config):
   print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%config['output'])
@@ -559,6 +564,13 @@ def plotSeqQC(meta,sID,strOut,grp=None):
             pdf.savefig(bbox_inches="tight")
             plt.savefig(os.path.join(Rmarkdown,"sequencingQC_%s_%s.png"%(oneG,formatFileName(one))),bbox_inches="tight")
             plt.close()
+def checkCells(adata):
+  sysConfig = getConfig()
+  cellN = adata.obs[batchKey].value_counts()
+  cellN = cellN[cellN<sysConfig["minCell"]]
+  if cellN.shape[0]==0:
+    return
+  Exit("The following samples contains less than %d cells, please either relax the filtering or remove them:\n\t%s"%(sysConfig["minCell"],", ".join(list(cellN.index))))
 def formatFileName(strF):
   return re.sub('_$','',re.sub('[^A-Za-z0-9]+','_',strF))
 def getSampleMeta(strMeta):
@@ -751,8 +763,12 @@ def plotQC(adata,strPDF,grp=None):
 
     w = max(6.4,adata.obs[batchKey].nunique()*2/10)
     plt.rcParams["figure.figsize"] = (w,4.8)
-
-    savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=batchKey,rotation=90,show=False),
+    
+    pltUMI = sc.pl.violin(adata, keys = 'total_counts',groupby=batchKey,rotation=90,show=False)
+    adataM = adata.obs['total_counts'].median()
+    pltUMI.hlines(adataM,xmin=-1,xmax=adata.obs[batchKey].nunique(),color='b')#"Median: %d"%round(adataM)
+    pltUMI.set_title("Median: %d"%round(adataM))
+    savePDF_PNG(pltUMI,
       pdf,"%s_counts.png"%strRmark)
     savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90,show=False),
       pdf,"%s_genes.png"%strRmark)
@@ -851,6 +867,7 @@ def combine(mIDs,prefix,config):
     Draw.write("%s_raw_added.h5ad"%prefix)
     if os.path.isfile("%s.h5ad.lock"%prefix):
       os.remove("%s.h5ad.lock"%prefix)
+  return D.uns.get('scaleF')
 def integrateH5ad(strH5ad,methods,prefix,majorR=None):
   D = ad.read_h5ad(strH5ad)
   obsm = pd.DataFrame(index=D.obs.index)
@@ -903,10 +920,10 @@ def findMajor(X,majorR):
 def description(strF,strDesc):
   print(strF)
   with open(strF,"w") as f:
-    f.write(strDesc)
+    f.write(strDesc+"\n")
   os.chmod(strF,0o664)
   
-def moveCellDepot(prefix,config):
+def moveCellDepot(prefix,config,scaleF=None):
   sysConfig = getConfig()
   if sysConfig['celldepotDir'] is None:
     print("*** CellDeport is NOT setup ***")
@@ -916,8 +933,15 @@ def moveCellDepot(prefix,config):
   shutil.copy("%s_raw_added.h5ad"%prefix, sysConfig['celldepotDir'])
   
   # create description file
-  description("%s/%s.txt"%(sysConfig['celldepotDir'],os.path.basename(prefix)),
-    "Description: %s\nData: ln(SCT normalized count)"%config['prj_title'])
+  expScaler = config.get('expScaler')
+  if expScaler is None or expScaler==0:
+    descTxt = "Description: %s\nData: ln(SCT normalized)"%config['prj_title']
+  else:
+    descTxt = "Description: %s\nData: ln(LogNormalize)"%config['prj_title']
+  if scaleF is not None:
+    descTxt += "\nScale Factor:%d"%round(scaleF)
+  description("%s/%s.txt"%(sysConfig['celldepotDir'],os.path.basename(prefix)),descTxt)
+
   description("%s/%s_raw_added.txt"%(sysConfig['celldepotDir'],os.path.basename(prefix)),
     "Description: %s\nData: UMI"%config['prj_title'])
 
