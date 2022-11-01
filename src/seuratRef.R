@@ -31,14 +31,22 @@ checkRef <- function(ref,config){
       }
     }
   }
-  return(config)
+  
+  for(one in config[["ref_label"]])
+    if(sum(nchar(levels(ref@meta.data[[one]]))==0)>0)
+      levels(ref@meta.data[[one]])[nchar(levels(ref@meta.data[[one]]))==0] <- "unknown"
+
+  return(list(config=config,ref=ref))
 }
 processSCTref <- function(strH5ad,batch,config,strOut){
   if(grepl("^http",config$ref_file))
     reference <- readRDS(url(config$ref_file))
   else
     reference <- readRDS(config$ref_file)
-  config <- checkRef(reference,config)
+  res <- checkRef(reference,config)
+  config <- res$config
+  reference <- res$ref
+  rm(res)
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
                           meta.data=getobs(strH5ad))
