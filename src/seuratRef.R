@@ -3,8 +3,6 @@ PKGloading <- function(){
   require(SeuratObject)
   require(SeuratDisk)
   require(sctransform)
-  require(rhdf5)
-  require(Matrix)
   options(future.globals.maxsize=3145728000)
 }
 mapOne <- function(oneD){
@@ -115,32 +113,6 @@ processSCTref <- function(strH5ad,batch,config,strOut){
   X <- cbind(cID=rownames(X),X)
   data.table::fwrite(X,strOut)
 }
-getobs <- function(strH5ad){
-  message("\tobtainning obs ...")
-  obs <- h5read(strH5ad,"obs")
-  meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
-  dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
-  for(one in names(obs[["__categories"]])){
-    meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
-  }
-  return(meta)
-}
-getX <- function(strH5ad){
-  message("\tobtainning X ...")
-  X <- h5read(strH5ad,"X")
-  gID <- h5read(strH5ad,"var/_index")
-  cID <- h5read(strH5ad,"obs/_index")
-  if((max(X$indices)+1)==length(gID)){ # CSR sparse matrix
-    M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }else if((max(X$indices)+1)==length(cID)){#CSC sparse matrix
-    M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }
-  return(M)
-}
 main <- function(){
   selfPath <- gsub("^--file=","",grep("^--file=",commandArgs(),value=T)[1])
   suppressMessages(suppressWarnings(PKGloading()))
@@ -165,6 +137,8 @@ main <- function(){
 
   strOut <- args[3]
   if(length(args)>3) batchKey <- args[4]
+  
+  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
   processSCTref(strH5ad,batchKey,oneRef,strOut)
   
 }
