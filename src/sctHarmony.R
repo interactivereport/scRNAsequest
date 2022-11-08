@@ -25,7 +25,7 @@ getX <- function(strH5ad){
     M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
                       dimnames=list(gID,cID))
-  }else if((max(X1$indices)+1)==length(cID)){#CSC sparse matrix
+  }else if((max(X$indices)+1)==length(cID)){#CSC sparse matrix
     M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
                       dimnames=list(gID,cID))
