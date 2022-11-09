@@ -159,54 +159,6 @@ scRNAseq_DE <- function(
     return(list(cmd))
 }
 
-getobs <- function(strH5ad){
-  message("\tobtainning obs ...")
-  obs <- h5read(strH5ad,"obs")
-  meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
-  dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
-  for(one in names(obs[["__categories"]])){
-    meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
-  }
-  return(meta)
-}
-getX <- function(strH5ad){
-  message("\tobtainning X ...")
-  keys <- h5ls(strH5ad)
-  if(sum(grepl("/raw/X",keys$group))>0){
-    message("\t\tFound .raw.X, extracting counts")
-    X <- h5read(strH5ad,"/raw/X")
-  }else{
-    X <- h5read(strH5ad,"X")
-  }
-  if(sum(grepl("/raw/var",keys$group))>0){
-    message("\t\tFound .raw.var, extracting gene name")
-    gID <- h5read(strH5ad,"/raw/var/_index")
-  }else{
-    gID <- h5read(strH5ad,"/var/_index")
-  }
-  if(sum(grepl("/raw/obs",keys$group))>0){
-    message("\t\tFound .raw.obs, extracting cell name")
-    cID <- h5read(strH5ad,"/raw/obs/_index")
-  }else{
-    cID <- h5read(strH5ad,"/obs/_index")
-  }
-  gID <- as.vector(gID)
-  cID <- as.vector(cID)
-  if((max(X$indices)+1)==length(gID)){ # CSR sparse matrix
-    if((length(X$indptr)-1)!=length(cID)) stop("unmatching cell number in CSR!")
-    M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }else if((max(X$indices)+1)==length(cID)){#CSC sparse matrix
-    if((length(X$indptr)-1)!=length(gID)) stop("unmatching gene number in CSC!")
-    M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }else{
-    stop("unknown h5ad format!")
-  }
-  return(M)
-}
 getMeta <- function(strMeta){
   if(grepl("rds$",strMeta)){
     meta <- readRDS(strMeta)
@@ -347,11 +299,13 @@ if(length(args)==1){
   a <- commandArgs()
   strPath <- gsub("^--file=","",grep("^--file",a,value=T)[1])
   scRNAseq_DE_path <<- dirname(normalizePath(strPath))
+  source(paste0(scRNAseq_DE_path,"/readH5ad.R"))
   main(checkFileExist(args[1],"config file"))
 }
 if(length(args)>1){
   selGrp <- paste(args[-1],collapse=" ")
   #message("\n\n\n",args[-1],": ",selGrp,"\n\n\n")
+  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
   print(system.time({
     scRNAseq_DE_one(readRDS("env.rds"),
                     selGrp,

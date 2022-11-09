@@ -2,22 +2,49 @@ PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
 }
-PKGloading()
+suppressMessages(suppressWarnings(PKGloading()))
+
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
   obs <- h5read(strH5ad,"obs")
-  meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
-  dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
+  sel <- names(obs)[sapply(obs,function(x)return(is.null(names(x))))&!grepl("^_|index$",names(obs))]
+  meta <- do.call(cbind.data.frame, obs[sel])
+  #meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
+  #dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
+  rownames(meta) <- obs[[grep("index$",names(obs))]]
   for(one in names(obs[["__categories"]])){
     meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
+  }
+  # for anndata v 0.8
+  for(one in names(obs)[sapply(obs,function(x)return(!is.null(names(x))))&!grepl("^_|index$",names(obs))]){
+    if(sum(c("categories","codes")%in%names(obs[[one]]))!=2) next
+    meta[[one]] <- obs[[one]]$categories[1+obs[[one]]$codes]
   }
   return(meta)
 }
 getX <- function(strH5ad){
   message("\tobtainning X ...")
-  X <- h5read(strH5ad,"X")
-  gID <- h5read(strH5ad,"var/_index")
-  cID <- h5read(strH5ad,"obs/_index")
+  keys <- h5ls(strH5ad)
+  if(sum(grepl("/raw/X",keys$group))>0){
+    message("\t\tFound .raw.X, extracting counts")
+    X <- h5read(strH5ad,"/raw/X")
+  }else{
+    X <- h5read(strH5ad,"X")
+  }
+  if(sum(grepl("/raw/var",keys$group))>0){
+    message("\t\tFound .raw.var, extracting gene name")
+    gID <- h5read(strH5ad,"/raw/var/_index")
+  }else{
+    gID <- h5read(strH5ad,"/var/_index")
+  }
+  if(sum(grepl("/raw/obs",keys$group))>0){
+    message("\t\tFound .raw.obs, extracting cell name")
+    cID <- h5read(strH5ad,"/raw/obs/_index")
+  }else{
+    cID <- h5read(strH5ad,"/obs/_index")
+  }
+  gID <- as.vector(gID)
+  cID <- as.vector(cID)
   if((max(X$indices)+1)==length(gID) || (length(X$indptr)-1)==length(cID)){ # CSR sparse matrix
     M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
@@ -30,4 +57,11 @@ getX <- function(strH5ad){
     stop(paste("Error in reading X from h5ad:",strH5ad))
   }
   return(M)
+}
+getobsm <- function(strH5ad,key){
+  k <- h5ls(strH5ad,recursive=2)
+  k <- k[grepl("obsm",k[,1]),2]
+  if(!key%in%k) return(NULL)
+  X <- h5read(strH5ad,paste0("obsm/",key))
+  return(t(X))
 }

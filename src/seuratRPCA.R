@@ -8,7 +8,7 @@ PKGloading <- function(){
   rlang::env_unlock(env = asNamespace('base'))
   rlang::env_binding_unlock(env = asNamespace('base'))
   message <<- function(...,domain = NULL, appendLF = TRUE){
-    cat(...,"\n",sep="")
+    cat(paste(...,collapse=", "),"\n",sep="")
   }
   rlang::env_binding_lock(env = asNamespace('base'))
   rlang::env_lock(asNamespace('base'))

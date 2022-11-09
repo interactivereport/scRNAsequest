@@ -143,43 +143,6 @@ checkRDSRefSeting <- function(config,D){
   #https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
   if(!"SCT_snn"%in%names(D)) warning(paste("SCT_snn neighber is not available, will be calculated based on SCT assay and provided reduction",config$ref_reduction))
 }
-getobs <- function(strH5ad){
-  message("\tobtainning obs ...")
-  obs <- h5read(strH5ad,"obs")
-  meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
-  if(!"_index"%in%names(obs)) dimnames(meta) <- list(obs[[1]],grep("^_",names(obs),invert=T,value=T))
-  else dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
-  
-  if("__categories"%in%names(obs)){
-    for(one in names(obs[["__categories"]])){
-      meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
-    }
-  }
-  return(meta)
-}
-getX <- function(strH5ad,cID){
-  message("\tobtainning X ...")
-  X <- h5read(strH5ad,"X")
-  gID <- h5read(strH5ad,"var/_index")
-  cID <- h5read(strH5ad,"obs/_index")
-  if((max(X$indices)+1)==length(gID)){ # CSR sparse matrix
-    M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }else if((max(X$indices)+1)==length(cID)){#CSC sparse matrix
-    M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
-                      dims=c(length(gID),length(cID)),
-                      dimnames=list(gID,cID))
-  }
-  return(M)
-}
-getobsm <- function(strH5ad,key){
-  k <- h5ls(strH5ad,recursive=2)
-  k <- k[grepl("obsm",k[,1]),2]
-  if(!key%in%k) return(NULL)
-  X <- h5read(strH5ad,paste0("obsm/",key))
-  return(t(X))
-}
 getSCT <- function(strH5ad,batch){
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
@@ -270,6 +233,7 @@ createRef <- function(strConfig){
   sysConfig <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))
   config <- checkConfig(strConfig,sysConfig)
   suppressMessages(suppressWarnings(loadingPKG()))
+  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
   #"/camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_SCT.h5ad"
   strRef <- file.path(config$output,paste0(config$ref_name,"_for_scAnalyzer.rds"))
   if(!file.exists(strRef)){
