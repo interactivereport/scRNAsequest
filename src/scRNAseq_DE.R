@@ -17,10 +17,17 @@ main <- function(strConfig){
   suppressMessages(suppressWarnings(PKGloading()))
   message("scDEG starting ...")
   config <- yaml::read_yaml(strConfig)
-  prefix <- paste0(config$output,"/",config$prj_name)
   strDEG <- checkFileExist(config$DEG_desp,"DEG description file")
-  strH5adraw <- checkFileExist(paste0(prefix,"_raw.h5ad"),"raw count h5ad file")
-  strH5ad <- checkFileExist(paste0(prefix,".h5ad"),"pipeline output h5ad file")
+  if(!is.null(config$prj_name)){
+    prefix <- paste0(config$output,"/",config$prj_name)
+    strH5adraw <- checkFileExist(paste0(prefix,"_raw.h5ad"),"raw count h5ad file")
+    strH5ad <- checkFileExist(paste0(prefix,".h5ad"),"pipeline output h5ad contains cell annotation file")
+  }else{
+    prefix <- paste0(config$output,"/",config$DBname)
+    strH5adraw <- checkFileExist(config$UMI,"raw count h5ad file")
+    strH5ad <- checkFileExist(config$meta,"cell annotation file")
+  }
+  
   
   #sample,cluster,group,alt,ref,covars[comma separated],method[default NEBULA]
   compInfo <- as.data.frame(data.table::fread(strDEG))

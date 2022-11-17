@@ -913,7 +913,7 @@ def findMajor(X,majorR):
   Xsize = X.groupby(colName).size().reset_index().rename(columns={0:'count'})
   Xmax = (Xsize[Xsize.groupby(colName[0])['count'].transform(max)==Xsize['count']]
     .merge(Xsize.groupby(colName[0])['count'].sum().reset_index().rename(columns={'count':'sum'}),on=colName[0]))
-  Xmax["name"] = Xmax.apply(lambda x:x[colName[1]] if x['count']/x['sum']>0.7 else x[colName[0]],axis=1)
+  Xmax["name"] = Xmax.apply(lambda x:x[colName[1]] if x['count']/x['sum']>majorR else x[colName[0]],axis=1)
   Xsel = Xmax.set_index(colName[0])['name'].to_dict()
   return(X[colName[0]].map(Xsel))
 
@@ -968,7 +968,11 @@ def runDEG(strConfig,prefix,config):
   if "scDEG task creation completed" in msg:
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
-    memG = math.ceil(os.path.getsize("%s_raw.h5ad"%prefix)*50/1e9)
+    umiF = config.get('UMI')
+    if umiF is None:
+      memG = math.ceil(os.path.getsize("%s_raw.h5ad"%prefix)*50/1e9)
+    else:
+      memG = math.ceil(os.path.getsize(umiF)*50/1e9)
     submit_cmd(scDEGtask,config,1,memG)
     formatDEG(prefix)
 def formatDEG(prefix):
