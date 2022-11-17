@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#nohup scAnalyzer config.yml > QC.log 2>&1 &
+
+config=$1
+src="$(dirname $0)/src"
+
+if [[ ! -f "$src/.env" ]]; then
+  echo "scDEG: Please run ./install to setup necessary env variables"
+  exit
+fi
+
+if [[ -f "$config" ]]; then
+  env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scDEG.py $config 2>&1 | tee -a $config.$(date +%Y%m%d).log'
+elif [[ -d "$config" ]]; then
+  env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scDEG.py $config 2>&1 | tee -a $config/scDEG$(date +%Y%m%d).init.log'
+else
+  env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scDEG.py'
+fi
