@@ -23,7 +23,8 @@ def initProject(strInput):
     "meta: #required, can be a cell annotation data.frame rds or a h5ad file\n",
       "output: "+strInput+"\n",
       "DBname: cellxgeneVIP\n",
-      'parallel: slurm # False or "sge" or "slurm"\n']+DEGconfig
+      'parallel: slurm # False or "sge" or "slurm"\n',
+      'newProcess: False #False use existing DEG results']+DEGconfig
 
   strConfig = os.path.join(strInput,"config.yml")
   with open(strConfig,"w") as f:

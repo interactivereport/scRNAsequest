@@ -294,7 +294,8 @@ scRNAseq_DE_one <- function(
                                   'limma_cell_level'= sce_qc$limma_cell_level_pipeline(covs = covars),
                                   'ancova'= sce_qc$ancova_pipeline(covs = covars),
                                   'NEBULA'= sce_qc$nebula_pipeline(covs = covars,method=env$method_model)))
-        write.csv(de, file=strF, row.names = FALSE)
+        saveRDS(de,file=paste0(strF,".rds"))
+        write.csv(de$res.tab, file=strF, row.names = FALSE)
         p <- sce_qc$volcanoPlot(FDR_threshold = 0.05, FC_threshold = 2, title = env$method)
         ggsave(gsub("csv","png",strF))
     }
