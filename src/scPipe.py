@@ -627,9 +627,13 @@ def getData(meta,sID):
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
     adatals.append(adata)
-  adata = sc.AnnData.concatenate(*adatals,
-    batch_categories=meta[sID],
-    batch_key=batchKey)
+  if len(adatals)==1:
+    adata = adatals[0]
+    adata.obs[batchKey]=meta[sID][0]
+  else:   
+    adata = sc.AnnData.concatenate(*adatals,
+      batch_categories=meta[sID],
+      batch_key=batchKey)
   ## remove duplicated columns in var
   varCol = [one.split("-")[0] for one in adata.var.columns]
   varInx = [i for i,v in enumerate(varCol) if not v in varCol[:i]]
