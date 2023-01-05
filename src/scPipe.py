@@ -871,6 +871,7 @@ def combine(mIDs,prefix,config):
     Draw.write("%s_raw_added.h5ad"%prefix)
     if os.path.isfile("%s.h5ad.lock"%prefix):
       os.remove("%s.h5ad.lock"%prefix)
+  saveSeuratObj(prefix)
   return D.uns.get('scaleF')
 def integrateH5ad(strH5ad,methods,prefix,majorR=None):
   D = ad.read_h5ad(strH5ad)
@@ -920,7 +921,12 @@ def findMajor(X,majorR):
   Xmax["name"] = Xmax.apply(lambda x:x[colName[1]] if x['count']/x['sum']>majorR else x[colName[0]],axis=1)
   Xsel = Xmax.set_index(colName[0])['name'].to_dict()
   return(X[colName[0]].map(Xsel))
-
+def saveSeuratObj(prefix):
+  strH5ad = "%s.h5ad"%prefix
+  strRDS = glob.glob('%s_SCT*.rds'%prefix)[0]
+  if os.path.exists(strRDS):
+    run_cmd("Rscript %s/src/seuratObj.R %s %s"%(strPipePath,strRDS,strh5ad))
+  
 def description(strF,strDesc):
   print(strF)
   with open(strF,"w") as f:

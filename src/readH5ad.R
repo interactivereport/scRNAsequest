@@ -22,22 +22,22 @@ getobs <- function(strH5ad){
   }
   return(meta)
 }
-getX <- function(strH5ad){
+getX <- function(strH5ad,useRaw=T){
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
-  if(sum(grepl("/raw/X",keys$group))>0){
+  if(useRaw && sum(grepl("/raw/X",keys$group))>0){
     message("\t\tFound .raw.X, extracting counts")
     X <- h5read(strH5ad,"/raw/X")
   }else{
     X <- h5read(strH5ad,"X")
   }
-  if(sum(grepl("/raw/var",keys$group))>0){
+  if(useRaw && sum(grepl("/raw/var",keys$group))>0){
     message("\t\tFound .raw.var, extracting gene name")
     gID <- h5read(strH5ad,"/raw/var/_index")
   }else{
     gID <- h5read(strH5ad,"/var/_index")
   }
-  if(sum(grepl("/raw/obs",keys$group))>0){
+  if(useRaw && sum(grepl("/raw/obs",keys$group))>0){
     message("\t\tFound .raw.obs, extracting cell name")
     cID <- h5read(strH5ad,"/raw/obs/_index")
   }else{
@@ -63,5 +63,11 @@ getobsm <- function(strH5ad,key){
   k <- k[grepl("obsm",k[,1]),2]
   if(!key%in%k) return(NULL)
   X <- h5read(strH5ad,paste0("obsm/",key))
+  colnames(X) <- h5read(strH5ad,"/obs/_index")
   return(t(X))
+}
+getobsmKey <- function(strH5ad){
+  k <- h5ls(strH5ad,recursive=2)
+  k <- k[grepl("obsm",k[,1]),2]
+  return(k)
 }
