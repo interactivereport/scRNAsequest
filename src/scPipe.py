@@ -925,7 +925,7 @@ def saveSeuratObj(prefix):
   strH5ad = "%s.h5ad"%prefix
   strRDS = glob.glob('%s_SCT*.rds'%prefix)[0]
   if os.path.exists(strRDS):
-    run_cmd("Rscript %s/src/seuratObj.R %s %s"%(strPipePath,strRDS,strh5ad))
+    run_cmd("Rscript %s/src/seuratObj.R %s %s"%(strPipePath,strRDS,strH5ad))
   
 def description(strF,strDesc):
   print(strF)

@@ -11,7 +11,7 @@ fi
 
 #condaEnv=$(head -n 1 $src/sys.yml)
 #condaEnv=${condaEnv:1}
-
+set -e
 if [[ -f "$config" ]]; then
   env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scPipe.py $config 2>&1 | tee -a $config.$(date +%Y%m%d).log'
   env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;$src/../scReport $config 2>&1 | tee -a $config.$(date +%Y%m%d).log'
