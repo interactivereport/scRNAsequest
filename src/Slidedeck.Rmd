@@ -29,6 +29,7 @@ PWD <- system("pwd", intern = TRUE)
 Info <- paste0(PWD, "/bookdown.info.txt")
 Data <- read.table(Info)
 Working_dir <- Data$V2[2]
+Config_file <- Data$V2[3]
 PNG_dir <- Data$V2[4]
 #Extract information from the Config_file
 config <- sapply(yaml::read_yaml(Config_file),unlist)
