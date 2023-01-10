@@ -383,6 +383,7 @@ def initSave(meta,strInput):
     f.write("comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
 
   # save config file
+  sysConfig = getConfig()
   config = getConfig("template.yml",True)
   strJson = "%s/samplesheet.json"%strInput
   if os.path.isfile(strJson):
@@ -395,7 +396,8 @@ def initSave(meta,strInput):
     print("===> Please update the prj_name and prj_title manually in config file <===")
   config = [one.replace("initOutput",strOut)
                 .replace("initPrjMeta",strMeta)
-                .replace("initDEG",strDEG)for one in config]
+                .replace("initDEG",strDEG)
+                .replace("initMethods",'[%s]'%','.join(sysConfig['methods'].keys())) for one in config]
   strConfig = os.path.join(strOut,"config.yml")
   with open(strConfig,"w") as f:
     f.writelines(config)
@@ -415,12 +417,13 @@ def initExternal(strInput):
   with open(strDEG,"w") as f:
     f.write("comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]\n")
 
+  sysConfig = getConfig()
   configL = getConfig("template.yml",blines=True)
-  configL = [one.replace("initOutput",strInput) for one in configL]
-  configL = [one.replace("initPrjMeta",strMeta) for one in configL]
-  configL = [one.replace("initDEG",strDEG) for one in configL]
-  configL = [one.replace("initPrjName",' #required') for one in configL]
-  configL = [one.replace('"initPrjTitle"',' #required') for one in configL]
+  configL = [one.replace("initOutput",strInput)
+                .replace("initPrjMeta",strMeta)
+                .replace("initDEG",strDEG)
+                .replace("initPrjName",' #required')
+                .replace("initMethods",'[%s]'%','.join(sysConfig['methods'].keys())) for one in configL]
 
   strConfig = os.path.join(strInput,"config.yml")
   with open(strConfig,"w") as f:
@@ -818,6 +821,12 @@ def runMethods(prefix,strConfig):
 
   cmds = {}
   allM = sysConfig['methods']
+  if 'methods' in config.keys():
+    selM = list(set(config['methods']) & set(allM.keys()))
+    if not 'SCT' in selM:
+      Exit("The method 'SCT' including log1p is required but missing in 'methods' setting in config file:\n\t %s"%strConfig)
+    allM = {a:allM[a] for a in selM}
+
   for m in allM.keys():
     if not config["newProcess"] and os.path.isfile("%s_%s.h5ad"%(prefix,m)):
       continue
