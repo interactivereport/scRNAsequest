@@ -11,8 +11,8 @@ if [[ -n "$1" ]]; then
     echo "############"
     echo "scReport: Building bookdown report..."
 
-    source $src/.env
-    eval $condaEnv
+    #source $src/.env
+    #eval $condaEnv
 
     workingdir=$(dirname $1)
     configdir=$1
