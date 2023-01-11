@@ -59,7 +59,7 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
   saveX(D,strOut,gID,expScale)
 }
 saveX <- function(D,strH5,gID,expScale){
-  message("\tsaving expression ...")
+  message("\tsaving expression: ",strH5)
   saveRDS(D,paste0(strH5,".rds"))
   if("SCT"%in%names(D)){
     X <- Matrix::t(Matrix::Matrix(D@assays$SCT@data,sparse=T))

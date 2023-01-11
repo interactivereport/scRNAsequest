@@ -44,18 +44,23 @@ main <- function(){
                     verbose = FALSE)
       )))
     },Dmedian)
-    features <- SelectIntegrationFeatures(object.list = Dlist, nfeatures = 3000)
-    Dlist <- PrepSCTIntegration(object.list = Dlist, anchor.features = features)
-    Dlist <- lapply(Dlist, FUN = RunPCA, features = features)
+    if(length(Dlist)>1){
+      features <- SelectIntegrationFeatures(object.list = Dlist, nfeatures = 3000)
+      Dlist <- PrepSCTIntegration(object.list = Dlist, anchor.features = features)
+      Dlist <- lapply(Dlist, FUN = RunPCA, features = features)
+      
+      anchors <- FindIntegrationAnchors(Dlist, normalization.method = "SCT",
+                                        anchor.features = features, dims = 1:50,
+                                        reduction = "rpca", k.anchor = 20)
+      rm(Dlist)
+      gc()
+      Dsct <- IntegrateData(anchorset = anchors, normalization.method = "SCT", dims = 1:50)
+      rm(anchors)
+      gc()
+    }else{
+      Dsct <- Dlist[[1]]
+    }
     
-    anchors <- FindIntegrationAnchors(Dlist, normalization.method = "SCT",
-                                      anchor.features = features, dims = 1:50,
-                                      reduction = "rpca", k.anchor = 20)
-    rm(Dlist)
-    gc()
-    Dsct <- IntegrateData(anchorset = anchors, normalization.method = "SCT", dims = 1:50)
-    rm(anchors)
-    gc()
     Dsct <- RunPCA(Dsct, verbose = FALSE)
     Dsct <- RunUMAP(Dsct, reduction = "pca", dims = 1:50)
     Dsct <- FindNeighbors(Dsct,dims = 1:50)

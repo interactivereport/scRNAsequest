@@ -12,7 +12,7 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
   rownames(X) <- names(gID) #gsub("_","-",rownames(X))
   D <- CreateSeuratObject(counts=X,
-                          project="sctHarmony",
+                          project=assayName,
                           meta.data=getobs(strH5ad))
   rm(X)
   gc()
@@ -32,7 +32,8 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   
   selFN <- 3000
   features <- SelectIntegrationFeatures(Dlist,nfeatures=selFN)
-  D <- merge(Dlist[[1]], y=Dlist[-1],project="sctHarmony")
+  if(length(Dlist)==1) D <- Dlist[[1]]
+  else D <- merge(Dlist[[1]], y=Dlist[-1],project=assayName)
   rm(Dlist)
   gc()
   DefaultAssay(D) <- assayName

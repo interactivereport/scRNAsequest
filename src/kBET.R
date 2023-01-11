@@ -36,7 +36,10 @@ estimateBatch <- function(oneM,prefix,batchKey){
   #batchRaw <- unlist(getobs(paste0(prefix,"_raw.h5ad"))[,batchKey,drop=F])
   tryCatch({
     message("\t working on ",oneM)
-    strH5ad <- paste0(prefix,"_",oneM,".h5ad")
+    
+    #strH5ad <- paste0(prefix,"_",oneM,".h5ad")
+    strH5ad <- paste0(file.path(dirname(prefix),oneM,basename(prefix)),".h5ad")
+    
     batch <- unlist(getobs(strH5ad)[,batchKey],use.names=F) #as.vector(batchRaw[rownames(getobs(strH5ad))]) #
     umap <- getobsm(strH5ad,"X_umap")
     if(is.null(umap)) stop(paste(oneM,"doesn't contain X_umap"))
@@ -83,7 +86,9 @@ plotBatch <- function(kBET_all,prefix){
   #    theme(axis.text.x = element_text(angle = -45, hjust = 0), axis.title.x = element_blank(), plot.margin = margin(0.2, 0.8, 0.2 , 0.2, unit = 'in')) +
   #    ylim(0, 1) #+ scale_x_discrete(labels = c("DESC", "Harmony", "Seurat3", "combat", "Scanorama(svd)", "linear regression", "mnn", "bbknn", "bbknn(trim)", "Scanorama",  "no correction"))
   #ggsave(filename = "figures/kBET_boxplot_across_methods_umap_k0_100.pdf", width = 5, height = 3)
-  ggsave(filename = paste0(prefix,"_kBET_umap_k0_100.pdf"),plot=p, width = 5, height = 3)
+  strKBET <- paste0(file.path(dirname(prefix),"evaluation",basename(prefix)),"_kBET_umap_k0_100.pdf")
+  dir.create(dirname(strKBET),showWarnings=F)
+  ggsave(filename=strKBET,plot=p, width = 5, height = 3)
 }
 
 main <- function(){

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, logging, yaml
+import subprocess, os, h5py, sys, warnings, logging, yaml, re
 import anndata as ad
 from scipy import sparse
 from scipy.sparse import csc_matrix
@@ -19,8 +19,8 @@ def main():
   strH5ad = sys.argv[1]
   if not os.path.isfile(strH5ad):
     msgError("ERROR: %s does not exist!"%strH5ad)
-  if not strH5ad.endswith("raw.h5ad"):
-    msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
+  #if not strH5ad.endswith("raw.h5ad"):
+  #  msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
   strConfig = sys.argv[2]
   if not os.path.isfile(strConfig):
     msgError("ERROR: %s does not exist!"%strConfig)
@@ -29,11 +29,11 @@ def main():
   if config['ref_name'] is None:
     print("No reference specified, END")
     return
-  print(strH5ad)
+
   D = ad.read_h5ad(strH5ad) #,backed=True
   Dbatch = D.obs["library_id"].copy()
 
-  strCSV = strH5ad.replace("raw.h5ad","seuratRef.csv")
+  strCSV = "%s.csv"%os.path.join(config["output"],"SeuratRef",config["prj_name"])#strH5ad.replace("raw.h5ad","seuratRef.csv")
   cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"seuratRef.R"),
                             strH5ad,strConfig,strCSV)
   subprocess.run(cmd,shell=True,check=True)
@@ -50,7 +50,7 @@ def main():
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    D.write(strH5ad.replace("raw.h5ad","SeuratRef.h5ad"))
+    D.write(re.sub("csv$","h5ad",strCSV))
   print("Mapping to reference completed!")
 
 if __name__ == "__main__":

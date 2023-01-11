@@ -16,7 +16,8 @@ def calc_sil_pca50(prefix,oneM):
   """
   this will be using euclidean distances in the PCA space
   """
-  strH5ad = "%s_%s.h5ad"%(prefix,oneM)
+  #strH5ad = "%s_%s.h5ad"%(prefix,oneM)
+  strH5ad="%s.h5ad"%os.path.join(os.path.dirname(prefix),oneM,os.path.basename(prefix))
   print(strH5ad)
   adata = sc.read(strH5ad,backed=True)
   sil_coeff = None
@@ -41,6 +42,11 @@ def make_df(i):
   #method = i[0].replace("concat12_", "").replace("clustered.h5ad", "")
   df0['method'] = i[0]
   return(df0)
+def setupDir(strOut):
+  try:
+    os.makedirs(strOut)
+  except FileExistsError:
+    pass
 
 def main():
   print("starting silhouette evaluation ...")
@@ -57,7 +63,9 @@ def main():
   ax = coeff_pca50_df.boxplot(by='method',rot=90)
   ax.set_title("Silhouette_coefficients")
   plt.grid()
-  plt.savefig("%s_Silhouette_boxplot_pc50.pdf"%prefix,bbox_inches="tight")
+  strPDF = "%s_Silhouette_boxplot_pc50.pdf"%os.path.join(os.path.dirname(prefix),'evaluation',os.path.basename(prefix))
+  setupDir(os.path.dirname(strPDF))
+  plt.savefig(strPDF,bbox_inches="tight")
   plt.close()
 
 if __name__ == "__main__":

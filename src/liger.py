@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, math
+import subprocess, os, h5py, sys, warnings, math, re, yaml
 import anndata as ad
 import scanpy as sc
 import numpy as np
@@ -19,11 +19,17 @@ def main():
   strH5ad = sys.argv[1]
   if not os.path.isfile(strH5ad):
     msgError("ERROR: %s does not exist!"%strH5ad)
-  if not strH5ad.endswith("raw.h5ad"):
-    msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
+  #if not strH5ad.endswith("raw.h5ad"):
+  #  msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
   
+  strConfig = sys.argv[2]
+  if not os.path.isfile(strConfig):
+    msgError("ERROR: %s does not exist!"%strConfig)
+  with open(strConfig,"r") as f:
+    config = yaml.safe_load(f)
+
   print("\tcalculate highly variable genes")
-  strHVG=strH5ad.replace("raw.h5ad","liger_hvg.csv")
+  strHVG= "%s_hvg.csv"%os.path.join(config["output"],"Liger",config["prj_name"])#strH5ad.replace("raw.h5ad","liger_hvg.csv")
   D = sc.read_h5ad(strH5ad)
   # 95 percentile to normalize
   sc.pp.normalize_total(D,target_sum=math.ceil(np.percentile(D.X.sum(axis=1).transpose().tolist()[0],95)))
@@ -32,7 +38,7 @@ def main():
   D.var.highly_variable.to_csv(strHVG)
   Dbatch = D.obs["library_id"].copy()
   
-  strCSV = strH5ad.replace("raw.h5ad","liger.csv")
+  strCSV = re.sub("_hvg.csv$",".csv",strHVG)#strH5ad.replace("raw.h5ad","liger.csv")
   cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"liger.R"),
                             strH5ad,strHVG,strCSV)
   subprocess.run(cmd,shell=True,check=True)
@@ -53,7 +59,7 @@ def main():
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    D.write(strH5ad.replace("raw.h5ad","Liger.h5ad"))
+    D.write(re.sub("_hvg.csv$",".h5ad",strHVG))
   print("liger process completed!")
 
 if __name__ == "__main__":

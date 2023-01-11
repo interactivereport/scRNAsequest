@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re
+import subprocess, os, h5py, sys, warnings, re, yaml
 import scanpy as sc
 from scipy import sparse
 from scipy.sparse import csc_matrix
@@ -17,12 +17,15 @@ def main():
   strH5ad = sys.argv[1]
   if not os.path.isfile(strH5ad):
     msgError("ERROR: %s does not exist!"%strH5ad)
-  if not strH5ad.endswith("raw.h5ad"):
-    msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
-  strH5 = strH5ad.replace("raw.h5ad","SCT.h5")
+  #if not strH5ad.endswith("raw.h5ad"):
+  #  msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
+  
   strConfig = sys.argv[2]
   if not os.path.isfile(strConfig):
     msgError("ERROR: %s does not exist!"%strConfig)
+  with open(strConfig,"r") as f:
+    config = yaml.safe_load(f)
+  strH5 = "%s.h5"%os.path.join(config["output"],"SCT",config["prj_name"])
   
   cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"SCT.R"),
                             strH5ad,strH5,strConfig)
@@ -65,7 +68,7 @@ def main():
     sc.tl.rank_genes_groups(D, 'normalized.louvain')
     sc.tl.tsne(D, n_pcs=npc)
     print("\tsaving ...")
-    D.write(strH5ad.replace("raw.h5ad","SCT.h5ad"))
+    D.write(re.sub("h5$","h5ad",strH5))
   
   print("Completed SCTransform ...")
 

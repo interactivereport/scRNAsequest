@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings
+import subprocess, os, h5py, sys, warnings, yaml, re
 import anndata as ad
 import pandas as pd
 import numpy as np
@@ -19,10 +19,15 @@ def main():
   strH5ad = sys.argv[1]
   if not os.path.isfile(strH5ad):
     msgError("ERROR: %s does not exist!"%strH5ad)
-  if not strH5ad.endswith("raw.h5ad"):
-    msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
+  #if not strH5ad.endswith("raw.h5ad"):
+  #  msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
 
-  strOut = strH5ad.replace("raw.h5ad","seurat_rpca.csv.gz")
+  strConfig = sys.argv[2]
+  if not os.path.isfile(strConfig):
+    msgError("ERROR: %s does not exist!"%strConfig)
+  with open(strConfig,"r") as f:
+    config = yaml.safe_load(f)
+  strOut = "%s.csv.gz"%os.path.join(config["output"],"SeuratRPCA",config["prj_name"])#strH5ad.replace("raw.h5ad","seurat_rpca.csv.gz")
 
   print("\tRPCA integration ...")
   cmd = "Rscript %s %s %s"%(os.path.join(strPipePath,"seuratRPCA.R"),
@@ -45,7 +50,7 @@ def main():
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    D.write(strH5ad.replace("raw.h5ad","SeuratRPCA.h5ad"))
+    D.write(re.sub("csv.gz","h5ad",strOut))
   print("=== seurat RPCA integration process completed! ===")
 
 if __name__ == "__main__":

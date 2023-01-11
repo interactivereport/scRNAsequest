@@ -17,6 +17,8 @@ IntronExon="intron_exon_count_path"
 batchKey="library_id"
 Rmarkdown="Rmarkdown"
 beRaster=True
+qcDir="QC"
+tempDir="raw"
 # maximum number of a parallel job can be re-submited is 5
 maxJobSubmitRepN=2
 logging.disable()
@@ -193,10 +195,7 @@ def sbatch(cmds,strPath,core,memG=0,jID=None):
   if jID is None:
     jID = "j%d"%random.randint(10,99)
   strWD = os.path.join(strPath,jID)
-  try:
-    os.makedirs(strWD)
-  except FileExistsError:
-    pass
+  setupDir(strWD)
   if memG==0:
     pScript = "\n".join([i for i in sbatchScript.split("\n") if not "MEMFREE" in i])
   else:
@@ -445,10 +444,11 @@ def runPipe(strConfig):
   config = getConfig(strConfig,bSys=False)
   config = checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
-  prefix = runQC(config,meta)
-
+  runQC(config,meta)
+  
+  prefix = os.path.join(config["output"],config["prj_name"])
   if not os.path.isfile("%s.h5ad"%prefix) or config["newProcess"]:
-    methods = runMethods(prefix,strConfig)
+    methods = runMethods(strConfig)
     scaleF = combine(methods,prefix,config)
   else:
     D = ad.read_h5ad("%s.h5ad"%prefix,backed="r")
@@ -456,6 +456,11 @@ def runPipe(strConfig):
   runDEG(strConfig,prefix,config)
   moveCellDepot(prefix,config,scaleF)
   MsgPower()
+def setupDir(strOut):
+  try:
+    os.makedirs(strOut)
+  except FileExistsError:
+    pass
 def checkConfig(config):
   global beRaster
   if config["prj_name"] is None:
@@ -472,7 +477,8 @@ def checkConfig(config):
   return config
 def runQC(config,meta):
   plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
-  prefix = os.path.join(config["output"],config["prj_name"])
+  prefix = os.path.join(config["output"],tempDir,config["prj_name"])
+  setupDir(os.path.dirname(prefix))
   if not config["runAnalysis"] or not os.path.isfile("%s_raw.h5ad"%prefix) or config["newProcess"]:
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
@@ -482,12 +488,12 @@ def runQC(config,meta):
       else:
         adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
       adata = preprocess(adata,config)
-      strPrefilterQC = os.path.join(config["output"],"prefilter.QC.pdf")
+      strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
       if not os.path.isfile(strPrefilterQC):
         plotQC(adata,strPrefilterQC,config["group"])
       if config["filter_step"]:
         adata = filtering(adata,config)
-        plotQC(adata,os.path.join(config["output"],"postfilter.QC.pdf"),config["group"])
+        plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
     checkCells(adata)
     if not config["runAnalysis"]:
       runQCmsg(config)
@@ -500,11 +506,9 @@ def runQC(config,meta):
         regress_out = ["pct_%s"%k for k in config["gene_group"].keys() if "pct_%s"%k in adata.obs.columns]
         regress_out.append("total_counts")
       adata.obs,adata.obsm=obtainRAWobsm(adata.copy(),regress_out)
-      adata.write("%s_raw.h5ad"%prefix)
-      
-  return prefix
+      adata.write("%s.h5ad"%prefix)
 def runQCmsg(config):
-  print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%config['output'])
+  print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%os.path.join(config["output"],qcDir))
   print("And then:")
   print("\t1. Remove any outlier sample from the sample meta table %s"%config['sample_meta'])
   print("\t2. Update config file on cutoff values for cell filtering")
@@ -515,6 +519,8 @@ def plotSeqQC(meta,sID,strOut,grp=None):
   print("plotting sequence QC ...")
   global Rmarkdown
   Rmarkdown = os.path.join(strOut,Rmarkdown)
+  strOut = os.path.join(strOut,qcDir)
+  setupDir(strOut)
   if not os.path.isdir(Rmarkdown):
     os.mkdir(Rmarkdown)
 
@@ -813,7 +819,7 @@ def savePDF_PNG(ax,pdf,strPNG):
   plt.savefig(strPNG,bbox_inches="tight")
   plt.close()
 
-def runMethods(prefix,strConfig):
+def runMethods(strConfig):
   print("starting the process by each method ...")
   sysConfig = getConfig()
   config = getConfig(strConfig,bSys=False)
@@ -827,19 +833,16 @@ def runMethods(prefix,strConfig):
       Exit("The method 'SCT' including log1p is required but missing in 'methods' setting in config file:\n\t %s"%strConfig)
     allM = {a:allM[a] for a in selM}
 
+  prefix = os.path.join(config["output"],tempDir,config["prj_name"])
   for m in allM.keys():
-    if not config["newProcess"] and os.path.isfile("%s_%s.h5ad"%(prefix,m)):
+    strH5ad = "%s.h5ad"%os.path.join(config["output"],m,config["prj_name"])
+    if not config["newProcess"] and os.path.isfile(strH5ad):
       continue
-    # /home/zouyang/projects/scRNAsequest/src/SCT.py
-    # /home/zouyang/projects/scRNAsequest/src/harmony.py
-    # /home/zouyang/projects/scRNAsequest/src/seurat.py
-    # /home/zouyang/projects/scRNAsequest/src/seuratRef.py
-
-    # /camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_raw.h5ad config.yml
-    cmd="%s/src/%s %s_%s.h5ad %s"%(strPipePath,
+    setupDir(os.path.dirname(strH5ad))
+    cmd="%s/src/%s %s.h5ad %s"%(strPipePath,#_%s
                                     allM[m][0],
                                     prefix,
-                                    allM[m][1],
+                                    #allM[m][1],
                                     strConfig)
     cmds[m]=cmd
   submit_cmd(cmds,config)
@@ -860,7 +863,7 @@ def checkLock(config,sysConfig):
     run_cmd("touch %s"%strLock)
 def combine(mIDs,prefix,config):
   print("Evaluating all methods ...")
-  CKmethods = [one for one in mIDs if os.path.isfile("%s_%s.h5ad"%(prefix,one))]+['raw']
+  CKmethods = [one for one in mIDs if os.path.isfile("%s.h5ad"%os.path.join(config['output'],one,config["prj_name"]))]+['raw']
   if not "SCT" in CKmethods:
     Exit("SCT is missing! and it is required expression for visualization!")
 
@@ -868,11 +871,13 @@ def combine(mIDs,prefix,config):
   submit_cmd({"kBET":cmd,
               "silhouette":"%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods))},
             config)
-  #run_cmd("%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods)))
 
   print("combining all methods results ...")
-  D = integrateH5ad("%s_SCT.h5ad"%prefix,CKmethods,prefix,config.get("major_cluster_rate"))
-  Draw = integrateH5ad("%s_raw.h5ad"%prefix,CKmethods,prefix,config.get("major_cluster_rate"))
+  D = integrateH5ad("%s.h5ad"%os.path.join(config['output'],"SCT",config["prj_name"]),
+    CKmethods,prefix,config.get("major_cluster_rate"))
+  Draw = integrateH5ad("%s.h5ad"%os.path.join(config['output'],"raw",config["prj_name"]),
+    CKmethods,prefix,config.get("major_cluster_rate"))
+  
   print("saving combined results ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -889,11 +894,12 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None):
   for one in methods:
     if one in ["SCT","raw"]:
       continue
-    if not os.path.isfile("%s_%s.h5ad"%(prefix,one)):
-      print("Warning: ignore missing h5ad for method %s"%one)
+    oneH5ad = "%s.h5ad"%os.path.join(os.path.dirname(prefix),one,os.path.basename(prefix))#"%s_%s.h5ad"%(prefix,one)
+    if not os.path.isfile(oneH5ad):
+      print("Warning: ignore missing h5ad (%s) for method %s"%(oneH5ad,one))
       continue
     print("\tmerging ",one)
-    D1 = ad.read_h5ad("%s_%s.h5ad"%(prefix,one),backed=True)
+    D1 = ad.read_h5ad(oneH5ad,backed=True)
     obs = D1.obs.copy()
     addObs = [one for one in obs.columns if not one in D.obs.columns]
     if one == "SeuratRef":
@@ -932,7 +938,7 @@ def findMajor(X,majorR):
   return(X[colName[0]].map(Xsel))
 def saveSeuratObj(prefix):
   strH5ad = "%s.h5ad"%prefix
-  strRDS = glob.glob('%s_SCT*.rds'%prefix)[0]
+  strRDS = glob.glob('%s*.rds'%os.path.join(os.path.dirname(prefix),"SCT",os.path.basename(prefix)))[0]
   if os.path.exists(strRDS):
     run_cmd("Rscript %s/src/seuratObj.R %s %s"%(strPipePath,strRDS,strH5ad))
   
