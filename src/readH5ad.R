@@ -22,6 +22,15 @@ getobs <- function(strH5ad){
   }
   return(meta)
 }
+getID <- function(strH5ad,keys,grp){
+  if("_index" %in% keys$name[grepl(grp,keys$group)]){
+    return(h5read(strH5ad,paste0(grp,"/_index")))
+  }else if("index" %in% keys$name[grepl(grp,keys$group)]){
+    return(h5read(strH5ad,paste0(grp,"/index")))
+  }else{
+    stop(paste("unknown adata format: Neither index or _index exists in group",grp))
+  }
+}
 getX <- function(strH5ad,useRaw=T){
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
@@ -33,15 +42,15 @@ getX <- function(strH5ad,useRaw=T){
   }
   if(useRaw && sum(grepl("/raw/var",keys$group))>0){
     message("\t\tFound .raw.var, extracting gene name")
-    gID <- h5read(strH5ad,"/raw/var/_index")
+    gID <- getID(strH5ad,keys,"/raw/var") #h5read(strH5ad,"/raw/var/_index")
   }else{
-    gID <- h5read(strH5ad,"/var/_index")
+    gID <- getID(strH5ad,keys,"/var") #h5read(strH5ad,"/var/_index")
   }
   if(useRaw && sum(grepl("/raw/obs",keys$group))>0){
     message("\t\tFound .raw.obs, extracting cell name")
-    cID <- h5read(strH5ad,"/raw/obs/_index")
+    cID <- getID(strH5ad,keys,"/raw/obs") #h5read(strH5ad,"/raw/obs/_index")
   }else{
-    cID <- h5read(strH5ad,"/obs/_index")
+    cID <- getID(strH5ad,keys,"/obs") #h5read(strH5ad,"/obs/_index")
   }
   gID <- as.vector(gID)
   cID <- as.vector(cID)
