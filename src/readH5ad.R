@@ -34,26 +34,30 @@ getID <- function(strH5ad,keys,grp){
 getX <- function(strH5ad,useRaw=T){
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
+  message("\t\textracting counts")
   if(useRaw && sum(grepl("/raw/X",keys$group))>0){
-    message("\t\tFound .raw.X, extracting counts")
+    message("\t\t\tFound .raw.X")
     X <- h5read(strH5ad,"/raw/X")
   }else{
     X <- h5read(strH5ad,"X")
   }
+  message("\t\textracting gene name")
   if(useRaw && sum(grepl("/raw/var",keys$group))>0){
-    message("\t\tFound .raw.var, extracting gene name")
+    message("\t\t\tFound .raw.var")
     gID <- getID(strH5ad,keys,"/raw/var") #h5read(strH5ad,"/raw/var/_index")
   }else{
     gID <- getID(strH5ad,keys,"/var") #h5read(strH5ad,"/var/_index")
   }
+  message("\t\textracting cell name")
   if(useRaw && sum(grepl("/raw/obs",keys$group))>0){
-    message("\t\tFound .raw.obs, extracting cell name")
+    message("\t\tFound .raw.obs")
     cID <- getID(strH5ad,keys,"/raw/obs") #h5read(strH5ad,"/raw/obs/_index")
   }else{
     cID <- getID(strH5ad,keys,"/obs") #h5read(strH5ad,"/obs/_index")
   }
   gID <- as.vector(gID)
   cID <- as.vector(cID)
+  message("\t\tcreating sparse matrix")
   if((max(X$indices)+1)==length(gID) || (length(X$indptr)-1)==length(cID)){ # CSR sparse matrix
     M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
@@ -72,7 +76,7 @@ getobsm <- function(strH5ad,key){
   k <- k[grepl("obsm",k[,1]),2]
   if(!key%in%k) return(NULL)
   X <- h5read(strH5ad,paste0("obsm/",key))
-  colnames(X) <- h5read(strH5ad,"/obs/_index")
+  colnames(X) <- getID(strH5ad,k,"/obs")    #h5read(strH5ad,"/obs/_index")
   return(t(X))
 }
 getobsmKey <- function(strH5ad){
