@@ -627,11 +627,14 @@ def getData(meta,sID):
     if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
       IE = getIntronExon(meta[IntronExon][i],adata.obs_names)
       adata.obs = adata.obs.merge(IE,left_index=True,right_index=True)
-    if ANNcol in meta.columns:
-      annMeta = pd.read_csv(meta[ANNcol][i],index_col=0)
-      adata = adata[adata.obs.index.isin(list(annMeta.index))]
-      adata.obs = pd.merge(adata.obs,annMeta,left_index=True,right_index=True)
-      print("\t\tCell level meta available, cell number: %d"%adata.shape[0])
+    if ANNcol in meta.columns and not pd.isna(meta[ANNcol][i]):
+      if not os.path.exists(meta[ANNcol][i]):
+        print("\t\tWarning: cell level meta file does not exist!\n\t\t\t%s"%meta[ANNcol][i])
+      else:
+        annMeta = pd.read_csv(meta[ANNcol][i],index_col=0)
+        adata = adata[adata.obs.index.isin(list(annMeta.index))]
+        adata.obs = pd.merge(adata.obs,annMeta,left_index=True,right_index=True)
+        print("\t\tCell level meta available, cell number: %d"%adata.shape[0])
     for one in meta.columns:
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
