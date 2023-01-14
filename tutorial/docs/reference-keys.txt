@@ -33,6 +33,10 @@ celldepot-publishing
 initialize-sc2celldepot
 publish-to-celldepot
 additional-tools
+scdeg
+initialize-scdeg
+run-de-analysis
+sctool
 remove-annotations
 add-annotations
 export-gene-expressions

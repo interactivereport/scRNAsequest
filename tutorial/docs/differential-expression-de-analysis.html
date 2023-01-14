@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-10-11" />
+<meta name="date" content="2023-01-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -188,9 +188,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="10" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>10</b> Additional tools</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2</b> Add annotations</a></li>
-<li class="chapter" data-level="10.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>10.1</b> scDEG</a>
+<ul>
+<li class="chapter" data-level="10.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>10.1.1</b> Initialize scDEG</a></li>
+<li class="chapter" data-level="10.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>10.1.2</b> Run DE analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>10.2</b> scTool</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.2.1</b> Remove annotations</a></li>
+<li class="chapter" data-level="10.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2.2</b> Add annotations</a></li>
+<li class="chapter" data-level="10.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.2.3</b> Export gene expressions</a></li>
+</ul></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -232,10 +240,10 @@ library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
 <p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="differential-expression-de-analysis.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb31-2"><a href="differential-expression-de-analysis.html#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="differential-expression-de-analysis.html#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb31-4"><a href="differential-expression-de-analysis.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="differential-expression-de-analysis.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb32-2"><a href="differential-expression-de-analysis.html#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="differential-expression-de-analysis.html#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb32-4"><a href="differential-expression-de-analysis.html#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step may take a few hours to run. The output files will be generated in the directory:</p>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4

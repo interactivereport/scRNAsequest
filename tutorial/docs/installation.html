@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2022-10-11" />
+<meta name="date" content="2023-01-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -188,9 +188,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="10" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>10</b> Additional tools</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2</b> Add annotations</a></li>
-<li class="chapter" data-level="10.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>10.1</b> scDEG</a>
+<ul>
+<li class="chapter" data-level="10.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>10.1.1</b> Initialize scDEG</a></li>
+<li class="chapter" data-level="10.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>10.1.2</b> Run DE analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>10.2</b> scTool</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.2.1</b> Remove annotations</a></li>
+<li class="chapter" data-level="10.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2.2</b> Add annotations</a></li>
+<li class="chapter" data-level="10.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.2.3</b> Export gene expressions</a></li>
+</ul></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -266,7 +274,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-23"><a href="installation.html#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="ex">NHP_Cerebellum:</span> more information @ search NHP_Cerebellum in celldepot @ http://omicsoft01.hpc.biogen.com/celldepot</span>
 <span id="cb2-24"><a href="installation.html#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="ex">If</span> one of the above can be used as a reference for your datasets, please update the config file with the name in <span class="st">&#39;ref_name&#39;</span>.</span>
 <span id="cb2-25"><a href="installation.html#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="installation.html#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb2-26"><a href="installation.html#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
 <span id="cb2-27"><a href="installation.html#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <p>Typing scRef directly without any parameters will activate the user manual page:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="installation.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
@@ -290,7 +298,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-19"><a href="installation.html#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
 <span id="cb3-20"><a href="installation.html#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
 <span id="cb3-21"><a href="installation.html#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="installation.html#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb3-22"><a href="installation.html#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
 <span id="cb3-23"><a href="installation.html#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 </div>
 <div id="configure-sys.yml-file" class="section level2" number="3.2">

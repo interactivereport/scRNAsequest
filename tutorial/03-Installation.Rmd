@@ -59,7 +59,7 @@ Available reference data:
 	NHP_Cerebellum: more information @ search NHP_Cerebellum in celldepot @ http://omicsoft01.hpc.biogen.com/celldepot
 If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.
 
-Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
+Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
 ------------
 ```
 
@@ -87,7 +87,7 @@ The Ref config file will be generated automatically when a path is provided
 	1. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!
 	2. Make sure the data provided for reference building is SCT transformed!
 
-Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
+Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
 ------------
 ```
 

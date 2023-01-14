@@ -37,11 +37,15 @@ highGene.cutoff: 3000    #any cells with a higher number of detected genes to be
 group:                   #if provided, a 10X QC box plot will be ploted in QC plot
 rasterizeFig: True       # should image in pdf be rasterized
 
-runAnalysis: True
+runAnalysis: False
 newProcess: False
+methods: [SCT,Liger,SeuratRef,SeuratRPCA,sctHarmony]    #SCT method (including log1p) is required expression normalization
+expScaler: 10000         #integer value, 0: SCT (along with following option); 1-100: logNormal with scale.factor to be the specified quantile
+                         #>100: logNormal with scale.factor to be the specified value                                         
+PrepSCTFindMarkers: True # should the "PrepSCTFindMarkers" applied on SCT to be exported for visualization expression                                                             
 parallel: False          #"sge" or "slurm"
 core: 2
-overwrite: True
+overwrite: False
 major_cluster_rate: 0.7  # the proportion of cells of an integration cluster to be assigned to a seurat reference label
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
@@ -117,20 +121,20 @@ Since each data has three MEX files (barcodes.tsv.gz, features.tsv.gz and matrix
 
 ```
 Sample_Name,h5path
-miR155cKO_rep1,~/10XGenomicsData/GSM6213399_IT_YZ_0309_2904
-WT_rep1,~/10XGenomicsData/GSM6213400_IT_YZ_0309_2905
-WT_rep2,~/10XGenomicsData/GSM6213401_IT_YZ_0309_2908
-miR155cKO_rep2,~/10XGenomicsData/GSM6213402_IT_YZ_0322_3125
+FCtr,~/10XGenomicsData/GSM5617891_snRNA_FCtr
+FEcig,~/10XGenomicsData/GSM5617892_snRNA_FEcig
+MCtr,~/10XGenomicsData/GSM5617893_snRNA_MCtr
+MEcig,~/10XGenomicsData/GSM5617894_snRNA_MEcig
 ```
 
 Another example with additional information:
 
 ```
-Sample_Name,h5path,Genotype,Sex
-miR155cKO_rep1,~/10XGenomicsData/GSM6213399_IT_YZ_0309_2904,miR155cKO,Female
-WT_rep1,~/10XGenomicsData/GSM6213400_IT_YZ_0309_2905,WT,Female
-WT_rep2,~/10XGenomicsData/GSM6213401_IT_YZ_0309_2908,WT,Female
-miR155cKO_rep2,~/10XGenomicsData/GSM6213402_IT_YZ_0322_3125,miR155cKO,Female
+Sample_Name,h5path,Treatment,Sex
+FCtr,~/10XGenomicsData/GSM5617891_snRNA_FCtr,Control,Female
+FEcig,~/10XGenomicsData/GSM5617892_snRNA_FEcig,EcTreated,Female
+MCtr,~/10XGenomicsData/GSM5617893_snRNA_MCtr,Control,Male
+MEcig,~/10XGenomicsData/GSM5617894_snRNA_MEcig,EcTreated,Male
 ```
 
 ## File hierarchy
@@ -158,11 +162,11 @@ For data downloaded in 10X MEX format:
 
 ```
 GSE205483/
-    ├── GSM6213399_IT_YZ_0309_2904
+    ├── GSM5617891_snRNA_FCtr
         ├── barcodes.tsv.gz
         ├── features.tsv.gz
         └── matrix.mtx.gz
-    ├── GSM6213400_IT_YZ_0309_2905
+    ├── GSM5617892_snRNA_FEcig
         ├── barcodes.tsv.gz
         ├── features.tsv.gz
         └── matrix.mtx.gz

@@ -7,12 +7,12 @@ By running the following command, we can see the manual page of the reference ge
 ```{bash, eval=FALSE}
 $ scRef
 
-***** 2022-06-23 17:38:28 *****
+***** 2023-01-13 19:07:46 *****
 ###########
 ## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
-## Pipeline Path: /camhpc/ngs/tools/scRNAsequest
-## Pipeline Date: 2022-06-23 15:00:23 -0400
-## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248
+## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest
+## Pipeline Date: 2023-01-13 17:41:49 -0500
+## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e
 ###########
 
 Loading resources
@@ -25,7 +25,7 @@ The Ref config file will be generated automatically when a path is provided
 	1. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!
 	2. Make sure the data provided for reference building is SCT transformed!
 
-Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]
+Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
 ------------
 ```
 

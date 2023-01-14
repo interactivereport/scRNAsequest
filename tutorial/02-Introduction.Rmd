@@ -25,3 +25,11 @@ This pipeline contains two main programs:
     scRef generates a reference dataset for label transfer. 
     
     For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanent path.
+
+  - **scDEG**
+  
+    scDEG is a standalone pipeline for differential expression (DE) analysis using harmonized data. It has been embedded into the scAnalyzer pipeline.
+  
+  - **scTool**
+  
+    scTool provides flexibility for modifying the h5ad file, such as modifying annotation and extracting meta information.

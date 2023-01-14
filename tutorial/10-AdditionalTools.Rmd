@@ -1,5 +1,68 @@
 # Additional tools
 
+## scDEG
+
+**scDEG** is a standalone pipeline to run the differential expression (DE) analysis independently if you alreadly have integrated scRNA-seq data in h5ad format.
+
+**scDEG** uses the same methods as in the scRNASequest pipeline to run DE analysis. It just provides a flexible way to apply the same analysis outside the pipeline.
+
+### Initialize scDEG
+
+scDEG requires three files
+
+- UMI: Gene counts matrix, can be in rds or h5ad format.
+- Meta: cell type annotation and related meta information for DE analysis, in h5ad format. If you have this information in your h5ad matrix already, you can provide the same file twice (as UMI and meta file).
+- config.yml: file storing the above UMI file path and meta data path, as well as the output file path.
+
+By running the **scDEG** without providing any parameters, we can see the manual page of the script:
+
+```{bash, eval=FALSE}
+$ scDEG
+
+scDEG /path/to/a/folder === or === scDEG /path/to/a/config/file
+An empty config file will be generated automatically when a folder is provided
+Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
+------------
+
+```
+
+Then providing a directory to **scDEG**, and it will generate a template config file:
+
+```{bash, eval=FALSE}
+$ scDEG /path/to/a/folder
+
+#Example:
+scDEG ~/DEG_results
+
+```
+
+Template configuration file:
+
+The UMI file can be a matrix rds or a h5ad file. The meta file can be a data.frame rds or a h5ad file, containing critical information that can be used for DE analysis.
+
+```{bash, eval=FALSE}
+## The config file for scDEG
+    UMI: ~/DEG_results/TST12055_raw_added.h5ad       #required, can be a matrix rds or a h5ad file
+    meta: ~/DEG_results/TST12055_raw_added.h5ad      #required, can be a cell annotation data.frame rds or a h5ad file
+    output: ~/DEG_results/
+    DBname: cellxgeneVIP
+    ## DEG analysis for an annotation (such as disease vs. health) within a cell type annotation
+    DEG_desp: ~/DEG_results/DEGinfo.csv              #required for DEG analysis
+    
+    ## Please be cautious of changing the following default filtering.
+    min.cells.per.gene: 3
+    min.genes.per.cell: 250
+    min.perc.cells.per.gene: 0.00
+    perc_filter: TRUE
+    ## ...
+```
+
+### Run DE analysis
+
+Please refer the previous section [Differential expression (DE) analysis] to prepare the DE comparison file.
+
+## scTool
+
 We also provide **scTool**, a user-friendly toolkit for modifying the h5ad file. With **scTool**, the user can:
 
 - Remove existing annotations in the data, such as the cell type annotation.
@@ -37,7 +100,7 @@ We use this pubic E-MTAB-11115 data as an example:
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png)
 
-## Remove annotations
+### Remove annotations
 
 To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.
 
@@ -45,7 +108,7 @@ To remove annotation, we can simply pass the annotation header names to the prog
 scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location
 ```
 
-## Add annotations
+### Add annotations
 
 To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a **manual.curated.labels** cell type labeling to the original data:
 
@@ -60,7 +123,7 @@ AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos
 scTool add ProjName_raw_added.h5ad manual.curated.labels.csv
 ```
 
-## Export gene expressions
+### Export gene expressions
 
 This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.
 

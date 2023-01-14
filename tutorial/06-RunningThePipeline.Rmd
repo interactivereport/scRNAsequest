@@ -66,6 +66,8 @@ Please find an example of the bookdown report here: [E-MTAB-11115 bookdown](http
 
 ## Generate a slide deck
 
+This is an optional step if you have already reviewed the Bookdown report. This slide deck is another way to organize and present the same results.
+
 The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the **Slidedeck.Rmd** file under the /src folder and follow the steps below:
 
 ```
@@ -107,6 +109,12 @@ ref_name: mouse_spinalCord
 ```
 
 To check all available references, run scAnalyzer without any parameter. To add new references, please see section 8: [Reference Building].
+
+Alternatively, you can provide a path to the **ref.Rds** reference file in the [Azimuth reference format](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format){target="_blank"}:
+
+```
+ref_name: path/to/ref.Rds
+```
 
 Then run the following command again:
 
