@@ -117,7 +117,7 @@ Sample_Name,h5path,metapath,sex,age
 
 ### MEX input
 
-Since each data has three MEX files (barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz), here we provide the path to each MEX result directory. The minimal information in the sample meta file:
+Since each data has three MEX files (barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz), here we provide the **path to each MEX result directory**. The minimal information in the sample meta file:
 
 ```
 Sample_Name,h5path
@@ -161,7 +161,7 @@ E-MTAB-11115/
 For data downloaded in 10X MEX format:
 
 ```
-GSE205483/
+GSE185538/
     ├── GSM5617891_snRNA_FCtr
         ├── barcodes.tsv.gz
         ├── features.tsv.gz

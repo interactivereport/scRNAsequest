@@ -10,9 +10,9 @@
 
 scDEG requires three files:
 
-- UMI: Gene counts matrix, can be in rds or h5ad format.
-- Meta: cell type annotation and related meta information for DE analysis, in h5ad format. If you have this information in your h5ad matrix already, you can provide the same file twice (as UMI and meta file).
-- config.yml: file storing the above UMI file path and meta data path, as well as the output file path.
+- **UMI**: Gene counts matrix, can be in rds or h5ad format.
+- **Meta**: cell type annotation and related meta information for DE analysis, in h5ad format. If you have this information in your h5ad matrix already, you can provide the same file twice (as UMI and meta file).
+- **config.yml**: file storing the above UMI file path and meta data path, as well as the output file path.
 
 By running the **scDEG** without providing any parameters, we can see the manual page of the script:
 

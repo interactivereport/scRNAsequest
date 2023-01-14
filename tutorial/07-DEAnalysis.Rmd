@@ -6,7 +6,7 @@ Before running the DE analysis, the **DEGinfo.csv** comparison file needs to be 
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png)
 
-In the DEG comparison file above, **“sample”**, **“cluster”**, **“group”** and **“covars”** are the annotation headers, and **“alt”** and **“ref”** are the two entries from **“group”** column. The **“covars”** is optional and can be empty.
+The first column, **comparisonName** is designed to store the name of the comparison. This name will become separate folders under the result directory. In the DEG comparison file above, **“sample”**, **“cluster”**, **“group”** and **“covars”** are the annotation headers, and **“alt”** and **“ref”** are the two entries from **“group”** column. The **“covars”** is optional and can be empty.
 
 The DEG is performing between **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations. The **“group”** variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DEG analysis between **“alt”** v.s. **“ref”**.
 

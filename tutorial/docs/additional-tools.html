@@ -229,9 +229,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">10.1.1</span> Initialize scDEG</h3>
 <p>scDEG requires three files:</p>
 <ul>
-<li>UMI: Gene counts matrix, can be in rds or h5ad format.</li>
-<li>Meta: cell type annotation and related meta information for DE analysis, in h5ad format. If you have this information in your h5ad matrix already, you can provide the same file twice (as UMI and meta file).</li>
-<li>config.yml: file storing the above UMI file path and meta data path, as well as the output file path.</li>
+<li><strong>UMI</strong>: Gene counts matrix, can be in rds or h5ad format.</li>
+<li><strong>Meta</strong>: cell type annotation and related meta information for DE analysis, in h5ad format. If you have this information in your h5ad matrix already, you can provide the same file twice (as UMI and meta file).</li>
+<li><strong>config.yml</strong>: file storing the above UMI file path and meta data path, as well as the output file path.</li>
 </ul>
 <p>By running the <strong>scDEG</strong> without providing any parameters, we can see the manual page of the script:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb48-1"><a href="additional-tools.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG</span>

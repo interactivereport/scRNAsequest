@@ -7,7 +7,7 @@ By running the following command, we can see the manual page of the reference ge
 ```{bash, eval=FALSE}
 $ scRef
 
-***** 2023-01-13 19:07:46 *****
+***** 2023-01-13 18:07:46 *****
 ###########
 ## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
 ## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest

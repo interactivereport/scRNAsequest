@@ -36,12 +36,12 @@ If the installation is successful, scAnalyzer and scRef should be able to run wi
 ```{bash, eval=FALSE}
 $ scAnalyzer
 
-***** 2022-06-23 17:40:17 *****
+***** 2023-01-13 18:02:02 *****
 ###########
 ## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
-## Pipeline Path: /camhpc/ngs/tools/scRNAsequest
-## Pipeline Date: 2022-06-23 15:00:23 -0400
-## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248
+## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest
+## Pipeline Date: 2023-01-13 17:41:49 -0500
+## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e
 ###########
 
 scAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file
@@ -68,12 +68,12 @@ Typing scRef directly without any parameters will activate the user manual page:
 ```{bash, eval=FALSE}
 $ scRef
 
-***** 2022-06-23 17:38:28 *****
+***** 2023-01-13 18:07:46 *****
 ###########
 ## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
-## Pipeline Path: /camhpc/ngs/tools/scRNAsequest
-## Pipeline Date: 2022-06-23 15:00:23 -0400
-## git HEAD: 61d9e676d31849ccc8ac8a3442704128504be248
+## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest
+## Pipeline Date: 2023-01-13 17:41:49 -0500
+## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e
 ###########
 
 
