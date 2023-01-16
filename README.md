@@ -43,9 +43,9 @@ This is a quick start guide to the pipeline. Please refer to the [**full tutoria
 
 ### 2.1 Data preparation
 
-This pipeline accepts [**.h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information after running Cell Ranger. You can also include the Cell Ranger QC results: metrics_summary.csv, but this is optional. When downloading data from NCBI/GEO, it may be necessary to rename the files.
+This pipeline accepts [**h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information after running Cell Ranger. You can also include the Cell Ranger QC results: metrics_summary.csv, but this is optional. When downloading data from NCBI/GEO, it may be necessary to rename the files.
 
-An example of **.h5** input file hierarchy, using data from [E-MTAB-11115](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11115):
+An example of **h5** input file hierarchy, using data from [E-MTAB-11115](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11115):
 
 ```
 E-MTAB-11115/
@@ -101,13 +101,13 @@ The output files include: **config.yml** (a template config file), **DEGinfo.csv
 The empty **sampleMeta.csv** file contains three preset column headers that can be recognized by the pipeline: 
 
 - **Sample_Name** is used to provide a simplified sample name.
-- **h5path** is for the full data path. If the inputs are .h5 files, this would be the full path of each file. However, for MTX inputs, this should be the path to the data directory, where three data files are stored.
+- **h5path** is for the full data path. If the inputs are h5 files, this would be the full path of each file. However, for MTX inputs, this should be the path to the data directory, where three data files are stored.
 - **metapath** is for cell annotation information, which is optional [(See more details about the annotation file)](https://interactivereport.github.io/scRNAsequest/tutorial/docs/data-preparation.html#public-data-in-h5-format). If you don't have this information, you can delete it from the sampleMeta.csv
 
 Users can add more meta information to this sampleMeta.csv. Here are two examples:
 
 ```
-#Example 1, for .h5 data
+#Example 1, for h5 data
 Sample_Name,h5path,Sex,Age
 5705STDY8058280,~/E-MTAB-11115/5705STDY8058280_filtered_feature_bc_matrix.h5,Female,56d
 5705STDY8058281,~/E-MTAB-11115/5705STDY8058281_filtered_feature_bc_matrix.h5,Female,56d
@@ -131,7 +131,7 @@ This **config.yml** file contains critical configuration parameters to run the p
 Some tips:
 
 - **ref_name**: If left blank, the pipeline won't run reference-based cell type annotation. Users can provide an RDS or H5ad file following [Azimuth reference file format](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format) or download from [Azimuth references website](https://azimuth.hubmapconsortium.org/references/). To build a reference, use the scRef script from our pipeline [(See more details)](https://interactivereport.github.io/scRNAsequest/tutorial/docs/reference-building.html).
-- **gene_group**: You can define your own gene groups to run QC. If the **rm: False** is set to False, gene counts will be checked, and only cells will be filtered out based on the "cutoff" percentage. To completely eliminate contaminating genes, such as mitochondria genes, set "rm: True".
+- **gene_group**: You can define your own gene groups to run QC. If the "**rm: False**" is set to False, gene counts will be checked, and only cells will be filtered out based on the "cutoff" percentage. To completely eliminate contaminating genes, such as mitochondria genes, set "**rm: True**".
 - **runAnalysis: False**: Run analysis means performing data integration and DE analysis. If set to False, the pipeline will only run the initial QC step, which allows users to examine whether the default cell filtering cutoffs are adequate. If they look good, set it to True to run the whole pipeline.
 - **overwrite: False**: Set to True if you rerun the pipeline and want to overwrite the previous results.
 - **DEG_desp**: path to the DE configuration file. If the file is empty, it won't perform any analysis. See section 3 about how to fill in this file.
@@ -171,16 +171,16 @@ After running the above steps, you will see a series of files generated. The mai
 
 ```
 outputdir
-    ├── QC/                                   # QC plots
-    ├── raw                                   # Raw h5ad files before and after cell filtering
-    ├── Liger/                                # Liger results
-    ├── sctHarmony                            # Harmony results
-    ├── SeuratRef                             # Seurat results
-    ├── SeuratRPCA                            # SeuratRPCA results
-    ├── evaluation/                           # kBET and Silhouette plots
-    ├── project_name_BookdownReport.tar.gz    # Bookdown report
-    ├── project_name.h5ad                     # Final h5ad result including all integration results
-    ├── project_name_raw_added.h5ad           # This h5ad also contains raw UMI counts
+    ├── QC/                                  # QC plots
+    ├── raw                                  # Raw h5ad files before and after cell filtering
+    ├── Liger/                               # Liger results
+    ├── sctHarmony                           # Harmony results
+    ├── SeuratRef                            # Seurat results
+    ├── SeuratRPCA                           # SeuratRPCA results
+    ├── evaluation/                          # kBET and Silhouette plots
+    ├── project_name_BookdownReport.tar.gz   # Bookdown report
+    ├── project_name.h5ad                    # Final h5ad result including all integration results
+    ├── project_name_raw_added.h5ad          # This h5ad also contains raw UMI counts
     ...
 ```
 
