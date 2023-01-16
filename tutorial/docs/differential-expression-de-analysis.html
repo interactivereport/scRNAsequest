@@ -235,8 +235,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We can also add <em>covars</em> if needed, but this is optional.</p>
 <p>The default DE analysis is performed by <a href="https://www.nature.com/articles/s42003-021-02146-6" target="_blank"><strong>NEBULA</strong></a>. As for the model, NEBULA provides two choices: <strong>HL</strong> and <strong>LN</strong>. For more details about them, please refer to the <a href="https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl" target="_blank">NEBULA manual</a>.</p>
 <p>Here is the DEGinfo.csv we described above:</p>
-<pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
-library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
+<pre><code>comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
 <p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
@@ -248,7 +248,7 @@ library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</code></pre>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4
     ├── ProjName_scDEG           #Folder containing DEG results
-      ├── deg6601_predicted.celltype1_Sex_NEBULA_HL
+      ├── Compare_Female_vs_Male
         ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.csv    #Each comparison has three associated files
         ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.png
         ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.QC.pdf
@@ -647,13 +647,13 @@ NBGMM (HL)
 5705STDY8058284,/home/ysun4/testSinglecell/ExternalData/5705STDY8058284_filtered_feature_bc_matrix.h5,Male,Everything
 5705STDY8058285,/home/ysun4/testSinglecell/ExternalData/5705STDY8058285_filtered_feature_bc_matrix.h5,Male,Everything</code></pre>
 <p>Then we prepare the <strong>DEGinfo.csv</strong> file in this way. The ‘SelectAll’ was filled into the <em>cluster</em> column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs <strong>astrocytes</strong> to <strong>Oligos</strong> comparison.</p>
-<pre><code>sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
-library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL</code></pre>
+<pre><code>comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+Comparison_Ast_vs_Oligo,library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL</code></pre>
 <p>Then we need to run the scRNASequest pipeline from the beginning, which allows the ‘SelectAll’ column to be embedded into the harmonized h5ad output. As long as we have DEGinfo.csv included in the config.yml, it will run through the DE analysis and produce the following results:</p>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4
     ├── ProjName_scDEG           #Folder containing DEG results
-      ├── deg6602_SelectAll_predicted.celltype1_NEBULA_HL
+      ├── Comparison_Ast_vs_Oligo
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.csv    #Each comparison has three associated files
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.QC.pdf

@@ -27,8 +27,8 @@ The default DE analysis is performed by [**NEBULA**](https://www.nature.com/arti
 Here is the DEGinfo.csv we described above:
 
 ```
-sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
-library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL
+comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL
 ```
 
 After preparing the DEGinfo.csv file, simply add it to the **config.yml** file:
@@ -52,7 +52,7 @@ This step may take a few hours to run. The output files will be generated in the
 outputdir
     ... previous results         #Omitted, see section 6.4
     ├── ProjName_scDEG           #Folder containing DEG results
-      ├── deg6601_predicted.celltype1_Sex_NEBULA_HL
+      ├── Compare_Female_vs_Male
         ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.csv    #Each comparison has three associated files
         ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.png
         ├── Female.vs.Male_predicted.celltype1:astrocytes_NEBULA.QC.pdf
@@ -125,8 +125,8 @@ Sample_Name,h5path,Sex,SelectAll
 Then we prepare the **DEGinfo.csv** file in this way. The 'SelectAll' was filled into the *cluster* column, and since it only has one value, it actually selects all cells when running the pipeline. Then it performs **astrocytes** to **Oligos** comparison.
 
 ```
-sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
-library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL
+comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+Comparison_Ast_vs_Oligo,library_id,SelectAll,predicted.celltype1,astrocytes,Oligos,,NEBULA,HL
 ```
 
 Then we need to run the scRNASequest pipeline from the beginning, which allows the 'SelectAll' column to be embedded into the harmonized h5ad output. As long as we have DEGinfo.csv included in the config.yml, it will run through the DE analysis and produce the following results:
@@ -135,7 +135,7 @@ Then we need to run the scRNASequest pipeline from the beginning, which allows t
 outputdir
     ... previous results         #Omitted, see section 6.4
     ├── ProjName_scDEG           #Folder containing DEG results
-      ├── deg6602_SelectAll_predicted.celltype1_NEBULA_HL
+      ├── Comparison_Ast_vs_Oligo
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.csv    #Each comparison has three associated files
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png
         ├── astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.QC.pdf
