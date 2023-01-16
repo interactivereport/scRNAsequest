@@ -46,12 +46,15 @@ author:
   - name: Fergal Casey
     email: fergal.casey@biogen.com
     affiliation: Biogen
+  - name: Xinmin Zhang
+    email: xinmin@bioinforx.com
+    affiliation: BioInfoRx
   - name: Baohong Zhang (Corresponding Author)
     email: baohong.zhang@biogen.com
     affiliation: Biogen
   - name: These authors contribute equally Kejie Li, Yu (Henry) Sun, Zhengyu Ouyang
 address:
-  - code: Research and Development, Biogen, Inc
+  - code: Research Data Sciences, Translational Biology, Biogen, Inc
     address: 225 Binney St, Cambridge, MA 02142, USA
   - code: Data Science, BioInfoRx, Inc
     address: 510 Charmany Dr, Suite 275A, Madison, WI 53719, USA

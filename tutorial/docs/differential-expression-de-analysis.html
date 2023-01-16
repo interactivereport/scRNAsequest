@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2023-01-13" />
+<meta name="date" content="2023-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -224,7 +224,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Another critical function of the scRNASequest pipeline is the <strong>Differential expression (DE)</strong> analysis. By running the steps in Section 6: <a href="running-the-pipeline.html#running-the-pipeline">Running the pipeline</a>, we have performed quality control of the data, and generated an integrated dataset.</p>
 <p>Before running the DE analysis, the <strong>DEGinfo.csv</strong> comparison file needs to be prepared:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png" /></a></p>
-<p>The first column, <strong>comparisonName</strong> is designed to store the name of the comparison. This name will become separate folders under the result directory. In the DEG comparison file above, <strong>“sample”</strong>, <strong>“cluster”</strong>, <strong>“group”</strong> and <strong>“covars”</strong> are the annotation headers, and <strong>“alt”</strong> and <strong>“ref”</strong> are the two entries from <strong>“group”</strong> column. The <strong>“covars”</strong> is optional and can be empty.</p>
+<p>The first column, <strong>comparisonName</strong> is designed to store the name of the comparison. These names will be used to create separate folders under the result directory. In the DEG comparison file above, <strong>“sample”</strong>, <strong>“cluster”</strong>, <strong>“group”</strong> and <strong>“covars”</strong> are the annotation headers, and <strong>“alt”</strong> and <strong>“ref”</strong> are the two entries from <strong>“group”</strong> column. The <strong>“covars”</strong> is optional and can be empty.</p>
 <p>The DEG is performing between <strong>“alt”</strong> and <strong>“ref”</strong> cells from <strong>“group”</strong> within each entry of <strong>“cluster”</strong> considering <strong>“sample”</strong> variations. The <strong>“group”</strong> variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DEG analysis between <strong>“alt”</strong> v.s. <strong>“ref”</strong>.</p>
 <p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:</p>
 <p>We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:</p>
