@@ -43,7 +43,7 @@ This is a quick start guide to the pipeline. Please refer to the [**full tutoria
 
 ### 2.1 Data preparation
 
-This pipeline accepts [**h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information after running Cell Ranger. You can also include the Cell Ranger QC results: metrics_summary.csv, but this is optional. When downloading data from NCBI/GEO, it may be necessary to rename the files.
+This pipeline accepts [**h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information after running Cell Ranger. You can also include the Cell Ranger QC results: DataPrefix.metrics_summary.csv, but this is optional. When downloading data from NCBI/GEO, it may be necessary to rename the files.
 
 An example of **h5** input file hierarchy, using data from [E-MTAB-11115](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11115):
 
@@ -87,7 +87,7 @@ GSE185538/
 
 ### 2.2 Generate templates of configuration files
 
-Users can initiate the pipeline by running the scAnalyzer script with a working directory, where future outputs will be generated.
+Users can initiate the pipeline by running the `scAnalyzer` script with a working directory, where future outputs will be generated.
 
 ```
 #Example:
@@ -130,11 +130,11 @@ This **config.yml** file contains critical configuration parameters to run the p
 
 Some tips:
 
-- **ref_name**: If left blank, the pipeline won't run reference-based cell type annotation. Users can provide an RDS or H5ad file following [Azimuth reference file format](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format) or download from [Azimuth references website](https://azimuth.hubmapconsortium.org/references/). To build a reference, use the scRef script from our pipeline [(See more details)](https://interactivereport.github.io/scRNAsequest/tutorial/docs/reference-building.html).
-- **gene_group**: You can define your own gene groups to run QC. If the "**rm: False**" is set to False, gene counts will be checked, and only cells will be filtered out based on the "cutoff" percentage. To completely eliminate contaminating genes, such as mitochondria genes, set "**rm: True**".
+- **ref_name**: If left blank, the pipeline won't run reference-based cell type annotation. Users can provide an RDS or H5ad file following [Azimuth reference file format](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format) or download from [Azimuth references website](https://azimuth.hubmapconsortium.org/references/). To build a reference, use the `scRef` script from our pipeline [(See more details)](https://interactivereport.github.io/scRNAsequest/tutorial/docs/reference-building.html).
+- **gene_group**: You can define your own gene groups to run QC. If the "**rm: False**" is set to False, gene counts will be checked, and cells will be filtered out based on the "cutoff" percentage. To completely eliminate contaminating genes, such as mitochondria genes, set "**rm: True**".
 - **runAnalysis: False**: Run analysis means performing data integration and DE analysis. If set to False, the pipeline will only run the initial QC step, which allows users to examine whether the default cell filtering cutoffs are adequate. If they look good, set it to True to run the whole pipeline.
 - **overwrite: False**: Set to True if you rerun the pipeline and want to overwrite the previous results.
-- **DEG_desp**: path to the DE configuration file. If the file is empty, it won't perform any analysis. See section 3 about how to fill in this file.
+- **DEG_desp**: Path to the DE configuration file. If the file is empty, it won't perform any analysis. See section 3 about how to fill in this file.
 
 ### 2.5 Start the pipeline
 
