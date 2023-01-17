@@ -172,25 +172,25 @@ After running the above steps, you will see a series of files generated. The mai
 ```
 outputdir
     ├── QC/                                  # QC plots
-    ├── raw                                  # Raw h5ad files before and after cell filtering
+    ├── raw/                                 # Raw h5ad files before and after cell filtering
     ├── Liger/                               # Liger results
-    ├── sctHarmony                           # Harmony results
-    ├── SeuratRef                            # Seurat results
-    ├── SeuratRPCA                           # SeuratRPCA results
+    ├── sctHarmony/                          # Harmony results
+    ├── SeuratRef/                           # Seurat results
+    ├── SeuratRPCA/                          # SeuratRPCA results
     ├── evaluation/                          # kBET and Silhouette plots
     ├── project_name_BookdownReport.tar.gz   # Bookdown report
-    ├── project_name.h5ad                    # Final h5ad result including all integration results
+    ├── project_name.h5ad                    # Final h5ad file including all integration results
     ├── project_name_raw_added.h5ad          # This h5ad also contains raw UMI counts
     ...
 ```
 
-The h5ad file can be updated to [**Cellxgene VIP**](https://github.com/interactivereport/cellxgene_VIP) platform for visualization (See section 5).
+The `project_name.h5ad` file can be updated to [**Cellxgene VIP**](https://github.com/interactivereport/cellxgene_VIP) platform for visualization (See section 5).
 
 A full description of output files can be seen [here](https://github.com/interactivereport/scRNAsequest/blob/main/src/file.description.yml).
 
 ## 4. Differential expression (DE) analysis
 
-The DE analysis in this pipeline is designed to compare **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations. The **“group”** variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DEG analysis between **“alt”** v.s. **“ref”**.
+The DE analysis in this pipeline is designed to compare **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations. The **“group”** variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DE analysis between **“alt”** v.s. **“ref”**.
 
 We strongly suggest that the reference-based label transfer has been run before DE analysis, so we can run DE based on meaningful cell types, rather than the cluster numbers automatically assigned by the pipeline.
 
@@ -207,6 +207,12 @@ Here is the DEGinfo.csv we described above:
 ```
 comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
 Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL
+```
+
+After preparing this DEGinfo.csv file, we can simply rerun the pipeline (previous steps before DE will be skipped):
+
+```
+scAnalyzer ~/Working_dir/config.yml
 ```
 
 Please refer to the [full tutorial](https://interactivereport.github.io/scRNAsequest/tutorial/docs/differential-expression-de-analysis.html) for more details related to DE analysis.
