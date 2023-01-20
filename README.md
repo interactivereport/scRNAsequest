@@ -4,7 +4,7 @@ Tutorial: https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.h
 
 ![scRNASequest](https://interactivereport.github.io/scRNAsequest/images/Cover.png?raw=true "scRNASequest")
 
-**Fig. 1. Overview of the scRNASequest workflow.** User provides gene expression matrix (h5 or MTX) from Cell Ranger and sample metadata to the semi-automated workflow, scRNASequest. It generates basic quality control (QC) Bookdown reports and allows users to choose from popular data harmonization tools such as [Harmony](https://www.nature.com/articles/s41592-019-0619-0), [LIGER](https://www.cell.com/cell/fulltext/S0092-8674(19)30504-5), and [Seurat](https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8) to remove batch effects. [Azimuth](https://www.cell.com/cell/fulltext/S0092-8674(21)00583-3) reference-based cell label transfer is enabled as optional to perform cell type identification. Cluster- or cell-type-specific multi-sample multi-condition single cell level DE analysis is by default performed through [NEBULA](https://www.nature.com/articles/s42003-021-02146-6). Finally, an h5ad file will be generated to be loaded into the [cellxgene VIP](https://www.biorxiv.org/content/10.1101/2020.08.28.270652v2.full) framework or [CellDepot](https://www.sciencedirect.com/science/article/pii/S0022283621006665) single-cell data management system for interactive visualization and analysis.
+**Fig. 1. Overview of the scRNASequest workflow.** User provides single-cell or single-nucleus RNA-seq gene expression matrix (h5 or MTX) from Cell Ranger and sample metadata to the semi-automated workflow, scRNASequest. It generates basic quality control (QC) [Bookdown]() reports and allows users to choose from popular data harmonization tools such as [Harmony](https://www.nature.com/articles/s41592-019-0619-0), [LIGER](https://www.cell.com/cell/fulltext/S0092-8674(19)30504-5), and [Seurat](https://www.cell.com/cell/fulltext/S0092-8674(19)30559-8) to remove batch effects. [Azimuth](https://www.cell.com/cell/fulltext/S0092-8674(21)00583-3) reference-based cell label transfer is enabled as optional to perform cell type identification. Cluster- or cell-type-specific multi-sample multi-condition single cell level DE analysis is by default performed through [NEBULA](https://www.nature.com/articles/s42003-021-02146-6). Finally, an h5ad file will be generated to be loaded into the [cellxgene VIP](https://www.biorxiv.org/content/10.1101/2020.08.28.270652v2.full) framework or [CellDepot](https://www.sciencedirect.com/science/article/pii/S0022283621006665) single-cell data management system for interactive visualization and analysis.
 
 ## 1. Installation
 
@@ -43,7 +43,7 @@ This is a quick start guide to the pipeline. Please refer to the [**full tutoria
 
 ### 2.1 Data preparation
 
-This pipeline accepts [**h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information after running Cell Ranger. You can also include the Cell Ranger QC results: DataPrefix.metrics_summary.csv, but this is optional. When downloading data from NCBI/GEO, it may be necessary to rename the files.
+This pipeline accepts [**h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information [after running Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/overview). You can also include the Cell Ranger QC results: DataPrefix.metrics_summary.csv, but this is optional. When you use downloaded data from NCBI/GEO, it may be necessary to rename the files.
 
 An example of **h5** input file hierarchy, using data from [E-MTAB-11115](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-11115):
 
@@ -94,7 +94,7 @@ Users can initiate the pipeline by running the `scAnalyzer` script with a workin
 scAnalyzer ~/Working_dir
 ```
 
-The output files include: **config.yml** (a template config file), **DEGinfo.csv** (a template for differential expression analysis), and an empty **sampleMeta.csv** file. The config.yml and sampleMeta.csv are required to run the pipeline, and the DEGinfo.csv is only required for the DE analysis. You can leave DEGinfo.csv empty currently.
+The output files include: **config.yml** (a template config file), **DEGinfo.csv** (a template for differential expression analysis), and an empty **sampleMeta.csv** file. The config.yml and sampleMeta.csv are required to run the pipeline, and the DEGinfo.csv is only required for the DE analysis. You can leave DEGinfo.csv empty (by default, just a header line there) currently.
 
 ### 2.3 Prepare the sampleMeta.csv file
 
@@ -219,10 +219,15 @@ Please refer to the [full tutorial](https://interactivereport.github.io/scRNAseq
 
 ## 5. Cellxgene VIP visualization
 
-scRNASequest pipeline generates an h5ad file that is fully compatible with Cellxgene VIP for data analysis and visualization. Please refer to the [GitHub website](https://github.com/interactivereport/cellxgene_VIP) and [Online tutorial](https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/) for more details related to the Cellxgene VIP platform.
+scRNASequest pipeline generates an h5ad file that is fully compatible with Cellxgene VIP for data analysis and visualization. 
 
 We processed an example dataset here:
 
+https://apps.bxgenomics.com/scrnaview/app/core/app_project_launcher.php?ID=422
+
+You can 'Sign in as Guest' and navigate this demo data. The Cellxgene VIP window is close to the 'Cellxgene' logo on the top left corner. You can maximize the Cellxgene VIP window to use its functions. The *annotation_1* and *annotation_1_print* are the labels provided by the author, see setting [here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/data-preparation.html#public-data-in-h5-format). The *libary_id* indicates data names. The following *liger_cluster* and *liger_cluster_predicted.celltype1* show default cluster assignment and cell type label transfer results. The last item *sex* shows the sex information acquired from the sample meta file.
+
+Please refer to the [GitHub website](https://github.com/interactivereport/cellxgene_VIP) and [Online tutorial](https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/) for more details related to the Cellxgene VIP platform.
 
 ## 6. CellDepot data management and publishing
 
