@@ -225,7 +225,9 @@ We processed an example dataset here:
 
 https://apps.bxgenomics.com/scrnaview/app/core/app_project_launcher.php?ID=422
 
-You can 'Sign in as Guest' and navigate this demo data. The Cellxgene VIP window is close to the 'Cellxgene' logo on the top left corner. You can maximize the Cellxgene VIP window to use its functions. The *annotation_1* and *annotation_1_print* are the labels provided by the author, see setting [here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/data-preparation.html#public-data-in-h5-format). The *libary_id* indicates data names. The following *liger_cluster* and *liger_cluster_predicted.celltype1* show default cluster assignment and cell type label transfer results. The last item *sex* shows the sex information acquired from the sample meta file.
+You can 'Sign in as Guest' and navigate this demo data. First, make sure you select the optimal embedding using the button at the botton of the plot. We recommend **'Liger_umap'** as the embedding for visualization. We can also see that categorical variables are shown on the left, while numeric variables are listed on the right. You can use the drop-shape button to highlight each variable on the plot.
+
+The Cellxgene VIP window is close to the 'Cellxgene' logo on the top left corner. You can maximize the Cellxgene VIP window to use its functions. The *annotation_1* and *annotation_1_print* are the labels provided by the author, see setting [here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/data-preparation.html#public-data-in-h5-format). The *libary_id* indicates data names. The following *liger_cluster* and *liger_cluster_predicted.celltype1* show default cluster assignment and cell type label transfer results. The last item *sex* shows the sex information acquired from the sample meta file.
 
 Please refer to the [GitHub website](https://github.com/interactivereport/cellxgene_VIP) and [Online tutorial](https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/) for more details related to the Cellxgene VIP platform.
 
