@@ -29,6 +29,10 @@ This pipeline contains two main programs:
   - **scDEG**
   
     scDEG is a standalone pipeline for differential expression (DE) analysis using harmonized data. It has been embedded into the scAnalyzer pipeline.
+    
+  - **sc2celldepot**
+  
+    sc2celldepot offers a easy and fast way to convert your own RDS file or h5 results+cell annotation to Cellxgene VIP, without running the full pipeline. If you have run the full pipeline script (scAnalyzer), you should get the h5ad (UMI, embedding, etc.) and db (DE information) files for CellDepot publishing, and you won't need to run sc2celldepot.
   
   - **scTool**
   

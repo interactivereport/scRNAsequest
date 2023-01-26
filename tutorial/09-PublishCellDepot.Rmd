@@ -7,12 +7,12 @@ By running the following command, we can see the manual page of the script:
 ```{bash, eval=FALSE}
 $ sc2celldepot
 
-***** 2022-07-07 11:10:44 *****
+***** 2023-01-26 15:25:32 *****
 ###########
 ## ExpressionAnalysis: https://github.com/interactivereport/scRNAsequest.git
-## Pipeline Path: /camhpc/ngs/tools/scRNAsequest
-## Pipeline Date: 2022-07-06 17:43:20 -0400
-## git HEAD: c9f0ba5e860c269fb632bee22ef312371e0e3143
+## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest
+## Pipeline Date: 2023-01-13 17:41:49 -0500
+## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e
 ###########
 
 
@@ -20,7 +20,7 @@ Loading resources
 
 sc2celldepot /path/to/a/output/folder === or === sc2celldepot /path/to/a/config/file
 
-The folder will be created if it does not exist.
+Please create the folder before running sc2celldepot.
 The data config file will be generated automatically when a path is provided
 
 Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]

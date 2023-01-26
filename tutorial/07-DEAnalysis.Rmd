@@ -10,6 +10,18 @@ The first column, **comparisonName** is designed to store the name of the compar
 
 The DEG is performing between **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations. The **“group”** variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DEG analysis between **“alt”** v.s. **“ref”**.
 
+**Covariate adjustment:**
+
+Adjusting covariates is optional. By default, NEBULA considers the value of **log of total UMI (library size)** as the offset covariate in our pipeline, so you don't need to adjust this again in **"covars"**.
+
+If needed, you can put a formula in the **"covars"** column using the meta information from the sampleMeta.csv file, such as Sex, Age, etc. You can also include QC metrics such as mitochondria percentage (pct_MT), etc. Please find a full list of QC metrics below. You can also open the Cellxgene VIP and check the right side. All numeric covariates are listed there.
+
+```{bash, eval=FALSE}
+n_genes_by_counts, log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score
+```
+
+You may consider **pct_MT** as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the **"covars"** column: **Age+Sex+pct_MT**.
+
 Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:
 
 We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:
@@ -26,7 +38,7 @@ The default DE analysis is performed by [**NEBULA**](https://www.nature.com/arti
 
 Here is the DEGinfo.csv we described above:
 
-```
+```{bash, eval=FALSE}
 comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
 Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL
 ```

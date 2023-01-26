@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2023-01-19" />
+<meta name="date" content="2023-01-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -234,37 +234,75 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><strong>config.yml</strong>: file storing the above UMI file path and meta data path, as well as the output file path.</li>
 </ul>
 <p>By running the <strong>scDEG</strong> without providing any parameters, we can see the manual page of the script:</p>
-<div class="sourceCode" id="cb48"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb48-1"><a href="additional-tools.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG</span>
-<span id="cb48-2"><a href="additional-tools.html#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-3"><a href="additional-tools.html#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> /path/to/a/folder === or === scDEG /path/to/a/config/file</span>
-<span id="cb48-4"><a href="additional-tools.html#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="ex">An</span> empty config file will be generated automatically when a folder is provided</span>
-<span id="cb48-5"><a href="additional-tools.html#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
-<span id="cb48-6"><a href="additional-tools.html#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
-<p>Then providing a directory to <strong>scDEG</strong>, and it will generate a template config file:</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb49-1"><a href="additional-tools.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG /path/to/a/folder</span>
+<div class="sourceCode" id="cb49"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb49-1"><a href="additional-tools.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG</span>
 <span id="cb49-2"><a href="additional-tools.html#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-3"><a href="additional-tools.html#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb49-4"><a href="additional-tools.html#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> ~/DEG_results</span></code></pre></div>
+<span id="cb49-3"><a href="additional-tools.html#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> /path/to/a/folder === or === scDEG /path/to/a/config/file</span>
+<span id="cb49-4"><a href="additional-tools.html#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="ex">An</span> empty config file will be generated automatically when a folder is provided</span>
+<span id="cb49-5"><a href="additional-tools.html#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
+<span id="cb49-6"><a href="additional-tools.html#cb49-6" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<p>Then providing a directory to <strong>scDEG</strong>, and it will generate a template config file:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb50-1"><a href="additional-tools.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG /path/to/a/folder</span>
+<span id="cb50-2"><a href="additional-tools.html#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="additional-tools.html#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb50-4"><a href="additional-tools.html#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> ~/DEG_results</span></code></pre></div>
 <p>Template configuration file:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="additional-tools.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="ex">UMI:</span> /path/to/Prefix.h5ad   <span class="co">#required, can be a matrix rds or a h5ad file</span></span>
+<span id="cb51-2"><a href="additional-tools.html#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="ex">meta:</span> /path/to/Prefix.h5ad  <span class="co">#required, can be a cell annotation data.frame rds or a h5ad file</span></span>
+<span id="cb51-3"><a href="additional-tools.html#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> /path/to/output/directory</span>
+<span id="cb51-4"><a href="additional-tools.html#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="ex">DBname:</span> cellxgeneVIP</span>
+<span id="cb51-5"><a href="additional-tools.html#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel:</span> slurm             <span class="co"># False or &quot;sge&quot; or &quot;slurm&quot;</span></span>
+<span id="cb51-6"><a href="additional-tools.html#cb51-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-7"><a href="additional-tools.html#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="co">## DEG analysis for an annotation (such as disease vs health) within a cell type annotation</span></span>
+<span id="cb51-8"><a href="additional-tools.html#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="ex">DEG_desp:</span> /path/to/DEGinfo.csv      <span class="co">#required for DEG analysis</span></span>
+<span id="cb51-9"><a href="additional-tools.html#cb51-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-10"><a href="additional-tools.html#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Please be causion of changing the following default filtering</span></span>
+<span id="cb51-11"><a href="additional-tools.html#cb51-11" aria-hidden="true" tabindex="-1"></a><span class="co"># More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/</span></span>
+<span id="cb51-12"><a href="additional-tools.html#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment</span></span>
+<span id="cb51-13"><a href="additional-tools.html#cb51-13" aria-hidden="true" tabindex="-1"></a><span class="ex">min.cells.per.gene:</span> 3 <span class="co"># if `perc_filter` is FALSE, then keep only genes that have expression in at least min.cells.per.gene</span></span>
+<span id="cb51-14"><a href="additional-tools.html#cb51-14" aria-hidden="true" tabindex="-1"></a><span class="ex">min.genes.per.cell:</span> 250 <span class="co"># keep cells with expression in at least min.genes.per.cell genes.</span></span>
+<span id="cb51-15"><a href="additional-tools.html#cb51-15" aria-hidden="true" tabindex="-1"></a><span class="ex">min.perc.cells.per.gene:</span> 0.00 <span class="co">#if &#39;perc_filter&#39;`&#39; is TRUE, then keep only genes that have expression in at least min.per.cells.per.gene * 100 percent of cells</span></span>
+<span id="cb51-16"><a href="additional-tools.html#cb51-16" aria-hidden="true" tabindex="-1"></a><span class="ex">perc_filter:</span> TRUE <span class="co">#if TRUE, apply the cells.per.gene filter using percentages (expressed as a decimal) rather than an absolute threshold</span></span>
+<span id="cb51-17"><a href="additional-tools.html#cb51-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-18"><a href="additional-tools.html#cb51-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the 2nd round of biostats filtering.  For &quot;group&quot; mode, the filtering is applied to `ref_group` and `alt_group` for the given cell type of interest.</span></span>
+<span id="cb51-19"><a href="additional-tools.html#cb51-19" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.cells.per.gene:</span> 3 <span class="co">#minimum cells expressed per gene.  This filter is applied if `R6_perc.cells.filter` is FALSE</span></span>
+<span id="cb51-20"><a href="additional-tools.html#cb51-20" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.perc.cells.per.gene:</span> 0.1 <span class="co"># minimum % cells expressed per gene filtering (use decimal form of percentage).  This threshold is applied if &#39;R6_perc.cells.filter&#39; is TRUE and</span></span>
+<span id="cb51-21"><a href="additional-tools.html#cb51-21" aria-hidden="true" tabindex="-1"></a> <span class="st">&#39;R6_cells.per.gene.filter&#39;</span> is TRUE</span>
+<span id="cb51-22"><a href="additional-tools.html#cb51-22" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.cells.per.gene.type:</span> <span class="st">&quot;or&quot;</span> <span class="co">#The type of cell per gene filtering.  If it has the value &quot;and&quot; then it requires the gene be expressed in both reference and non-reference grou</span></span>
+<span id="cb51-23"><a href="additional-tools.html#cb51-23" aria-hidden="true" tabindex="-1"></a><span class="ex">ps.</span> If it has the value <span class="st">&quot;or&quot;</span> then it requires the gene be expressed in either group</span>
+<span id="cb51-24"><a href="additional-tools.html#cb51-24" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_cells.per.gene.filter:</span> TRUE <span class="co">#TRUE means apply cells per gene filtering</span></span>
+<span id="cb51-25"><a href="additional-tools.html#cb51-25" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc.cells.filter:</span> TRUE <span class="co">#TRUE means apply cell.per.gene filtering by use of a percentage rather than absolute threshold.  If the percentage results in a number less than R6_m</span></span>
+<span id="cb51-26"><a href="additional-tools.html#cb51-26" aria-hidden="true" tabindex="-1"></a><span class="ex">in.cells.per.gene,</span> the code will automatically switch to min.cells.per.gene absolute thresholding</span>
+<span id="cb51-27"><a href="additional-tools.html#cb51-27" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc.filter:</span> FALSE <span class="co">#If TRUE, then apply the 75th percentile gene filtering</span></span>
+<span id="cb51-28"><a href="additional-tools.html#cb51-28" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc.filter.type:</span> <span class="st">&quot;and&quot;</span> <span class="co">#The type of percentile gene filtering.  If it has the value &quot;and&quot; then any gene that has 75th percentile of zero in both groups will be filtered out.</span></span>
+<span id="cb51-29"><a href="additional-tools.html#cb51-29" aria-hidden="true" tabindex="-1"></a>  <span class="ex">If</span> it has the value <span class="st">&quot;or&quot;</span> then any gene that has a 75th percentile of zero in either group will be filtered out.</span>
+<span id="cb51-30"><a href="additional-tools.html#cb51-30" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc_threshold:</span> 0.90 <span class="co">#Percentile threshold, 75th percentile is default.  Express percentile as a decimal value.</span></span>
+<span id="cb51-31"><a href="additional-tools.html#cb51-31" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.ave.pseudo.bulk.cpm:</span> 1 <span class="co">#cpm filtering threshold</span></span>
+<span id="cb51-32"><a href="additional-tools.html#cb51-32" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_pseudo.bulk.cpm.filter:</span> FALSE <span class="co">#if TRUE, then apply a cpm filter on the pseudo-bulk counts</span></span>
+<span id="cb51-33"><a href="additional-tools.html#cb51-33" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.cells.per.subj:</span> 3 <span class="co">#Minimum cells required per subject, must be a nonzero number</span></span></code></pre></div>
 <p>The UMI file can be a matrix rds or a h5ad file. The meta file can be a data.frame rds or a h5ad file, containing critical information that can be used for DE analysis.</p>
-<div class="sourceCode" id="cb50"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb50-1"><a href="additional-tools.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file for scDEG</span></span>
-<span id="cb50-2"><a href="additional-tools.html#cb50-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">UMI:</span> ~/DEG_results/TST12055_raw_added.h5ad       <span class="co">#required, can be a matrix rds or a h5ad file</span></span>
-<span id="cb50-3"><a href="additional-tools.html#cb50-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">meta:</span> ~/DEG_results/TST12055_raw_added.h5ad      <span class="co">#required, can be a cell annotation data.frame rds or a h5ad file</span></span>
-<span id="cb50-4"><a href="additional-tools.html#cb50-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">output:</span> ~/DEG_results/</span>
-<span id="cb50-5"><a href="additional-tools.html#cb50-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DBname:</span> cellxgeneVIP</span>
-<span id="cb50-6"><a href="additional-tools.html#cb50-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">## DEG analysis for an annotation (such as disease vs. health) within a cell type annotation</span></span>
-<span id="cb50-7"><a href="additional-tools.html#cb50-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DEG_desp:</span> ~/DEG_results/DEGinfo.csv              <span class="co">#required for DEG analysis</span></span>
-<span id="cb50-8"><a href="additional-tools.html#cb50-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb50-9"><a href="additional-tools.html#cb50-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">## Please be cautious of changing the following default filtering.</span></span>
-<span id="cb50-10"><a href="additional-tools.html#cb50-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.cells.per.gene:</span> 3</span>
-<span id="cb50-11"><a href="additional-tools.html#cb50-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.genes.per.cell:</span> 250</span>
-<span id="cb50-12"><a href="additional-tools.html#cb50-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.perc.cells.per.gene:</span> 0.00</span>
-<span id="cb50-13"><a href="additional-tools.html#cb50-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">perc_filter:</span> TRUE</span>
-<span id="cb50-14"><a href="additional-tools.html#cb50-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">## ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="additional-tools.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file for scDEG</span></span>
+<span id="cb52-2"><a href="additional-tools.html#cb52-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">UMI:</span> ~/DEG_results/TST12055_raw_added.h5ad       <span class="co">#required, can be a matrix rds or a h5ad file</span></span>
+<span id="cb52-3"><a href="additional-tools.html#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">meta:</span> ~/DEG_results/TST12055_raw_added.h5ad      <span class="co">#required, can be a cell annotation data.frame rds or a h5ad file</span></span>
+<span id="cb52-4"><a href="additional-tools.html#cb52-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">output:</span> ~/DEG_results/</span>
+<span id="cb52-5"><a href="additional-tools.html#cb52-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DBname:</span> cellxgeneVIP</span>
+<span id="cb52-6"><a href="additional-tools.html#cb52-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">## DEG analysis for an annotation (such as disease vs. health) within a cell type annotation</span></span>
+<span id="cb52-7"><a href="additional-tools.html#cb52-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DEG_desp:</span> ~/DEG_results/DEGinfo.csv              <span class="co">#required for DEG analysis</span></span>
+<span id="cb52-8"><a href="additional-tools.html#cb52-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb52-9"><a href="additional-tools.html#cb52-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">## Please be cautious of changing the following default filtering.</span></span>
+<span id="cb52-10"><a href="additional-tools.html#cb52-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.cells.per.gene:</span> 3</span>
+<span id="cb52-11"><a href="additional-tools.html#cb52-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.genes.per.cell:</span> 250</span>
+<span id="cb52-12"><a href="additional-tools.html#cb52-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.perc.cells.per.gene:</span> 0.00</span>
+<span id="cb52-13"><a href="additional-tools.html#cb52-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">perc_filter:</span> TRUE</span>
+<span id="cb52-14"><a href="additional-tools.html#cb52-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">## ...</span></span></code></pre></div>
 </div>
 <div id="run-de-analysis" class="section level3" number="10.1.2">
 <h3><span class="header-section-number">10.1.2</span> Run DE analysis</h3>
 <p>Please refer the previous section <a href="differential-expression-de-analysis.html#differential-expression-de-analysis">Differential expression (DE) analysis</a> to prepare the DE comparison file.</p>
+<p>After preparing the config.yml and DEGinfo.csv files, run the pipeline:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb53-1"><a href="additional-tools.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG /path/to/config.yml</span>
+<span id="cb53-2"><a href="additional-tools.html#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="additional-tools.html#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb53-4"><a href="additional-tools.html#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> ~/DEG_results/config.yml</span></code></pre></div>
 </div>
 </div>
 <div id="sctool" class="section level2" number="10.2">
@@ -276,48 +314,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Export a list of genes along with all annotation.</p></li>
 </ul>
 <p>By running the <strong>scTool</strong> without providing any parameters, we can see the manual page of the script:</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="additional-tools.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scTool</span>
-<span id="cb51-2"><a href="additional-tools.html#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-3"><a href="additional-tools.html#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> scTool.py [-h] <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span> h5ad [changes]</span>
-<span id="cb51-4"><a href="additional-tools.html#cb51-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-5"><a href="additional-tools.html#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Additional</span> sc tools. WARNING: The input h5ad files will be over-written!</span>
-<span id="cb51-6"><a href="additional-tools.html#cb51-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-7"><a href="additional-tools.html#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="ex">positional</span> arguments:</span>
-<span id="cb51-8"><a href="additional-tools.html#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span>  Modify the h5ad by either <span class="st">&quot;rm&quot;</span>, <span class="st">&quot;add&quot;</span> or <span class="st">&quot;export&quot;</span> cell level annotations.</span>
-<span id="cb51-9"><a href="additional-tools.html#cb51-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">h5ad</span>             Path to a h5ad file to be modified</span>
-<span id="cb51-10"><a href="additional-tools.html#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">changes</span>          Options:</span>
-<span id="cb51-11"><a href="additional-tools.html#cb51-11" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">1.</span> A list of annotaions to be removed <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span><span class="kw">)</span> </span>
-<span id="cb51-12"><a href="additional-tools.html#cb51-12" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">2.</span> A path to a csv file contains cell level annotations <span class="er">(</span><span class="ex">first</span> column is the cell ID<span class="kw">)</span></span>
-<span id="cb51-13"><a href="additional-tools.html#cb51-13" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">3.</span> A list of genes <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span>, empty or max 50<span class="kw">)</span> <span class="ex">to</span> be exported along with all annotations.</span>
-<span id="cb51-14"><a href="additional-tools.html#cb51-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-15"><a href="additional-tools.html#cb51-15" aria-hidden="true" tabindex="-1"></a><span class="ex">optional</span> arguments:</span>
-<span id="cb51-16"><a href="additional-tools.html#cb51-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>       show this help message and exit</span>
-<span id="cb51-17"><a href="additional-tools.html#cb51-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-18"><a href="additional-tools.html#cb51-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
-<span id="cb51-19"><a href="additional-tools.html#cb51-19" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb54-1"><a href="additional-tools.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scTool</span>
+<span id="cb54-2"><a href="additional-tools.html#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="additional-tools.html#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> scTool.py [-h] <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span> h5ad [changes]</span>
+<span id="cb54-4"><a href="additional-tools.html#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="additional-tools.html#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Additional</span> sc tools. WARNING: The input h5ad files will be over-written!</span>
+<span id="cb54-6"><a href="additional-tools.html#cb54-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-7"><a href="additional-tools.html#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="ex">positional</span> arguments:</span>
+<span id="cb54-8"><a href="additional-tools.html#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span>  Modify the h5ad by either <span class="st">&quot;rm&quot;</span>, <span class="st">&quot;add&quot;</span> or <span class="st">&quot;export&quot;</span> cell level annotations.</span>
+<span id="cb54-9"><a href="additional-tools.html#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">h5ad</span>             Path to a h5ad file to be modified</span>
+<span id="cb54-10"><a href="additional-tools.html#cb54-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">changes</span>          Options:</span>
+<span id="cb54-11"><a href="additional-tools.html#cb54-11" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">1.</span> A list of annotaions to be removed <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span><span class="kw">)</span> </span>
+<span id="cb54-12"><a href="additional-tools.html#cb54-12" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">2.</span> A path to a csv file contains cell level annotations <span class="er">(</span><span class="ex">first</span> column is the cell ID<span class="kw">)</span></span>
+<span id="cb54-13"><a href="additional-tools.html#cb54-13" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">3.</span> A list of genes <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span>, empty or max 50<span class="kw">)</span> <span class="ex">to</span> be exported along with all annotations.</span>
+<span id="cb54-14"><a href="additional-tools.html#cb54-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-15"><a href="additional-tools.html#cb54-15" aria-hidden="true" tabindex="-1"></a><span class="ex">optional</span> arguments:</span>
+<span id="cb54-16"><a href="additional-tools.html#cb54-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>       show this help message and exit</span>
+<span id="cb54-17"><a href="additional-tools.html#cb54-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-18"><a href="additional-tools.html#cb54-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
+<span id="cb54-19"><a href="additional-tools.html#cb54-19" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <p>We use this pubic E-MTAB-11115 data as an example:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
 <div id="remove-annotations" class="section level3" number="10.2.1">
 <h3><span class="header-section-number">10.2.1</span> Remove annotations</h3>
 <p>To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.</p>
-<pre><code>scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location</code></pre>
+<div class="sourceCode" id="cb55"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb55-1"><a href="additional-tools.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location</span></code></pre></div>
 </div>
 <div id="add-annotations" class="section level3" number="10.2.2">
 <h3><span class="header-section-number">10.2.2</span> Add annotations</h3>
 <p>To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a <strong>manual.curated.labels</strong> cell type labeling to the original data:</p>
-<pre><code>$ head -2 manual.curated.labels.csv
-
-AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons
-AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos
-
-#Run the scTool:
-
-scTool add ProjName_raw_added.h5ad manual.curated.labels.csv</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb56-1"><a href="additional-tools.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> head <span class="at">-2</span> manual.curated.labels.csv</span>
+<span id="cb56-2"><a href="additional-tools.html#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="additional-tools.html#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="ex">AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons</span></span>
+<span id="cb56-4"><a href="additional-tools.html#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="ex">AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos</span></span>
+<span id="cb56-5"><a href="additional-tools.html#cb56-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-6"><a href="additional-tools.html#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Run the scTool:</span></span>
+<span id="cb56-7"><a href="additional-tools.html#cb56-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-8"><a href="additional-tools.html#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> add ProjName_raw_added.h5ad manual.curated.labels.csv</span></code></pre></div>
 </div>
 <div id="export-gene-expressions" class="section level3" number="10.2.3">
 <h3><span class="header-section-number">10.2.3</span> Export gene expressions</h3>
 <p>This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.</p>
-<pre><code>scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12</code></pre>
+<div class="sourceCode" id="cb57"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="additional-tools.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> export ProjName_raw_added.h5ad App,Olig1,P2ry12</span></code></pre></div>
 <p>The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png" /></a></p>
 

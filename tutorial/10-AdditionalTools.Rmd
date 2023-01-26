@@ -23,7 +23,6 @@ scDEG /path/to/a/folder === or === scDEG /path/to/a/config/file
 An empty config file will be generated automatically when a folder is provided
 Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
 ------------
-
 ```
 
 Then providing a directory to **scDEG**, and it will generate a template config file:
@@ -37,6 +36,42 @@ scDEG ~/DEG_results
 ```
 
 Template configuration file:
+
+```{bash, eval=FALSE}
+UMI: /path/to/Prefix.h5ad   #required, can be a matrix rds or a h5ad file
+meta: /path/to/Prefix.h5ad  #required, can be a cell annotation data.frame rds or a h5ad file
+output: /path/to/output/directory
+DBname: cellxgeneVIP
+parallel: slurm             # False or "sge" or "slurm"
+
+## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
+DEG_desp: /path/to/DEGinfo.csv      #required for DEG analysis
+
+# Please be causion of changing the following default filtering
+# More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/
+# Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment
+min.cells.per.gene: 3 # if `perc_filter` is FALSE, then keep only genes that have expression in at least min.cells.per.gene
+min.genes.per.cell: 250 # keep cells with expression in at least min.genes.per.cell genes.
+min.perc.cells.per.gene: 0.00 #if 'perc_filter'`' is TRUE, then keep only genes that have expression in at least min.per.cells.per.gene * 100 percent of cells
+perc_filter: TRUE #if TRUE, apply the cells.per.gene filter using percentages (expressed as a decimal) rather than an absolute threshold
+
+# Apply the 2nd round of biostats filtering.  For "group" mode, the filtering is applied to `ref_group` and `alt_group` for the given cell type of interest.
+R6_min.cells.per.gene: 3 #minimum cells expressed per gene.  This filter is applied if `R6_perc.cells.filter` is FALSE
+R6_min.perc.cells.per.gene: 0.1 # minimum % cells expressed per gene filtering (use decimal form of percentage).  This threshold is applied if 'R6_perc.cells.filter' is TRUE and
+ 'R6_cells.per.gene.filter' is TRUE
+R6_min.cells.per.gene.type: "or" #The type of cell per gene filtering.  If it has the value "and" then it requires the gene be expressed in both reference and non-reference grou
+ps. If it has the value "or" then it requires the gene be expressed in either group
+R6_cells.per.gene.filter: TRUE #TRUE means apply cells per gene filtering
+R6_perc.cells.filter: TRUE #TRUE means apply cell.per.gene filtering by use of a percentage rather than absolute threshold.  If the percentage results in a number less than R6_m
+in.cells.per.gene, the code will automatically switch to min.cells.per.gene absolute thresholding
+R6_perc.filter: FALSE #If TRUE, then apply the 75th percentile gene filtering
+R6_perc.filter.type: "and" #The type of percentile gene filtering.  If it has the value "and" then any gene that has 75th percentile of zero in both groups will be filtered out.
+  If it has the value "or" then any gene that has a 75th percentile of zero in either group will be filtered out.
+R6_perc_threshold: 0.90 #Percentile threshold, 75th percentile is default.  Express percentile as a decimal value.
+R6_min.ave.pseudo.bulk.cpm: 1 #cpm filtering threshold
+R6_pseudo.bulk.cpm.filter: FALSE #if TRUE, then apply a cpm filter on the pseudo-bulk counts
+R6_min.cells.per.subj: 3 #Minimum cells required per subject, must be a nonzero number
+```
 
 The UMI file can be a matrix rds or a h5ad file. The meta file can be a data.frame rds or a h5ad file, containing critical information that can be used for DE analysis.
 
@@ -60,6 +95,15 @@ The UMI file can be a matrix rds or a h5ad file. The meta file can be a data.fra
 ### Run DE analysis
 
 Please refer the previous section [Differential expression (DE) analysis] to prepare the DE comparison file.
+
+After preparing the config.yml and DEGinfo.csv files, run the pipeline:
+
+```{bash, eval=FALSE}
+$ scDEG /path/to/config.yml
+
+#Example:
+scDEG ~/DEG_results/config.yml
+```
 
 ## scTool
 
@@ -104,7 +148,7 @@ We use this pubic E-MTAB-11115 data as an example:
 
 To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.
 
-```
+```{bash, eval=FALSE}
 scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location
 ```
 
@@ -112,7 +156,7 @@ scTool rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location
 
 To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a **manual.curated.labels** cell type labeling to the original data:
 
-```
+```{bash, eval=FALSE}
 $ head -2 manual.curated.labels.csv
 
 AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons
@@ -127,7 +171,7 @@ scTool add ProjName_raw_added.h5ad manual.curated.labels.csv
 
 This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.
 
-```
+```{bash, eval=FALSE}
 scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12
 ```
 

@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2023-01-19" />
+<meta name="date" content="2023-01-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -223,26 +223,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 9</span> CellDepot publishing</h1>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S0022283621006665" target="_blank">CellDepot</a> is a comprehensive data management platform for single-cell RNA-seq datasets. Publishing to CellDepot allows easy navigation and visualization of the data, and facilitates big data deposition. Thus, scRNASequest pipeline offers a function to publish a dataset to CellDepot using <strong>sc2celldepot</strong>. This workflow will use the existing cell type labels and create <strong>h5ad</strong> and <strong>RDS</strong> that are compatible with the CellDepot platform. If you are interested in hosting any public datasets withour re-analyzing it using the full scRNAsequest pipeline (e.g. filtering, harmonization, DE analysis), you can easily run <strong>sc2celldepot</strong> to convert and publish it on CellDepot.</p>
 <p>By running the following command, we can see the manual page of the script:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="celldepot-publishing.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sc2celldepot</span>
-<span id="cb43-2"><a href="celldepot-publishing.html#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-3"><a href="celldepot-publishing.html#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2022-07-07 11:10:44 <span class="pp">*****</span></span>
-<span id="cb43-4"><a href="celldepot-publishing.html#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb43-5"><a href="celldepot-publishing.html#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="co">## ExpressionAnalysis: https://github.com/interactivereport/scRNAsequest.git</span></span>
-<span id="cb43-6"><a href="celldepot-publishing.html#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /camhpc/ngs/tools/scRNAsequest</span></span>
-<span id="cb43-7"><a href="celldepot-publishing.html#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2022-07-06 17:43:20 -0400</span></span>
-<span id="cb43-8"><a href="celldepot-publishing.html#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: c9f0ba5e860c269fb632bee22ef312371e0e3143</span></span>
-<span id="cb43-9"><a href="celldepot-publishing.html#cb43-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb43-10"><a href="celldepot-publishing.html#cb43-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-11"><a href="celldepot-publishing.html#cb43-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-12"><a href="celldepot-publishing.html#cb43-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
-<span id="cb43-13"><a href="celldepot-publishing.html#cb43-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-14"><a href="celldepot-publishing.html#cb43-14" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> /path/to/a/output/folder === or === sc2celldepot /path/to/a/config/file</span>
-<span id="cb43-15"><a href="celldepot-publishing.html#cb43-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-16"><a href="celldepot-publishing.html#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder will be created if it does not exist.</span>
-<span id="cb43-17"><a href="celldepot-publishing.html#cb43-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> data config file will be generated automatically when a path is provided</span>
-<span id="cb43-18"><a href="celldepot-publishing.html#cb43-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-19"><a href="celldepot-publishing.html#cb43-19" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
-<span id="cb43-20"><a href="celldepot-publishing.html#cb43-20" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb44-1"><a href="celldepot-publishing.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sc2celldepot</span>
+<span id="cb44-2"><a href="celldepot-publishing.html#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="celldepot-publishing.html#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2023-01-26 15:25:32 <span class="pp">*****</span></span>
+<span id="cb44-4"><a href="celldepot-publishing.html#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb44-5"><a href="celldepot-publishing.html#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co">## ExpressionAnalysis: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb44-6"><a href="celldepot-publishing.html#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest</span></span>
+<span id="cb44-7"><a href="celldepot-publishing.html#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-01-13 17:41:49 -0500</span></span>
+<span id="cb44-8"><a href="celldepot-publishing.html#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e</span></span>
+<span id="cb44-9"><a href="celldepot-publishing.html#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb44-10"><a href="celldepot-publishing.html#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-11"><a href="celldepot-publishing.html#cb44-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-12"><a href="celldepot-publishing.html#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb44-13"><a href="celldepot-publishing.html#cb44-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-14"><a href="celldepot-publishing.html#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> /path/to/a/output/folder === or === sc2celldepot /path/to/a/config/file</span>
+<span id="cb44-15"><a href="celldepot-publishing.html#cb44-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-16"><a href="celldepot-publishing.html#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="ex">Please</span> create the folder before running sc2celldepot.</span>
+<span id="cb44-17"><a href="celldepot-publishing.html#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> data config file will be generated automatically when a path is provided</span>
+<span id="cb44-18"><a href="celldepot-publishing.html#cb44-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-19"><a href="celldepot-publishing.html#cb44-19" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
+<span id="cb44-20"><a href="celldepot-publishing.html#cb44-20" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <div id="initialize-sc2celldepot" class="section level2" number="9.1">
 <h2><span class="header-section-number">9.1</span> Initialize sc2celldepot</h2>
 <p>Running <strong>sc2celldepot</strong> by providing a working directory will initiate the project and generate a template of config file. The config file template can be found: <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/external2h5ad.yml" target="_blank">template</a>.</p>
