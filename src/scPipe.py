@@ -453,6 +453,8 @@ def runPipe(strConfig):
   else:
     D = ad.read_h5ad("%s.h5ad"%prefix,backed="r")
     scaleF = D.uns.get('scaleF')
+  if not os.path.isfile("%s.h5seurat"%prefix) or config["newProcess"]::
+    saveSeuratObj(prefix)
   runDEG(strConfig,prefix,config)
   moveCellDepot(prefix,config,scaleF)
   MsgPower()
@@ -622,6 +624,8 @@ def getData(meta,sID):
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
+    sc.pp.filter_genes(adata,min_cells=1)
+    sc.pp.filter_cells(adata,min_counts=1)
     adata.X = csc_matrix(adata.X)
     ## add intro/exon counts/ratio if exists
     if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
@@ -888,7 +892,6 @@ def combine(mIDs,prefix,config):
     Draw.write("%s_raw_added.h5ad"%prefix)
     if os.path.isfile("%s.h5ad.lock"%prefix):
       os.remove("%s.h5ad.lock"%prefix)
-  saveSeuratObj(prefix)
   return D.uns.get('scaleF')
 def integrateH5ad(strH5ad,methods,prefix,majorR=None):
   D = ad.read_h5ad(strH5ad)

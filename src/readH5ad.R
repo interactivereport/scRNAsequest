@@ -72,11 +72,11 @@ getX <- function(strH5ad,useRaw=T){
   return(M)
 }
 getobsm <- function(strH5ad,key){
-  k <- h5ls(strH5ad,recursive=2)
-  k <- k[grepl("obsm",k[,1]),2]
+  AllK <- h5ls(strH5ad,recursive=2)
+  k <- AllK[grepl("obsm",AllK[,1]),2]
   if(!key%in%k) return(NULL)
   X <- h5read(strH5ad,paste0("obsm/",key))
-  colnames(X) <- getID(strH5ad,k,"/obs")    #h5read(strH5ad,"/obs/_index")
+  colnames(X) <- getID(strH5ad,AllK,"/obs")    #h5read(strH5ad,"/obs/_index")
   return(t(X))
 }
 getobsmKey <- function(strH5ad){
