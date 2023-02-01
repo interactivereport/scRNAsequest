@@ -19,6 +19,7 @@ main <- function(strConfig){
   config <- yaml::read_yaml(strConfig)
   strDEG <- checkFileExist(config$DEG_desp,"DEG description file")
   if(!is.null(config$prj_name)){
+    prefix <- paste0(config$output,"/",config$prj_name)
     strH5adraw <- checkFileExist(paste0(file.path(config$output,"raw",config$prj_name),".h5ad"),"raw count h5ad file")
     strH5ad <- checkFileExist(paste0(file.path(config$output,config$prj_name),".h5ad"),"pipeline output h5ad contains cell annotation file")
   }else{
