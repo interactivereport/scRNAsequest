@@ -311,7 +311,7 @@ def MsgInit():
     gitLog = gitLog.iloc[-1,0].split(" ")
     print("###########\n## scRNAsequest: %s"%url)
     print("## Pipeline Path: %s"%strPipePath)
-    print("## Pipeline Date: %s %s"%(datetime.fromtimestamp(int(gitLog[4])).strftime('%Y-%m-%d %H:%M:%S'),gitLog[5]))
+    print("## Pipeline Date: %s %s"%(datetime.fromtimestamp(int(gitLog[-2])).strftime('%Y-%m-%d %H:%M:%S'),gitLog[-1]))
     print("## git HEAD: %s\n###########\n"%gitLog[1])
 
 ## init projects
