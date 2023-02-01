@@ -453,7 +453,7 @@ def runPipe(strConfig):
   else:
     D = ad.read_h5ad("%s.h5ad"%prefix,backed="r")
     scaleF = D.uns.get('scaleF')
-  if not os.path.isfile("%s.h5seurat"%prefix) or config["newProcess"]::
+  if not os.path.isfile("%s.h5seurat"%prefix) or config["newProcess"]:
     saveSeuratObj(prefix)
   runDEG(strConfig,prefix,config)
   moveCellDepot(prefix,config,scaleF)
