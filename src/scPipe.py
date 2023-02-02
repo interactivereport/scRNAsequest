@@ -1001,7 +1001,7 @@ def runDEG(strConfig,prefix,config):
       scDEGtask = json.load(f)
     umiF = config.get('UMI')
     if umiF is None:
-      memG = math.ceil(os.path.getsize("%s_raw.h5ad"%prefix)*50/1e9)
+      memG = math.ceil(os.path.getsize("%s_raw_added.h5ad"%prefix)*50/1e9)
     else:
       memG = math.ceil(os.path.getsize(umiF)*50/1e9)
     submit_cmd(scDEGtask,config,1,memG)
