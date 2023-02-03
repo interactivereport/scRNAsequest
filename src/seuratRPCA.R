@@ -18,7 +18,7 @@ main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"#
   args = commandArgs(trailingOnly=TRUE)
-  if(length(args)<2) stop("Path to 3 files are required!")
+  if(length(args)<2) stop("Path to 2 files are required!")
   strH5ad <- args[1]
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
   print(system.time({
