@@ -628,7 +628,6 @@ def getData(meta,sID):
     else:
       Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
     adata.var_names_make_unique()
-    sc.pp.filter_genes(adata,min_cells=1)
     sc.pp.filter_cells(adata,min_counts=1)
     adata.X = csc_matrix(adata.X)
     ## add intro/exon counts/ratio if exists
@@ -654,6 +653,8 @@ def getData(meta,sID):
     adata = sc.AnnData.concatenate(*adatals,
       batch_categories=meta[sID],
       batch_key=batchKey)
+  #filter genes after (inner) concatenate
+  sc.pp.filter_genes(adata,min_cells=1)
   ## remove duplicated columns in var
   varCol = [one.split("-")[0] for one in adata.var.columns]
   varInx = [i for i,v in enumerate(varCol) if not v in varCol[:i]]
