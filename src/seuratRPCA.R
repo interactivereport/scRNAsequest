@@ -63,7 +63,7 @@ main <- function(){
       Dsct <- Dlist[[1]]
     }
     
-    Dsct <- RunPCA1(Dsct, verbose = FALSE)
+    Dsct <- RunPCA(Dsct, verbose = FALSE)
     Dsct <- RunUMAP(Dsct, reduction = "pca", dims = 1:50)
     Dsct <- FindNeighbors(Dsct,dims = 1:50)
     Dsct <- FindClusters(Dsct)#default Algorithm: 1 = original Louvain algorithm
