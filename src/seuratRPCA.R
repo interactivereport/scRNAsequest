@@ -4,14 +4,16 @@ PKGloading <- function(){
   require(RcppCNPy)
   require(readr)
   options(stringsAsFactors = FALSE)
-  
-  rlang::env_unlock(env = asNamespace('base'))
-  rlang::env_binding_unlock(env = asNamespace('base'))
-  message <<- function(...,domain = NULL, appendLF = TRUE){
-    cat(paste(...,collapse=", "),"\n",sep="")
+  if(F){
+    rlang::env_unlock(env = asNamespace('base'))
+    rlang::env_binding_unlock(env = asNamespace('base'))
+    message <<- function(...,domain = NULL, appendLF = TRUE){
+      cat(paste(...,collapse=", "),"\n",sep="")
+    }
+    rlang::env_binding_lock(env = asNamespace('base'))
+    rlang::env_lock(asNamespace('base'))
   }
-  rlang::env_binding_lock(env = asNamespace('base'))
-  rlang::env_lock(asNamespace('base'))
+  
 }
 
 main <- function(){
@@ -61,7 +63,7 @@ main <- function(){
       Dsct <- Dlist[[1]]
     }
     
-    Dsct <- RunPCA(Dsct, verbose = FALSE)
+    Dsct <- RunPCA1(Dsct, verbose = FALSE)
     Dsct <- RunUMAP(Dsct, reduction = "pca", dims = 1:50)
     Dsct <- FindNeighbors(Dsct,dims = 1:50)
     Dsct <- FindClusters(Dsct)#default Algorithm: 1 = original Louvain algorithm

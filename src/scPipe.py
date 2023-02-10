@@ -25,7 +25,7 @@ logging.disable()
 def run_cmd(cmd):
   #print(cmd)
   try:
-    cmdR = subprocess.run(cmd,shell=True,check=True,stdout=subprocess.PIPE)#capture_output=True
+    cmdR = subprocess.run(cmd,shell=True,check=True,stdout=subprocess.PIPE)#capture_output=True,
   except subprocess.CalledProcessError as e:
     if not e.returncode==1:
       print("%s process return above error"%cmd)#,e.stderr.decode("utf-8")
@@ -60,17 +60,21 @@ def submit_cmd(cmds,config,core=None,memG=0):
   if core is None:
     core=config['core']
   parallel = config["parallel"]
+  os.makedirs(os.path.join(config["output"],"log"),exist_ok=True)
   if not parallel:
     for one in cmds.keys():
       if cmds[one] is None:
         continue
-      print("submitting %s"%one)
-      strError = os.path.join(config["output"],"%s.error"%one)
+      print("\n\n\nsubmitting %s"%one)
+      strLog = os.path.join(config["output"],"log","%s.log"%one)
+      oneCMD=cmds[one]+" 2>&1 | tee "+ strLog
+      print("\tPlease check log: %s"%strLog)
+      print(oneCMD)
       try:
-        with open(strError,"w") as errorF:
-          cmdR = subprocess.run(cmds[one],shell=True,check=True,stderr=errorF,text=True)#,capture_output=True
-      except subprocess.CalledProcessError as e:
-        print("%s process error return: @%s"%(one,strError))
+        cmdR = subprocess.run(oneCMD,shell=True,check=True)
+      except:
+        print("%s process error return: @%s"%(one,strLog))
+      #run_cmd(oneCMD)
   elif parallel=="sge":
     jID = qsub(cmds,config['output'],core,memG=memG)
     print("----- Monitoring all submitted SGE jobs: %s ..."%jID)
