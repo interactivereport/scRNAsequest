@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+R -q -e 'suppressWarnings({if(!require(revealjs)) install.packages("revealjs",repos="https://cran.rstudio.com/")})'
+R -q -e 'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade="never",upgrade_dependencies=F)})'
+R -q -e 'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v1.1.7",upgrade="never",upgrade_dependencies=F)})'
+R -q -e 'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.4.1",upgrade="never",upgrade_dependencies=F)})'
+python -m pip install git+https://github.com/broadinstitute/CellBender@b9fd92dec1cb89ac923df19aee3cf44543d23fa6

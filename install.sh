@@ -19,7 +19,7 @@ condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
 source $condaPath/etc/profile.d/conda.sh
 conda activate $appEnvName
-mamba env update -f install.yml
+mamba env update -f install/install.yml
 
 echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $CONDA_PREFIX'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
@@ -31,10 +31,6 @@ echo "export SLURM_CONF=$SLURM_CONF" >> $src/.env
 conda deactivate
 
 ## additional packages which are not available on anaconda
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(revealjs)) install.packages("revealjs",repos="https://cran.rstudio.com/")})'"'"
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade="never",upgrade_dependencies=F)})'"'"
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v1.1.7",upgrade="never",upgrade_dependencies=F)})'"'"
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;R -q -e '"'"'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.4.1",upgrade="never",upgrade_dependencies=F)})'"'"
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -m pip install git+https://github.com/broadinstitute/CellBender@b9fd92dec1cb89ac923df19aee3cf44543d23fa6'
+env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;$src/../install/install.extra'
 
 echo "If no errors above, scRNAsequest installation is successful!"
