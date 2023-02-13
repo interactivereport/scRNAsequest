@@ -13,7 +13,15 @@ getobs <- function(strH5ad){
   #dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
   rownames(meta) <- obs[[grep("index$",names(obs))]]
   for(one in names(obs[["__categories"]])){
-    meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
+    if(min(meta[,one])<0){
+      ann <- meta[,one]+1
+      ann[ann<1] <- max(ann)+1
+      annLable <- obs[["__categories"]][[one]]
+      annLable <- c(annLable,"NAN")
+      meta[,one] <- annLable[ann]
+    }else{
+      meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
+    }
   }
   # for anndata v 0.8
   for(one in names(obs)[sapply(obs,function(x)return(!is.null(names(x))))&!grepl("^_|index$",names(obs))]){
