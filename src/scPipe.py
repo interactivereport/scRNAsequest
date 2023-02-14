@@ -337,7 +337,6 @@ def initMeta(strInput):
   meta = pd.read_csv(strMeta,sep="\t")
   sysConfig = getConfig()
   config = getConfig("template.yml")
-
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     if not 'notMeta' in sysConfig.keys():
@@ -347,13 +346,29 @@ def initMeta(strInput):
   strInEx = findIntronExon(list(meta[config["sample_name"]]),strInput)
   if strInEx is not None:
     meta.insert(0,IntronExon,strInEx)
-
   meta.insert(0,UMIcol,["%s/%s.filtered_feature_bc_matrix.h5"%(strInput,one) for one in meta[config["sample_name"]]])
-
   for oneH5 in meta[UMIcol]:
     if not os.path.isfile(oneH5):
       Exit("The UMI h5 file %s does not exist, please correct the sample sheet"%oneH5)
   return meta
+def initRawMeta(meta):
+  print("Create raw h5 sample meta ...")
+  metaRaw = meta.copy()
+  h5raw = []
+  expCellN=[]
+  for oneH5 in metaRaw[UMIcol]:
+    oneH5raw = re.sub("filtered_feature_bc_matrix","raw_feature_bc_matrix",oneH5)
+    h5raw += [oneH5raw if os.path.isfile(oneH5raw) else ""]
+    oneMetrics = re.sub("filtered_feature_bc_matrix.h5","metrics_summary.csv",oneH5)
+    oneExpN = '0'
+    if os.path.isfile(oneMetrics):
+      oneMe = pd.read_csv(oneMetrics,header=0)
+      oneExpN = oneMe['Estimated Number of Cells'] if 'Estimated Number of Cells' in oneMe.columns else '0'
+    expCellN += [str(list(oneExpN)[0])]
+  metaRaw[UMIcol] = h5raw
+  metaRaw['expected_cells'] = [int(i.replace(',','')) for i in expCellN]
+  metaRaw['droplets_included'] = [0]*meta.shape[0]
+  return metaRaw
 def findIntronExon(sNames,strInput):
   sFile = []
   n = 0
@@ -379,6 +394,7 @@ def initSave(meta,strInput):
   # save meta file
   strMeta = os.path.join(strOut,"sampleMeta.csv")
   meta.to_csv(strMeta,index=False)
+  initRawMeta(meta).to_csv(re.sub(".csv$","_raw.csv",strMeta),index=False)
 
   # save empty DE csv table
   strDEG = os.path.join(strOut,"DEGinfo.csv")
@@ -439,6 +455,8 @@ def initMsg(strConfig):
     print("Additional columns can be provided into the sample meta table (sampleMeta.csv).")
     print("DEG table (DEGinfo.csv) can be filled later and rerun the following command.")
     print("Please run the following command to use the pipeline for the input dataset.")
+    print("\n===> scRMambient %s"%os.path.join(os.path.dirname(strConfig),"sampleMeta_raw.csv"))
+    print("Please make sure to update droplets_included column in above'sampleMeta_raw.csv'")
     print("\n===> scAnalyzer %s"%strConfig)
     MsgPower()
 
