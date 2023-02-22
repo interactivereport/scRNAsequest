@@ -2,11 +2,11 @@
 channels:
   - conda-forge
   - bioconda
-  - r
   - defaults
 dependencies:
   - r-base=4.0.5
   - python=3.8.13
+  - python_abi=3.8=2_cp38
   - anndata=0.7.4
   - scanpy=1.8.2
   - r-sctransform=0.3.3
@@ -31,6 +31,8 @@ dependencies:
   - r-slam=0.1-50
   - r-domc=1.3.8
   - r-emmeans=1.7.3
+  - r-rfast=2.0.6
+  - r-igraph==1.3.1=r40hf10d5bd_0
   - bioconductor-glmgampoi=1.2.0
   - bioconductor-limma=3.46.0
   - bioconductor-edger=3.32.1
@@ -41,7 +43,7 @@ dependencies:
   - bioconductor-ensdb.hsapiens.v86=2.99.0
   - bioconductor-scater=1.18.6
   - pandas=1.4.1
-  - scipy=1.8.0
+  - scipy=1.8.0=py38h56a6a73_1
   - numpy=1.22.3
   - pyyaml=6.0
   - seaborn=0.11.2
@@ -53,13 +55,13 @@ dependencies:
   - anndata2ri=1.0.6
   - h5py=2.10.0
   - numba=0.56.4
-  - python-igraph=0.9.9
-  - louvain=0.7.1
+  - python-igraph=0.9.9=py38h2af5540_0
+  - igraph==0.9.10=h026ac8f_0
+  - louvain==0.7.1=py38hfa26641_2
   - multicore-tsne=0.1
   - r-bookdown=0.26
   - r-knitr=1.39
   - r-kableextra=1.3.4
   - umap-learn=0.5.1
-  - pytorch=1.13.0
-  - torchvision=0.14.0
-  - leidenalg=0.9.1
+  - leidenalg==0.8.10=py38hfa26641_0
+  - r-shinyjs=2.1.0 #for Azimuth

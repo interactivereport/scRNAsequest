@@ -8,13 +8,17 @@ import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix
+from natsort import natsorted
 
+warnings.simplefilter(action='ignore', category=FutureWarning)
 sc.set_figure_params(vector_friendly=True, dpi_save=300)
 strPipePath=""
 UMIcol="h5path"
 ANNcol="metapath"
 IntronExon="intron_exon_count_path"
 batchKey="library_id"
+expCellNcol="expected_cells"
+dropletNcol="droplets_included"
 Rmarkdown="Rmarkdown"
 beRaster=True
 qcDir="QC"
@@ -60,8 +64,8 @@ def submit_cmd(cmds,config,core=None,memG=0):
   if core is None:
     core=config['core']
   parallel = config["parallel"]
-  os.makedirs(os.path.join(config["output"],"log"),exist_ok=True)
   if not parallel:
+    os.makedirs(os.path.join(config["output"],"log"),exist_ok=True)
     for one in cmds.keys():
       if cmds[one] is None:
         continue
@@ -93,13 +97,13 @@ def submit_cmd(cmds,config,core=None,memG=0):
         print("\t--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
       print("\n*** Please check log files in %s folder and consider rerun the analysis!"%jID)
   elif parallel=="slurm":
-    jID = sbatch(cmds,config['output'],core,memG=memG)
+    jID = sbatch(cmds,config['output'],core,memG=memG,gpu=config.get('gpu'))
     print("----- Monitoring all submitted SLURM jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
     cmdN = {one:1 for one in cmds.keys()}
     failedJobs = {}
     while True:
-      squeue(jID,config['output'],cmds,cmdN,core,memG,failedJobs)
+      squeue(jID,config['output'],cmds,cmdN,core,memG,failedJobs,gpu=config.get('gpu'))
       if len(cmds)==0:
         break
       ## wait for 1 min if any running jobs
@@ -195,7 +199,11 @@ def qstat(jID,strPath,cmds,cmdN,core,memG,failedJobs):
   #  time.sleep(60)
   #  qstat(jID,strPath,cmds,core,iN)
 
-def sbatch(cmds,strPath,core,memG=0,jID=None):
+def sbatch(cmds,strPath,core,memG=0,jID=None,gpu=False):
+  gpu=False if gpu is None else gpu
+  sbatchScript=sbatchScriptCPU
+  if gpu:
+    sbatchScript=sbatchScriptGPU
   if jID is None:
     jID = "j%d"%random.randint(10,99)
   strWD = os.path.join(strPath,jID)
@@ -216,33 +224,37 @@ def sbatch(cmds,strPath,core,memG=0,jID=None):
       f.write(oneScript)
     run_cmd("sbatch %s"%strF)
   return jID
-def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs):
+def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
+  gpu=False if gpu is None else gpu
   print(".",end="")
   strWD = os.path.join(strPath,jID)
   qstateCol=4 # make sure the state of qstat is the 4th column (0-index)
   qJobCol=0 # make sure the job-id of qstat is the 0th column (0-index)
   # remove the job in wrong stats: Eqw and obtain the running and waiting job names
   qs = run_cmd("squeue | grep '%s_'"%jID).stdout.decode("utf-8").split("\n")
+  qs = pd.DataFrame([[a.strip() for a in one.split(" ") if len(a.strip())>0 ] for one in qs if len(one)>6])
+  qs[0] = [a.split("_")[0] for a in qs[0]] 
+  runID = set(qs[~qs[qstateCol].isin(['S','ST'])][qJobCol])
+  for one in set(qs[qs[qstateCol].isin(['S','ST'])][qJobCol]):
+    run_cmd("scancel %s"%one)
+    runID.discard(one)
   jNames = []
-  for one in qs:
-    if len(one)<5:
+  for oneJob in runID:
+    if len(oneJob)<5:
       continue
-    oneJob = [a.strip() for a in one.split(" ") if len(a.strip())>0 ]
-    if oneJob[qstateCol] in ['S','ST']:
-      run_cmd("scancel %s"%oneJob[qJobCol])
-      continue
-    jobDetail = parseSlurmJob(oneJob[qJobCol])
+    jobDetail = parseSlurmJob(oneJob)
     jName=jobDetail.get('JobName')
     if jName is None:
       continue
     jNames.append(jName.replace(jID+"_",""))
   # check the finished job, resubmit if not sucessfully finished
+  jNames=list(set(jNames))
   resub = {}
   finishedJob = []
   for one in cmds.keys():
     if not one in jNames:
-      strLog = os.path.join(strWD,"%s.log"%one)
-      if not "DONE" in run_cmd("tail -n 1 %s"%strLog).stdout.decode("utf-8"):
+      strLog = glob.glob(os.path.join(strWD,"%s*log"%one))
+      if len(strLog)==0 or not "DONE" in run_cmd("tail -n 1 %s"%natsorted(strLog,reverse=True)[0]).stdout.decode("utf-8"):
         cmdN[one] += 1
         if cmdN[one]>maxJobSubmitRepN:
           #print("\n--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
@@ -257,7 +269,7 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs):
         print("\tFinished: %s"%one)
         finishedJob.append(one)
   if len(resub)>0:
-    re1=sbatch(resub,strPath,core,memG,jID)
+    re1=sbatch(resub,strPath,core,memG,jID,gpu=gpu)
     time.sleep(5) #might not needed for the qsub to get in
   for one in finishedJob:
     del cmds[one]
@@ -274,6 +286,8 @@ def parseSlurmJob(jobID):
       jInfo[tmp[0].strip()]=tmp[1].strip()
       continue
     k=tmp[0].strip()
+    if k in jInfo.keys():
+      break
     v=""
     for i in range(1,len(tmp)-1):
       vk=tmp[i].rsplit(" ",1)
@@ -366,8 +380,8 @@ def initRawMeta(meta):
       oneExpN = oneMe['Estimated Number of Cells'] if 'Estimated Number of Cells' in oneMe.columns else '0'
     expCellN += [str(list(oneExpN)[0])]
   metaRaw[UMIcol] = h5raw
-  metaRaw['expected_cells'] = [int(i.replace(',','')) for i in expCellN]
-  metaRaw['droplets_included'] = [0]*meta.shape[0]
+  metaRaw[expCellNcol] = [int(i.replace(',','')) for i in expCellN]
+  metaRaw[dropletNcol] = [0]*meta.shape[0]
   return metaRaw
 def findIntronExon(sNames,strInput):
   sFile = []
@@ -382,7 +396,7 @@ def findIntronExon(sNames,strInput):
   if n>0:
     return(sFile)
   return(None)
-def initSave(meta,strInput):
+def initSave(meta,strInput,saveRaw=True):
   print("Saving the initialized project ...")
   ix = 0
   strOut="%s/sc%s_%d/"%(strInput,datetime.today().strftime('%Y%m%d'),ix)
@@ -394,7 +408,8 @@ def initSave(meta,strInput):
   # save meta file
   strMeta = os.path.join(strOut,"sampleMeta.csv")
   meta.to_csv(strMeta,index=False)
-  initRawMeta(meta).to_csv(re.sub(".csv$","_raw.csv",strMeta),index=False)
+  if saveRaw:
+    initRawMeta(meta).to_csv(re.sub(".csv$","_raw.csv",strMeta),index=False)
 
   # save empty DE csv table
   strDEG = os.path.join(strOut,"DEGinfo.csv")
@@ -456,7 +471,7 @@ def initMsg(strConfig):
     print("DEG table (DEGinfo.csv) can be filled later and rerun the following command.")
     print("Please run the following command to use the pipeline for the input dataset.")
     print("\n===> scRMambient %s"%os.path.join(os.path.dirname(strConfig),"sampleMeta_raw.csv"))
-    print("Please make sure to update droplets_included column in above'sampleMeta_raw.csv'")
+    print("Please make sure to update "+dropletNcol+" column in above'sampleMeta_raw.csv'")
     print("\n===> scAnalyzer %s"%strConfig)
     MsgPower()
 
@@ -1092,7 +1107,7 @@ set -e
 env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
 echo 'DONE'
 '''
-sbatchScript='''#!/bin/bash
+sbatchScriptCPU='''#!/bin/bash
 #SBATCH -J jID_jName
 #SBATCH -D wkPath
 #SBATCH -n CoreNum
@@ -1103,13 +1118,30 @@ sbatchScript='''#!/bin/bash
 #- End embedded arguments
 echo $SLURM_JOB_NODELIST
 echo 'end of HOST'
-
 # exit
 set -e
-
 env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
 echo 'DONE'
 '''
+sbatchScriptGPU='''#!/bin/bash
+#SBATCH --job-name=jID_jName
+#SBATCH -D wkPath
+#SBATCH --gres=gpu:1
+#SBATCH --time=24:00:00
+#SBATCH --requeue
+#SBATCH -p gpu
+#SBATCH --mem=MEMFREE
+#SBATCH -o jName.log
+#SBATCH -e jName.log
+#- End embedded arguments
+echo $SLURM_JOB_NODELIST
+echo 'end of HOST'
+# exit
+set -e
+env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
+echo 'DONE'
+'''
+
 if __name__ == "__main__":
   start_time = time.time()
   main()

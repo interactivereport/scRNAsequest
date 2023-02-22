@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#nohup scRMambient config.yml > QC.log 2>&1 &
+
+config=$1
+src="$(dirname $0)/src"
+
+if [[ ! -f "$src/.env" ]]; then
+  echo "scRMambient: Please run ./install to setup necessary env variables"
+  exit
+fi
+
+#condaEnv=$(head -n 1 $src/sys.yml)
+#condaEnv=${condaEnv:1}
+set -e
+if [[ -f "$config" ]]; then
+  env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scRMambient.py $config 2>&1 | tee -a scRMambient.$(date +%Y%m%d).log'
+else
+  echo "scRMambient: Remove background RNA"
+  echo "https://cellbender.readthedocs.io/en/latest/usage/index.html"
+  echo "Please provide the sample sheet contains raw expression h5 file path, expected cell number and droplet number (includes some empty ones)"
+  echo "Usage: scRMambient <sample meta csv>"
+fi
