@@ -65,3 +65,4 @@ dependencies:
   - umap-learn=0.5.1
   - leidenalg==0.8.10=py38hfa26641_0
   - r-shinyjs=2.1.0 #for Azimuth
+  - plotly=5.13.0
