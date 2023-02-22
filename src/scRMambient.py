@@ -9,8 +9,10 @@ sns.set_style('whitegrid')
 #strPipePath=""
 UMIcol="h5path"
 ANNcol="metapath"
-expCellNcol="expected_cells"
-dropletNcol="droplets_included"
+CB_expCellNcol="expected_cells"
+CB_dropletNcol="droplets_included"
+CB_count="low-count-threshold"
+CB_learningR="learning-rate"
 sampleNameCol="Sample_Name"
 
 def EXIT(msg):
@@ -19,8 +21,8 @@ def EXIT(msg):
 
 def cellbender(strMeta):
   meta = pd.read_csv(strMeta)
-  if not UMIcol in meta.columns or not expCellNcol in meta.columns or not dropletNcol in meta.columns:
-    EXIT("Please make sure the following columns exist in %s\n:%s, %s, %s"%(strMeta,UMIcol,expCellNcol,dropletNcol))
+  if not UMIcol in meta.columns or not CB_expCellNcol in meta.columns or not CB_dropletNcol in meta.columns:
+    EXIT("Please make sure the following columns exist in %s\n:%s, %s, %s"%(strMeta,UMIcol,CB_expCellNcol,CB_dropletNcol))
   if not sampleNameCol in meta.columns:
     meta[sampleNameCol]=[re.sub(".h5$","",re.sub(".raw_feature_bc_matrix.h5$","",os.path.basename(one))) for one in meta[UMIcol]]
   strOut = os.path.join(os.path.dirname(strMeta),"cellbender")
@@ -32,10 +34,10 @@ def cellbender(strMeta):
   print("CellBender process starts ...")
   for i in range(meta.shape[0]):
     oneName=meta[sampleNameCol][i]
-    if meta[dropletNcol][i] < meta[expCellNcol][i]:
+    if meta[CB_dropletNcol][i] < meta[CB_expCellNcol][i]:
       EXIT("Please make sure the %s column is larger than %s column for %s, details: \
         https://cellbender.readthedocs.io/en/latest/usage/index.html"%
-        (dropletNcol,expCellNcol,oneName))
+        (CB_dropletNcol,CB_expCellNcol,oneName))
     oneH5 = os.path.join(strH5out,oneName+".cellbender.h5")
     H5pair += [{'old_path':meta[UMIcol][i],
       'new_path':re.sub(".h5$","_filtered.h5",oneH5),
@@ -43,8 +45,8 @@ def cellbender(strMeta):
     if os.path.exists(oneH5):
       print("\t%s SKIP! CellBender H5 exists: \n\t\t%s"%(oneName,oneH5))
     else:
-      cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s --cuda --expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150"%(
-        meta[UMIcol][i],oneH5,meta[expCellNcol][i],meta[dropletNcol][i])
+      cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s --cuda --expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f"%(
+        meta[UMIcol][i],oneH5,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i])
   #cmds={"CB":'\n'.join(cmds.values())}
   if len(cmds)>0:
     scPipe.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':True},core=1,memG=300000)
@@ -101,7 +103,7 @@ def cellbenderInit(meta,H5pair,strOut):
   H5pair.index=H5pair[sampleNameCol]
   meta[UMIcol]=list(H5pair.loc[meta[sampleNameCol],'new_path'])
   meta[ANNcol]=list(H5pair.loc[meta[sampleNameCol],ANNcol])
-  meta.drop([expCellNcol,dropletNcol],axis=1,inplace=True,errors='ignore')
+  meta.drop([CB_expCellNcol,CB_dropletNcol,CB_count,CB_learningR],axis=1,inplace=True,errors='ignore')
   scPipe.initSave(meta,strOut,False)
 
 def main():

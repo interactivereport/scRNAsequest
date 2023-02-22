@@ -17,8 +17,10 @@ UMIcol="h5path"
 ANNcol="metapath"
 IntronExon="intron_exon_count_path"
 batchKey="library_id"
-expCellNcol="expected_cells"
-dropletNcol="droplets_included"
+CB_expCellNcol="expected_cells"
+CB_dropletNcol="droplets_included"
+CB_count="low-count-threshold"
+CB_learningR="learning-rate"
 Rmarkdown="Rmarkdown"
 beRaster=True
 qcDir="QC"
@@ -380,8 +382,10 @@ def initRawMeta(meta):
       oneExpN = oneMe['Estimated Number of Cells'] if 'Estimated Number of Cells' in oneMe.columns else '0'
     expCellN += [str(list(oneExpN)[0])]
   metaRaw[UMIcol] = h5raw
-  metaRaw[expCellNcol] = [int(i.replace(',','')) for i in expCellN]
-  metaRaw[dropletNcol] = [0]*meta.shape[0]
+  metaRaw[CB_expCellNcol] = [int(i.replace(',','')) for i in expCellN]
+  metaRaw[CB_dropletNcol] = [0]*meta.shape[0]
+  metaRaw[CB_count] = [15]*meta.shape[0]
+  metaRaw[CB_learningR] = [0.0001]*meta.shape[0]
   return metaRaw
 def findIntronExon(sNames,strInput):
   sFile = []
@@ -471,7 +475,7 @@ def initMsg(strConfig):
     print("DEG table (DEGinfo.csv) can be filled later and rerun the following command.")
     print("Please run the following command to use the pipeline for the input dataset.")
     print("\n===> scRMambient %s"%os.path.join(os.path.dirname(strConfig),"sampleMeta_raw.csv"))
-    print("Please make sure to update "+dropletNcol+" column in above'sampleMeta_raw.csv'")
+    print("Please make sure to update "+CB_dropletNcol+" column in above'sampleMeta_raw.csv'")
     print("\n===> scAnalyzer %s"%strConfig)
     MsgPower()
 
