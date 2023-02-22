@@ -11,8 +11,8 @@ UMIcol="h5path"
 ANNcol="metapath"
 CB_expCellNcol="expected_cells"
 CB_dropletNcol="droplets_included"
-CB_count="low-count-threshold"
-CB_learningR="learning-rate"
+CB_count="low_count_threshold"
+CB_learningR="learning_rate"
 sampleNameCol="Sample_Name"
 
 def EXIT(msg):
@@ -31,7 +31,7 @@ def cellbender(strMeta):
   
   H5pair=[]
   cmds = {}
-  print("CellBender process starts ...")
+  print("CellBender process starts ...\n\tFor more information, please visit https://cellbender.readthedocs.io/en/latest/usage/index.html")
   for i in range(meta.shape[0]):
     oneName=meta[sampleNameCol][i]
     if meta[CB_dropletNcol][i] < meta[CB_expCellNcol][i]:
