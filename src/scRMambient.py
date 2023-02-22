@@ -52,6 +52,7 @@ def cellbender(strMeta):
     scPipe.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':True},core=1,memG=300000)
   cellbenderQC(H5pair,strOut)
   cellbenderInit(meta,H5pair,strOut)
+  print("Before running the scAnalyzer, please check the log and pdf files in \n\t%s"%strH5out)
 
 def cellbenderQC(H5pair,strOut):
   print("Cellbender QC ...")
