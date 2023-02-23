@@ -233,10 +233,17 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
   qstateCol=4 # make sure the state of qstat is the 4th column (0-index)
   qJobCol=0 # make sure the job-id of qstat is the 0th column (0-index)
   # remove the job in wrong stats: Eqw and obtain the running and waiting job names
-  qs = run_cmd("squeue | grep '%s_'"%jID).stdout.decode("utf-8").split("\n")
-  qs = pd.DataFrame([[a.strip() for a in one.split(" ") if len(a.strip())>0 ] for one in qs if len(one)>6])
-  qs[0] = [a.split("_")[0] for a in qs[0]] 
-  runID = set(qs[~qs[qstateCol].isin(['S','ST'])][qJobCol])
+  qs = run_cmd("squeue")
+  if qs.returncode!=0:
+    return
+  qs = pd.DataFrame([[a.strip() for a in one.split(" ") if len(a.strip())>0 ] for one in qs.stdout.decode("utf-8").split("\n") if len(one)>6 and '%s_'%jID in one])
+  errID=[]
+  runID=[]
+  if qs.shape[0]>0:
+    qs[0] = [a.split("_")[0] for a in qs[0]]
+    errID = set(qs[qs[qstateCol].isin(['S','ST'])][qJobCol])
+    runID = set(qs[~qs[qstateCol].isin(['S','ST'])][qJobCol])
+
   for one in set(qs[qs[qstateCol].isin(['S','ST'])][qJobCol]):
     run_cmd("scancel %s"%one)
     runID.discard(one)
