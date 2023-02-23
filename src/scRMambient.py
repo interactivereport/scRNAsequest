@@ -47,7 +47,6 @@ def cellbender(strMeta):
     else:
       cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s --cuda --expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f"%(
         meta[UMIcol][i],oneH5,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i])
-  #cmds={"CB":'\n'.join(cmds.values())}
   if len(cmds)>0:
     scPipe.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':True},core=1,memG=300000)
   cellbenderQC(H5pair,strOut)

@@ -245,7 +245,7 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
     errID = set(qs[qs[qstateCol].isin(['S','ST'])][qJobCol])
     runID = set(qs[~qs[qstateCol].isin(['S','ST'])][qJobCol])
 
-  for one in set(qs[qs[qstateCol].isin(['S','ST'])][qJobCol]):
+  for one in errID:
     run_cmd("scancel %s"%one)
     runID.discard(one)
   jNames = []
@@ -263,7 +263,7 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
   finishedJob = []
   for one in cmds.keys():
     if not one in jNames:
-      strLog = glob.glob(os.path.join(strWD,"%s*log"%one))
+      strLog = glob.glob(os.path.join(strWD,"%s.log"%one))
       if len(strLog)==0 or not "DONE" in run_cmd("tail -n 1 %s"%natsorted(strLog,reverse=True)[0]).stdout.decode("utf-8"):
         cmdN[one] += 1
         if cmdN[one]>maxJobSubmitRepN:
@@ -274,7 +274,7 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
         resub[one] = cmds[one]
       else:
         print("\n\t===== %s ====="%one)
-        with open(strLog,"r") as f:
+        with open(strLog[0],"r") as f:
           print(f.read())
         print("\tFinished: %s"%one)
         finishedJob.append(one)
