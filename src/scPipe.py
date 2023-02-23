@@ -9,6 +9,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix
 from natsort import natsorted
+import barcodeRankPlot as BRP
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 sc.set_figure_params(vector_friendly=True, dpi_save=300)
@@ -393,7 +394,7 @@ def initRawMeta(meta):
   metaRaw[CB_dropletNcol] = [0]*meta.shape[0]
   metaRaw[CB_count] = [15]*meta.shape[0]
   metaRaw[CB_learningR] = [0.0001]*meta.shape[0]
-  return metaRaw
+  return metaRaw[metaRaw[UMIcol].str.len()>0]
 def findIntronExon(sNames,strInput):
   sFile = []
   n = 0
@@ -421,6 +422,7 @@ def initSave(meta,strInput,saveRaw=True):
   meta.to_csv(strMeta,index=False)
   if saveRaw:
     initRawMeta(meta).to_csv(re.sub(".csv$","_raw.csv",strMeta),index=False)
+    BRP.plot(re.sub(".csv$","_raw.csv",strMeta))
 
   # save empty DE csv table
   strDEG = os.path.join(strOut,"DEGinfo.csv")
