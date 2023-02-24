@@ -128,8 +128,7 @@ main <- function(){
   sysConfig <- yaml::read_yaml(paste0(dirname(selfPath),"/sys.yml"))
   if(file.exists(config$ref_name) && grepl("rds$",config$ref_name)){
     oneRef <- list(ref_file=config$ref_name)
-  }
-  else if(!is.null(config$ref_name) && config$ref_name%in%names(sysConfig)){
+  }else if(!is.null(config$ref_name) && config$ref_name%in%names(sysConfig)){
     oneRef <- sysConfig[[config$ref_name]]
   }else{
     stop(paste("unknown reference:",config$ref_name))
@@ -138,7 +137,7 @@ main <- function(){
   strOut <- args[3]
   if(length(args)>3) batchKey <- args[4]
   
-  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
+  source(paste0(dirname(selfPath),"/readH5ad.R"))
   processSCTref(strH5ad,batchKey,oneRef,strOut)
   
 }
