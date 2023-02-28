@@ -38,7 +38,9 @@ def plotOne(oneH5,sName):
   D.var_names_make_unique()
   sc.pp.filter_cells(D,min_counts=1)
   sc.pp.calculate_qc_metrics(D,inplace=True)
-  return go.Scatter(x=list(range(D.shape[0])), 
-               y=sorted(D.obs['n_genes_by_counts'],reverse=True),
-               name="",
-               showlegend=False)
+  x = list(range(1,D.shape[0]+1,1))
+  y = sorted(D.obs['n_genes_by_counts'],reverse=True)
+  if D.shape[0]>1000:
+    x=list(range(100,len(y)+1,100))
+    y=y[slice(99,len(y),100)]
+  return go.Scatter(x=x, y=y,name="",showlegend=False)
