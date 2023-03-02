@@ -25,7 +25,7 @@ def plot(strRawMeta):
   for i in range(meta.shape[0]):
     fig.add_trace(plotOne(meta[UMIcol][i],meta[sampleNameCol][i]),
       row=int(i/cN)+1,col=i%cN+1)
-  fig.update_xaxes(type='log',title_text="Cell Ranke")
+  fig.update_xaxes(type='log',title_text="Cell Rank")
   fig.update_yaxes(type='log',title_text="UMI Count")
   fig.update_layout(height=400*rN, width=1500, title_text="Barcode Rank Plot",template='plotly_white')
   fig.write_html("%s/BarcodeRankPlot.html"%os.path.dirname(strRawMeta),
