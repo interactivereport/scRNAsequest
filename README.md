@@ -8,7 +8,14 @@ Tutorial: https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.h
 
 ## 1. Installation
 
-First, we install scRNASequest by downloading the source code from GitHub:
+First, please make sure you have [Conda](https://docs.conda.io/en/latest/) installed, for example, [Anaconda](https://docs.anaconda.com/anaconda/install/index.html) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+
+```
+which conda
+# You conda path will be returned
+```
+
+Then, we install scRNASequest by downloading the source code from GitHub:
 
 ```
 git clone https://github.com/interactivereport/scRNASequest.git
