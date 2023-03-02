@@ -23,7 +23,7 @@ cd scRNASequest
 
 # Install scRNASequest conda environment
 # Please make sure you have conda installed before, and this step may take a while
-bash install
+bash install.sh
 
 # The .env will be created under the src directory
 ls ~/scRNASequest/src/.env
