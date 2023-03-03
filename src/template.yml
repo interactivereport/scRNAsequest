@@ -24,6 +24,7 @@ highGene.cutoff: 3000 # any cells with higher number of detected genes to be rem
 group: #if provided, a 10X QC box plot will be ploted in QC plot
 rasterizeFig: True # should image in pdf be rasterized
 
+reRunQC: True # if satisfied with the above setting, please set this to False to save time 
 runAnalysis: False
 newProcess: False
 methods: initMethods #SCT method (including log1p) is required expression normalization

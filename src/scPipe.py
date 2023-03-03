@@ -528,8 +528,12 @@ def checkConfig(config):
   beRaster = config["rasterizeFig"]
   return config
 def runQC(config,meta):
-  plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
   prefix = os.path.join(config["output"],tempDir,config["prj_name"])
+  reRunQC = True if config.get('reRunQC') is None else config.get('reRunQC')
+  if os.path.isfile("%s.h5ad"%prefix) and not reRunQC:
+    print("QC skip: %s.h5ad exists"%prefix)
+    return
+  plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
   setupDir(os.path.dirname(prefix))
   if not config["runAnalysis"] or not os.path.isfile("%s_raw.h5ad"%prefix) or config["newProcess"]:
     with warnings.catch_warnings():
@@ -567,7 +571,7 @@ def runQCmsg(config):
   print("\t3. After making sure the cell filtering setting (might several iteration), set 'runAnalysis: True' in the config file.")
   print("\t4. (Optional) consider to enable parallel by setting: 'parallel: sge' for CAMHPC or 'parallel: slurm' for EdgeHPC.")
   MsgPower()
-def plotSeqQC(meta,sID,strOut,grp=None):
+def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
   print("plotting sequence QC ...")
   global Rmarkdown
   Rmarkdown = os.path.join(strOut,Rmarkdown)
