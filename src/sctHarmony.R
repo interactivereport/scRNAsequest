@@ -17,6 +17,8 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   rm(X)
   gc()
   Dlist <- SplitObject(D,split.by=batch)
+  rm(D)
+  gc()
   message("\tSCT ...")
   Dlist <- sapply(Dlist,function(one){
     bID <- one@meta.data[1,batch]

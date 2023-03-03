@@ -50,6 +50,8 @@ processSCTref <- function(strH5ad,batch,config,strOut){
                           meta.data=getobs(strH5ad))
   Dmedian <- median(colSums(D@assays$RNA@counts))
   Dlist <- SplitObject(D,split.by=batch)
+  rm(D)
+  gc()
   Dlist <- sapply(Dlist,function(one,medianUMI){
     bID <- one@meta.data[1,batch]
     message("\t\tmapping ",bID)
@@ -97,7 +99,8 @@ processSCTref <- function(strH5ad,batch,config,strOut){
   }else{
     SCT <- merge(Dlist[[1]], y=Dlist[-1],merge.dr = names(Dlist[[1]]@reductions))
   }
-  
+  rm(Dlist)
+  gc()
   ## save layout and annotation (not iterative mapping yet!)
   meta <- SCT@meta.data[,grep("^predicted",colnames(SCT@meta.data)),drop=F]
   layout <- c()
