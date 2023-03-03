@@ -15,29 +15,29 @@ which conda
 # Your conda path will be returned
 ```
 
-Then, we install scRNASequest by downloading the source code from GitHub:
+Then, we choose a directory and install scRNASequest by downloading the source code from GitHub.
+
+The directory you choose here will be the future directory of this pipeline.
 
 ```
+# Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:
+cd ~
 git clone https://github.com/interactivereport/scRNASequest.git
 cd scRNASequest
 
 # Install scRNASequest conda environment
-# Please make sure you have conda installed before, and this step may take a while
+# Before running this, please make sure you have conda installed before
+# This step may take a while
 bash install.sh
 
 # The .env will be created under the src directory
 ls ~/scRNASequest/src/.env
 
-# Check the path of the current directory and add it to $PATH:
-CurrentDir=`pwd`
-export PATH="$CurrentDir:$PATH"
-
-# However, the above command only adds the scRNASequest directory to $PATH temporarily
-# To add it to the environment permanently, edit ~/.bash_profile or ~/.bashrc:
+# Then add the scRNASequest directory to the environment permanently by editing ~/.bash_profile or ~/.bashrc
 vim ~/.bash_profile
-# Add the full path of the scRNASequest directory to $PATH, for example, $HOME/scRNASequest
-PATH=$PATH:$HOME/scRNASequest
-# Source the file
+# Add the full path of the scRNASequest directory to $PATH. In our example, this will be: ~/scRNASequest
+PATH=$PATH:~/scRNASequest
+# Close the vim text editor and source the file
 source ~/.bash_profile
 
 #To verify the installation, type the main program name, and the manual page will show up:
