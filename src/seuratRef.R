@@ -51,7 +51,8 @@ processSCTref <- function(strH5ad,batch,config,strOut){
   Dmedian <- median(colSums(D@assays$RNA@counts))
   Dlist <- SplitObject(D,split.by=batch)
   Dlist <- sapply(Dlist,function(one,medianUMI){
-    message("\t\tmapping one ...")
+    bID <- one@meta.data[1,batch]
+    message("\t\tmapping ",bID)
     #after checking/testing, the below would return proper SCT nomralized data
     #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
     #https://github.com/satijalab/sctransform/issues/128
