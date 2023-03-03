@@ -27,15 +27,19 @@ cd scRNASequest
 
 # Install scRNASequest conda environment
 # Before running this, please make sure you have conda installed before
-# This step may take a while
+# This step will take a while, usually between 30min to 1h depending on the internet speed
+# Thank you for your patience
 bash install.sh
 
 # The .env will be created under the src directory
 ls ~/scRNASequest/src/.env
 
-# Then add the scRNASequest directory to the environment permanently by editing ~/.bash_profile or ~/.bashrc
+# Now the pipeline scripts under the scRNASequest folder can be used
+# Users can add the scRNASequest directory to the environment permanently
+# by editing ~/.bash_profile or ~/.bashrc
 vim ~/.bash_profile
-# Add the full path of the scRNASequest directory to $PATH. In our example, this will be: ~/scRNASequest
+# Add the full path of the scRNASequest directory to $PATH.
+# In our example, this will be: ~/scRNASequest
 PATH=$PATH:~/scRNASequest
 # Close the vim text editor and source the file
 source ~/.bash_profile
