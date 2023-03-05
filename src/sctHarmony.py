@@ -27,11 +27,14 @@ def main():
     config = yaml.safe_load(f)
 
   strCSV = "%s.csv"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
-  cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"sctHarmony.R"),
-                            strH5ad,strCSV,strConfig)
-  subprocess.run(cmd,shell=True,check=True)
-  if not os.path.isfile(strCSV):
-    msgError("".join(cmdR.stdout.decode("utf-8"))+"\nERROR: sctHarmony failed!")
+  if os.path.isfile(strCSV):
+    print("Using previous harmony results: %s"%strCSV)
+  else:
+    cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"sctHarmony.R"),
+                              strH5ad,strCSV,strConfig)
+    subprocess.run(cmd,shell=True,check=True)
+    if not os.path.isfile(strCSV):
+      msgError("".join(cmdR.stdout.decode("utf-8"))+"\nERROR: sctHarmony failed!")
 
   meta = pd.read_csv(strCSV,index_col=0,header=0)
   meta.index = list(meta.index)

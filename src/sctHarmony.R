@@ -64,7 +64,9 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
              D@meta.data[,c("seurat_clusters",batch)])
   colnames(X) <- gsub("UMAP","umap",gsub("harmony","pca",gsub("seurat_clusters","sctHarmony_cluster",colnames(X))))
   #save(X,D,file=gsub("csv$","RData",strOut))
+  message("Saving in R ...")
   data.table::fwrite(X,strOut)
+  message("complete in R")
 }
 
 main <- function(){

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 appEnvName="scRNAsequest"
 
+set -e
 condaPath=$(which conda)
 if [[ ${#condaPath} -lt 3 ]]; then
     echo "Missing conda"
