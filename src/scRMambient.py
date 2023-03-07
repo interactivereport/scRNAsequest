@@ -79,7 +79,7 @@ def cellbenderQC(H5pair,strOut):
         pdf,bw=0.05)
     cellN=pd.DataFrame(cellN)
     plotBar(cellN,sampleNameCol,'cell_number',pdf,"CellBender filter cell number")
-  pd.DataFrame(rmR).T.astype({'count':'int'}).to_csv("%s/cellbender_rmRate.csv"%strOut,float_format='%.4f')
+  pd.DataFrame(rmR).rename(index={'count':"cell_number"}).T.astype({'"cell_number"':'int'}).to_csv("%s/cellbender_rmRate.csv"%strOut,float_format='%.4f')
 
 def plotDensity(dat,sTitle,pdf,bw='scott'):
   f, (ax_T, ax_B) = plt.subplots(2, sharex=True,figsize=(6,4),gridspec_kw={"height_ratios": (.8, .2)})
