@@ -421,8 +421,13 @@ def initSave(meta,strInput,saveRaw=True):
   strMeta = os.path.join(strOut,"sampleMeta.csv")
   meta.to_csv(strMeta,index=False)
   if saveRaw:
-    initRawMeta(meta).to_csv(re.sub(".csv$","_raw.csv",strMeta),index=False)
-    BRP.plot(re.sub(".csv$","_raw.csv",strMeta))
+    rawMeta = initRawMeta(meta)
+    print("*** Total %d samples with %d raw h5"%(meta.shape[0],rawMeta.shape[0]))
+    if rawMeta.shape[0]>0:
+      rawMeta.to_csv(re.sub(".csv$","_raw.csv",strMeta),index=False)
+      BRP.plot(re.sub(".csv$","_raw.csv",strMeta))
+    else:
+      print("\tSkip raw h5: No raw h5 for any sample!")
 
   # save empty DE csv table
   strDEG = os.path.join(strOut,"DEGinfo.csv")
