@@ -1,8 +1,10 @@
-import scPipe, os, time, sys, re
+import scPipe, os, time, sys, re, shutil
 import pandas as pd
 import scanpy as sc
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from PyPDF2 import PdfWriter,PdfReader
+from PyPDF2.generic import AnnotationBuilder
 import seaborn as sns
 sns.set_style('whitegrid')
 
@@ -58,10 +60,40 @@ def cellbender(strMeta,nCore=0):
         meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i])
   if len(cmds)>0:
     scPipe.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':useGPU},core=nCore,memG=mem)
+  cellbenderMergeLog(H5pair,strOut)
+  cellbenderMergePdf(H5pair,strOut)
   cellbenderQC(H5pair,strOut)
   cellbenderInit(meta,H5pair,strOut)
   print("Before running the scAnalyzer, please check the log and pdf files in \n\t%s"%strH5out)
 
+def cellbenderMergeLog(H5pair,strOut):
+  print("\tmergeing log ...")
+  with open(os.path.join(strOut,"all.log"),'wb') as outf:
+    for one in H5pair:
+      strF = re.sub("_filtered.h5$",".log",one['new_path'])
+      if os.path.isfile(strF):
+        outf.write(("\n\n***** %s *****\n"%one[sampleNameCol]).encode('utf-8'))
+        with open(strF,'rb') as f:
+          shutil.copyfileobj(f,outf)
+def cellbenderMergePdf(H5pair,strOut):
+  print("\tmergeing pdf ...")
+  onePDF=PdfWriter()
+  pageN=0
+  for one in H5pair:
+    strF = re.sub("_filtered.h5$",".pdf",one['new_path'])
+    if os.path.isfile(strF):
+      onePDF.append_pages_from_reader(PdfReader(strF))
+      addText = AnnotationBuilder.free_text(
+        one[sampleNameCol],
+        rect=(200,800,350,820),
+        font_size="20pt",
+        font_color="00ff00",
+        background_color="cdcdcd"
+      )
+      onePDF.add_annotation(page_number=pageN, annotation=addText)
+      pageN+=1
+  with open(os.path.join(strOut,'all_cellbender.pdf'),"wb") as fp:
+    onePDF.write(fp)
 def cellbenderQC(H5pair,strOut):
   print("Cellbender QC ...")
   rmR={}
@@ -88,8 +120,7 @@ def cellbenderQC(H5pair,strOut):
         pdf,bw=0.05)
     cellN=pd.DataFrame(cellN)
     plotBar(cellN,sampleNameCol,'cell_number',pdf,"CellBender filter cell number")
-  pd.DataFrame(rmR).rename(index={'count':"cell_number"}).T.astype({'"cell_number"':'int'}).to_csv("%s/cellbender_rmRate.csv"%strOut,float_format='%.4f')
-
+  pd.DataFrame(rmR).rename(index={'count':"cell_number"}).T.astype({'cell_number':'int'}).to_csv("%s/cellbender_rmRate.csv"%strOut,float_format='%.4f')
 def plotDensity(dat,sTitle,pdf,bw='scott'):
   f, (ax_T, ax_B) = plt.subplots(2, sharex=True,figsize=(6,4),gridspec_kw={"height_ratios": (.8, .2)})
   sns.kdeplot(dat,bw_method=bw,ax=ax_T)
@@ -106,7 +137,6 @@ def plotBar(dat,x,y,pdf,sTitle=None):
     ax.set_title(sTitle)
   pdf.savefig(bbox_inches="tight")
   plt.close()
-
 def cellbenderInit(meta,H5pair,strOut):
   H5pair=pd.DataFrame(H5pair)
   H5pair.index=H5pair[sampleNameCol]
