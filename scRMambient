@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-#nohup scRMambient config.yml > QC.log 2>&1 &
+#nohup scRMambient meta.csv > QC.log 2>&1 &
 
-config=$1
 src="$(dirname $0)/src"
 
 if [[ ! -f "$src/.env" ]]; then
@@ -9,14 +8,34 @@ if [[ ! -f "$src/.env" ]]; then
   exit
 fi
 
-#condaEnv=$(head -n 1 $src/sys.yml)
-#condaEnv=${condaEnv:1}
+## parse the input arguments
+meta=$1
+shift
+nCore=0
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key=$1
+case $key in
+    -t|--thread)
+    nCore="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+
 set -e
-if [[ -f "$config" ]]; then
-  env -i config="$config" src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scRMambient.py $config 2>&1 | tee -a scRMambient.$(date +%Y%m%d).log'
+if [[ -f "$meta" ]]; then
+  env -i meta="$meta" nCore=$nCore src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scRMambient.py $meta $nCore 2>&1 | tee -a scRMambient.$(date +%Y%m%d).log'
 else
   echo "scRMambient: Remove background RNA"
   echo "https://cellbender.readthedocs.io/en/latest/usage/index.html"
   echo "Please provide the sample sheet contains raw expression h5 file path, expected cell number and droplet number (includes some empty ones)"
-  echo "Usage: scRMambient <sample meta csv>"
+  echo "Usage: scRMambient <sample meta csv> [-t 4]"
+  echo "-t: (option) the number of CPU threats cores [default GPU]"
 fi
