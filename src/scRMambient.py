@@ -59,6 +59,7 @@ def cellbender(strMeta,nCore=0):
       cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s %s--expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f"%(
         meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i])
   if len(cmds)>0:
+    print('\nrunning cellbeder for the following samples:\n%s'%'\n'.join([re.sub("^CB_","",i) for i in cmds.keys()]))
     scPipe.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':useGPU},core=nCore,memG=mem)
   cellbenderMergeLog(H5pair,strOut)
   cellbenderMergePdf(H5pair,strOut)
@@ -152,7 +153,7 @@ def main():
   scPipe.MsgInit()
   
   strMeta = sys.argv[1]
-  nCore = sys.argv[2]
+  nCore = int(sys.argv[2])
   if os.path.isfile(strMeta):
     cellbender(os.path.realpath(strMeta),nCore)
   else:
