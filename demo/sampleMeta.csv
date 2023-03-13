@@ -1,0 +1,3 @@
+Sample_Name,h5path,Sex
+RatFemaleCigarette,/demo/data/RatFemaleCigarette.filtered_feature_bc_matrix.h5,Female
+RatMaleCigarette,/demo/data/RatMaleCigarette.filtered_feature_bc_matrix.h5,Male

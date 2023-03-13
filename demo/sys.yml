@@ -1,0 +1,41 @@
+celldepotDir: /demo/cellxgenedir # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
+celldepotHttp: http://HOST:PORT/d/ # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
+refDir: /demo/ref # the absolute path to the seurat refrence folder if building reference is desired
+minCell: 50
+powerby: the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com] # the message at the end
+ref: # list refrence data could be used for Seurat Reference Mapping, one example is from azimuth list below
+- human_cortex
+human_cortex:
+  ref_file: https://zenodo.org/record/4546932/files/ref.Rds # local file absolute path can be provided as well
+  ref_link: https://azimuth.hubmapconsortium.org/references/
+  ref_src: single nuclei
+  ref_platform: SNARE-seq2
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - class
+  - cluster
+  - subclass
+  - cross_species_cluster
+methods:
+  SCT:
+  - SCT.py
+  - raw
+  Liger:
+  - liger.py
+  - raw
+  SeuratRef:
+  - seuratRef.py
+  - raw
+  SeuratRPCA:
+  - seuratRPCA.py
+  - raw
+  sctHarmony:
+  - sctHarmony.py
+  - raw
+# ..._raw.h5ad and user config file is passing to the above methods
+# .../<method name>/<proj_name>.h5ad is expected to becreated, such as .../SCT/...h5ad, .../Harmony/...h5ad
+# For kBET: please make sure the saved h5ad contains "X_umap" in obsm and "library_id" (batchKey) in obs
+# For silhouette: please make sure the saved h5ad contains "X_pca" in the obsm and "*louvain"/"*cluster" in the obs
