@@ -2,7 +2,7 @@
 prj_name: scRNASequest_demo #required # this is the name of the project which will be used as prefix of all file created
 prj_title: "A simple scRNASequest demo run using two data from GSE185538" # quote might be needed
 ref_name: /demo/ref/rat_cortex_ref.rds # choose one from scAnalyzer call without argument
-output: /demo/results #output path
+output: /demo #output path
 sample_name: Sample_Name # this is the column header in the following meta file which specify the sample name
 sample_meta: /demo/sampleMeta.csv
 gene_group:
