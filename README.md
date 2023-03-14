@@ -53,27 +53,30 @@ scAnalyzer
 
 #Output:
 =====
-Please contact admin to set the sys.yml in ~/scRNASequest.
+Please set the sys.yml in ~/scRNASequest.
 An Example is '~/scRNASequest/src/sys_example.yml'.
 =====
 ```
 
-This is because the sys.yml file is missing under the pipeline `src` directory (in our case, ~/scRNASequest/src/). 
+You got the above message because the `sys.yml` file is missing under the pipeline `src` directory (in our case, ~/scRNASequest/src/). 
 
-Please copy the sys_example.yml template there:
+Please copy the sys_example.yml template there first:
 
 ```
 cp ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml
 ```
 
-Then, fill in the following required items. Here I use examples under ~ directories since our pipeline directory has these directories created:
+Then, fill in the following required items. These directories will be used to host final results (.h5ad files) of the pipeline as well as the cell type reference files.
+
+Since we have `cellxgenedir` and `ref` directories created under the `demo` directory, we use them here:
 
 ```
 celldepotDir: ~/scRNASequest/demo/cellxgenedir.  # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
 refDir: ~/scRNASequest/demo/ref   # the absolute path to the seurat refrence folder if building reference is desired
 ```
 
-You may fill in the Cellxgene VIP server path after installing Cellxgene VIP later, but this is not required for the pipeline run.
+You may fill in the Cellxgene VIP server path after installing Cellxgene VIP later, but this is not required for running the pipeline. We leave this empty here:
+
 ```
 celldepotHttp: # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
 ```
@@ -102,7 +105,7 @@ The installation was successful if you see the above message.
 
 ### 1.2 Installation through Docker
 
-We provide a Docker image here: https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general. Users can pull this image to build a container, whcih have been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.
+We provide a Docker image here: https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general. Users can pull this image to build a container, which have been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.
 
 We also provide a [Dockerfile](https://github.com/interactivereport/scRNAsequest/blob/main/Dockerfile) if you would like to build the image from scratch using the `docker build` command, which takes ~30 min.
 
@@ -125,7 +128,7 @@ Then we pull the docker image. This step takes ~10 min.
 docker pull sunyumail93/scrnasequest
 ```
 
-Start the docker container. This command maps the `demo` directory under scRNASequest to `/demo` in the container:
+Initiate the docker container. This command uses -v to map the `demo` directory under scRNASequest to `/demo` in the container:
 
 ```
 docker run -v `pwd`/demo:/demo -d sunyumail93/scrnasequest
@@ -139,7 +142,7 @@ docker container ls
 CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS     NAMES
 4e0f3a40ce1d   sunyumail93/scrnasequest   "/bin/sh -c 'while t…"   54 seconds ago   Up 52 seconds             interesting_lewin
 ```
-The last column is the <container_name> of this container, and it will be used in the following steps.
+The last column is the <container_name>, and it will be used in the following steps.
 
 Now we launch the main program of this pipeline. In our example, <container_name> is interesting_lewin. Please substitute to yours:
 ```
@@ -147,18 +150,18 @@ docker exec -t -i <container_name> scAnalyzer
 
 #Output:
 =====
-Please contact admin to set the sys.yml in /home/scRNASequest/src.
+Please set the sys.yml in /home/scRNASequest/src.
 An Example is '/home/scRNASequest/src/sys_example.yml'.
 =====
 ```
 
-This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running this demo, and you can copy it to the pipeline src directory. However, you may change the information in the sys.yml later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that '/home/scRNASequest/src' directory is within this container, rather than in your file system.
+This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running the demo data (see section 2.2), and you can copy it to the pipeline src directory using the command below. It will work for futher analysis also. However, you may change the information in the sys.yml file later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that '/home/scRNASequest/src' directory is within this container, rather than in your file system.
 
 ```
 docker exec -t -i <container_name> cp /demo/sys.yml /home/scRNASequest/src/
 ```
 
-Now we run this command again, and we will see a message printed out, same as the one at the end of section 1.1.
+Now we run this command again, and we will see the pipeline message printed out, same as the one at the end of section 1.1:
 
 ```
 docker exec -t -i <container_name> scAnalyzer
@@ -168,11 +171,11 @@ docker exec -t -i <container_name> scAnalyzer
 
 We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
 
-This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, I used a stringent QC cutoff which eliminated many cells.
+This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, I used stringent QC cutoffs which eliminated many cells.
 
 ### 2.1 Demo run for Conda
 
-Necessady files to run this demo have been prepared under the `demo` directory. 
+Necessary files to run this demo have been prepared under the `demo` directory. 
 
 Continued from section 1.1, we assume that the pipeline was installed in: ~/scRNASequest.
 
@@ -197,11 +200,11 @@ After following section 1.2 to set up the pipeline, we are ready to run this dem
 docker exec -t -i <container_name> scAnalyzer /demo/config.yml
 ```
 
-## 2. Quick start
+## 3. Quick start
 
 This is a quick start guide to the pipeline. Please refer to the [**full tutorial**](https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.html) for more details.
 
-### 2.1 Data preparation
+### 3.1 Data preparation
 
 This pipeline accepts [**h5**](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices) or [**MTX**](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices) (an mtx file and associated barcodes file as well as a features file) containing cell count information [after running Cell Ranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/overview). You can also include the Cell Ranger QC results: DataPrefix.metrics_summary.csv, but this is optional. When you use downloaded data from NCBI/GEO, it may be necessary to rename the files.
 
@@ -245,7 +248,7 @@ GSE185538/
         └── matrix.mtx.gz
 ```
 
-### 2.2 Generate templates of configuration files
+### 3.2 Generate templates of configuration files
 
 Users can initiate the pipeline by running the `scAnalyzer` script with a working directory, where future outputs will be generated.
 
@@ -256,7 +259,7 @@ scAnalyzer ~/Working_dir
 
 The output files include: **config.yml** (a template config file), **DEGinfo.csv** (a template for differential expression analysis), and an empty **sampleMeta.csv** file. The config.yml and sampleMeta.csv are required to run the pipeline, and the DEGinfo.csv is only required for the DE analysis. You can leave DEGinfo.csv empty (by default, just a header line there) currently.
 
-### 2.3 Prepare the sampleMeta.csv file
+### 3.3 Prepare the sampleMeta.csv file
 
 The empty **sampleMeta.csv** file contains three preset column headers that can be recognized by the pipeline: 
 
@@ -284,7 +287,7 @@ MCtr,~/GSE185538/GSM5617893_snRNA_MCtr,Control,Male
 MEcig,~/GSE185538/GSM5617894_snRNA_MEcig,EcTreated,Male
 ```
 
-### 2.4 Prepare the config.yml file
+### 3.4 Prepare the config.yml file
 
 This **config.yml** file contains critical configuration parameters to run the pipeline. Please use the following template as an example to prepare this file: [**config.yml**](https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml).
 
@@ -296,7 +299,7 @@ Some tips:
 - **overwrite: False**: Set to True if you rerun the pipeline and want to overwrite the previous results.
 - **DEG_desp**: Path to the DE configuration file. If the file is empty, it won't perform any analysis. See section 3 about how to fill in this file.
 
-### 2.5 Start the pipeline
+### 3.5 Start the pipeline
 
 Now we have prepared the minimal files (Data files, sampleMeta.csv, and config.yml) to start the pipeline.
 
@@ -325,7 +328,7 @@ Check the Bookdown report and adjust the filtering parameters if needed. Repeat 
 scAnalyzer ~/Working_dir/config.yml
 ```
 
-## 3. Output
+## 4. Output
 
 After running the above steps, you will see a series of files generated. The main results include:
 
@@ -344,11 +347,11 @@ outputdir
     ...
 ```
 
-The `project_name.h5ad` file can be updated to [**Cellxgene VIP**](https://github.com/interactivereport/cellxgene_VIP) platform for visualization (See section 5).
+The `project_name.h5ad` file can be updated to [**Cellxgene VIP**](https://github.com/interactivereport/cellxgene_VIP) platform for visualization (See section 6).
 
 A full description of output files can be seen [here](https://github.com/interactivereport/scRNAsequest/blob/main/src/file.description.yml).
 
-## 4. Differential expression (DE) analysis
+## 5. Differential expression (DE) analysis
 
 The DE analysis in this pipeline is designed to compare **“alt”** and **“ref”** cells from **“group”** within each entry of **“cluster”** considering **“sample”** variations. The **“group”** variable should contain conditions to compare, such as Mutant v.s. Control. Thus, this pipeline is designed to loop through each cluster, and perform DE analysis between **“alt”** v.s. **“ref”**.
 
@@ -377,7 +380,7 @@ scAnalyzer ~/Working_dir/config.yml
 
 Please refer to the [full tutorial](https://interactivereport.github.io/scRNAsequest/tutorial/docs/differential-expression-de-analysis.html) for more details related to DE analysis.
 
-## 5. Cellxgene VIP visualization
+## 6. Cellxgene VIP visualization
 
 scRNASequest pipeline generates an h5ad file that is fully compatible with Cellxgene VIP for data analysis and visualization. 
 
@@ -391,7 +394,7 @@ The Cellxgene VIP window is close to the 'Cellxgene' logo on the top left corner
 
 Please refer to the [GitHub website](https://github.com/interactivereport/cellxgene_VIP) and [Online tutorial](https://interactivereport.github.io/cellxgene_VIP/tutorial/docs/) for more details related to the Cellxgene VIP platform.
 
-## 6. CellDepot data management and publishing
+## 7. CellDepot data management and publishing
 
 Please refer to this tutorial to manage and publish the project using CellDepot: https://interactivereport.github.io/CellDepot/bookdown/docs/.
 
