@@ -8,6 +8,10 @@ Tutorial: https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.h
 
 ## 1. Installation
 
+We provide two installation methods for scRNASequest. The first one uses [Conda](https://docs.conda.io/en/latest/) and the second one uses [Docker](https://www.docker.com/). We have tested both methods on Linux servers; however, if you are a Mac user, please use the Docker method.
+
+### 1.1 Installation using Conda
+
 First, please make sure you have [Conda](https://docs.conda.io/en/latest/) installed, or, [Anaconda](https://docs.anaconda.com/anaconda/install/index.html)/[Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed:
 
 ```
@@ -47,6 +51,25 @@ source ~/.bash_profile
 #To verify the installation, type the main program name, and the manual page will show up:
 scAnalyzer
 ```
+
+### 1.2 Installation through Docker
+
+We provide a [Dockerfile]
+
+
+
+## 2. Run a demo dataset
+
+We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)).
+
+### 2.1 Demo run for Conda
+
+
+
+### 2.2 Demo run for Docker
+
+
+
 
 ## 2. Quick start
 
