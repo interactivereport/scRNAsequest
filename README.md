@@ -50,13 +50,77 @@ source ~/.bash_profile
 
 #To verify the installation, type the main program name, and the manual page will show up:
 scAnalyzer
+
+#Output:
+=====
+Please contact admin to set the sys.yml in ~/scRNASequest.
+An Example is '~/src/sys_example.yml'.
+=====
 ```
 
 ### 1.2 Installation through Docker
 
-We provide a [Dockerfile]
+We provide a Docker image here: https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general. Users can pull this image to build a container, whcih have been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.
 
+We also provide a [Dockerfile](https://github.com/interactivereport/scRNAsequest/blob/main/Dockerfile) if you would like to build the image from scratch using the `docker build` command, which takes ~30 min.
 
+First, please make sure Docker has been installed and can be recognized through command line:
+
+```
+which docker
+# Your docker path will be returned
+```
+
+Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:
+```
+cd ~
+git clone https://github.com/interactivereport/scRNASequest.git
+cd scRNASequest
+```
+
+Then we pull the docker image. This step takes ~10 min.
+```
+docker pull sunyumail93/scrnasequest
+```
+
+Start the docker container. This command maps the `demo` directory under scRNASequest to `/demo` in the container:
+
+```
+docker run -v `pwd`/demo:/demo -d sunyumail93/scrnasequest
+```
+
+Verify your container:
+```
+docker container ls
+
+#Results:
+CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS     NAMES
+4e0f3a40ce1d   sunyumail93/scrnasequest   "/bin/sh -c 'while t…"   54 seconds ago   Up 52 seconds             interesting_lewin
+```
+The last column is the <container_name> of this container, and it will be used in the following steps.
+
+Now we launch the main program of this pipeline. In our example, <container_name> is interesting_lewin. Please substitute to yours:
+```
+docker exec -t -i <container_name> scAnalyzer
+
+#Output:
+=====
+Please contact admin to set the sys.yml in /home/scRNASequest/src.
+An Example is '/home/scRNASequest/src/sys_example.yml'.
+=====
+```
+
+This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running this demo, and you can copy it to the pipeline src directory. However, you may change the information in the sys.yml later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that '/home/scRNASequest/src' directory is within this container, rather than in your file system.
+
+```
+docker exec -t -i <container_name> cp /demo/sys.yml /home/scRNASequest/src
+```
+
+Now we are ready to run this demo. This demo run contains two downsampled snRNA-seq data from GSE185538, and will take ~15-20 minutes to finish.
+
+```
+docker exec -t -i <container_name> scAnalyzer /demo/config.yml
+```
 
 ## 2. Run a demo dataset
 
