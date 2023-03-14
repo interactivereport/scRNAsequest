@@ -57,7 +57,7 @@ def checkInstallSetting():
   strConfig = "%s/src/sys.yml"%(strPipePath)
   if not os.path.isfile(strConfig):
     print("=====\nPlease set the sys.yml in %s.\n"%strPipePath)
-    print("An Example is '%s/src/sys_example.yml.\n====="%strPipePath)
+    print("An example is '%s/src/sys_example.yml.\n====="%strPipePath)
     exit()
 
 ## parallel job management
