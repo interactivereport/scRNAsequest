@@ -54,9 +54,51 @@ scAnalyzer
 #Output:
 =====
 Please contact admin to set the sys.yml in ~/scRNASequest.
-An Example is '~/src/sys_example.yml'.
+An Example is '~/scRNASequest/src/sys_example.yml'.
 =====
 ```
+
+This is because the sys.yml file is required under the pipeline src directory (in our case, ~/scRNASequest/src/). 
+
+Please copy the sys_example.yml template:
+
+```
+cp ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml
+```
+
+Then, fill in the following required items. Here I use examples under ~ directories since our pipeline directory has these directories created:
+
+```
+celldepotDir: ~/scRNASequest/demo/cellxgenedir.  # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
+refDir: ~/scRNASequest/demo/ref   # the absolute path to the seurat refrence folder if building reference is desired
+```
+
+You may fill in the Cellxgene VIP server path after installing Cellxgene VIP later, but this is not required for the pipeline run.
+```
+celldepotHttp: # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
+```
+Then type the name of the main program, `scAnalyzer` again:
+
+```
+***** 2023-03-14 14:48:13 *****
+###########
+## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
+## Pipeline Path: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest
+## Pipeline Date: 2023-03-01 10:10:55 -0500
+## git HEAD: d067bfd6dc056597d046a45f3b3b927dd122dd82
+###########
+
+scAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file
+
+The config file will be generated automatically when a DNAnexus download folder is provided
+Available reference data:
+	human_cortex: more information @ https://azimuth.hubmapconsortium.org/references/
+If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.
+
+Powered by None
+------------
+```
+The installation was successful if you see the above message.
 
 ### 1.2 Installation through Docker
 
@@ -113,27 +155,47 @@ An Example is '/home/scRNASequest/src/sys_example.yml'.
 This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running this demo, and you can copy it to the pipeline src directory. However, you may change the information in the sys.yml later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that '/home/scRNASequest/src' directory is within this container, rather than in your file system.
 
 ```
-docker exec -t -i <container_name> cp /demo/sys.yml /home/scRNASequest/src
+docker exec -t -i <container_name> cp /demo/sys.yml /home/scRNASequest/src/
 ```
 
-Now we are ready to run this demo. This demo run contains two downsampled snRNA-seq data from GSE185538, and will take ~15-20 minutes to finish.
+Now we run this command again, and we will see a message printed out, same as the one at the end of section 1.1.
 
 ```
-docker exec -t -i <container_name> scAnalyzer /demo/config.yml
+docker exec -t -i <container_name> scAnalyzer
 ```
 
 ## 2. Run a demo dataset
 
-We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)).
+We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
+
+This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, I used a stringent QC cutoff which eliminated many cells.
 
 ### 2.1 Demo run for Conda
 
+Necessady files to run this demo have been prepared under the `demo` directory. 
 
+Continued from section 1.1, we assume that the pipeline was installed in: ~/scRNASequest.
+
+First, we set up the config file by modifying these lines to your directory, and other lines won't need to be changed:
+
+```
+...
+ref_name: ~/scRNASequest/demo/ref/rat_cortex_ref.rds   # choose one from scAnalyzer call without argument
+output: ~/scRNASequest/demo                            # output path   
+...
+sample_meta: ~/scRNASequest/demo/sampleMeta.csv
+...
+DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis
+...
+```
 
 ### 2.2 Demo run for Docker
 
+After following section 1.2 to set up the pipeline, we are ready to run this demo:
 
-
+```
+docker exec -t -i <container_name> scAnalyzer /demo/config.yml
+```
 
 ## 2. Quick start
 
