@@ -48,7 +48,7 @@ PATH=$PATH:~/scRNASequest
 # Close the vim text editor and source the file
 source ~/.bash_profile
 
-#To verify the installation, type the main program name, and the manual page will show up:
+#To verify the installation, type the main program name, and the following message will show up:
 scAnalyzer
 
 #Output:
@@ -58,9 +58,9 @@ An Example is '~/scRNASequest/src/sys_example.yml'.
 =====
 ```
 
-This is because the sys.yml file is required under the pipeline src directory (in our case, ~/scRNASequest/src/). 
+This is because the sys.yml file is missing under the pipeline `src` directory (in our case, ~/scRNASequest/src/). 
 
-Please copy the sys_example.yml template:
+Please copy the sys_example.yml template there:
 
 ```
 cp ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml
