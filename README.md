@@ -8,7 +8,7 @@ Tutorial: https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.h
 
 ## 1. Installation
 
-We provide two installation methods for scRNASequest. The first one uses [Conda](https://docs.conda.io/en/latest/) and the second one uses [Docker](https://www.docker.com/). We have tested both methods on Linux servers; however, if you are a Mac user, please use the Docker method.
+We provide two methods to install scRNASequest. The first one uses [Conda](https://docs.conda.io/en/latest/), and the second one uses [Docker](https://www.docker.com/). We have tested both methods on Linux servers; however, if you are a Mac user, please use the Docker method.
 
 ### 1.1 Installation using Conda
 
@@ -54,7 +54,7 @@ scAnalyzer
 #Output:
 =====
 Please set the sys.yml in ~/scRNASequest.
-An Example is '~/scRNASequest/src/sys_example.yml'.
+An example is '~/scRNASequest/src/sys_example.yml'.
 =====
 ```
 
@@ -72,14 +72,17 @@ Since we have `cellxgenedir` and `ref` directories created under the `demo` dire
 
 ```
 celldepotDir: ~/scRNASequest/demo/cellxgenedir.  # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
-refDir: ~/scRNASequest/demo/ref   # the absolute path to the seurat refrence folder if building reference is desired
+refDir: ~/scRNASequest/demo/ref   # the absolute path to the Seurat reference folder if building reference is desired
 ```
 
-You may fill in the Cellxgene VIP server path after installing Cellxgene VIP later, but this is not required for running the pipeline. We leave this empty here:
+You may fill in the Cellxgene VIP server path after installing Cellxgene VIP later, but this is not required for running the pipeline. We leave this empty here.
 
 ```
 celldepotHttp: # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
 ```
+
+You may change the information in the sys.yml file later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file).
+
 Then type the name of the main program, `scAnalyzer` again:
 
 ```
@@ -105,11 +108,11 @@ The installation was successful if you see the above message.
 
 ### 1.2 Installation through Docker
 
-We provide a Docker image here: https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general. Users can pull this image to build a container, which have been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.
+We provide a Docker image here: https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general. Users can pull this image to build a container, which has been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.
 
 We also provide a [Dockerfile](https://github.com/interactivereport/scRNAsequest/blob/main/Dockerfile) if you would like to build the image from scratch using the `docker build` command, which takes ~30 min.
 
-First, please make sure Docker has been installed and can be recognized through command line:
+First, please make sure Docker has been installed and can be recognized through the command line:
 
 ```
 which docker
@@ -133,6 +136,7 @@ Initiate the docker container. This command uses -v to map the `demo` directory 
 ```
 docker run -v `pwd`/demo:/demo -d sunyumail93/scrnasequest
 ```
+The above command prepars for the demo run in section 2.2. You can mount any directory containing your data to the Docker container using the syntax old_dir:container_dir.
 
 Verify your container:
 ```
@@ -151,11 +155,11 @@ docker exec -t -i <container_name> scAnalyzer
 #Output:
 =====
 Please set the sys.yml in /home/scRNASequest/src.
-An Example is '/home/scRNASequest/src/sys_example.yml'.
+An example is '/home/scRNASequest/src/sys_example.yml'.
 =====
 ```
 
-This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running the demo data (see section 2.2), and you can copy it to the pipeline src directory using the command below. It will work for futher analysis also. However, you may change the information in the sys.yml file later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that '/home/scRNASequest/src' directory is within this container, rather than in your file system.
+This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running the demo data (see section 2.2), and you can copy it to the pipeline src directory using the command below. It will work for future analysis also. However, you may change the information in the sys.yml file later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that both '/demo/sys.yml' and '/home/scRNASequest/src' directories are in the container, rather than in your file system.
 
 ```
 docker exec -t -i <container_name> cp /demo/sys.yml /home/scRNASequest/src/
@@ -171,15 +175,15 @@ docker exec -t -i <container_name> scAnalyzer
 
 We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
 
-This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, I used stringent QC cutoffs which eliminated many cells.
+This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, I used stringent QC cutoffs, which eliminated many cells.
 
 ### 2.1 Demo run for Conda
 
-Necessary files to run this demo have been prepared under the `demo` directory. 
+All necessary files for this demo have been prepared under the `demo` directory. 
 
-Continued from section 1.1, we assume that the pipeline was installed in: ~/scRNASequest.
+Continuing from section 1.1, we assume that the pipeline was installed in: ~/scRNASequest.
 
-First, we set up the config file by modifying these lines to your directory, and other lines won't need to be changed:
+First, we set up the config file by pointing these parameters to your directory, and other lines don't need to be changed:
 
 ```
 ...
