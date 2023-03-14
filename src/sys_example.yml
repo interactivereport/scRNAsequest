@@ -1,6 +1,6 @@
 celldepotDir: # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
 celldepotHttp: # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
-refDir: # the absolute path to the seurat refrence folder if building reference is desired
+refDir: # the absolute path to the Seurat reference folder if building reference is desired
 minCell: 50
 powerby: # the message at the end
 ref: # list refrence data could be used for Seurat Reference Mapping, one example is from azimuth list below
