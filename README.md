@@ -175,9 +175,9 @@ docker exec -t -i <container_name> scAnalyzer
 
 We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
 
-This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, we used stringent QC cutoffs, which eliminated many cells.
+This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, we used stringent QC cutoffs, which eliminated many cells. After running the scAnalyzer command, output files will be generated under the `demo` directory on your computer.
 
-Also, we provided config.yml, sampleMeta.csv and DEGinfo.csv files for this demo so you can run the pipeline directly. For your own dataset, you will need to follow section 3.2 to generate the template of these files first.
+Also, we provided config.yml, sampleMeta.csv and DEGinfo.csv files for running this demo so you can run the `scAnalyzer` command directly. For your own dataset, please follow section 3.2 to generate the template of these files first.
 
 ### 2.1 Demo run for Conda
 
