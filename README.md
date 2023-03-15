@@ -66,7 +66,7 @@ Please copy the sys_example.yml template there first:
 cp ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml
 ```
 
-Then, fill in the following required items. These directories will be used to host final results (.h5ad files) of the pipeline as well as the cell type reference files.
+Then, fill in the following required items. These directories will be used to host final results (.h5ad files) of the pipeline as well as the reference files for cell type label transfer.
 
 Since we have `cellxgenedir` and `ref` directories created under the `demo` directory, we use them here:
 
@@ -173,7 +173,7 @@ docker exec -t -i <container_name> scAnalyzer
 
 ## 2. Run a demo dataset
 
-We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
+We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including QC, data integration ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [Harmony](https://www.nature.com/articles/s41592-019-0619-0)), [Seurat reference mapping](https://satijalab.org/seurat/articles/integration_mapping.html), and evaluation of integration ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
 
 This demo run contains two downsampled snRNA-seq data from the original study, and will take ~15-20 minutes to finish. Please note that to speed up the run, we used stringent QC cutoffs, which eliminated many cells. After running the scAnalyzer command, output files will be generated under the `demo` directory on your computer.
 
@@ -185,7 +185,7 @@ All necessary files for this demo have been prepared under the `demo` directory.
 
 Continuing from section 1.1, we assume that the pipeline was installed in: ~/scRNASequest.
 
-First, we set up the config file by pointing these parameters to your directory, and other lines don't need to be changed:
+First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory, and other lines don't need to be changed:
 
 ```
 ...
@@ -196,6 +196,12 @@ sample_meta: ~/scRNASequest/demo/sampleMeta.csv
 ...
 DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis
 ...
+```
+
+Then execute the following command:
+
+```
+scAnalyzer ~/scRNASequest/demo/config.yml
 ```
 
 ### 2.2 Demo run for Docker
