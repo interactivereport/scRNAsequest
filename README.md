@@ -214,7 +214,7 @@ docker exec -t -i <container_name> scAnalyzer /demo/config.yml
 
 ## 3. Quick start
 
-This is a quick start guide to the pipeline. Please refer to the [**full tutorial**](https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.html) for more details.
+This is a quick start guide to run your own data using the pipeline. Please refer to the [**full tutorial**](https://interactivereport.github.io/scRNAsequest/tutorial/docs/index.html) for more details.
 
 ### 3.1 Data preparation
 
