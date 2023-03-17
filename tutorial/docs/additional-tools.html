@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 10 Additional tools | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -23,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-01-26" />
+<meta name="date" content="2023-03-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,6 @@
   
 <link rel="prev" href="celldepot-publishing.html"/>
 
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,8 +48,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -219,14 +218,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="additional-tools" class="section level1" number="10">
-<h1><span class="header-section-number">Chapter 10</span> Additional tools</h1>
-<div id="scdeg" class="section level2" number="10.1">
-<h2><span class="header-section-number">10.1</span> scDEG</h2>
+<div id="additional-tools" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">Chapter 10</span> Additional tools<a href="additional-tools.html#additional-tools" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="scdeg" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> scDEG<a href="additional-tools.html#scdeg" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><strong>scDEG</strong> is a standalone pipeline to run the differential expression (DE) analysis independently if you alreadly have integrated scRNA-seq data in h5ad format.</p>
 <p><strong>scDEG</strong> uses the same methods as in the scRNASequest pipeline to run DE analysis. It just provides a flexible way to apply the same analysis outside the pipeline.</p>
-<div id="initialize-scdeg" class="section level3" number="10.1.1">
-<h3><span class="header-section-number">10.1.1</span> Initialize scDEG</h3>
+<div id="initialize-scdeg" class="section level3 hasAnchor" number="10.1.1">
+<h3><span class="header-section-number">10.1.1</span> Initialize scDEG<a href="additional-tools.html#initialize-scdeg" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>scDEG requires three files:</p>
 <ul>
 <li><strong>UMI</strong>: Gene counts matrix, can be in rds or h5ad format.</li>
@@ -295,8 +294,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb52-13"><a href="additional-tools.html#cb52-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">perc_filter:</span> TRUE</span>
 <span id="cb52-14"><a href="additional-tools.html#cb52-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">## ...</span></span></code></pre></div>
 </div>
-<div id="run-de-analysis" class="section level3" number="10.1.2">
-<h3><span class="header-section-number">10.1.2</span> Run DE analysis</h3>
+<div id="run-de-analysis" class="section level3 hasAnchor" number="10.1.2">
+<h3><span class="header-section-number">10.1.2</span> Run DE analysis<a href="additional-tools.html#run-de-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Please refer the previous section <a href="differential-expression-de-analysis.html#differential-expression-de-analysis">Differential expression (DE) analysis</a> to prepare the DE comparison file.</p>
 <p>After preparing the config.yml and DEGinfo.csv files, run the pipeline:</p>
 <div class="sourceCode" id="cb53"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb53-1"><a href="additional-tools.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG /path/to/config.yml</span>
@@ -305,8 +304,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb53-4"><a href="additional-tools.html#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> ~/DEG_results/config.yml</span></code></pre></div>
 </div>
 </div>
-<div id="sctool" class="section level2" number="10.2">
-<h2><span class="header-section-number">10.2</span> scTool</h2>
+<div id="sctool" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> scTool<a href="additional-tools.html#sctool" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We also provide <strong>scTool</strong>, a user-friendly toolkit for modifying the h5ad file. With <strong>scTool</strong>, the user can:</p>
 <ul>
 <li><p>Remove existing annotations in the data, such as the cell type annotation.</p></li>
@@ -335,13 +334,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb54-19"><a href="additional-tools.html#cb54-19" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <p>We use this pubic E-MTAB-11115 data as an example:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
-<div id="remove-annotations" class="section level3" number="10.2.1">
-<h3><span class="header-section-number">10.2.1</span> Remove annotations</h3>
+<div id="remove-annotations" class="section level3 hasAnchor" number="10.2.1">
+<h3><span class="header-section-number">10.2.1</span> Remove annotations<a href="additional-tools.html#remove-annotations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb55-1"><a href="additional-tools.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location</span></code></pre></div>
 </div>
-<div id="add-annotations" class="section level3" number="10.2.2">
-<h3><span class="header-section-number">10.2.2</span> Add annotations</h3>
+<div id="add-annotations" class="section level3 hasAnchor" number="10.2.2">
+<h3><span class="header-section-number">10.2.2</span> Add annotations<a href="additional-tools.html#add-annotations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a <strong>manual.curated.labels</strong> cell type labeling to the original data:</p>
 <div class="sourceCode" id="cb56"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb56-1"><a href="additional-tools.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> head <span class="at">-2</span> manual.curated.labels.csv</span>
 <span id="cb56-2"><a href="additional-tools.html#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -352,8 +351,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb56-7"><a href="additional-tools.html#cb56-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb56-8"><a href="additional-tools.html#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> add ProjName_raw_added.h5ad manual.curated.labels.csv</span></code></pre></div>
 </div>
-<div id="export-gene-expressions" class="section level3" number="10.2.3">
-<h3><span class="header-section-number">10.2.3</span> Export gene expressions</h3>
+<div id="export-gene-expressions" class="section level3 hasAnchor" number="10.2.3">
+<h3><span class="header-section-number">10.2.3</span> Export gene expressions<a href="additional-tools.html#export-gene-expressions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.</p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="additional-tools.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> export ProjName_raw_added.h5ad App,Olig1,P2ry12</span></code></pre></div>
 <p>The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:</p>

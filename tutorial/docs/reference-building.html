@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 8 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -23,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-01-26" />
+<meta name="date" content="2023-03-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,6 @@
   
 <link rel="prev" href="differential-expression-de-analysis.html"/>
 <link rel="next" href="celldepot-publishing.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,8 +48,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -219,8 +218,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="reference-building" class="section level1" number="8">
-<h1><span class="header-section-number">Chapter 8</span> Reference building</h1>
+<div id="reference-building" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Reference building<a href="reference-building.html#reference-building" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.</p>
 <p>By running the following command, we can see the manual page of the reference generator, scRef:</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="reference-building.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
@@ -246,8 +245,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb38-21"><a href="reference-building.html#cb38-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-22"><a href="reference-building.html#cb38-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
 <span id="cb38-23"><a href="reference-building.html#cb38-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
-<div id="initialize-scref" class="section level2" number="8.1">
-<h2><span class="header-section-number">8.1</span> Initialize scRef</h2>
+<div id="initialize-scref" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Initialize scRef<a href="reference-building.html#initialize-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This pipeline can be initialized using an empty directory. for example, we first create a directory called ‘Reference_data’, then initiate the pipeline pointing to this directory:</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb39-1"><a href="reference-building.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/the/directory</span>
 <span id="cb39-2"><a href="reference-building.html#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -278,8 +277,8 @@ overwrite: False                        # Overwrite the existing scAnalyzer refe
 <p>For the input data, scRef can take either a h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have finished running a dataset using scAnalyzer, then you can directly use the Filename_raw_added.h5ad (not Filename_raw.h5ad file) as input, and attach its path to <strong>ref_h5ad_raw</strong>. Alternatively, you can provide an RDS file using <strong>ref_rds</strong>. Either providing <strong>ref_h5ad_raw</strong> or <strong>ref_rds</strong> would be sufficient to the pipeline.</p>
 <p>The <strong>ref_label</strong> is critical for label transfer if you would like to use this data as a reference in the future. It tells the program to use the cell type information in these (can be one more more) headers to perform label transfer. For a h5ad data, the easiest way is to open it using Cellxgene VIP, and identify the header that contains cell type labels, e.g. predicted.celltype1 in our case. For an RDS data, you could read it in R using the <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS" target="_blank">readRDS</a> function and identify the column names containing cell type annotation.</p>
 </div>
-<div id="submit-scref" class="section level2" number="8.2">
-<h2><span class="header-section-number">8.2</span> Submit scRef</h2>
+<div id="submit-scref" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> Submit scRef<a href="reference-building.html#submit-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After filling in the information in the <strong>refConfig.yml</strong> file, we are ready to submit the full pipeline and build the reference data for label transfer:</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="reference-building.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/Ref/config/file</span>
 <span id="cb41-2"><a href="reference-building.html#cb41-2" aria-hidden="true" tabindex="-1"></a></span>

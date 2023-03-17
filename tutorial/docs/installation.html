@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -23,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-01-26" />
+<meta name="date" content="2023-03-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,6 @@
   
 <link rel="prev" href="introduction.html"/>
 <link rel="next" href="data-preparation.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,8 +48,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -219,10 +218,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="installation" class="section level1" number="3">
-<h1><span class="header-section-number">Chapter 3</span> Installation</h1>
-<div id="install-scrnasequest" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Install scRNASequest</h2>
+<div id="installation" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Installation<a href="installation.html#installation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="install-scrnasequest" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Install scRNASequest<a href="installation.html#install-scrnasequest" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>First, we install the scRNASequest by downloading the scripts from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="installation.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/interactivereport/scRNAsequest.git</span>
 <span id="cb1-2"><a href="installation.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> scRNAsequest</span>
@@ -304,19 +303,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-22"><a href="installation.html#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
 <span id="cb3-23"><a href="installation.html#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 </div>
-<div id="configure-sys.yml-file" class="section level2" number="3.2">
-<h2><span class="header-section-number">3.2</span> Configure sys.yml file</h2>
+<div id="configure-sys.yml-file" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Configure sys.yml file<a href="installation.html#configure-sys.yml-file" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The <strong>sys.yml</strong> file contains critical information for the pipeline. You can use this <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/sys_example.yml" target="_blank">sys_example.yml</a> file as a template to prepare your file. The file name must be <strong>sys.yml</strong> and is located under the src/ directory of the pipeline.</p>
 </div>
-<div id="install-cellxgene_vip" class="section level2" number="3.3">
-<h2><span class="header-section-number">3.3</span> Install cellxgene_VIP</h2>
+<div id="install-cellxgene_vip" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Install cellxgene_VIP<a href="installation.html#install-cellxgene_vip" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The cellxgene_VIP platform can be used to visualize the h5ad file generated by the scRNASequest pipeline. This visualization step can be performed before the differential expression (DE) analysis to pinpoint meaningful clusters for downstream steps.</p>
 <p>Please follow the detailed instructions below to install cellxgene_VIP:</p>
 <p><a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">https://github.com/interactivereport/cellxgene_VIP</a></p>
 <p>However, it is up to the user how to visualize the h5ad file, and other tools with similar functions (<a href="https://scanpy.readthedocs.io/en/stable/" target="_blank">scanpy</a> or <a href="https://satijalab.org/seurat/" target="_blank">Seurat</a>) will also work.</p>
 </div>
-<div id="install-celldepot" class="section level2" number="3.4">
-<h2><span class="header-section-number">3.4</span> Install CellDepot</h2>
+<div id="install-celldepot" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Install CellDepot<a href="installation.html#install-celldepot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Please refer to the detailed instructions below to install CellDepot:</p>
 <p><a href="https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php" target="_blank">https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php</a></p>
 <p>The installation of CellDepot is also optional if the user only needs to analyze the data, without publishing it into the CellDepot database.</p>

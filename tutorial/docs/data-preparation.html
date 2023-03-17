@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 Data preparation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -23,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-01-26" />
+<meta name="date" content="2023-03-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,6 @@
   
 <link rel="prev" href="installation.html"/>
 <link rel="next" href="input-configuration.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,8 +48,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -219,11 +218,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="data-preparation" class="section level1" number="4">
-<h1><span class="header-section-number">Chapter 4</span> Data preparation</h1>
+<div id="data-preparation" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Data preparation<a href="data-preparation.html#data-preparation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>scRNASequest pipeline is compatible with different single-cell experiment outputs, including the <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices" target="_blank"><strong>10X MEX format</strong></a> and the <a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices" target="_blank"><strong>10X h5 format</strong></a> from Cell Ranger. The user may need to manually separate the annotation file, so that no cell filtering was performed. In this chapter, we will walk through how to prepare the data before running the pipeline.</p>
-<div id="public-data-in-h5-format" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Public data in h5 format</h2>
+<div id="public-data-in-h5-format" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Public data in h5 format<a href="data-preparation.html#public-data-in-h5-format" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Here, we first present an example of the data processing steps using a public EMBL EBI dataset: <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a>. The nine processed zip files were downloaded and unzipped.</p>
 <p>There are total 6 data, with 6 corresponding *raw_feature_bc_matrix.h5 files. These files are required by the pipeline:</p>
 <pre><code>#h5 matrix files
@@ -256,8 +255,8 @@ AAACCCAAGGGCAGTT-1,5705STDY8058280,Ext_L56,24_Ext_L56</code></pre>
 5705STDY8058285.metrics_summary.csv</code></pre>
 <p><strong>!!! Important</strong> Since we don’t provide the path of these metrics_summary.csv files to the pipeline, their prefix <strong>SampleName</strong> must be consistent with the <strong>Sample_Name</strong> column in the sample meta file (See section 5.2), so that the pipeline can recognize them automatically. You can certainly rename the files and the corresponding <strong>SampleName</strong> column if you would like to change the data names and how they appear in the final results. Also, for the metrics_summary.csv file names, the concatenator between the <strong>Sample_Name</strong> and “metrics_summary.csv” must be “.” so that the pipeline can read them automatically. This follows the naming criteria of Cell Ranger.</p>
 </div>
-<div id="public-data-in-10x-mex-format" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Public data in 10X MEX format</h2>
+<div id="public-data-in-10x-mex-format" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Public data in 10X MEX format<a href="data-preparation.html#public-data-in-10x-mex-format" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Another popular format for single-cell RNA-seq is the <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices" target="_blank"><strong>MEX format</strong></a>, with an <strong>mtx file</strong> and associated <strong>barcodes</strong> file as well as a <strong>features</strong> file. Here, we use a public dataset from NCBI/GEO: <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538" target="_blank">GSE185538</a> to walk through the procedures for pipeline setup.</p>
 <p>There are total 4 single-nucleus RNA-seq data, and all the processed data can be downloaded from the Supplementary file section as a tarball: GSE185538_RAW.tar:</p>
 <pre><code>#Untar the file
@@ -296,8 +295,8 @@ $ ls -l  #Only show the MTX-related files
         ├── features.tsv.gz
         └── matrix.mtx.gz</code></pre>
 </div>
-<div id="self-prepared-files" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Self-prepared files</h2>
+<div id="self-prepared-files" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Self-prepared files<a href="data-preparation.html#self-prepared-files" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>If you have raw data in <a href="https://support.illumina.com/bulletins/2016/04/fastq-files-explained.html" target="_blank">FASTQ format</a>, please process them using the Cell Ranger pipeline to generate the raw_feature_bc_matrix.h5 and metrics_summary.csv files. Please visit <a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count" target="_blank">Cell Ranger website here</a> for more details about the outputs, in the “Output files” section.</p>
 <p>In short, Cell Ranger outputs <strong>filtered_feature_bc_matrix.h5</strong> (cells after filtering, recommended to use), <strong>raw_feature_bc_matrix.h5</strong> (without filtering), and two folders for MEX format output: <strong>filtered_feature_bc_matrix</strong>, <strong>raw_feature_bc_matrix</strong>. In addition, Cell Ranger also has a <strong>metrics_summary.csv</strong> file generated, which can be provided to scRNASequest. Please re-organize, and if necessary, rename the Cell Ranger output files into the following file structures before running scRNASequest.</p>
 <p>Below is the file hierarchy for h5 input files (metrics_summary.csv files are suggested to be included, but not required; If cell type classification annotation.csv files are available, it would be better to include them):</p>

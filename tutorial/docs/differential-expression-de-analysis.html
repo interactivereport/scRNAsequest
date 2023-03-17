@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -23,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-01-26" />
+<meta name="date" content="2023-03-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,6 @@
   
 <link rel="prev" href="running-the-pipeline.html"/>
 <link rel="next" href="reference-building.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,8 +48,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -219,8 +218,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="differential-expression-de-analysis" class="section level1" number="7">
-<h1><span class="header-section-number">Chapter 7</span> Differential expression (DE) analysis</h1>
+<div id="differential-expression-de-analysis" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Differential expression (DE) analysis<a href="differential-expression-de-analysis.html#differential-expression-de-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Another critical function of the scRNASequest pipeline is the <strong>Differential expression (DE)</strong> analysis. By running the steps in Section 6: <a href="running-the-pipeline.html#running-the-pipeline">Running the pipeline</a>, we have performed quality control of the data, and generated an integrated dataset.</p>
 <p>Before running the DE analysis, the <strong>DEGinfo.csv</strong> comparison file needs to be prepared:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png" /></a></p>
@@ -234,8 +233,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:</p>
 <p>We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
-<div id="example-1" class="section level2" number="7.1">
-<h2><span class="header-section-number">7.1</span> Example 1</h2>
+<div id="example-1" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Example 1<a href="differential-expression-de-analysis.html#example-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In the first example, we would like to run DE analysis between <strong>‘Female’</strong> and <strong>‘Male’</strong> for each cluster annotated by <strong>predicted.celltype1</strong>. In the first column, we input the header name <strong>library_id</strong>, which annotates the data sources. Then we add <strong>predicted.celltype1</strong> in the <em>cluster</em> column, which allows the pipeline to loop through each cluster in <strong>predicted.celltype1</strong>. The <em>group</em> column contains the header name storing the comparison groups, and here we use the <strong>Sex</strong> annotation. Each time, the pipeline can only compare two conditions, such as <strong>‘Female’</strong> and <strong>‘Male’</strong>. If the <em>group</em> column contains more groups, please list them in multiple lines in the DEGinfo.csv file.</p>
 <p>We can also add <em>covars</em> if needed, but this is optional.</p>
 <p>The default DE analysis is performed by <a href="https://www.nature.com/articles/s42003-021-02146-6" target="_blank"><strong>NEBULA</strong></a>. As for the model, NEBULA provides two choices: <strong>HL</strong> and <strong>LN</strong>. For more details about them, please refer to the <a href="https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl" target="_blank">NEBULA manual</a>.</p>
@@ -641,8 +640,8 @@ NBGMM (HL)
 <p>An example of the DE png file (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.png):</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png" /></a></p>
 </div>
-<div id="example-2" class="section level2" number="7.2">
-<h2><span class="header-section-number">7.2</span> Example 2</h2>
+<div id="example-2" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Example 2<a href="differential-expression-de-analysis.html#example-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In the second example, we are going to show how to perform DE analysis <strong>between two cell types</strong>. To achieve this, we added one artificial column (called ‘SelectAll’) in the <strong>sampleMeta.csv</strong> file, and assigned the same values (‘Everything’) to all the data:</p>
 <pre><code>Sample_Name,h5path,Sex,SelectAll
 5705STDY8058280,/home/ysun4/testSinglecell/ExternalData/5705STDY8058280_filtered_feature_bc_matrix.h5,Female,Everything

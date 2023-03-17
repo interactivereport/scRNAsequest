@@ -6,11 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
-  
   
   
   
@@ -23,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-01-26" />
+<meta name="date" content="2023-03-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,6 @@
   
 <link rel="prev" href="input-configuration.html"/>
 <link rel="next" href="differential-expression-de-analysis.html"/>
-<script src="libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -50,8 +48,9 @@
 
 
 
-<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -219,11 +218,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="running-the-pipeline" class="section level1" number="6">
-<h1><span class="header-section-number">Chapter 6</span> Running the pipeline</h1>
+<div id="running-the-pipeline" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Running the pipeline<a href="running-the-pipeline.html#running-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.</p>
-<div id="initial-scanalyzer-run" class="section level2" number="6.1">
-<h2><span class="header-section-number">6.1</span> Initial scAnalyzer run</h2>
+<div id="initial-scanalyzer-run" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Initial scAnalyzer run<a href="running-the-pipeline.html#initial-scanalyzer-run" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The initial scAnalyzer run intends to test the default filtering parameters on the single-cell RNA-seq data. We suggest the following settings in the config.yml file to activate the filtering step, but pause the pipeline from additional analysis (such as data integration, harmonization, etc.):</p>
 <pre><code># Change the following settings in the config.yml file:
 filter_step: True
@@ -245,8 +244,8 @@ runAnalysis: False</code></pre>
     ├── postfilter.QC.pdf              #QC plots after filtering
     └── Rmarkdown/                     #Source files for the Bookdown report</code></pre>
 </div>
-<div id="review-the-bookdown-report" class="section level2" number="6.2">
-<h2><span class="header-section-number">6.2</span> Review the bookdown report</h2>
+<div id="review-the-bookdown-report" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Review the bookdown report<a href="running-the-pipeline.html#review-the-bookdown-report" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After the initial scAnalyzer run, a bookdown report, named <strong>ProjName_BookdownReport.tar.gz</strong> will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:</p>
 <pre><code># Cell filtering parameters in the config.yml file:
 gene_group:
@@ -267,8 +266,8 @@ highGene.cutoff: 3000    #any cells with a higher number of detected genes to be
 <p>The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.</p>
 <p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/bookdown/index.html" target="_blank">E-MTAB-11115 bookdown</a></p>
 </div>
-<div id="generate-a-slide-deck" class="section level2" number="6.3">
-<h2><span class="header-section-number">6.3</span> Generate a slide deck</h2>
+<div id="generate-a-slide-deck" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> Generate a slide deck<a href="running-the-pipeline.html#generate-a-slide-deck" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This is an optional step if you have already reviewed the Bookdown report. This slide deck is another way to organize and present the same results.</p>
 <p>The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the <strong>Slidedeck.Rmd</strong> file under the /src folder and follow the steps below:</p>
 <pre><code># create a new directory inside the project, and link the existed files and folder:
@@ -289,8 +288,8 @@ Rscript -e &#39;rmarkdown::render(&quot;Slidedeck.Rmd&quot;, output_file=&quot;O
 <p>Please download the whole Slidedeck and open the <strong>Output.html</strong> file in a web browser.</p>
 <p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html" target="_blank">E-MTAB-11115 slidedeck</a></p>
 </div>
-<div id="run-the-full-analysis" class="section level2" number="6.4">
-<h2><span class="header-section-number">6.4</span> Run the full analysis</h2>
+<div id="run-the-full-analysis" class="section level2 hasAnchor" number="6.4">
+<h2><span class="header-section-number">6.4</span> Run the full analysis<a href="running-the-pipeline.html#run-the-full-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After the filtering step is done, we are ready to turn on the <em>runAnalysis</em> parameter and run the full pipeline:</p>
 <pre><code># Change the following setting in the config.yml file:
 runAnalysis: True
@@ -307,8 +306,8 @@ overwrite: True    #Overwrite the previous results if we run this again, for exa
 <span id="cb28-4"><a href="running-the-pipeline.html#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483" target="_blank">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
 </div>
-<div id="visualize-the-harmonized-results" class="section level2" number="6.5">
-<h2><span class="header-section-number">6.5</span> Visualize the harmonized results</h2>
+<div id="visualize-the-harmonized-results" class="section level2 hasAnchor" number="6.5">
+<h2><span class="header-section-number">6.5</span> Visualize the harmonized results<a href="running-the-pipeline.html#visualize-the-harmonized-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After running the pipeline, you will see the following files in the working directory. Each harmonization method (Harmony, Seurat, Liger) will also generate corresponding files.</p>
 <pre><code>outputdir
     # Input files
