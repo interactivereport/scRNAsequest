@@ -189,6 +189,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="9.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>9.1</b> Initialize scRef</a></li>
 <li class="chapter" data-level="9.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>9.2</b> Submit scRef</a></li>
+<li class="chapter" data-level="9.3" data-path="reference-building.html"><a href="reference-building.html#demo-scref"><i class="fa fa-check"></i><b>9.3</b> Demo scRef</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>10</b> CellDepot publishing</a>
 <ul>
@@ -234,7 +235,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>ls ~/scRNAsequest/src/.env</code></pre>
 <div id="generate-template-files" class="section level2 hasAnchor" number="6.1">
 <h2><span class="header-section-number">6.1</span> Generate template files<a href="input-configuration.html#generate-template-files" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Now we are ready to run the pipeline. Since the main pipeline script <code>scAnalyzer</code> requires a config.yml file, a sample meta information file, and a DEGinfo.csv file for DE analysis (can be filled in later), we can first generate templates for these files.</p>
+<p>Now we are ready to run the pipeline. Since the main pipeline script <code>scAnalyzer</code> requires a <strong>config.yml</strong> file, a sample metadata file <strong>sampleMeta.csv</strong>, and a <strong>DEGinfo.csv</strong> file for DE analysis (can be filled in later), we can first generate templates for these files.</p>
 <p>We run <code>scAnalyzer</code> by providing a path to our working directory. This can be any directory on you system:</p>
 <pre><code>scAnalyzer /path/to/working/dir</code></pre>
 <p>Then you will see the following files generate:</p>

@@ -189,6 +189,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="9.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>9.1</b> Initialize scRef</a></li>
 <li class="chapter" data-level="9.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>9.2</b> Submit scRef</a></li>
+<li class="chapter" data-level="9.3" data-path="reference-building.html"><a href="reference-building.html#demo-scref"><i class="fa fa-check"></i><b>9.3</b> Demo scRef</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>10</b> CellDepot publishing</a>
 <ul>
@@ -230,7 +231,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="differential-expression-de-analysis" class="section level1 hasAnchor" number="8">
 <h1><span class="header-section-number">Chapter 8</span> Differential expression (DE) analysis<a href="differential-expression-de-analysis.html#differential-expression-de-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Another critical function of the scRNASequest pipeline is the <strong>Differential expression (DE)</strong> analysis. By running the steps in Section 6: <a href="running-the-pipeline.html#running-the-pipeline">Running the pipeline</a>, we have performed quality control of the data, and generated an integrated dataset.</p>
+<p>Another critical function of the scRNASequest pipeline is the <strong>Differential expression (DE)</strong> analysis. By running the steps in Section: <a href="running-the-pipeline.html#running-the-pipeline">Running the pipeline</a>, we have performed quality control of the data, and generated an integrated dataset.</p>
 <p>Before running the DE analysis, the <strong>DEGinfo.csv</strong> comparison file needs to be prepared:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png" /></a></p>
 <p>The first column, <strong>comparisonName</strong> is designed to store the name of the comparison. These names will be used to create separate folders under the result directory. In the DEG comparison file above, <strong>“sample”</strong>, <strong>“cluster”</strong>, <strong>“group”</strong> and <strong>“covars”</strong> are the annotation headers, and <strong>“alt”</strong> and <strong>“ref”</strong> are the two entries from <strong>“group”</strong> column. The <strong>“covars”</strong> is optional and can be empty.</p>
@@ -270,16 +271,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.png
         ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.QC.pdf
         ...
-        ├── env.rds
-    ├── ProjName_scDEG.cmd.json
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_astrocytes_Female_Male.error  #Standard error messages
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_meninges_schwann_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_microglia_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_discarded_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_endo_vascular_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_neurons_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_OPC_Female_Male.error
-    └── ProjName_scDEG.db</code></pre>
+        └── env.rds</code></pre>
 <p>An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):</p>
 <p>In the table below, the most significant gene is <a href="https://www.ncbi.nlm.nih.gov/gene/213742" target="_blank">Xist</a>, a well-known X-chromosome gene highly expressed in female.</p>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">

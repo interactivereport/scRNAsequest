@@ -128,7 +128,7 @@ scAnalyzer Path/to/a/config/file
 scAnalyzer ~/E-MTAB-11115/processing/config.yml
 ```
 
-This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"} data (final cell number: 29511) to finish. For a larger dataset, such as [GSE205483](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483){target="_blank"} (final cell number: 111,011), the full pipeline took ~7 hours.
+This step will be time-consuming, and it took ~1 hour for the [E-MTAB-11115](https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/){target="_blank"} data (final cell number: 29,511) to finish. For a larger dataset with 110k cells we have tested, the full pipeline took ~7 hours.
 
 ## Visualize the harmonized results
 
@@ -137,65 +137,66 @@ After running the pipeline, you will see the following files in the working dire
 ```
 outputdir
     # Input files
-        ├── config.yml:     The analysis config file specify the scAnalyzer parameters
-        ├── sampleMeta.csv: List all sample information including expression matrix (and sample/cell level meta information)
-        └── DEGinfo.csv:    Define the sc DEG (between phenotypes within a cluster annotatino)
-    # Log files:
-        ├── config.yml.[date].log: All stdout/stderr will be recorded in this dated log file
-        └── [Software].error       Standard error files of multiple software, including: 
-                                        Harmony, Liger, SeuratRPCA, SeuratRef, SCT, sctHarmony, silhouette, 
-    # QC files:
-        ├── sequencingQC.csv:  Merged all sequence QC files from individual samples if available
-        ├── sequencingQC.pdf:  Plots of sequence QC if they are available
-        ├── prefilter.QC.pdf:  Initial data QC plots without filtering
-        └── postfilter.QC.pdf: Data QC plots after filtering
-    # Initial files:
-        ├── [prj_name]_raw_prefilter.h5ad: The internal temporary raw counts created/merged directly from sample before filtering 
-        └── [prj_name]_raw.h5ad:           The internal temporary raw counts after the cell/gene filtering
-    # SCT:
-        ├── [prj_name]_SCT.h5:     The sparse matrix contains SCT expression values
-        ├── [prj_name]_SCT.h5.rds: The Seurat object contains counts (RNA assay) and 
-                                      SCT expression (SCT assay) along with original meta information from SampleMeta file
-        └── [prj_name]_SCT.h5ad:   The SCT expression, along with PCA, tSNE, UMAP reduction layout, will be 
-                                      merged into [prj_name].h5ad
-    # Seurat_integration:
-        ├── [prj_name]_seurat_r2py_integrated.csv.gz:       Expression matrix from seurat integration assay of data entry 
-        ├── [prj_name]_seurat_r2py_integrated.genes.csv.gz: Variable genes from integration assay
-        └── [prj_name]_Seurat.h5ad:                         The seurat integration with reduction embedding and clustering, 
-                                      will be merged into [prj_name].h5ad
-    # Seurat_RPCA_integration:
-        ├── [prj_name]_seurat_rpca.csv.gz: The reuction embedding and clustering results from seurat RPCA integration 
-        └── [prj_name]_SeuratRPCA.h5ad:    The seurat RPCA integration with reduction embedding and clustering, 
-                                      will be merged into [prj_name].h5ad
-    # Seurat_refMapping:
-        ├── [prj_name]_seuratRef.csv:  The reuction embedding and label transfer results from seurat RPCA integration 
-        └── [prj_name]_SeuratRef.h5ad: The seurat reference mapping results with reduction embedding, will be merged into [prj_name].h5ad
-    # Harmony:
-        ├── [prj_name]_harmony_py2r_batch.Rdata: The library/batch information of each cell
-        ├── [prj_name]_harmony_py2r_pca.Rdata:   The PCA of each cell
-        ├── [prj_name]_harmony_r2py.Rdata:       The harmony PCA results
-        └── [prj_name]_Harmony.h5ad:             The harmony integration with reduction embedding and clustering, 
-                                      will be merged into [prj_name].h5ad
-    # Liger:
-        ├── [prj_name]_liger_hvg.csv:  High variable gene list
-        ├── [prj_name]_liger.csv":     The liger integration embedding and cluster
-        └── [prj_name]_Liger.h5ad":    The liger integration with reduction embedding and clustering, 
-                                          will be merged into [prj_name].h5ad
-    # scDEG (if you ran the DEG step):
-        ├── [prj_name]_scDEG.cmd.json: The scDEG cmd jobs, if scDEG jobs defined in DEGinfo.csv are available
-        ├── [prj_name]_scDEG":         The folder contains all scDEG jobs, each sub folder contains scDEG csv files from one entry in DEGinfo.csv
-        └── [comparison].error         Standard error files for all comparison groups
-    # Other output:
-        ├── [prj_name].h5ad:           The final h5ad file which is used for cellxgene VIP load (will be copied into celldepot folder)
-        ├── [prj_name].db:             The final h5ad file which is used for cellxgene VIP load (will be copied into celldepot folder)
+        ├── config.yml:      The analysis config file specify the scAnalyzer parameters
+        ├── sampleMeta.csv:  List all sample information including expression matrix (and sample/cell level meta information)
+        └── DEGinfo.csv:     Define the sc DEG (between phenotypes within a cluster annotatino)
+    # Main results under the output dir:
+        ├── [prj_name].h5ad:           The final h5ad file which is used for cellxgene VIP loading (will be copied into the celldepotDir folder set by sys.yml)
+        ├── [prj_name].db:             The final db file which is used for cellxgene VIP loading (will be copied into the celldepotDir folder set by sys.yml)
+        ├── [prj_name].h5seurat:       The h5seurat file of the final results
         └── [prj_name]_raw_added.h5ad: The h5ad file contains raw counts in X along with all annotation and embeding 
                                           (will be copied into celldepot folder)
-        ├── [prj_name]_kBET_umap_k0_100.pdf": The kBET evaluation plot for all integration methods
-        └── [prj_name]_Silhouette_boxplot_pc50.pdf": The Silhouette evaluation plot for all integration methods
-    # Rbookdown:
+    # Rmarkdown:
         ├── Rmarkdown:                 The folder contains png files for R bookdown
         ├── [prj_name]_BookdownReport.tar.gz: R bookdown document tarball for downloading and sharing
         └── BookdownReport:            The folder contains R bookdown reports
+    # Log file:
+        └── config.yml.[date].log:  All stdout/stderr will be recorded in this dated log file
+        └── [Software].error:       Standard error files of multiple software, including: 
+                                        Harmony, Liger, SeuratRPCA, SeuratRef, SCT, sctHarmony, silhouette, etc.
+                                    These files will be under the log/ directory if you did not run in the parallel mode
+                                    These files will be under the j[numeric] folder if you ran the pipeline in the parallel mode
+    # QC files under the QC/ folder:
+        ├── sequencingQC.csv:   Merged all sequence QC files from individual samples if available
+        ├── sequencingQC.pdf:   Plots of sequence QC if they are available
+        ├── prefilter.QC.pdf:   Initial data QC plots without filtering
+        └── postfilter.QC.pdf:  Data QC plots after filtering
+    # evaluation folder for harmonization evaluation:
+        ├── [prj_name]_kBET_umap_k0_100.pdf          The kBET evaluation plot for all integration methods
+        └── [prj_name]_Silhouette_boxplot_pc50.pdf   The Silhouette evaluation plot for all integration methods
+    # raw/ folder for h5ad files before and after QC, but have not run through the pipeline:
+        ├── [prj_name]_raw_prefilter.h5ad: The internal temporary raw counts created/merged directly from sample before filtering 
+        └── [prj_name]_raw.h5ad:           The internal temporary raw counts after the cell/gene filtering
+    # SCT/ folder:
+        ├── [prj_name].h5:        The sparse matrix contains SCT expression values
+        ├── [prj_name].h5.rds:    The Seurat object contains counts (RNA assay) and 
+                                      SCT expression (SCT assay) along with original meta information from SampleMeta file
+        ├── [prj_name].cID        Cell barcodes
+        ├── [prj_name].gID        Gene ID
+        ├── [prj_name].scalF      Scale factor
+        └── [prj_name].h5ad:      The SCT expression, along with PCA, tSNE, UMAP reduction layout, will be 
+                                      merged into [prj_name].h5ad
+    # SeuratRPCA folder for Seurat RPCA integration results:
+        ├── [prj_name].csv.gz:    The reuction embedding and clustering results from seurat RPCA integration 
+        └── [prj_name].h5ad:      The seurat RPCA integration with reduction embedding and clustering, 
+                                      will be merged into [prj_name].h5ad
+    # SeuratRef folder for Seurat reference mapping results:
+        ├── [prj_name].csv:       The reuction embedding and label transfer results from seurat RPCA integration 
+        └── [prj_name].h5ad:      The seurat reference mapping results with reduction embedding, will be merged into [prj_name].h5ad
+    # sctHarmony folder for Harmony based on SCT transformation:
+        ├── [prj_name].csv:       The PCA iinformation of each cell
+        └── [prj_name].h5ad:      The harmony integration with reduction embedding and clustering, 
+                                      will be merged into [prj_name].h5ad
+    # Liger folder for Liger integration results:
+        ├── [prj_name]_hvg.csv:  High variable gene list
+        ├── [prj_name].csv:      The liger integration embedding and cluster
+        └── [prj_name].h5ad":    The liger integration with reduction embedding and clustering, 
+                                          will be merged into [prj_name].h5ad
+    # [prj_name]_scDEG folder (if you ran the DEG step):
+        ├── Comparisone names folders
+          ├── .csv files for each cell type: The DEG analysis results
+          ├── .rds files for each cell type: The rds data
+          └── .pnd files for each cell type: The volcano plots
     # Parallel directory (if you ran the pipeline in parallel mode):
         └── j[numeric]:                A colder contains parallel jobs submit script and log file
 ```

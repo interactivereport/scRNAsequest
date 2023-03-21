@@ -1,6 +1,6 @@
 # CellDepot publishing
 
-[CellDepot](https://www.sciencedirect.com/science/article/pii/S0022283621006665){target="_blank"} is a comprehensive data management platform for single-cell RNA-seq datasets. Publishing to CellDepot allows easy navigation and visualization of the data, and facilitates big data deposition. Thus, scRNASequest pipeline offers a function to publish a dataset to CellDepot using **sc2celldepot**. This workflow will use the existing cell type labels and create **h5ad** and **RDS** that are compatible with the CellDepot platform. If you are interested in hosting any public datasets withour re-analyzing it using the full scRNAsequest pipeline (e.g. filtering, harmonization, DE analysis), you can easily run **sc2celldepot** to convert and publish it on CellDepot.
+[CellDepot](https://www.sciencedirect.com/science/article/pii/S0022283621006665){target="_blank"} is a comprehensive data management platform for single-cell RNA-seq datasets. Publishing to CellDepot allows easy navigation and visualization of the data, and facilitates big data deposition. Thus, scRNASequest pipeline offers a function to publish a dataset to CellDepot using **sc2celldepot**. This workflow will use the existing cell type information and create **h5ad** and **RDS** that are compatible with the CellDepot platform, which means you will need some types of cell labels (cell type, cluter id, etc.) as input. If you are interested in hosting any public datasets without re-analyzing it using the full scRNAsequest pipeline (e.g. filtering, harmonization, DE analysis), you can easily run **sc2celldepot** to convert and publish it on CellDepot.
 
 By running the following command, we can see the manual page of the script:
 
@@ -14,7 +14,6 @@ $ sc2celldepot
 ## Pipeline Date: 2023-01-13 17:41:49 -0500
 ## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e
 ###########
-
 
 Loading resources
 
@@ -106,3 +105,14 @@ E-MTAB-11115/
 ```
 
 Finally, copy the **E-MTAB-11115.h5ad** to the [CellDepot](https://github.com/interactivereport/CellDepot){target="_blank"} folder and follow the [instructions](https://interactivereport.github.io/CellDepot/bookdown/docs/){target="_blank"} for publishing it.
+
+## Demo sc2celldepot
+
+To demo sc2celldepot, we use the two h5 data files from our [demo](https://github.com/interactivereport/scRNAsequest/tree/main/demo) dataset. Besides that, we also need two cell level annotation files, and I have prepared them:.
+
+Please organize these four files in the working dir (in this demo: ~/demo_celldepot):
+
+```
+
+
+```

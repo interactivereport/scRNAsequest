@@ -1,6 +1,6 @@
 # Differential expression (DE) analysis
 
-Another critical function of the scRNASequest pipeline is the **Differential expression (DE)** analysis. By running the steps in Section 6: [Running the pipeline], we have performed quality control of the data, and generated an integrated dataset. 
+Another critical function of the scRNASequest pipeline is the **Differential expression (DE)** analysis. By running the steps in Section: [Running the pipeline], we have performed quality control of the data, and generated an integrated dataset. 
 
 Before running the DE analysis, the **DEGinfo.csv** comparison file needs to be prepared:
 
@@ -72,16 +72,7 @@ outputdir
         ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.png
         ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.QC.pdf
         ...
-        ├── env.rds
-    ├── ProjName_scDEG.cmd.json
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_astrocytes_Female_Male.error  #Standard error messages
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_meninges_schwann_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_microglia_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_discarded_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_endo_vascular_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_neurons_Female_Male.error
-    ├── deg6601_predicted.celltype1_Sex_NEBULA_HL_OPC_Female_Male.error
-    └── ProjName_scDEG.db
+        └── env.rds
 ```
 
 An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):
