@@ -39,10 +39,7 @@ submit-scref
 demo-scref
 celldepot-publishing
 initialize-sc2celldepot
-publish-to-celldepot
-additional-tools
-scdeg
-initialize-scdeg
+the-config-file-to-process-public-scsn-rnaseq-and-generate-h5ad-for-celldepot
 run-de-analysis
 sctool
 remove-annotations
