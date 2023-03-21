@@ -38,7 +38,7 @@ outputdir
 
 ## Review the bookdown report
 
-After the initial scAnalyzer run, a bookdown report, named **ProjName_BookdownReport.tar.gz** will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:
+After the initial `scAnalyzer` run, a bookdown report, named **ProjName_BookdownReport.tar.gz** will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:
 
 ```
 # Cell filtering parameters in the config.yml file:
@@ -58,9 +58,9 @@ highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
 ```
 
-The **min.cells** cutoff is to filter out *genes* that have low representation in cells, and the **min.features** cutoff is to filter out *cells* that have low number of genes (features) detected. The last two cutoffs, **highCount.cutoff** and **highGene.cutoff** can be used to filter cells if they have too many total counts or UMI detected, possibly due to multiplets.
+The **min.cells** cutoff is to filter out *genes* that have low representation in cells, and the **min.features** cutoff is to filter out *cells* that have low number of genes (features) detected. The last two cutoffs, **highCount.cutoff** and **highGene.cutoff** can be used to filter cells if they have too many total counts or UMI detected, possibly due to multiplets. Please evaluate these cutoffs carefully, because the default values here are arbitrary.
 
-The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.
+The user may need to adjust the thresholds and rerun `scAnalyzer` to visualize the results. This step may be repeated until the threshold is adequate for the data.
 
 Please find an example of the bookdown report here: [E-MTAB-11115 bookdown](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/bookdown/index.html){target="_blank"}
 
@@ -77,18 +77,19 @@ mkdir Slidedeck && cd Slidedeck
 ln -s ../BookdownReport/images
 ln -s ../BookdownReport/bookdown.info.txt
 
-# Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file
+# Copy the Slidedeck.Rmd file from src directory to the working directory containing config.yml file.
+# We assume your pipeline was installed under ~/scRNAsequest/
 cp ~/scRNAsequest/src/Slidedeck.Rmd ~/E-MTAB-11115/processing/Slidedeck
 
 # Source the environment
-src="~/scRNAsequest/src/.env"
+src="~/scRNAsequest/src"
 source $src/.env;eval $condaEnv
 
 # Run the Slidedeck script, and set the output file name using 'output_file' parameter
 Rscript -e 'rmarkdown::render("Slidedeck.Rmd", output_file="Output.html")'
 ```
 
-Please download the whole Slidedeck and open the **Output.html** file in a web browser.
+Please download **the whole Slidedeck directory** and open the **Output.html** file in a web browser.
 
 Please find an example of the bookdown report here: [E-MTAB-11115 slidedeck](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html){target="_blank"}
 
@@ -102,19 +103,21 @@ runAnalysis: True
 overwrite: True    #Overwrite the previous results if we run this again, for example, after adjusting some parameters.
 ```
 
-Please also pay attention to the **reference** data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example, using **mouse_spinalCord** as the reference:
+Please also pay attention to the **reference** data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example, using **human_cortex** as the reference:
 
 ```
-ref_name: mouse_spinalCord
+ref_name: human_cortex
 ```
 
-To check all available references, run scAnalyzer without any parameter. To add new references, please see section 8: [Reference Building].
+To check all available references, run `scAnalyzer` without any parameter, which will read the src/sys.yml file to check available references. To add new references, please see section 8: [Reference Building].
 
 Alternatively, you can provide a path to the **ref.Rds** reference file in the [Azimuth reference format](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format){target="_blank"}:
 
 ```
 ref_name: path/to/ref.Rds
 ```
+
+An example reference file is the demo/ref/rat_cortex_ref.rds file associated with this pipeline.
 
 Then run the following command again:
 

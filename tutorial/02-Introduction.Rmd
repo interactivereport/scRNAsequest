@@ -2,33 +2,33 @@
 
 scRNASequest is a semi-automated single-cell RNA-seq (scRNA-seq) data analysis workflow which allows the following five different functionalities:
 
-- Pre-processing from raw single-cell RNA sequencing data, 
+- Pre-processing from single-cell RNA sequencing UMI count matrix data (better generated with Cell Ranger)
 
-- Batch correction by one or multiple harmonization methods, 
+- Applying multiple harmonization methods for batch correction
 
-- Reference-dataset-based cell type label transfer and embedding projection, 
+- Reference-dataset-based cell type label transfer and embedding projection
 
 - Multi-sample multi-condition single-cell level differential gene expression analysis
 
 - Seamless integration with [cellxgene VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"} for visualization and with [CellDepot](https://github.com/interactivereport/CellDepot){target="_blank"} for data hosting and sharing by generating a compatible h5ad file. Users have the option to run it on a local laptop computer or interact with sge/slurm schedulers on high performance computing (HPC) clusters.
 
-This pipeline contains two main programs:
+This pipeline contains the following programs:
 
   - **scAnalyzer**
   
     This is the main script in scRNASequest for single-cell data processing and analysis.
     
     Also, scAnalyzer is an all-in-one program for downstream data analysis, including pre-processing, batch correction, label transfer, differential gene expression analysis and CellDepot integration. Moreover, scAnalyzer is embedded with a Bookdown report generator, named **scReport**, which can produce a user-friendly, well-structured quality control report after each run.
+
+  - **scDEG**
+  
+    scDEG is a standalone pipeline for differential expression (DE) analysis using harmonized data. It has been embedded into the scAnalyzer pipeline.
     
   - **scRef**
   
     scRef generates a reference dataset for label transfer. 
     
     For each reference dataset, this program only needs to run once, and the reference h5ad file will be placed in a permanent path.
-
-  - **scDEG**
-  
-    scDEG is a standalone pipeline for differential expression (DE) analysis using harmonized data. It has been embedded into the scAnalyzer pipeline.
     
   - **sc2celldepot**
   
@@ -37,3 +37,33 @@ This pipeline contains two main programs:
   - **scTool**
   
     scTool provides flexibility for modifying the h5ad file, such as modifying annotation and extracting meta information.
+    
+  - **scRMambient**
+  
+    scRMambient is a wrapper function to remove ambient RNAs using CellBender.
+  
+**A detailed comparison of the above scripts can be found below:**
+
+```{r, echo=FALSE, results = "asis"}
+Command <- c("scAnalyzer", "scDEG", "scRef", "sc2celldepot", "scTool", "scRMambient")
+Description <- c("Main program to perform full scRNA-seq data anal-ysis with QC and data harmonization",
+                 "Program to perform DEG analysis between two phenotypes within each cluster of an annotation (such as cell types)",
+                 "Program to create Seurat 'Azimuth' references",
+                 "Program to transfer ana-lyzed data into h5ad for the cellxgene VIP (CellDepot) loading",
+                 "Tool to add, remove or export express/annotation from an h5ad",
+                 "Remove ambient RNA by the CellBender")
+Input <- c("A path to analysis config file (config.yml)",
+           "A path to a DEG config file (config_DEG.yml)",
+           "A path to a reference con-fig file (config_ref.yml)",
+           "A path to a data config file (config_convert.yml)",
+           "A path to an h5ad file",
+           "A path to a sample metadata file containing paths to raw (unfiltered) UMI along with a few Cell-Bender parameters")
+Output <- c("Final analysis results in h5ad and h5seurat format",
+            "One DEG table for each cluster and an SQLite db file of all comparisons",
+            "An RDS object with 'Azi-muth' reference for scAnalyzer",
+            "An h5ad file",
+            "A modified h5ad file or a csv file",
+            "CellBender filtered UMI counts in h5 format")
+Data <- data.frame(Command, Description, Input, Output)
+kable(Data, caption = "Pipeline scripts and their function", align = "c", booktabs = TRUE)
+```

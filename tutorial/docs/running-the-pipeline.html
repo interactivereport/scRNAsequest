@@ -4,25 +4,25 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
+  <title>Chapter 7 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 7 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 7 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 6 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 7 Running the pipeline | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
 
 
 
-<meta name="date" content="2023-03-17" />
+<meta name="date" content="2023-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -141,62 +141,72 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
 <li class="chapter" data-level="3" data-path="installation.html"><a href="installation.html"><i class="fa fa-check"></i><b>3</b> Installation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a></li>
+<li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="installation.html"><a href="installation.html#installation-using-conda"><i class="fa fa-check"></i><b>3.1.1</b> Installation using Conda</a></li>
+<li class="chapter" data-level="3.1.2" data-path="installation.html"><a href="installation.html#installation-through-docker"><i class="fa fa-check"></i><b>3.1.2</b> Installation through Docker</a></li>
+</ul></li>
 <li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#configure-sys.yml-file"><i class="fa fa-check"></i><b>3.2</b> Configure sys.yml file</a></li>
-<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-cellxgene_vip"><i class="fa fa-check"></i><b>3.3</b> Install cellxgene_VIP</a></li>
+<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-cellxgene-vip"><i class="fa fa-check"></i><b>3.3</b> Install cellxgene VIP</a></li>
 <li class="chapter" data-level="3.4" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.4</b> Install CellDepot</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>4</b> Data preparation</a>
+<li class="chapter" data-level="4" data-path="demo-run.html"><a href="demo-run.html"><i class="fa fa-check"></i><b>4</b> Demo run</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-h5-format"><i class="fa fa-check"></i><b>4.1</b> Public data in h5 format</a></li>
-<li class="chapter" data-level="4.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mex-format"><i class="fa fa-check"></i><b>4.2</b> Public data in 10X MEX format</a></li>
-<li class="chapter" data-level="4.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>4.3</b> Self-prepared files</a></li>
+<li class="chapter" data-level="4.1" data-path="demo-run.html"><a href="demo-run.html#demo-run-with-conda"><i class="fa fa-check"></i><b>4.1</b> Demo run with Conda</a></li>
+<li class="chapter" data-level="4.2" data-path="demo-run.html"><a href="demo-run.html#demo-run-with-docker"><i class="fa fa-check"></i><b>4.2</b> Demo run with Docker</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>5</b> Input configuration</a>
+<li class="chapter" data-level="5" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>5</b> Data preparation</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
-<ul>
-<li class="chapter" data-level="5.2.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>5.2.1</b> h5 input</a></li>
-<li class="chapter" data-level="5.2.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>5.2.2</b> MEX input</a></li>
+<li class="chapter" data-level="5.1" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-h5-format"><i class="fa fa-check"></i><b>5.1</b> Public data in h5 format</a></li>
+<li class="chapter" data-level="5.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mex-format"><i class="fa fa-check"></i><b>5.2</b> Public data in 10X MEX format</a></li>
+<li class="chapter" data-level="5.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>5.3</b> Self-prepared files</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="input-configuration.html"><a href="input-configuration.html#file-hierarchy"><i class="fa fa-check"></i><b>5.3</b> File hierarchy</a></li>
+<li class="chapter" data-level="6" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>6</b> Input configuration</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="input-configuration.html"><a href="input-configuration.html#generate-template-files"><i class="fa fa-check"></i><b>6.1</b> Generate template files</a></li>
+<li class="chapter" data-level="6.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>6.2</b> Prepare the config.yml file</a></li>
+<li class="chapter" data-level="6.3" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>6.3</b> Prepare the sample meta file</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>6.3.1</b> h5 input</a></li>
+<li class="chapter" data-level="6.3.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>6.3.2</b> MEX input</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>6</b> Running the pipeline</a>
-<ul>
-<li class="chapter" data-level="6.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>6.1</b> Initial scAnalyzer run</a></li>
-<li class="chapter" data-level="6.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>6.2</b> Review the bookdown report</a></li>
-<li class="chapter" data-level="6.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>6.3</b> Generate a slide deck</a></li>
-<li class="chapter" data-level="6.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>6.4</b> Run the full analysis</a></li>
-<li class="chapter" data-level="6.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>6.5</b> Visualize the harmonized results</a></li>
+<li class="chapter" data-level="6.4" data-path="input-configuration.html"><a href="input-configuration.html#file-hierarchy"><i class="fa fa-check"></i><b>6.4</b> File hierarchy</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>7</b> Differential expression (DE) analysis</a>
+<li class="chapter" data-level="7" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>7</b> Running the pipeline</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
-<li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
+<li class="chapter" data-level="7.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>7.1</b> Initial scAnalyzer run</a></li>
+<li class="chapter" data-level="7.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>7.2</b> Review the bookdown report</a></li>
+<li class="chapter" data-level="7.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>7.3</b> Generate a slide deck</a></li>
+<li class="chapter" data-level="7.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>7.4</b> Run the full analysis</a></li>
+<li class="chapter" data-level="7.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>7.5</b> Visualize the harmonized results</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference building</a>
+<li class="chapter" data-level="8" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>8</b> Differential expression (DE) analysis</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>8.1</b> Initialize scRef</a></li>
-<li class="chapter" data-level="8.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>8.2</b> Submit scRef</a></li>
+<li class="chapter" data-level="8.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>8.1</b> Example 1</a></li>
+<li class="chapter" data-level="8.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>8.2</b> Example 2</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>9</b> CellDepot publishing</a>
+<li class="chapter" data-level="9" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>9</b> Reference building</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>9.1</b> Initialize sc2celldepot</a></li>
-<li class="chapter" data-level="9.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#publish-to-celldepot"><i class="fa fa-check"></i><b>9.2</b> Publish to CellDepot</a></li>
+<li class="chapter" data-level="9.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>9.1</b> Initialize scRef</a></li>
+<li class="chapter" data-level="9.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>9.2</b> Submit scRef</a></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>10</b> Additional tools</a>
+<li class="chapter" data-level="10" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>10</b> CellDepot publishing</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>10.1</b> scDEG</a>
-<ul>
-<li class="chapter" data-level="10.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>10.1.1</b> Initialize scDEG</a></li>
-<li class="chapter" data-level="10.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>10.1.2</b> Run DE analysis</a></li>
+<li class="chapter" data-level="10.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>10.1</b> Initialize sc2celldepot</a></li>
+<li class="chapter" data-level="10.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#publish-to-celldepot"><i class="fa fa-check"></i><b>10.2</b> Publish to CellDepot</a></li>
 </ul></li>
-<li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>10.2</b> scTool</a>
+<li class="chapter" data-level="11" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>11</b> Additional tools</a>
 <ul>
-<li class="chapter" data-level="10.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.2.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="10.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2.2</b> Add annotations</a></li>
-<li class="chapter" data-level="10.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.2.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="11.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>11.1</b> scDEG</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>11.1.1</b> Initialize scDEG</a></li>
+<li class="chapter" data-level="11.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>11.1.2</b> Run DE analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>11.2</b> scTool</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.2.1</b> Remove annotations</a></li>
+<li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.2.2</b> Add annotations</a></li>
+<li class="chapter" data-level="11.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.2.3</b> Export gene expressions</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -218,20 +228,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="running-the-pipeline" class="section level1 hasAnchor" number="6">
-<h1><span class="header-section-number">Chapter 6</span> Running the pipeline<a href="running-the-pipeline.html#running-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="running-the-pipeline" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Running the pipeline<a href="running-the-pipeline.html#running-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.</p>
-<div id="initial-scanalyzer-run" class="section level2 hasAnchor" number="6.1">
-<h2><span class="header-section-number">6.1</span> Initial scAnalyzer run<a href="running-the-pipeline.html#initial-scanalyzer-run" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="initial-scanalyzer-run" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Initial scAnalyzer run<a href="running-the-pipeline.html#initial-scanalyzer-run" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The initial scAnalyzer run intends to test the default filtering parameters on the single-cell RNA-seq data. We suggest the following settings in the config.yml file to activate the filtering step, but pause the pipeline from additional analysis (such as data integration, harmonization, etc.):</p>
 <pre><code># Change the following settings in the config.yml file:
 filter_step: True
 runAnalysis: False</code></pre>
 <p>To run scAnalyzer, simply pass the path to the config.yml file to the program:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="running-the-pipeline.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb21-2"><a href="running-the-pipeline.html#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="running-the-pipeline.html#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb21-4"><a href="running-the-pipeline.html#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb45-1"><a href="running-the-pipeline.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb45-2"><a href="running-the-pipeline.html#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="running-the-pipeline.html#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb45-4"><a href="running-the-pipeline.html#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>Output files:</p>
 <pre><code>outputdir
     ├── BookdownReport/                #Full bookdown report folder. This is same as the BookdownReport.tar.gz below
@@ -244,8 +254,8 @@ runAnalysis: False</code></pre>
     ├── postfilter.QC.pdf              #QC plots after filtering
     └── Rmarkdown/                     #Source files for the Bookdown report</code></pre>
 </div>
-<div id="review-the-bookdown-report" class="section level2 hasAnchor" number="6.2">
-<h2><span class="header-section-number">6.2</span> Review the bookdown report<a href="running-the-pipeline.html#review-the-bookdown-report" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="review-the-bookdown-report" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Review the bookdown report<a href="running-the-pipeline.html#review-the-bookdown-report" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After the initial scAnalyzer run, a bookdown report, named <strong>ProjName_BookdownReport.tar.gz</strong> will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:</p>
 <pre><code># Cell filtering parameters in the config.yml file:
 gene_group:
@@ -266,8 +276,8 @@ highGene.cutoff: 3000    #any cells with a higher number of detected genes to be
 <p>The user may need to adjust the thresholds and rerun scAnalyzer to visualize the results. This step may be repeated until the threshold is adequate for the data.</p>
 <p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/bookdown/index.html" target="_blank">E-MTAB-11115 bookdown</a></p>
 </div>
-<div id="generate-a-slide-deck" class="section level2 hasAnchor" number="6.3">
-<h2><span class="header-section-number">6.3</span> Generate a slide deck<a href="running-the-pipeline.html#generate-a-slide-deck" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="generate-a-slide-deck" class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> Generate a slide deck<a href="running-the-pipeline.html#generate-a-slide-deck" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This is an optional step if you have already reviewed the Bookdown report. This slide deck is another way to organize and present the same results.</p>
 <p>The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the <strong>Slidedeck.Rmd</strong> file under the /src folder and follow the steps below:</p>
 <pre><code># create a new directory inside the project, and link the existed files and folder:
@@ -288,8 +298,8 @@ Rscript -e &#39;rmarkdown::render(&quot;Slidedeck.Rmd&quot;, output_file=&quot;O
 <p>Please download the whole Slidedeck and open the <strong>Output.html</strong> file in a web browser.</p>
 <p>Please find an example of the bookdown report here: <a href="https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html" target="_blank">E-MTAB-11115 slidedeck</a></p>
 </div>
-<div id="run-the-full-analysis" class="section level2 hasAnchor" number="6.4">
-<h2><span class="header-section-number">6.4</span> Run the full analysis<a href="running-the-pipeline.html#run-the-full-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="run-the-full-analysis" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> Run the full analysis<a href="running-the-pipeline.html#run-the-full-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After the filtering step is done, we are ready to turn on the <em>runAnalysis</em> parameter and run the full pipeline:</p>
 <pre><code># Change the following setting in the config.yml file:
 runAnalysis: True
@@ -300,14 +310,14 @@ overwrite: True    #Overwrite the previous results if we run this again, for exa
 <p>Alternatively, you can provide a path to the <strong>ref.Rds</strong> reference file in the <a href="https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format" target="_blank">Azimuth reference format</a>:</p>
 <pre><code>ref_name: path/to/ref.Rds</code></pre>
 <p>Then run the following command again:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="running-the-pipeline.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb28-2"><a href="running-the-pipeline.html#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="running-the-pipeline.html#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb28-4"><a href="running-the-pipeline.html#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="running-the-pipeline.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb52-2"><a href="running-the-pipeline.html#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="running-the-pipeline.html#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb52-4"><a href="running-the-pipeline.html#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step will be time-consuming, and it took ~1 hour for the <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> data (final cell number: 29511) to finish. For a larger dataset, such as <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE205483" target="_blank">GSE205483</a> (final cell number: 111,011), the full pipeline took ~7 hours.</p>
 </div>
-<div id="visualize-the-harmonized-results" class="section level2 hasAnchor" number="6.5">
-<h2><span class="header-section-number">6.5</span> Visualize the harmonized results<a href="running-the-pipeline.html#visualize-the-harmonized-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="visualize-the-harmonized-results" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Visualize the harmonized results<a href="running-the-pipeline.html#visualize-the-harmonized-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After running the pipeline, you will see the following files in the working directory. Each harmonization method (Harmony, Seurat, Liger) will also generate corresponding files.</p>
 <pre><code>outputdir
     # Input files
@@ -417,7 +427,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/06-RunningThePipeline.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/07-RunningThePipeline.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -425,7 +435,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/06-RunningThePipeline.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/07-RunningThePipeline.Rmd",
 "text": null
 },
 "download": null,

@@ -2,71 +2,106 @@
 
 ## Install scRNASequest
 
-First, we install the scRNASequest by downloading the scripts from GitHub:
+We provide two methods to install scRNASequest. The first one uses [Conda](https://docs.conda.io/en/latest/), and the second one uses [Docker](https://www.docker.com/). We have tested both methods on Linux servers; however, if you are a Mac user, please use the Docker method.
+
+### Installation using Conda
+
+First, please make sure you have [Conda](https://docs.conda.io/en/latest/) installed, or, [Anaconda](https://docs.anaconda.com/anaconda/install/index.html)/[Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed:
 
 ```{bash, eval=FALSE}
-git clone https://github.com/interactivereport/scRNAsequest.git
-cd scRNAsequest
-
-#Install scRNAsequest conda environment and R packages
-#Please make sure you have conda installed before, and this step may take a while (30min ~1 hour)
-bash install
-
-#Activate the conda environment
-conda activate scRNAsequest
-
-#Also, .env will be created under the src directory:
-ls ~/scRNAsequest/src/.env
-
-#Check the path of current directory and add it to $PATH:
-CurrentDir=`pwd`
-export PATH="$CurrentDir:$PATH"
-
-#However, the above command only adds the scRNAsequest directory to $PATH temporarily
-#To add it to the environment permanently, edit ~/.bash_profile or ~/.bashrc:
-vim ~/.bash_profile
-#Add the full path of the scRNAsequest directory to $PATH, for example, $HOME/scRNAsequest
-PATH=$PATH:$HOME/RNAsequest
-#Source the file
-source ~/.bash_profile
+which conda
+# Your conda path will be returned
 ```
 
-If the installation is successful, scAnalyzer and scRef should be able to run without passing any parameters:
+Then, we choose a directory and install scRNASequest by downloading the source code from GitHub.
+
+The directory you choose here will be the future directory of this pipeline.
 
 ```{bash, eval=FALSE}
-$ scAnalyzer
+# Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:
+cd ~
+git clone https://github.com/interactivereport/scRNASequest.git
+cd scRNASequest
 
-***** 2023-01-26 15:29:28 *****
+# Install scRNASequest conda environment
+# Before running this, please make sure you have conda installed before
+# This step will take a while, usually between 30min to 1h depending on the internet speed
+# Thank you for your patience
+bash install.sh
+
+# The .env will be created under the src directory
+ls ~/scRNASequest/src/.env
+
+# Now the pipeline scripts under the scRNASequest folder can be used
+# Users can add the scRNASequest directory to the environment permanently
+# by editing ~/.bash_profile or ~/.bashrc
+vim ~/.bash_profile
+# Add the full path of the scRNASequest directory to $PATH.
+# In our example, this will be: ~/scRNASequest
+PATH=$PATH:~/scRNASequest
+# Close the vim text editor and source the file
+source ~/.bash_profile
+
+#To verify the installation, type the main program name, and the following message will show up:
+scAnalyzer
+
+#Output:
+=====
+Please set the sys.yml in ~/scRNASequest.
+An example is '~/scRNASequest/src/sys_example.yml'.
+=====
+```
+
+You got the above message because the `sys.yml` file is missing under the pipeline `src` directory (in our case, ~/scRNASequest/src/). 
+
+Please copy the [sys_example.yml](https://github.com/interactivereport/scRNAsequest/blob/main/src/sys_example.yml) template there first:
+
+```{bash, eval=FALSE}
+cp ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml
+```
+
+Then, fill in the following required items. These directories will be used to host final results (.h5ad files) of the pipeline as well as the reference files for cell type label transfer.
+
+Since we have `cellxgenedir` and `ref` directories created under the `demo` directory, we use them here:
+
+```{bash, eval=FALSE}
+celldepotDir: ~/scRNASequest/demo/cellxgenedir.  # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
+refDir: ~/scRNASequest/demo/ref   # the absolute path to the Seurat reference folder if building reference is desired
+```
+
+You may fill in the cellxgene VIP server path after installing cellxgene VIP later, but this is not required for running the pipeline. We leave this empty here.
+
+```{bash, eval=FALSE}
+celldepotHttp: # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
+```
+
+You may change the information in the sys.yml file later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file).
+
+Then type the name of the main program, `scAnalyzer` again:
+
+```{bash, eval=FALSE}
+***** 2023-03-14 14:48:13 *****
 ###########
 ## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git
-## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest
-## Pipeline Date: 2023-01-13 17:41:49 -0500
-## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e
+## Pipeline Path: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest
+## Pipeline Date: 2023-03-01 10:10:55 -0500
+## git HEAD: d067bfd6dc056597d046a45f3b3b927dd122dd82
 ###########
-
 
 scAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file
 
 The config file will be generated automatically when a DNAnexus download folder is provided
 Available reference data:
-	human_cortex: more information @ https://azimuth.hubmapconsortium.orgerences/
-	human_fetal: more information @ https://azimuth.hubmapconsortium.orgerences/
-	human_pbmc: more information @ https://azimuth.hubmapconsortium.orgerences/
-	mouse_thalamus: more information @ http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php?ID=301
-	mouse_cortex: more information @ https://azimuth.hubmapconsortium.orgerences/
-	mouse_spinalCord: more information @ http://omicsoft01.hpc.biogen.com/celldepot/app/core/app_project_review.php?ID=285
-	mouse_telencephalon_diencephalon: more information @ https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/
-	NHP_Substantia_nigra: more information @ search NHP_Substantia_nigra in celldepot @ http://omicsoft01.hpc.biogen.com/celldepot
-	NHP_Cerebellum: more information @ search NHP_Cerebellum in celldepot @ http://omicsoft01.hpc.biogen.com/celldepot
-	rat_cortex: more information @ https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE172462
+	human_cortex: more information @ https://azimuth.hubmapconsortium.org/references/
 If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.
 
-
-Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
+Powered by None
 ------------
 ```
 
-Typing scRef directly without any parameters will activate the user manual page:
+The installation was successful if you see the above message.
+
+Typing other scripts' name, such as scRef, directly without any parameters will activate the user manual page:
 
 ```{bash, eval=FALSE}
 $ scRef
@@ -94,24 +129,138 @@ Powered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@
 ------------
 ```
 
+Similary, you will also see the manual message printed out for other scripts: scDEG, sc2celldepot, and scTool.
+
+### Installation through Docker
+
+We provide a [Docker](https://www.docker.com/) image here: https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general. Users can pull this image to build a container, which has been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.
+
+We also provide a [Dockerfile](https://github.com/interactivereport/scRNAsequest/blob/main/Dockerfile) if you would like to build the image from scratch using the `docker build` command, which takes ~30 min.
+
+First, please make sure Docker has been installed and can be recognized through the command line:
+
+```
+which docker
+# Your docker path will be returned
+```
+
+Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:
+```
+cd ~
+git clone https://github.com/interactivereport/scRNASequest.git
+cd scRNASequest
+```
+
+Then we pull the docker image. This step takes ~10 min.
+```
+docker pull sunyumail93/scrnasequest
+```
+
+Initiate the docker container. This command uses -v to map the `demo` directory under scRNASequest to `/demo` in the container:
+
+```
+docker run -v `pwd`/demo:/demo -d sunyumail93/scrnasequest
+```
+The above command prepars for the demo run in 4. You can mount any directory containing your data to the Docker container using the syntax old_dir:container_dir.
+
+Verify your container:
+```
+docker container ls
+
+#Results:
+CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS     NAMES
+4e0f3a40ce1d   sunyumail93/scrnasequest   "/bin/sh -c 'while t…"   54 seconds ago   Up 52 seconds             interesting_lewin
+```
+The last column is the <container_name>, and it will be used in the following steps.
+
+Now we launch the main program of this pipeline. In our example, <container_name> is interesting_lewin. Please substitute to yours:
+```
+docker exec -t -i <container_name> scAnalyzer
+
+#Output:
+=====
+Please set the sys.yml in /home/scRNASequest/src.
+An example is '/home/scRNASequest/src/sys_example.yml'.
+=====
+```
+
+This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running the demo data (see section 2.2), and you can copy it to the pipeline src directory using the command below. It will work for future analysis also. However, you may change the information in the sys.yml file later, following the [full tutorial here](https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file). Please note that both '/demo/sys.yml' and '/home/scRNASequest/src' directories are in the container, rather than in your file system.
+
+```
+docker exec -t -i <container_name> cp /demo/sys.yml /home/scRNASequest/src/
+```
+
+Now we run this command again, and we will see the pipeline message printed out, same as the one at the end of section 3.1.1:
+
+```
+docker exec -t -i <container_name> scAnalyzer
+```
+
 ## Configure sys.yml file
 
-The **sys.yml** file contains critical information for the pipeline. You can use this [sys_example.yml](https://github.com/interactivereport/scRNAsequest/blob/main/src/sys_example.yml){target="_blank"} file as a template to prepare your file. The file name must be **sys.yml** and is located under the src/ directory of the pipeline.
+The **sys.yml** file contains critical information for the pipeline, which must be set up before running the pipeline. This file only needs to create once, under the src/ directory. You can use this [sys_example.yml](https://github.com/interactivereport/scRNAsequest/blob/main/src/sys_example.yml){target="_blank"} file as a template to prepare your file. The file name must be **sys.yml** and is located under the src/ directory of the pipeline.
 
-## Install cellxgene_VIP
+The first two rows are related to cellxgene VIP and CellDepot. The `celldepotDir` is required because all .h5ad files will be copied to this directory, and when launching cellxgene VIP, it will look for files in this directory. Please look into the tutorial below to learn how to set up cellxgene VIP. After setting up cellxgene VIP, you will know the HOST and PORT of your links, which can be included in `celldepotHttp`. The scAnalyzer pipeline won't generate error if you don't have `celldepotHttp` set up.
 
-The cellxgene_VIP platform can be used to visualize the h5ad file generated by the scRNASequest pipeline. This visualization step can be performed before the differential expression (DE) analysis to pinpoint meaningful clusters for downstream steps.
+In our demo dataset (demo/ directory under the pipeline folder), we provide the following information:
 
-Please follow the detailed instructions below to install cellxgene_VIP:
+```
+celldepotDir: /demo/cellxgenedir # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
+celldepotHttp: http://HOST:PORT/d/ # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
+refDir: /demo/ref # the absolute path to the seurat refrence folder if building reference is desired
+minCell: 50
+```
+
+The `refDir` stores all Azimuth reference files for cell type label transfer. Please select a directory for this. The `scRef` pipeline will use this directory and copy all necessary files there. scRef will also modify this sys.yml file when new reference is added. An example of added reference is shown as:
+
+```
+- human_cortex
+human_cortex:
+  ref_file: https://zenodo.org/record/4546932/files/ref.Rds # local file absolute path can be provided as well
+  ref_link: https://azimuth.hubmapconsortium.org/references/
+  ref_src: single nuclei
+  ref_platform: SNARE-seq2
+  ref_assay: refAssay
+  ref_neighbors: refdr.annoy.neighbors
+  ref_reduction: refDR
+  ref_reduction.model: refUMAP
+  ref_label:
+  - class
+  - cluster
+  - subclass
+  - cross_species_cluster
+```
+
+The `powerby` parameter sets the ending message after running the pipeline. An example would be:
+
+```
+powerby: the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com] # the message at the end
+```
+
+An example of the message showing:
+
+```
+Powered by the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
+```
+
+If you leave `powerby` as blank, it will show as: Powered by None.
+
+## Install cellxgene VIP
+
+The cellxgene VIP (Visualization In Plugin) platform can be used to visualize the h5ad file generated by the scRNASequest pipeline. This visualization step can be performed before the differential expression (DE) analysis to pinpoint meaningful clusters for downstream steps. If you include DE analysis when running `scAnalyzer`, you will also see DE results in Cellxgene VIP.
+
+Please follow the detailed instructions below to install cellxgene VIP:
 
 [https://github.com/interactivereport/cellxgene_VIP](https://github.com/interactivereport/cellxgene_VIP){target="_blank"}
 
-However, it is up to the user how to visualize the h5ad file, and other tools with similar functions ([scanpy](https://scanpy.readthedocs.io/en/stable/){target="_blank"} or [Seurat](https://satijalab.org/seurat/){target="_blank"}) will also work.
+After setting up, when launching cellxgene VIP, you will designate HOST name and PORT number. You can add this information in the sys.yml file as `celldepotHttp` under src/ directory.
+
+However, cellxgene VIP is not required for running any components of the scRNASequest pipeline (scAnalyzer, scRef, etc.). It is up to the user how to work with the h5ad files after running the `scAnalyzer` script, and ([scanpy](https://scanpy.readthedocs.io/en/stable/){target="_blank"} is an alternative option.
 
 ## Install CellDepot
 
-Please refer to the detailed instructions below to install CellDepot:
+If you have multiple projects, you will have to manage many cellxgene VIP links and related data files. CellDepot is a centralized database for storing single-cell/nucleus RNA-seq results. Please refer to the detailed instructions below to install CellDepot:
 
 [https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php](https://celldepot.bxgenomics.com/celldepot_manual/install_environment.php){target="_blank"}
 
-The installation of CellDepot is also optional if the user only needs to analyze the data, without publishing it into the CellDepot database.
+The installation of CellDepot is optional if the user only needs to analyze the data, without publishing it into the CellDepot database.

@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 4 Demo run | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 4 Demo run | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 4 Demo run | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 4 Demo run | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="differential-expression-de-analysis.html"/>
-<link rel="next" href="celldepot-publishing.html"/>
+<link rel="prev" href="installation.html"/>
+<link rel="next" href="data-preparation.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -228,87 +228,77 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="reference-building" class="section level1 hasAnchor" number="9">
-<h1><span class="header-section-number">Chapter 9</span> Reference building<a href="reference-building.html#reference-building" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.</p>
-<p>By running the following command, we can see the manual page of the reference generator, scRef:</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb62-1"><a href="reference-building.html#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
-<span id="cb62-2"><a href="reference-building.html#cb62-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-3"><a href="reference-building.html#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2023-01-26 15:29:54 <span class="pp">*****</span></span>
-<span id="cb62-4"><a href="reference-building.html#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb62-5"><a href="reference-building.html#cb62-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
-<span id="cb62-6"><a href="reference-building.html#cb62-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest</span></span>
-<span id="cb62-7"><a href="reference-building.html#cb62-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-01-13 17:41:49 -0500</span></span>
-<span id="cb62-8"><a href="reference-building.html#cb62-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e</span></span>
-<span id="cb62-9"><a href="reference-building.html#cb62-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb62-10"><a href="reference-building.html#cb62-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-11"><a href="reference-building.html#cb62-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-12"><a href="reference-building.html#cb62-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
-<span id="cb62-13"><a href="reference-building.html#cb62-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-14"><a href="reference-building.html#cb62-14" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
-<span id="cb62-15"><a href="reference-building.html#cb62-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-16"><a href="reference-building.html#cb62-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
-<span id="cb62-17"><a href="reference-building.html#cb62-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
-<span id="cb62-18"><a href="reference-building.html#cb62-18" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
-<span id="cb62-19"><a href="reference-building.html#cb62-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
-<span id="cb62-20"><a href="reference-building.html#cb62-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
-<span id="cb62-21"><a href="reference-building.html#cb62-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb62-22"><a href="reference-building.html#cb62-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
-<span id="cb62-23"><a href="reference-building.html#cb62-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
-<div id="initialize-scref" class="section level2 hasAnchor" number="9.1">
-<h2><span class="header-section-number">9.1</span> Initialize scRef<a href="reference-building.html#initialize-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This pipeline can be initialized using an empty directory. for example, we first create a directory called ‘Reference_data’, then initiate the pipeline pointing to this directory:</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb63-1"><a href="reference-building.html#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/the/directory</span>
-<span id="cb63-2"><a href="reference-building.html#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-3"><a href="reference-building.html#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb63-4"><a href="reference-building.html#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data</span></code></pre></div>
-<p>After the run, a config file, <strong>refConfig.yml</strong>, and a log file will be generated in the directory. The <strong>refConfig.yml</strong> is a template of the following scRef run, passing critical parameters to the pipeline. The <strong>refConfig.yml</strong> file will be same as this <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/ref.yml" target="_blank">template</a>, but the output directory will be yours. Here is an example after filling in the configuration file:</p>
-<pre><code>output: ~/Reference_data
-# the following is normally located in the same folder of celldepot hosting h5ad files
-ref_h5ad_raw: /path/to/ProjectName_raw_added.h5ad # full path to the h5ad file contains raw UMI along with cell annotation and layout
-ref_batch: library_id
-# above two parameters are ignored, if a seurat object can be located in the project folder
-ref_rds:                                          # full path to the processed seurat object including SCT assay, cell annotation and layout
-
-# All information below are required
-ref_name: Reference_data                # Please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
-ref_link:                               # The web link to the information of this reference. For scAnalyzer processed data, you could provide a Cellxgene VIP link here.
-ref_src: sn                             # sc/&quot;single cell&quot; or sn/&quot;single nuclei&quot;
-ref_platform: 10X                       # Single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
-#list a reduction to be used (at least 50 dimensions full name from VIP or one from seurat &#39;reductions&#39; ) 
-# details: https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
-# this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
-# For instance, if harmony was prefered layout then providing either &#39;harmony&#39; (50 dimention) or &#39;harmony-PCA&#39;
-ref_reduction: pca 
-ref_label: [predicted.celltype1]        # List the annotations (case sensitive) to be used for transferring. Please check this in the data. For our case, the header is called &#39;predicted.celltype1&#39;
-                                        # The cell type label/header name you would like to transfer
-publish: False                          # Should this reference be published (added permanently) into scAnalyzer
-overwrite: False                        # Overwrite the existing scAnalyzer reference </code></pre>
-<p>For the input data, scRef can take either a h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have finished running a dataset using scAnalyzer, then you can directly use the Filename_raw_added.h5ad (not Filename_raw.h5ad file) as input, and attach its path to <strong>ref_h5ad_raw</strong>. Alternatively, you can provide an RDS file using <strong>ref_rds</strong>. Either providing <strong>ref_h5ad_raw</strong> or <strong>ref_rds</strong> would be sufficient to the pipeline.</p>
-<p>The <strong>ref_label</strong> is critical for label transfer if you would like to use this data as a reference in the future. It tells the program to use the cell type information in these (can be one more more) headers to perform label transfer. For a h5ad data, the easiest way is to open it using Cellxgene VIP, and identify the header that contains cell type labels, e.g. predicted.celltype1 in our case. For an RDS data, you could read it in R using the <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS" target="_blank">readRDS</a> function and identify the column names containing cell type annotation.</p>
-</div>
-<div id="submit-scref" class="section level2 hasAnchor" number="9.2">
-<h2><span class="header-section-number">9.2</span> Submit scRef<a href="reference-building.html#submit-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>After filling in the information in the <strong>refConfig.yml</strong> file, we are ready to submit the full pipeline and build the reference data for label transfer:</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb65-1"><a href="reference-building.html#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/Ref/config/file</span>
-<span id="cb65-2"><a href="reference-building.html#cb65-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-3"><a href="reference-building.html#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb65-4"><a href="reference-building.html#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data/refConfig.yml</span></code></pre></div>
-<p>Output files:</p>
-<pre><code>Reference_data
-    ├── init_20220630.log
-    ├── refConfig.yml
-    ├── refConfig.yml.20220630.log               # Output log information
-    ├── Reference_data_for_scAnalyzer.rds        # The data to use for label transfer and downstream analysis
-    ├── ref_notFor_scAnalyzer.rds                # Output rds file NOT for lebel transfer
-    ...</code></pre>
-<p>Please also check the information in the refConfig.yml.20220630.log file, and pay attention to the last few lines:</p>
-<pre><code>...  #log of the running process omitted
-
-The private reference could be used by provide the following full path to &#39;ref_name&#39; in scAnalyzer config file:
-    ~/Reference_data/Reference_data_for_scAnalyzer.rds
+<div id="demo-run" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> Demo run<a href="demo-run.html#demo-run" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>We provide a demo dataset under the <code>demo</code> directory. This demo uses two snRNA-seq data from <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538">GSE185538</a> to run through the main steps, including <strong>QC</strong>, <strong>data integration</strong> (<a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1">SCTransform</a>, then <a href="https://www.nature.com/articles/s41592-019-0619-0"><strong>Harmony</strong></a>), <a href="https://satijalab.org/seurat/articles/integration_mapping.html"><strong>Seurat reference mapping</strong></a>, and <strong>evaluation of integration</strong> (<a href="https://www.nature.com/articles/s41592-018-0254-1">kBET</a> and <a href="https://ieeexplore.ieee.org/document/9260048">silhouette</a>). To save time, the differential expression analysis won’t be performed, and the DEGinfo.csv file is empty.</p>
+<p>This demo run contains two downsampled snRNA-seq data from the original study, and will take <strong>~15-20 minutes to finish</strong>. Please note that to speed up the run, we used stringent QC cutoffs, which eliminated many cells. After running the scAnalyzer command, output files will be generated under the <code>demo</code> directory on your computer.</p>
+<p>Also, we provided config.yml, sampleMeta.csv and DEGinfo.csv files for running this demo so you can run the <code>scAnalyzer</code> command directly. Please note that these files are only for the demo run. Later for your own dataset, please follow the full tutorial in the next section, <a href="data-preparation.html#data-preparation">Data preparation</a>, to generate the template of these files first.</p>
+<div id="demo-run-with-conda" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Demo run with Conda<a href="demo-run.html#demo-run-with-conda" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Continuing from section 3.1.1, we assume that the pipeline was installed in: ~/scRNASequest.</p>
+<p>First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory, and other lines don’t need to be changed:</p>
+<pre><code>...
+ref_name: ~/scRNASequest/demo/ref/rat_cortex_ref.rds   # choose one from scAnalyzer call without argument
+output: ~/scRNASequest/demo                            # output path   
+...
+sample_meta: ~/scRNASequest/demo/sampleMeta.csv
+...
+DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis. To save time, this demo run doesn&#39;t include DE analysis
 ...</code></pre>
-<p>This indicates that the reference has been successfully generated, and it can be passed to scAnalyzer through the config.yml file. If you turned on <strong>“publish: True”</strong> in the <strong>refConfig.yml</strong>, this reference will be added to scAnalyzer, and you can use its name to refer it when running scAnalyzer.</p>
+<p>Then execute the following command:</p>
+<pre><code>scAnalyzer ~/scRNASequest/demo/config.yml</code></pre>
+</div>
+<div id="demo-run-with-docker" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Demo run with Docker<a href="demo-run.html#demo-run-with-docker" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>After following section 3.1.2 to set up the pipeline, we are ready to run this demo:</p>
+<pre><code>docker exec -t -i &lt;container_name&gt; scAnalyzer /demo/config.yml</code></pre>
+<p>After running this demo, a list of files will be created:</p>
+<pre><code>config.yml                        #Original config.yml file
+config.yml.20230314.log           #Log file during pipeline run
+data/                             #Original data files
+  ├──RatFemaleCigarette.filtered_feature_bc_matrix.h5
+  ├──RatFemaleCigarette.metrics_summary.csv
+  ├──RatMaleCigarette.filtered_feature_bc_matrix.h5
+  └──RatMaleCigarette.metrics_summary.csv
+DEGinfo.csv                       #Comparison file. In this demo, this is empty
+evaluation/                       #Evaluation of harmonization
+  ├──scRNASequest_demo_kBET_umap_k0_100.pdf
+  └──scRNASequest_demo_Silhouette_boxplot_pc50.pdf
+log/                              #Log files for each step
+  ├──kBET.log
+  ├──sctHarmony.log
+  ├──SCT.log
+  ├──SeuratRef.log
+  └──ssilhouette.log
+QC/                               #QC files
+  ├──postfilter.QC.pdf
+  ├──prefilter.QC.pdf
+  ├──sequencingQC.csv
+  └──sequencingQC.pdf
+raw/                              #Original UMI counts, with and withour filtering
+  ├──scRNASequest_demo.h5ad
+  └──scRNASequest_demo_raw_prefilter.h5ad
+ref/
+  └──ref.Rds                      #Azimuth reference RSD file for cell type label transfer
+Rmarkdown/                        #Pre-generated QC figures, for generating Bookdown report
+sampleMeta.csv                    #Input sample metainformation file
+scRNASequest_demo.h5ad            #This is the final output h5ad file, and the expression values have been normalized
+                                   cellxgene VIP will use this file for visualization
+scRNASequest_demo.h5seurat        #Result in h5seurat format
+scRNASequest_demo_raw_added.h5ad  #Since AnnData object can only have one count matrix, this one uses the raw UMI
+SCT/                              #Results related to SCT transformation
+  ├──scRNASequest_demo.cID
+  ├──scRNASequest_demo.gID
+  ├──scRNASequest_demo.h5
+  ├──scRNASequest_demo.h5ad
+  ├──scRNASequest_demo.h5.rds
+  └──scRNASequest_demo.scaleF
+sctHarmony/                       #SCT+Harmony results
+  ├──scRNASequest_demo.csv
+  └──scRNASequest_demo.h5ad
+SeuratRef/                       #Seurat reference mapping results
+  ├──scRNASequest_demo.csv
+  └──scRNASequest_demo.h5ad</code></pre>
 
 </div>
 </div>
@@ -317,8 +307,8 @@ The private reference could be used by provide the following full path to &#39;r
           </div>
         </div>
       </div>
-<a href="differential-expression-de-analysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="celldepot-publishing.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="installation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="data-preparation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -349,7 +339,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/09-ReferenceBuilding.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/04-DemoRun.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -357,7 +347,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/09-ReferenceBuilding.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/04-DemoRun.Rmd",
 "text": null
 },
 "download": null,

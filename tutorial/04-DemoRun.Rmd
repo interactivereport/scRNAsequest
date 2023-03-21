@@ -1,0 +1,89 @@
+# Demo run
+
+We provide a demo dataset under the `demo` directory. This demo uses two snRNA-seq data from [GSE185538](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE185538) to run through the main steps, including **QC**, **data integration** ([SCTransform](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1874-1), then [**Harmony**](https://www.nature.com/articles/s41592-019-0619-0)), [**Seurat reference mapping**](https://satijalab.org/seurat/articles/integration_mapping.html), and **evaluation of integration** ([kBET](https://www.nature.com/articles/s41592-018-0254-1) and [silhouette](https://ieeexplore.ieee.org/document/9260048)). To save time, the differential expression analysis won't be performed, and the DEGinfo.csv file is empty.
+
+This demo run contains two downsampled snRNA-seq data from the original study, and will take **~15-20 minutes to finish**. Please note that to speed up the run, we used stringent QC cutoffs, which eliminated many cells. After running the scAnalyzer command, output files will be generated under the `demo` directory on your computer.
+
+Also, we provided config.yml, sampleMeta.csv and DEGinfo.csv files for running this demo so you can run the `scAnalyzer` command directly. Please note that these files are only for the demo run. Later for your own dataset, please follow the full tutorial in the next section, [Data preparation], to generate the template of these files first.
+
+## Demo run with Conda
+
+Continuing from section 3.1.1, we assume that the pipeline was installed in: ~/scRNASequest.
+
+First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory, and other lines don't need to be changed:
+
+```
+...
+ref_name: ~/scRNASequest/demo/ref/rat_cortex_ref.rds   # choose one from scAnalyzer call without argument
+output: ~/scRNASequest/demo                            # output path   
+...
+sample_meta: ~/scRNASequest/demo/sampleMeta.csv
+...
+DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis. To save time, this demo run doesn't include DE analysis
+...
+```
+
+Then execute the following command:
+
+```
+scAnalyzer ~/scRNASequest/demo/config.yml
+```
+
+## Demo run with Docker
+
+After following section 3.1.2 to set up the pipeline, we are ready to run this demo:
+
+```
+docker exec -t -i <container_name> scAnalyzer /demo/config.yml
+```
+
+After running this demo, a list of files will be created:
+
+```
+config.yml                        #Original config.yml file
+config.yml.20230314.log           #Log file during pipeline run
+data/                             #Original data files
+  ├──RatFemaleCigarette.filtered_feature_bc_matrix.h5
+  ├──RatFemaleCigarette.metrics_summary.csv
+  ├──RatMaleCigarette.filtered_feature_bc_matrix.h5
+  └──RatMaleCigarette.metrics_summary.csv
+DEGinfo.csv                       #Comparison file. In this demo, this is empty
+evaluation/                       #Evaluation of harmonization
+  ├──scRNASequest_demo_kBET_umap_k0_100.pdf
+  └──scRNASequest_demo_Silhouette_boxplot_pc50.pdf
+log/                              #Log files for each step
+  ├──kBET.log
+  ├──sctHarmony.log
+  ├──SCT.log
+  ├──SeuratRef.log
+  └──ssilhouette.log
+QC/                               #QC files
+  ├──postfilter.QC.pdf
+  ├──prefilter.QC.pdf
+  ├──sequencingQC.csv
+  └──sequencingQC.pdf
+raw/                              #Original UMI counts, with and withour filtering
+  ├──scRNASequest_demo.h5ad
+  └──scRNASequest_demo_raw_prefilter.h5ad
+ref/
+  └──ref.Rds                      #Azimuth reference RSD file for cell type label transfer
+Rmarkdown/                        #Pre-generated QC figures, for generating Bookdown report
+sampleMeta.csv                    #Input sample metainformation file
+scRNASequest_demo.h5ad            #This is the final output h5ad file, and the expression values have been normalized
+                                   cellxgene VIP will use this file for visualization
+scRNASequest_demo.h5seurat        #Result in h5seurat format
+scRNASequest_demo_raw_added.h5ad  #Since AnnData object can only have one count matrix, this one uses the raw UMI
+SCT/                              #Results related to SCT transformation
+  ├──scRNASequest_demo.cID
+  ├──scRNASequest_demo.gID
+  ├──scRNASequest_demo.h5
+  ├──scRNASequest_demo.h5ad
+  ├──scRNASequest_demo.h5.rds
+  └──scRNASequest_demo.scaleF
+sctHarmony/                       #SCT+Harmony results
+  ├──scRNASequest_demo.csv
+  └──scRNASequest_demo.h5ad
+SeuratRef/                       #Seurat reference mapping results
+  ├──scRNASequest_demo.csv
+  └──scRNASequest_demo.h5ad
+```

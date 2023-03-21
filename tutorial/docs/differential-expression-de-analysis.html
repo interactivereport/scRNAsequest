@@ -4,25 +4,25 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
+  <title>Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 7 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
 
 
 
-<meta name="date" content="2023-03-17" />
+<meta name="date" content="2023-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -141,62 +141,72 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
 <li class="chapter" data-level="3" data-path="installation.html"><a href="installation.html"><i class="fa fa-check"></i><b>3</b> Installation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a></li>
+<li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="installation.html"><a href="installation.html#installation-using-conda"><i class="fa fa-check"></i><b>3.1.1</b> Installation using Conda</a></li>
+<li class="chapter" data-level="3.1.2" data-path="installation.html"><a href="installation.html#installation-through-docker"><i class="fa fa-check"></i><b>3.1.2</b> Installation through Docker</a></li>
+</ul></li>
 <li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#configure-sys.yml-file"><i class="fa fa-check"></i><b>3.2</b> Configure sys.yml file</a></li>
-<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-cellxgene_vip"><i class="fa fa-check"></i><b>3.3</b> Install cellxgene_VIP</a></li>
+<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-cellxgene-vip"><i class="fa fa-check"></i><b>3.3</b> Install cellxgene VIP</a></li>
 <li class="chapter" data-level="3.4" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.4</b> Install CellDepot</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>4</b> Data preparation</a>
+<li class="chapter" data-level="4" data-path="demo-run.html"><a href="demo-run.html"><i class="fa fa-check"></i><b>4</b> Demo run</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-h5-format"><i class="fa fa-check"></i><b>4.1</b> Public data in h5 format</a></li>
-<li class="chapter" data-level="4.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mex-format"><i class="fa fa-check"></i><b>4.2</b> Public data in 10X MEX format</a></li>
-<li class="chapter" data-level="4.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>4.3</b> Self-prepared files</a></li>
+<li class="chapter" data-level="4.1" data-path="demo-run.html"><a href="demo-run.html#demo-run-with-conda"><i class="fa fa-check"></i><b>4.1</b> Demo run with Conda</a></li>
+<li class="chapter" data-level="4.2" data-path="demo-run.html"><a href="demo-run.html#demo-run-with-docker"><i class="fa fa-check"></i><b>4.2</b> Demo run with Docker</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>5</b> Input configuration</a>
+<li class="chapter" data-level="5" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>5</b> Data preparation</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>5.1</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="5.2" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>5.2</b> Prepare the sample meta file</a>
-<ul>
-<li class="chapter" data-level="5.2.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>5.2.1</b> h5 input</a></li>
-<li class="chapter" data-level="5.2.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>5.2.2</b> MEX input</a></li>
+<li class="chapter" data-level="5.1" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-h5-format"><i class="fa fa-check"></i><b>5.1</b> Public data in h5 format</a></li>
+<li class="chapter" data-level="5.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mex-format"><i class="fa fa-check"></i><b>5.2</b> Public data in 10X MEX format</a></li>
+<li class="chapter" data-level="5.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>5.3</b> Self-prepared files</a></li>
 </ul></li>
-<li class="chapter" data-level="5.3" data-path="input-configuration.html"><a href="input-configuration.html#file-hierarchy"><i class="fa fa-check"></i><b>5.3</b> File hierarchy</a></li>
+<li class="chapter" data-level="6" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>6</b> Input configuration</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="input-configuration.html"><a href="input-configuration.html#generate-template-files"><i class="fa fa-check"></i><b>6.1</b> Generate template files</a></li>
+<li class="chapter" data-level="6.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>6.2</b> Prepare the config.yml file</a></li>
+<li class="chapter" data-level="6.3" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>6.3</b> Prepare the sample meta file</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>6.3.1</b> h5 input</a></li>
+<li class="chapter" data-level="6.3.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>6.3.2</b> MEX input</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>6</b> Running the pipeline</a>
-<ul>
-<li class="chapter" data-level="6.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>6.1</b> Initial scAnalyzer run</a></li>
-<li class="chapter" data-level="6.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>6.2</b> Review the bookdown report</a></li>
-<li class="chapter" data-level="6.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>6.3</b> Generate a slide deck</a></li>
-<li class="chapter" data-level="6.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>6.4</b> Run the full analysis</a></li>
-<li class="chapter" data-level="6.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>6.5</b> Visualize the harmonized results</a></li>
+<li class="chapter" data-level="6.4" data-path="input-configuration.html"><a href="input-configuration.html#file-hierarchy"><i class="fa fa-check"></i><b>6.4</b> File hierarchy</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>7</b> Differential expression (DE) analysis</a>
+<li class="chapter" data-level="7" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>7</b> Running the pipeline</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>7.1</b> Example 1</a></li>
-<li class="chapter" data-level="7.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>7.2</b> Example 2</a></li>
+<li class="chapter" data-level="7.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>7.1</b> Initial scAnalyzer run</a></li>
+<li class="chapter" data-level="7.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>7.2</b> Review the bookdown report</a></li>
+<li class="chapter" data-level="7.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>7.3</b> Generate a slide deck</a></li>
+<li class="chapter" data-level="7.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>7.4</b> Run the full analysis</a></li>
+<li class="chapter" data-level="7.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>7.5</b> Visualize the harmonized results</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>8</b> Reference building</a>
+<li class="chapter" data-level="8" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>8</b> Differential expression (DE) analysis</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>8.1</b> Initialize scRef</a></li>
-<li class="chapter" data-level="8.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>8.2</b> Submit scRef</a></li>
+<li class="chapter" data-level="8.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>8.1</b> Example 1</a></li>
+<li class="chapter" data-level="8.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>8.2</b> Example 2</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>9</b> CellDepot publishing</a>
+<li class="chapter" data-level="9" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>9</b> Reference building</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>9.1</b> Initialize sc2celldepot</a></li>
-<li class="chapter" data-level="9.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#publish-to-celldepot"><i class="fa fa-check"></i><b>9.2</b> Publish to CellDepot</a></li>
+<li class="chapter" data-level="9.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>9.1</b> Initialize scRef</a></li>
+<li class="chapter" data-level="9.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>9.2</b> Submit scRef</a></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>10</b> Additional tools</a>
+<li class="chapter" data-level="10" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>10</b> CellDepot publishing</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>10.1</b> scDEG</a>
-<ul>
-<li class="chapter" data-level="10.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>10.1.1</b> Initialize scDEG</a></li>
-<li class="chapter" data-level="10.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>10.1.2</b> Run DE analysis</a></li>
+<li class="chapter" data-level="10.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>10.1</b> Initialize sc2celldepot</a></li>
+<li class="chapter" data-level="10.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#publish-to-celldepot"><i class="fa fa-check"></i><b>10.2</b> Publish to CellDepot</a></li>
 </ul></li>
-<li class="chapter" data-level="10.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>10.2</b> scTool</a>
+<li class="chapter" data-level="11" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>11</b> Additional tools</a>
 <ul>
-<li class="chapter" data-level="10.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>10.2.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="10.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>10.2.2</b> Add annotations</a></li>
-<li class="chapter" data-level="10.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.2.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="11.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>11.1</b> scDEG</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>11.1.1</b> Initialize scDEG</a></li>
+<li class="chapter" data-level="11.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>11.1.2</b> Run DE analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>11.2</b> scTool</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.2.1</b> Remove annotations</a></li>
+<li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.2.2</b> Add annotations</a></li>
+<li class="chapter" data-level="11.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.2.3</b> Export gene expressions</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -218,8 +228,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="differential-expression-de-analysis" class="section level1 hasAnchor" number="7">
-<h1><span class="header-section-number">Chapter 7</span> Differential expression (DE) analysis<a href="differential-expression-de-analysis.html#differential-expression-de-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="differential-expression-de-analysis" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Differential expression (DE) analysis<a href="differential-expression-de-analysis.html#differential-expression-de-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Another critical function of the scRNASequest pipeline is the <strong>Differential expression (DE)</strong> analysis. By running the steps in Section 6: <a href="running-the-pipeline.html#running-the-pipeline">Running the pipeline</a>, we have performed quality control of the data, and generated an integrated dataset.</p>
 <p>Before running the DE analysis, the <strong>DEGinfo.csv</strong> comparison file needs to be prepared:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_empty.png" /></a></p>
@@ -228,26 +238,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Covariate adjustment:</strong></p>
 <p>Adjusting covariates is optional. By default, NEBULA considers the value of <strong>log of total UMI (library size)</strong> as the offset covariate in our pipeline, so you don’t need to adjust this again in <strong>“covars”</strong>.</p>
 <p>If needed, you can put a formula in the <strong>“covars”</strong> column using the meta information from the sampleMeta.csv file, such as Sex, Age, etc. You can also include QC metrics such as mitochondria percentage (pct_MT), etc. Please find a full list of QC metrics below. You can also open the Cellxgene VIP and check the right side. All numeric covariates are listed there.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="differential-expression-de-analysis.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb54-1"><a href="differential-expression-de-analysis.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
 <p>You may consider <strong>pct_MT</strong> as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the <strong>“covars”</strong> column: <strong>Age+Sex+pct_MT</strong>.</p>
 <p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:</p>
 <p>We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
-<div id="example-1" class="section level2 hasAnchor" number="7.1">
-<h2><span class="header-section-number">7.1</span> Example 1<a href="differential-expression-de-analysis.html#example-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="example-1" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Example 1<a href="differential-expression-de-analysis.html#example-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In the first example, we would like to run DE analysis between <strong>‘Female’</strong> and <strong>‘Male’</strong> for each cluster annotated by <strong>predicted.celltype1</strong>. In the first column, we input the header name <strong>library_id</strong>, which annotates the data sources. Then we add <strong>predicted.celltype1</strong> in the <em>cluster</em> column, which allows the pipeline to loop through each cluster in <strong>predicted.celltype1</strong>. The <em>group</em> column contains the header name storing the comparison groups, and here we use the <strong>Sex</strong> annotation. Each time, the pipeline can only compare two conditions, such as <strong>‘Female’</strong> and <strong>‘Male’</strong>. If the <em>group</em> column contains more groups, please list them in multiple lines in the DEGinfo.csv file.</p>
 <p>We can also add <em>covars</em> if needed, but this is optional.</p>
 <p>The default DE analysis is performed by <a href="https://www.nature.com/articles/s42003-021-02146-6" target="_blank"><strong>NEBULA</strong></a>. As for the model, NEBULA provides two choices: <strong>HL</strong> and <strong>LN</strong>. For more details about them, please refer to the <a href="https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl" target="_blank">NEBULA manual</a>.</p>
 <p>Here is the DEGinfo.csv we described above:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="differential-expression-de-analysis.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
-<span id="cb31-2"><a href="differential-expression-de-analysis.html#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</span></span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb55-1"><a href="differential-expression-de-analysis.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
+<span id="cb55-2"><a href="differential-expression-de-analysis.html#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</span></span></code></pre></div>
 <p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="differential-expression-de-analysis.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb33-2"><a href="differential-expression-de-analysis.html#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="differential-expression-de-analysis.html#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb33-4"><a href="differential-expression-de-analysis.html#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="differential-expression-de-analysis.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb57-2"><a href="differential-expression-de-analysis.html#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="differential-expression-de-analysis.html#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb57-4"><a href="differential-expression-de-analysis.html#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step may take a few hours to run. The output files will be generated in the directory:</p>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4
@@ -275,7 +285,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-9">Table 7.1: </span>DEG analysis of Female.vs.Male in astrocytes
+<span id="tab:unnamed-chunk-14">Table 8.1: </span>DEG analysis of Female.vs.Male in astrocytes
 </caption>
 <thead>
 <tr>
@@ -640,8 +650,8 @@ NBGMM (HL)
 <p>An example of the DE png file (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.png):</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Female_vs_Male_Astrocytes.png" /></a></p>
 </div>
-<div id="example-2" class="section level2 hasAnchor" number="7.2">
-<h2><span class="header-section-number">7.2</span> Example 2<a href="differential-expression-de-analysis.html#example-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="example-2" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> Example 2<a href="differential-expression-de-analysis.html#example-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In the second example, we are going to show how to perform DE analysis <strong>between two cell types</strong>. To achieve this, we added one artificial column (called ‘SelectAll’) in the <strong>sampleMeta.csv</strong> file, and assigned the same values (‘Everything’) to all the data:</p>
 <pre><code>Sample_Name,h5path,Sex,SelectAll
 5705STDY8058280,/home/ysun4/testSinglecell/ExternalData/5705STDY8058280_filtered_feature_bc_matrix.h5,Female,Everything
@@ -669,7 +679,7 @@ Comparison_Ast_vs_Oligo,library_id,SelectAll,predicted.celltype1,astrocytes,Olig
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-10">Table 7.2: </span>DEG analysis of astrocytes.vs.Oligos
+<span id="tab:unnamed-chunk-15">Table 8.2: </span>DEG analysis of astrocytes.vs.Oligos
 </caption>
 <thead>
 <tr>
@@ -1073,7 +1083,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/07-DEAnalysis.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/08-DEAnalysis.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -1081,7 +1091,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/07-DEAnalysis.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/08-DEAnalysis.Rmd",
 "text": null
 },
 "download": null,
