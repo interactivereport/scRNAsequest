@@ -12,18 +12,18 @@ seuratObj <- function(strRDS,strH5ad){
   message("Obtain and append cell meta information")
   meta <- getobs(strH5ad)
   meta <- meta[,!colnames(meta)%in%colnames(D@meta.data)]
-  meta <- merge(D@meta.data,meta,by=0,all.x=T)
+  meta <- merge(D@meta.data,meta,by=0,all.x=T,sort=F)
   rownames(meta) <- unlist(meta[,1])
-  D@meta.data <- meta[,-1]
+  D@meta.data <- meta[rownames(D@meta.data),-1]
   # add embedding
   message("Obtain and append cell integration embedding")
   for(one in getobsmKey(strH5ad)){
     keyname <- gsub("X_","",one)
     message("\t",keyname)
     key <- gsub("[[:punct:]]","",keyname)
-    X <- getobsm(strH5ad,one)
-    colnames(X) <- paste(key,1:ncol(X),sep="_")
-    D[[keyname]] <- CreateDimReducObject(embeddings=X,key=paste0(key,"_"),assay="RNA")
+    X <- merge(data.frame(row.names=rownames(D@meta.data)),getobsm(strH5ad,one),by=0,all.x=T,sort=F)
+    dimnames(X) <- list(X[,1],paste(key,1:ncol(X),sep="_"))
+    D[[keyname]] <- CreateDimReducObject(embeddings=as.matrix(X[rownames(D@meta.data),-1]),key=paste0(key,"_"),assay=D@active.assay)
   }
   message("Saving h5seurat")
   suppressMessages(SeuratDisk::SaveH5Seurat(D,filename=gsub("h5ad$","h5seurat",strH5ad),overwrite=T))
