@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-03-20" />
+<meta name="date" content="2023-03-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -232,7 +232,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 5</span> Data preparation<a href="data-preparation.html#data-preparation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>scRNASequest pipeline is compatible with different single-cell experiment outputs, including the <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices" target="_blank"><strong>10X MEX format</strong></a> and the <a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/h5_matrices" target="_blank"><strong>10X h5 format</strong></a> from Cell Ranger. The user may need to manually separate the annotation file, so that no cell filtering was performed. In this chapter, we will walk through how to prepare the data before running the pipeline.</p>
 <p>A bit more information about these two types of format:</p>
-<p><strong>10X MEX format</strong>: This format has three associated files: an <strong>mtx file</strong> and associated <strong>barcodes</strong> file as well as a <strong>features</strong> file. Based on the information provided by the 10X official <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices-">website</a>, the MEX is also called the <strong>Market Exchange (MEX) format</strong>, and the .mtx is a plain text file like this:</p>
+<p><strong>10X MEX format</strong>: This format has three associated files: an <strong>mtx file</strong> and associated <strong>barcodes</strong> file as well as a <strong>features</strong> file. Based on the information provided by the 10X official <a href="https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices-">website</a>, the MEX is also called the <strong>Market Exchange (MEX) format</strong>, and the .mtx is a plain text file showing <strong>MatrixMarket matrix coordinates</strong> like this:</p>
 <pre><code>%%MatrixMarket matrix coordinate integer general
 %
 154 1 21
