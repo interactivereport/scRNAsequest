@@ -197,7 +197,7 @@ The results will be new h5ad files as below:
     └── sc2celldepot.yml
 ```
 
-We provide another demo using two h5 data files from our previous [demo](https://github.com/interactivereport/scRNAsequest/tree/main/demo) dataset. Besides that, we also need two cell level annotation files, and I have prepared them: RatMaleCigarette.annotation.csv, RatFemaleCigarette.annotation.csv.
+We provide another demo using two h5 data files from our previous [demo](https://github.com/interactivereport/scRNAsequest/tree/main/demo) dataset. Besides that, we also need two cell level annotation files, and I have prepared them: [RatMaleCigarette.annotation.csv](https://github.com/interactivereport/scRNAsequest/releases/download/untagged-e92025b745dbc6f9666a/RatMaleCigarette.annotation.csv), [RatFemaleCigarette.annotation.csv](https://github.com/interactivereport/scRNAsequest/releases/download/untagged-e92025b745dbc6f9666a/RatFemaleCigarette.annotation.csv).
 
 Take a quick look of the csv files (Usually, the cell barcodes in the list is only a subset of all barcodes in the h5, due to filtering in previous analysis):
 ```{bash, eval=FALSE}
