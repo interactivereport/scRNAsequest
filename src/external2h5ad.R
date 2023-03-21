@@ -309,13 +309,15 @@ processSCT <- function(D,batch=NULL){
   }else{
     D <- merge(Dlist[[1]], y=Dlist[-1])
     VariableFeatures(D) <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
+    message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
+    D <- PrepSCTFindMarkers(D)
   }
   return(D)
 }
 processLayout <- function(D,reduction,config){
   message("\tobtain the layout reduction")
   if(length(reduction)==0){
-    stop("Empty reduction layout")
+    #stop("Empty reduction layout")
     if(length(VariableFeatures(D))<50) D <- FindVariableFeatures(D, nfeatures = 3000)
     D <- RunPCA(D, features = VariableFeatures(D))
     D <- RunUMAP(D,dims=1:50)
