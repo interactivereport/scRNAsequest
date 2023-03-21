@@ -137,9 +137,9 @@ Finally, copy the **E-MTAB-11115.h5ad** to the [CellDepot](https://github.com/in
 
 ## Demo sc2celldepot
 
-To demo sc2celldepot, we use the following RDS file (GSE172462.SCT.For_scRef.rds), which we had used it to demo scRef. This RDS file contains cell type labeling and embedding information. 
+To demo **sc2celldepot**, we use the following RDS file ([GSE172462.SCT.For_scRef.rds](https://github.com/interactivereport/scRNAsequest/releases/download/untagged-e92025b745dbc6f9666a/GSE172462.SCT.For_scRef.rds)), which we had used it to demo scRef. This RDS file contains cell type labeling and embedding information. Please download it to the working directory, for example, ~/demo_celldepot.
 
-Then we run the **sc2celldepot** program by providing a working directory, in our case, for example:
+Then we run the **sc2celldepot** program by providing a working directory, in our case:
 
 ```{bash, eval=FALSE}
 sc2celldepot ~/demo_celldepot
@@ -153,7 +153,7 @@ File hierarchy after running the above command:
     └── sc2celldepot.yml
 ```
 
-We set up the sc2celldepot.yml in the following way, by just adding information to `prefix` and `seuratObj`:
+We set up the **sc2celldepot.yml** in the following way, by just adding information to `prefix` and `seuratObj`:
 
 ```{bash, eval=FALSE}
 ## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
