@@ -4,7 +4,7 @@ scRNASequest pipeline is compatible with different single-cell experiment output
 
 A bit more information about these two types of format:
 
-**10X MEX format**: This format has three associated files: an **mtx file** and associated **barcodes** file as well as a **features** file. Based on the information provided by the 10X official [website](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices-), the MEX is also called the Market Exchange (MEX) format, and the .mtx is a plain text file like this:
+**10X MEX format**: This format has three associated files: an **mtx file** and associated **barcodes** file as well as a **features** file. Based on the information provided by the 10X official [website](https://kb.10xgenomics.com/hc/en-us/articles/115000794686-How-is-the-MEX-format-used-for-the-gene-barcode-matrices-), the MEX is also called the **Market Exchange (MEX) format**, and the .mtx is a plain text file like this:
 
 ```
 %%MatrixMarket matrix coordinate integer general

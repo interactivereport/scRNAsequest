@@ -268,6 +268,8 @@ gene_group:
     startwith: [&quot;MT-&quot;,&quot;Mt-&quot;,&quot;mt-&quot;]
     cutoff: 20           # percentage cutoff to filter out the cells (larger than this cutoff)
     rm: False            # this means the genes specified &quot;startwith&quot; will be REMOVED from the downstream analysis
+  # The following is an example (Ribosomal genes) to add additional gene set/list to be quantified the percentage over total UMI per cell
+  # additional gene set/list can be added as the format
   RP:
     startwith: [MRPL,MRPS,RPL,RPS]
     cutoff: 50
@@ -278,18 +280,21 @@ min.features: 50         #filtering cells by minimal genes
 highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
 group:                   #if provided, a 10X QC box plot will be ploted in QC plot
-rasterizeFig: True       # should image in pdf be rasterized
+rasterizeFig: True       #should image in pdf be rasterized
 
-runAnalysis: False
+reRunQC: True            #if satisfied with the above setting, please set this to False to save time 
+runAnalysis: False       #False means only run QC steps before data normalization and harmonization
+                         #If QC looks good, turn this to True to run the full pipeline
 newProcess: False
 methods: [SCT,Liger,SeuratRef,SeuratRPCA,sctHarmony]    #SCT method (including log1p) is required expression normalization
+                         #The listed methods include all available analyses. If you want to ignore Liger, for example, you can delete it here
 expScaler: 10000         #integer value, 0: SCT (along with following option); 1-100: logNormal with scale.factor to be the specified quantile
                          #&gt;100: logNormal with scale.factor to be the specified value                                         
 PrepSCTFindMarkers: True # should the &quot;PrepSCTFindMarkers&quot; applied on SCT to be exported for visualization expression                                                             
 parallel: False          #&quot;sge&quot; or &quot;slurm&quot;
 core: 2
-overwrite: False
-major_cluster_rate: 0.7  # the proportion of cells of an integration cluster to be assigned to a seurat reference label
+overwrite: False         #if you are rerunning the same project, set this to True to overwrite previous results
+major_cluster_rate: 0.7  #the proportion of cells of an integration cluster to be assigned to a seurat reference label
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp:  ~/E-MTAB-11115/DEGinfo.csv         #required for DEG analysis, but you can leave this empty if not going to run DEG
@@ -315,8 +320,9 @@ R6_min.cells.per.subj: 3                      # Minimum cells required per subje
 
 ## publish to celldepot
 publish: False</code></pre>
-<p>In the first run (see the below scAnalyzer section on how to run the pipeline), the user can set <code>runAnalysis: False</code> and use the above default parameters to perform cell filtering and QC.</p>
+<p>In the first run (see the below section 7.1 scAnalyzer section on how to run the pipeline), the user can set <code>runAnalysis: False</code> and use the above default parameters to perform cell filtering and QC.</p>
 <p>Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different datasets may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.</p>
+<p>For HPC clusters, if you set <code>parallel</code> to be “sge” or “slurm” based on your cluster, the pipeline will automatically submit separate jobs and monitor the run. Finally, it will collect results and summarize them.</p>
 <p>Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:</p>
 <pre><code>runAnalysis: True
 overwrite: True</code></pre>
@@ -341,7 +347,13 @@ overwrite: True</code></pre>
 5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,Female,56d
 5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,Male,56d
 5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,Male,56d
-5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv,Male,56d</code></pre>
+5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv,Male,56d
+
+#A brief look at the annotation file used in the metapath column:
+$ head -3 5705STDY8058280_annotation.csv
+Cell.ID,sample,annotation_1,annotation_1_print
+AAACCCAAGGAAGTAG-1,5705STDY8058280,Ext_L25,23_Ext_L25
+AAACCCAAGGGCAGTT-1,5705STDY8058280,Ext_L56,24_Ext_L56</code></pre>
 </div>
 <div id="mex-input" class="section level3 hasAnchor" number="6.3.2">
 <h3><span class="header-section-number">6.3.2</span> MEX input<a href="input-configuration.html#mex-input" class="anchor-section" aria-label="Anchor link to header"></a></h3>
