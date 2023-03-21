@@ -30,7 +30,7 @@
   
   
 <link rel="prev" href="reference-building.html"/>
-
+<link rel="next" href="additional-tools.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -194,15 +194,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="10" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>10</b> CellDepot publishing</a>
 <ul>
 <li class="chapter" data-level="10.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>10.1</b> Initialize sc2celldepot</a></li>
-<li class="chapter" data-level="10.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#the-config-file-to-process-public-scsn-rnaseq-and-generate-h5ad-for-celldepot"><i class="fa fa-check"></i><b>10.2</b> The config file to process public sc/sn RNAseq and generate h5ad for celldepot</a>
-<ul>
-<li class="chapter" data-level="10.2.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#run-de-analysis"><i class="fa fa-check"></i><b>10.2.1</b> Run DE analysis</a></li>
+<li class="chapter" data-level="10.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#run-sc2celldepot"><i class="fa fa-check"></i><b>10.2</b> Run sc2celldepot</a></li>
+<li class="chapter" data-level="10.3" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#demo-sc2celldepot"><i class="fa fa-check"></i><b>10.3</b> Demo sc2celldepot</a></li>
 </ul></li>
-<li class="chapter" data-level="10.3" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#sctool"><i class="fa fa-check"></i><b>10.3</b> scTool</a>
+<li class="chapter" data-level="11" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>11</b> Additional tools</a>
 <ul>
-<li class="chapter" data-level="10.3.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#remove-annotations"><i class="fa fa-check"></i><b>10.3.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="10.3.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#add-annotations"><i class="fa fa-check"></i><b>10.3.2</b> Add annotations</a></li>
-<li class="chapter" data-level="10.3.3" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#export-gene-expressions"><i class="fa fa-check"></i><b>10.3.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="11.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>11.1</b> scDEG</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>11.1.1</b> Initialize scDEG</a></li>
+<li class="chapter" data-level="11.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>11.1.2</b> Run DE analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>11.2</b> scTool</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.2.1</b> Remove annotations</a></li>
+<li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.2.2</b> Add annotations</a></li>
+<li class="chapter" data-level="11.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.2.3</b> Export gene expressions</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -253,285 +259,162 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">10.1</span> Initialize sc2celldepot<a href="celldepot-publishing.html#initialize-sc2celldepot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Running <strong>sc2celldepot</strong> by providing a working directory will initiate the project and generate a template of config file. The config file template can be found: <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/external2h5ad.yml" target="_blank">template</a>.</p>
 <p>First, we create a new directory under the project. Then we run the <strong>sc2celldepot</strong> command:</p>
-<pre><code>mkdir ~/E-MTAB-11115/CellDepot_publish
-sc2celldepot ~/E-MTAB-11115/CellDepot_publish
-
-E-MTAB-11115/
-    ├── E-MTAB-11115.rds
-    └── CellDepot_publish
-        └── sc2celldepot.yml</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb74-1"><a href="celldepot-publishing.html#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/E-MTAB-11115/CellDepot_publish</span>
+<span id="cb74-2"><a href="celldepot-publishing.html#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> ~/E-MTAB-11115/CellDepot_publish</span>
+<span id="cb74-3"><a href="celldepot-publishing.html#cb74-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-4"><a href="celldepot-publishing.html#cb74-4" aria-hidden="true" tabindex="-1"></a><span class="ex">E-MTAB-11115/</span></span>
+<span id="cb74-5"><a href="celldepot-publishing.html#cb74-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> E-MTAB-11115.rds</span>
+<span id="cb74-6"><a href="celldepot-publishing.html#cb74-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">└──</span> CellDepot_publish</span>
+<span id="cb74-7"><a href="celldepot-publishing.html#cb74-7" aria-hidden="true" tabindex="-1"></a>        <span class="ex">└──</span> sc2celldepot.yml</span></code></pre></div>
 <p>Here is an example after filling in the configuration <strong>sc2celldepot.yml</strong> file.</p>
 <p>For a simple example, we just provide a prefix and an RDS file path to this yml file. The pipeline will read the metadata and convert it to an h5ad file.</p>
-<pre><code>## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
-output: ~/E-MTAB-11115/CellDepot_publish
-prefix: E-MTAB-11115                              # the prefix of the file name of the h5ad
-
-# seurat RDS is avaiable, otherwise please move to next section
-seuratObj: ~/E-MTAB-11115/E-MTAB-11115.rds        # the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction
-seuratUMI: RNA                                    # the name of the assay stores raw UMI
-seuratSCT: SCT                                    # the name of the assay stores SCT
-seuratMeta: []                                    # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
-
-# Expression when the seurat RDS is not available (row gene/column cell)
-# if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
-expression: [] # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;
-dataUMI: True #if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;
-
-# cell annotation (cell intersection will be used, first column is the cell ID)
-annotation: [] # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
-annotationUse: [] # the column names in the annotation file to be extracted for h5ad, empty list means all columns
-sample_column: #one column header from annotation file, if the one expression file needs to be splited into each sample
-
-# cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
-reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
-  files: [] #full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
-  umap: [] # column headers from layout file to be used, please use quote for each column header
-  tsne: [] # column headers from layout file to be used, please use quote for each column header
-  pca: [] # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)</code></pre>
+<div class="sourceCode" id="cb75"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb75-1"><a href="celldepot-publishing.html#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file to process public sc/sn RNAseq and generate h5ad for celldepot</span></span>
+<span id="cb75-2"><a href="celldepot-publishing.html#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> ~/E-MTAB-11115/CellDepot_publish</span>
+<span id="cb75-3"><a href="celldepot-publishing.html#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="ex">prefix:</span> E-MTAB-11115                                        <span class="co"># the prefix of the file name of the h5ad</span></span>
+<span id="cb75-4"><a href="celldepot-publishing.html#cb75-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-5"><a href="celldepot-publishing.html#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="co"># seurat RDS is avaiable, otherwise please move to next section</span></span>
+<span id="cb75-6"><a href="celldepot-publishing.html#cb75-6" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratObj:</span> ~/E-MTAB-11115/E-MTAB-11115.rds                  <span class="co"># the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction</span></span>
+<span id="cb75-7"><a href="celldepot-publishing.html#cb75-7" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratUMI:</span> RNA                                              <span class="co"># the name of the assay stores raw UMI</span></span>
+<span id="cb75-8"><a href="celldepot-publishing.html#cb75-8" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratSCT:</span> SCT                                              <span class="co"># the name of the assay stores SCT</span></span>
+<span id="cb75-9"><a href="celldepot-publishing.html#cb75-9" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratMeta:</span> []                                              <span class="co"># the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds</span></span>
+<span id="cb75-10"><a href="celldepot-publishing.html#cb75-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-11"><a href="celldepot-publishing.html#cb75-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Expression when the seurat RDS is not available (row gene/column cell)</span></span>
+<span id="cb75-12"><a href="celldepot-publishing.html#cb75-12" aria-hidden="true" tabindex="-1"></a><span class="co"># if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match</span></span>
+<span id="cb75-13"><a href="celldepot-publishing.html#cb75-13" aria-hidden="true" tabindex="-1"></a><span class="ex">expression:</span> []                                              <span class="co"># full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;</span></span>
+<span id="cb75-14"><a href="celldepot-publishing.html#cb75-14" aria-hidden="true" tabindex="-1"></a><span class="ex">dataUMI:</span> True                                               <span class="co"># if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;</span></span>
+<span id="cb75-15"><a href="celldepot-publishing.html#cb75-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-16"><a href="celldepot-publishing.html#cb75-16" aria-hidden="true" tabindex="-1"></a><span class="co"># cell annotation (cell intersection will be used, first column is the cell ID)</span></span>
+<span id="cb75-17"><a href="celldepot-publishing.html#cb75-17" aria-hidden="true" tabindex="-1"></a><span class="ex">annotation:</span> []                                              <span class="co"># full path to the cell annotation file, first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb75-18"><a href="celldepot-publishing.html#cb75-18" aria-hidden="true" tabindex="-1"></a><span class="ex">annotationUse:</span> []                                           <span class="co"># the column names in the annotation file to be extracted for h5ad, empty list means all columns</span></span>
+<span id="cb75-19"><a href="celldepot-publishing.html#cb75-19" aria-hidden="true" tabindex="-1"></a><span class="ex">sample_column:</span>                                              <span class="co"># one column header from annotation file, if the one expression file needs to be splited into each sample</span></span>
+<span id="cb75-20"><a href="celldepot-publishing.html#cb75-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-21"><a href="celldepot-publishing.html#cb75-21" aria-hidden="true" tabindex="-1"></a><span class="co"># cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order</span></span>
+<span id="cb75-22"><a href="celldepot-publishing.html#cb75-22" aria-hidden="true" tabindex="-1"></a><span class="ex">reduction:</span>                                                  <span class="co"># optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad</span></span>
+<span id="cb75-23"><a href="celldepot-publishing.html#cb75-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">files:</span> []                                                 <span class="co"># full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb75-24"><a href="celldepot-publishing.html#cb75-24" aria-hidden="true" tabindex="-1"></a>  <span class="ex">umap:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb75-25"><a href="celldepot-publishing.html#cb75-25" aria-hidden="true" tabindex="-1"></a>  <span class="ex">tsne:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb75-26"><a href="celldepot-publishing.html#cb75-26" aria-hidden="true" tabindex="-1"></a>  <span class="ex">pca:</span> []                                                   <span class="co"># column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)</span></span></code></pre></div>
 <p>Alternatively, if you don’t have an RDS file, users can provide raw UMI files together with cell type annotation files and reduction embeddings in this way:</p>
 <p>Besides the required <code>output</code> and <code>prefix</code> parameters, in this example, the <code>expression</code> points to several h5 files or MEX folders, which is required. The <code>annotation</code> points to cell type annotation (and other cell level information) csv files, which are also required.</p>
-<pre><code>## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
-output: ~/E-MTAB-11115/CellDepot_publish
-prefix: E-MTAB-11115                                        # the prefix of the file name of the h5ad
-
-# seurat RDS is avaiable, otherwise please move to next section
-seuratObj:                                                  # the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction
-seuratUMI: RNA                                              # the name of the assay stores raw UMI
-seuratSCT: SCT                                              # the name of the assay stores SCT
-seuratMeta: []                                              # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
-
-# Expression when the seurat RDS is not available (row gene/column cell)
-# if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
-expression: [~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5] # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;
-dataUMI: True                                               # if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;
-
-# cell annotation (cell intersection will be used, first column is the cell ID)
-annotation: [~/E-MTAB-11115/data/5705STDY8058280_annotation.csv,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv] # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
-annotationUse: []                                           # the column names in the annotation file to be extracted for h5ad, empty list means all columns
-sample_column:                                              # one column header from annotation file, if the one expression file needs to be splited into each sample
-
-# cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
-reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
-  files: []                                                 # full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
-  umap: []                                                  # column headers from layout file to be used, please use quote for each column header
-  tsne: []                                                  # column headers from layout file to be used, please use quote for each column header
-  pca: []                                                   # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)```
-
-## Run sc2celldepot
-
-After preparing the **sc2celldepot.yml** file, we are ready to run the pipeline by the following command:
-</code></pre>
-<p>sc2celldepot ~/E-MTAB-11115/CellDepot_publish/sc2celldepot.yml</p>
-<pre><code>
-This workflow will generate the output files in the working directory, **CellDepot_publish**:
-
-The output prefix is determined by the **prefix** parameter in the sc2celldepot.yml file.
-</code></pre>
-<p>E-MTAB-11115/
-├── E-MTAB-11115.rds
-└── CellDepot_publish
-├── E-MTAB-11115.h5ad
-├── E-MTAB-11115.raw_added.h5ad
-└── sc2celldepot.yml</p>
-<pre><code>
-Finally, copy the **E-MTAB-11115.h5ad** to the [CellDepot](https://github.com/interactivereport/CellDepot){target=&quot;_blank&quot;} folder defined by sys.yml (celldepotDir) and follow the [instructions](https://interactivereport.github.io/CellDepot/bookdown/docs/){target=&quot;_blank&quot;} for publishing it.
-
-## Demo sc2celldepot
-
-To demo sc2celldepot, we use the following RDS file (GSE172462.SCT.For_scRef.rds), which we had used it to demo scRef. This RDS file contains cell type labeling and embedding information. 
-
-Then we run the **sc2celldepot** program by providing a working directory, in our case, for example:
-</code></pre>
-<p>sc2celldepot ~/demo_celldepot</p>
-<pre><code>
-File hierarchy after running the above command:
-</code></pre>
-<p>~/demo_celldepot
-├── GSE172462.SCT.For_scRef.rds
-└── sc2celldepot.yml</p>
-<pre><code>
-We set up the sc2celldepot.yml in the following way, by just adding information to `prefix` and `seuratObj`:
-</code></pre>
+<div class="sourceCode" id="cb76"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb76-1"><a href="celldepot-publishing.html#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file to process public sc/sn RNAseq and generate h5ad for celldepot</span></span>
+<span id="cb76-2"><a href="celldepot-publishing.html#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> ~/E-MTAB-11115/CellDepot_publish</span>
+<span id="cb76-3"><a href="celldepot-publishing.html#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="ex">prefix:</span> E-MTAB-11115                                        <span class="co"># the prefix of the file name of the h5ad</span></span>
+<span id="cb76-4"><a href="celldepot-publishing.html#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-5"><a href="celldepot-publishing.html#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="co"># seurat RDS is avaiable, otherwise please move to next section</span></span>
+<span id="cb76-6"><a href="celldepot-publishing.html#cb76-6" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratObj:</span>                                                  <span class="co"># the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction</span></span>
+<span id="cb76-7"><a href="celldepot-publishing.html#cb76-7" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratUMI:</span> RNA                                              <span class="co"># the name of the assay stores raw UMI</span></span>
+<span id="cb76-8"><a href="celldepot-publishing.html#cb76-8" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratSCT:</span> SCT                                              <span class="co"># the name of the assay stores SCT</span></span>
+<span id="cb76-9"><a href="celldepot-publishing.html#cb76-9" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratMeta:</span> []                                              <span class="co"># the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds</span></span>
+<span id="cb76-10"><a href="celldepot-publishing.html#cb76-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-11"><a href="celldepot-publishing.html#cb76-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Expression when the seurat RDS is not available (row gene/column cell)</span></span>
+<span id="cb76-12"><a href="celldepot-publishing.html#cb76-12" aria-hidden="true" tabindex="-1"></a><span class="co"># if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match</span></span>
+<span id="cb76-13"><a href="celldepot-publishing.html#cb76-13" aria-hidden="true" tabindex="-1"></a><span class="ex">expression:</span> [~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5] <span class="co"># full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;</span></span>
+<span id="cb76-14"><a href="celldepot-publishing.html#cb76-14" aria-hidden="true" tabindex="-1"></a><span class="ex">dataUMI:</span> True                                               <span class="co"># if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;</span></span>
+<span id="cb76-15"><a href="celldepot-publishing.html#cb76-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-16"><a href="celldepot-publishing.html#cb76-16" aria-hidden="true" tabindex="-1"></a><span class="co"># cell annotation (cell intersection will be used, first column is the cell ID)</span></span>
+<span id="cb76-17"><a href="celldepot-publishing.html#cb76-17" aria-hidden="true" tabindex="-1"></a><span class="ex">annotation:</span> [~/E-MTAB-11115/data/5705STDY8058280_annotation.csv,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv] <span class="co"># full path to the cell annotation file, first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb76-18"><a href="celldepot-publishing.html#cb76-18" aria-hidden="true" tabindex="-1"></a><span class="ex">annotationUse:</span> []                                           <span class="co"># the column names in the annotation file to be extracted for h5ad, empty list means all columns</span></span>
+<span id="cb76-19"><a href="celldepot-publishing.html#cb76-19" aria-hidden="true" tabindex="-1"></a><span class="ex">sample_column:</span>                                              <span class="co"># one column header from annotation file, if the one expression file needs to be splited into each sample</span></span>
+<span id="cb76-20"><a href="celldepot-publishing.html#cb76-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-21"><a href="celldepot-publishing.html#cb76-21" aria-hidden="true" tabindex="-1"></a><span class="co"># cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order</span></span>
+<span id="cb76-22"><a href="celldepot-publishing.html#cb76-22" aria-hidden="true" tabindex="-1"></a><span class="ex">reduction:</span> <span class="co">#optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad</span></span>
+<span id="cb76-23"><a href="celldepot-publishing.html#cb76-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">files:</span> []                                                 <span class="co"># full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb76-24"><a href="celldepot-publishing.html#cb76-24" aria-hidden="true" tabindex="-1"></a>  <span class="ex">umap:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb76-25"><a href="celldepot-publishing.html#cb76-25" aria-hidden="true" tabindex="-1"></a>  <span class="ex">tsne:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb76-26"><a href="celldepot-publishing.html#cb76-26" aria-hidden="true" tabindex="-1"></a>  <span class="ex">pca:</span> []                                                   <span class="co"># column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)```</span></span></code></pre></div>
 </div>
-<div id="the-config-file-to-process-public-scsn-rnaseq-and-generate-h5ad-for-celldepot" class="section level2 hasAnchor" number="10.2">
-<h2><span class="header-section-number">10.2</span> The config file to process public sc/sn RNAseq and generate h5ad for celldepot<a href="celldepot-publishing.html#the-config-file-to-process-public-scsn-rnaseq-and-generate-h5ad-for-celldepot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>output: /mnt/depts/dept04/compbio/projects/ndru_projects/202303_scRNASequest_demo/demo_celldepot_rds
-prefix: demo_sc2celldepot # the prefix of the file name of the h5ad
-# seurat RDS is avaiable, otherwise please move to next section
-seuratObj: ~/demo_celldepot/GSE172462.SCT.For_scRef.rds # the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction
-seuratUMI: RNA # the name of the assay stores raw UMI
-seuratSCT: SCT # the name of the assay stores SCT
-seuratMeta: [] # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
-# Expression when the seurat RDS is not available (row gene/column cell)
-# if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
-expression: [] # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by ‘,’
-dataUMI: True #if the above expression is UMI, if the value in expression file should be used directly, please set “False”
-# cell annotation (cell intersection will be used, first column is the cell ID)
-annotation: [] # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
-annotationUse: [] # the column names in the annotation file to be extracted for h5ad, empty list means all columns
-sample_column: # one column header from annotation file, if the one expression file needs to be splited into each sample
-# cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
-reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
-files: [] # full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
-umap: [] # column headers from layout file to be used, please use quote for each column header
-tsne: [] # column headers from layout file to be used, please use quote for each column header
-pca: [] # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)</p>
-<pre><code>
-
-
-
-two h5 data files from our [demo](https://github.com/interactivereport/scRNAsequest/tree/main/demo) dataset. Besides that, we also need two cell level annotation files, and I have prepared them:.
-
-Please organize these four files in the working dir (in this demo: ~/demo_celldepot):
-</code></pre>
-<pre><code>
-&lt;!--chapter:end:10-PublishCellDepot.Rmd--&gt;
-
-# Additional tools
-
-## scDEG
-
-**scDEG** is a standalone pipeline to run the differential expression (DE) analysis independently if you alreadly have integrated scRNA-seq data in h5ad format.
-
-**scDEG** uses the same methods as in the scRNASequest pipeline to run DE analysis. It just provides a flexible way to apply the same analysis outside the pipeline.
-
-### Initialize scDEG
-
-scDEG requires three files:
-
-- **UMI**: Gene counts matrix, can be in rds or h5ad format.
-- **Meta**: cell type annotation and related meta information for DE analysis, in h5ad format. If you have this information in your h5ad matrix already, you can provide the same file twice (as UMI and meta file).
-- **config.yml**: file storing the above UMI file path and meta data path, as well as the output file path.
-
-By running the **scDEG** without providing any parameters, we can see the manual page of the script:
-
-
-```bash
-$ scDEG
-
-scDEG /path/to/a/folder === or === scDEG /path/to/a/config/file
-An empty config file will be generated automatically when a folder is provided
-Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
-------------</code></pre>
-<p>Then providing a directory to <strong>scDEG</strong>, and it will generate a template config file:</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb83-1"><a href="celldepot-publishing.html#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG /path/to/a/folder</span>
-<span id="cb83-2"><a href="celldepot-publishing.html#cb83-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb83-3"><a href="celldepot-publishing.html#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb83-4"><a href="celldepot-publishing.html#cb83-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> ~/DEG_results</span></code></pre></div>
-<p>Template configuration file:</p>
-<div class="sourceCode" id="cb84"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb84-1"><a href="celldepot-publishing.html#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="ex">UMI:</span> /path/to/Prefix.h5ad   <span class="co">#required, can be a matrix rds or a h5ad file</span></span>
-<span id="cb84-2"><a href="celldepot-publishing.html#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="ex">meta:</span> /path/to/Prefix.h5ad  <span class="co">#required, can be a cell annotation data.frame rds or a h5ad file</span></span>
-<span id="cb84-3"><a href="celldepot-publishing.html#cb84-3" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> /path/to/output/directory</span>
-<span id="cb84-4"><a href="celldepot-publishing.html#cb84-4" aria-hidden="true" tabindex="-1"></a><span class="ex">DBname:</span> cellxgeneVIP</span>
-<span id="cb84-5"><a href="celldepot-publishing.html#cb84-5" aria-hidden="true" tabindex="-1"></a><span class="ex">parallel:</span> slurm             <span class="co"># False or &quot;sge&quot; or &quot;slurm&quot;</span></span>
-<span id="cb84-6"><a href="celldepot-publishing.html#cb84-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-7"><a href="celldepot-publishing.html#cb84-7" aria-hidden="true" tabindex="-1"></a><span class="co">## DEG analysis for an annotation (such as disease vs health) within a cell type annotation</span></span>
-<span id="cb84-8"><a href="celldepot-publishing.html#cb84-8" aria-hidden="true" tabindex="-1"></a><span class="ex">DEG_desp:</span> /path/to/DEGinfo.csv      <span class="co">#required for DEG analysis</span></span>
-<span id="cb84-9"><a href="celldepot-publishing.html#cb84-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-10"><a href="celldepot-publishing.html#cb84-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Please be causion of changing the following default filtering</span></span>
-<span id="cb84-11"><a href="celldepot-publishing.html#cb84-11" aria-hidden="true" tabindex="-1"></a><span class="co"># More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/</span></span>
-<span id="cb84-12"><a href="celldepot-publishing.html#cb84-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment</span></span>
-<span id="cb84-13"><a href="celldepot-publishing.html#cb84-13" aria-hidden="true" tabindex="-1"></a><span class="ex">min.cells.per.gene:</span> 3 <span class="co"># if `perc_filter` is FALSE, then keep only genes that have expression in at least min.cells.per.gene</span></span>
-<span id="cb84-14"><a href="celldepot-publishing.html#cb84-14" aria-hidden="true" tabindex="-1"></a><span class="ex">min.genes.per.cell:</span> 250 <span class="co"># keep cells with expression in at least min.genes.per.cell genes.</span></span>
-<span id="cb84-15"><a href="celldepot-publishing.html#cb84-15" aria-hidden="true" tabindex="-1"></a><span class="ex">min.perc.cells.per.gene:</span> 0.00 <span class="co">#if &#39;perc_filter&#39;`&#39; is TRUE, then keep only genes that have expression in at least min.per.cells.per.gene * 100 percent of cells</span></span>
-<span id="cb84-16"><a href="celldepot-publishing.html#cb84-16" aria-hidden="true" tabindex="-1"></a><span class="ex">perc_filter:</span> TRUE <span class="co">#if TRUE, apply the cells.per.gene filter using percentages (expressed as a decimal) rather than an absolute threshold</span></span>
-<span id="cb84-17"><a href="celldepot-publishing.html#cb84-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-18"><a href="celldepot-publishing.html#cb84-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the 2nd round of biostats filtering.  For &quot;group&quot; mode, the filtering is applied to `ref_group` and `alt_group` for the given cell type of interest.</span></span>
-<span id="cb84-19"><a href="celldepot-publishing.html#cb84-19" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.cells.per.gene:</span> 3 <span class="co">#minimum cells expressed per gene.  This filter is applied if `R6_perc.cells.filter` is FALSE</span></span>
-<span id="cb84-20"><a href="celldepot-publishing.html#cb84-20" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.perc.cells.per.gene:</span> 0.1 <span class="co"># minimum % cells expressed per gene filtering (use decimal form of percentage).  This threshold is applied if &#39;R6_perc.cells.filter&#39; is TRUE and</span></span>
-<span id="cb84-21"><a href="celldepot-publishing.html#cb84-21" aria-hidden="true" tabindex="-1"></a> <span class="st">&#39;R6_cells.per.gene.filter&#39;</span> is TRUE</span>
-<span id="cb84-22"><a href="celldepot-publishing.html#cb84-22" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.cells.per.gene.type:</span> <span class="st">&quot;or&quot;</span> <span class="co">#The type of cell per gene filtering.  If it has the value &quot;and&quot; then it requires the gene be expressed in both reference and non-reference grou</span></span>
-<span id="cb84-23"><a href="celldepot-publishing.html#cb84-23" aria-hidden="true" tabindex="-1"></a><span class="ex">ps.</span> If it has the value <span class="st">&quot;or&quot;</span> then it requires the gene be expressed in either group</span>
-<span id="cb84-24"><a href="celldepot-publishing.html#cb84-24" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_cells.per.gene.filter:</span> TRUE <span class="co">#TRUE means apply cells per gene filtering</span></span>
-<span id="cb84-25"><a href="celldepot-publishing.html#cb84-25" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc.cells.filter:</span> TRUE <span class="co">#TRUE means apply cell.per.gene filtering by use of a percentage rather than absolute threshold.  If the percentage results in a number less than R6_m</span></span>
-<span id="cb84-26"><a href="celldepot-publishing.html#cb84-26" aria-hidden="true" tabindex="-1"></a><span class="ex">in.cells.per.gene,</span> the code will automatically switch to min.cells.per.gene absolute thresholding</span>
-<span id="cb84-27"><a href="celldepot-publishing.html#cb84-27" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc.filter:</span> FALSE <span class="co">#If TRUE, then apply the 75th percentile gene filtering</span></span>
-<span id="cb84-28"><a href="celldepot-publishing.html#cb84-28" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc.filter.type:</span> <span class="st">&quot;and&quot;</span> <span class="co">#The type of percentile gene filtering.  If it has the value &quot;and&quot; then any gene that has 75th percentile of zero in both groups will be filtered out.</span></span>
-<span id="cb84-29"><a href="celldepot-publishing.html#cb84-29" aria-hidden="true" tabindex="-1"></a>  <span class="ex">If</span> it has the value <span class="st">&quot;or&quot;</span> then any gene that has a 75th percentile of zero in either group will be filtered out.</span>
-<span id="cb84-30"><a href="celldepot-publishing.html#cb84-30" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_perc_threshold:</span> 0.90 <span class="co">#Percentile threshold, 75th percentile is default.  Express percentile as a decimal value.</span></span>
-<span id="cb84-31"><a href="celldepot-publishing.html#cb84-31" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.ave.pseudo.bulk.cpm:</span> 1 <span class="co">#cpm filtering threshold</span></span>
-<span id="cb84-32"><a href="celldepot-publishing.html#cb84-32" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_pseudo.bulk.cpm.filter:</span> FALSE <span class="co">#if TRUE, then apply a cpm filter on the pseudo-bulk counts</span></span>
-<span id="cb84-33"><a href="celldepot-publishing.html#cb84-33" aria-hidden="true" tabindex="-1"></a><span class="ex">R6_min.cells.per.subj:</span> 3 <span class="co">#Minimum cells required per subject, must be a nonzero number</span></span></code></pre></div>
-<p>The UMI file can be a matrix rds or a h5ad file. The meta file can be a data.frame rds or a h5ad file, containing critical information that can be used for DE analysis.</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb85-1"><a href="celldepot-publishing.html#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file for scDEG</span></span>
-<span id="cb85-2"><a href="celldepot-publishing.html#cb85-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">UMI:</span> ~/DEG_results/TST12055_raw_added.h5ad       <span class="co">#required, can be a matrix rds or a h5ad file</span></span>
-<span id="cb85-3"><a href="celldepot-publishing.html#cb85-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">meta:</span> ~/DEG_results/TST12055_raw_added.h5ad      <span class="co">#required, can be a cell annotation data.frame rds or a h5ad file</span></span>
-<span id="cb85-4"><a href="celldepot-publishing.html#cb85-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">output:</span> ~/DEG_results/</span>
-<span id="cb85-5"><a href="celldepot-publishing.html#cb85-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DBname:</span> cellxgeneVIP</span>
-<span id="cb85-6"><a href="celldepot-publishing.html#cb85-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">## DEG analysis for an annotation (such as disease vs. health) within a cell type annotation</span></span>
-<span id="cb85-7"><a href="celldepot-publishing.html#cb85-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">DEG_desp:</span> ~/DEG_results/DEGinfo.csv              <span class="co">#required for DEG analysis</span></span>
-<span id="cb85-8"><a href="celldepot-publishing.html#cb85-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb85-9"><a href="celldepot-publishing.html#cb85-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">## Please be cautious of changing the following default filtering.</span></span>
-<span id="cb85-10"><a href="celldepot-publishing.html#cb85-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.cells.per.gene:</span> 3</span>
-<span id="cb85-11"><a href="celldepot-publishing.html#cb85-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.genes.per.cell:</span> 250</span>
-<span id="cb85-12"><a href="celldepot-publishing.html#cb85-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">min.perc.cells.per.gene:</span> 0.00</span>
-<span id="cb85-13"><a href="celldepot-publishing.html#cb85-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">perc_filter:</span> TRUE</span>
-<span id="cb85-14"><a href="celldepot-publishing.html#cb85-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">## ...</span></span></code></pre></div>
-<div id="run-de-analysis" class="section level3 hasAnchor" number="10.2.1">
-<h3><span class="header-section-number">10.2.1</span> Run DE analysis<a href="celldepot-publishing.html#run-de-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Please refer the previous section <a href="differential-expression-de-analysis.html#differential-expression-de-analysis">Differential expression (DE) analysis</a> to prepare the DE comparison file.</p>
-<p>After preparing the config.yml and DEGinfo.csv files, run the pipeline:</p>
-<div class="sourceCode" id="cb86"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb86-1"><a href="celldepot-publishing.html#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scDEG /path/to/config.yml</span>
-<span id="cb86-2"><a href="celldepot-publishing.html#cb86-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb86-3"><a href="celldepot-publishing.html#cb86-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb86-4"><a href="celldepot-publishing.html#cb86-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scDEG</span> ~/DEG_results/config.yml</span></code></pre></div>
+<div id="run-sc2celldepot" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> Run sc2celldepot<a href="celldepot-publishing.html#run-sc2celldepot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>After preparing the <strong>sc2celldepot.yml</strong> file, we are ready to run the pipeline by the following command:</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb77-1"><a href="celldepot-publishing.html#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> ~/E-MTAB-11115/CellDepot_publish/sc2celldepot.yml</span></code></pre></div>
+<p>This workflow will generate the output files in the working directory, <strong>CellDepot_publish</strong>:</p>
+<p>The output prefix is determined by the <strong>prefix</strong> parameter in the sc2celldepot.yml file.</p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb78-1"><a href="celldepot-publishing.html#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="ex">E-MTAB-11115/</span></span>
+<span id="cb78-2"><a href="celldepot-publishing.html#cb78-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> E-MTAB-11115.rds</span>
+<span id="cb78-3"><a href="celldepot-publishing.html#cb78-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">└──</span> CellDepot_publish</span>
+<span id="cb78-4"><a href="celldepot-publishing.html#cb78-4" aria-hidden="true" tabindex="-1"></a>        <span class="ex">├──</span> E-MTAB-11115.h5ad</span>
+<span id="cb78-5"><a href="celldepot-publishing.html#cb78-5" aria-hidden="true" tabindex="-1"></a>        <span class="ex">├──</span> E-MTAB-11115.raw_added.h5ad</span>
+<span id="cb78-6"><a href="celldepot-publishing.html#cb78-6" aria-hidden="true" tabindex="-1"></a>        <span class="ex">└──</span> sc2celldepot.yml</span></code></pre></div>
+<p>Finally, copy the <strong>E-MTAB-11115.h5ad</strong> to the <a href="https://github.com/interactivereport/CellDepot" target="_blank">CellDepot</a> folder defined by sys.yml (celldepotDir) and follow the <a href="https://interactivereport.github.io/CellDepot/bookdown/docs/" target="_blank">instructions</a> for publishing it.</p>
 </div>
-</div>
-<div id="sctool" class="section level2 hasAnchor" number="10.3">
-<h2><span class="header-section-number">10.3</span> scTool<a href="celldepot-publishing.html#sctool" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>We also provide <strong>scTool</strong>, a user-friendly toolkit for modifying the h5ad file. With <strong>scTool</strong>, the user can:</p>
-<ul>
-<li><p>Remove existing annotations in the data, such as the cell type annotation.</p></li>
-<li><p>Add cell type annotation by providing a two-column csv file, specifying the cell type category of each single cell.</p></li>
-<li><p>Export a list of genes along with all annotation.</p></li>
-</ul>
-<p>By running the <strong>scTool</strong> without providing any parameters, we can see the manual page of the script:</p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb87-1"><a href="celldepot-publishing.html#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scTool</span>
-<span id="cb87-2"><a href="celldepot-publishing.html#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-3"><a href="celldepot-publishing.html#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usage:</span> scTool.py [-h] <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span> h5ad [changes]</span>
-<span id="cb87-4"><a href="celldepot-publishing.html#cb87-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-5"><a href="celldepot-publishing.html#cb87-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Additional</span> sc tools. WARNING: The input h5ad files will be over-written!</span>
-<span id="cb87-6"><a href="celldepot-publishing.html#cb87-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-7"><a href="celldepot-publishing.html#cb87-7" aria-hidden="true" tabindex="-1"></a><span class="ex">positional</span> arguments:</span>
-<span id="cb87-8"><a href="celldepot-publishing.html#cb87-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">{rm</span><span class="op">,</span><span class="dt">add</span><span class="op">,</span><span class="dt">export}</span>  Modify the h5ad by either <span class="st">&quot;rm&quot;</span>, <span class="st">&quot;add&quot;</span> or <span class="st">&quot;export&quot;</span> cell level annotations.</span>
-<span id="cb87-9"><a href="celldepot-publishing.html#cb87-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">h5ad</span>             Path to a h5ad file to be modified</span>
-<span id="cb87-10"><a href="celldepot-publishing.html#cb87-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">changes</span>          Options:</span>
-<span id="cb87-11"><a href="celldepot-publishing.html#cb87-11" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">1.</span> A list of annotaions to be removed <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span><span class="kw">)</span> </span>
-<span id="cb87-12"><a href="celldepot-publishing.html#cb87-12" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">2.</span> A path to a csv file contains cell level annotations <span class="er">(</span><span class="ex">first</span> column is the cell ID<span class="kw">)</span></span>
-<span id="cb87-13"><a href="celldepot-publishing.html#cb87-13" aria-hidden="true" tabindex="-1"></a>                   <span class="ex">3.</span> A list of genes <span class="er">(</span><span class="ex">separated</span> by <span class="st">&quot;,&quot;</span>, empty or max 50<span class="kw">)</span> <span class="ex">to</span> be exported along with all annotations.</span>
-<span id="cb87-14"><a href="celldepot-publishing.html#cb87-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-15"><a href="celldepot-publishing.html#cb87-15" aria-hidden="true" tabindex="-1"></a><span class="ex">optional</span> arguments:</span>
-<span id="cb87-16"><a href="celldepot-publishing.html#cb87-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-h,</span> <span class="at">--help</span>       show this help message and exit</span>
-<span id="cb87-17"><a href="celldepot-publishing.html#cb87-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-18"><a href="celldepot-publishing.html#cb87-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span>
-<span id="cb87-19"><a href="celldepot-publishing.html#cb87-19" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
-<p>We use this pubic E-MTAB-11115 data as an example:</p>
-<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
-<div id="remove-annotations" class="section level3 hasAnchor" number="10.3.1">
-<h3><span class="header-section-number">10.3.1</span> Remove annotations<a href="celldepot-publishing.html#remove-annotations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>To remove annotation, we can simply pass the annotation header names to the program, and it will remove these headers, and re-write the original file. Please back-up the original file first if you would like to keep a copy ot it. As an example, here we remove the following headers: predicted.celltype2 and predicted.location.</p>
-<div class="sourceCode" id="cb88"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb88-1"><a href="celldepot-publishing.html#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> rm ProjName_raw_added.h5ad predicted.celltype2,predicted.location</span></code></pre></div>
-</div>
-<div id="add-annotations" class="section level3 hasAnchor" number="10.3.2">
-<h3><span class="header-section-number">10.3.2</span> Add annotations<a href="celldepot-publishing.html#add-annotations" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>To provide a new annotation, the user needs to prepare a csv file containing cell barcode and new annotation names. For example, we use the following csv file to include a <strong>manual.curated.labels</strong> cell type labeling to the original data:</p>
-<div class="sourceCode" id="cb89"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb89-1"><a href="celldepot-publishing.html#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> head <span class="at">-2</span> manual.curated.labels.csv</span>
-<span id="cb89-2"><a href="celldepot-publishing.html#cb89-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb89-3"><a href="celldepot-publishing.html#cb89-3" aria-hidden="true" tabindex="-1"></a><span class="ex">AAACCCAAGGAAGTAG-1-5705STDY8058280,neurons</span></span>
-<span id="cb89-4"><a href="celldepot-publishing.html#cb89-4" aria-hidden="true" tabindex="-1"></a><span class="ex">AAACCCAAGGGCAGTT-1-5705STDY8058280,Oligos</span></span>
-<span id="cb89-5"><a href="celldepot-publishing.html#cb89-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb89-6"><a href="celldepot-publishing.html#cb89-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Run the scTool:</span></span>
-<span id="cb89-7"><a href="celldepot-publishing.html#cb89-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb89-8"><a href="celldepot-publishing.html#cb89-8" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> add ProjName_raw_added.h5ad manual.curated.labels.csv</span></code></pre></div>
-</div>
-<div id="export-gene-expressions" class="section level3 hasAnchor" number="10.3.3">
-<h3><span class="header-section-number">10.3.3</span> Export gene expressions<a href="celldepot-publishing.html#export-gene-expressions" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>This function exports gene expression values of provided genes, along with all other annotations. This provides a flexible way to examine the expression values of a set of genes.</p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb90-1"><a href="celldepot-publishing.html#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> export ProjName_raw_added.h5ad App,Olig1,P2ry12</span></code></pre></div>
-<p>The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:</p>
-<p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png" /></a></p>
+<div id="demo-sc2celldepot" class="section level2 hasAnchor" number="10.3">
+<h2><span class="header-section-number">10.3</span> Demo sc2celldepot<a href="celldepot-publishing.html#demo-sc2celldepot" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To demo sc2celldepot, we use the following RDS file (GSE172462.SCT.For_scRef.rds), which we had used it to demo scRef. This RDS file contains cell type labeling and embedding information.</p>
+<p>Then we run the <strong>sc2celldepot</strong> program by providing a working directory, in our case, for example:</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb79-1"><a href="celldepot-publishing.html#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> ~/demo_celldepot</span></code></pre></div>
+<p>File hierarchy after running the above command:</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb80-1"><a href="celldepot-publishing.html#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/demo_celldepot</span></span>
+<span id="cb80-2"><a href="celldepot-publishing.html#cb80-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> GSE172462.SCT.For_scRef.rds</span>
+<span id="cb80-3"><a href="celldepot-publishing.html#cb80-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">└──</span> sc2celldepot.yml</span></code></pre></div>
+<p>We set up the sc2celldepot.yml in the following way, by just adding information to <code>prefix</code> and <code>seuratObj</code>:</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb81-1"><a href="celldepot-publishing.html#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file to process public sc/sn RNAseq and generate h5ad for celldepot</span></span>
+<span id="cb81-2"><a href="celldepot-publishing.html#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> ~/demo_celldepot</span>
+<span id="cb81-3"><a href="celldepot-publishing.html#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="ex">prefix:</span> demo_sc2celldepot                                   <span class="co"># the prefix of the file name of the h5ad</span></span>
+<span id="cb81-4"><a href="celldepot-publishing.html#cb81-4" aria-hidden="true" tabindex="-1"></a><span class="co"># seurat RDS is avaiable, otherwise please move to next section</span></span>
+<span id="cb81-5"><a href="celldepot-publishing.html#cb81-5" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratObj:</span> ~/demo_celldepot/GSE172462.SCT.For_scRef.rds     <span class="co"># the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction</span></span>
+<span id="cb81-6"><a href="celldepot-publishing.html#cb81-6" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratUMI:</span> RNA                                              <span class="co"># the name of the assay stores raw UMI</span></span>
+<span id="cb81-7"><a href="celldepot-publishing.html#cb81-7" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratSCT:</span> SCT                                              <span class="co"># the name of the assay stores SCT</span></span>
+<span id="cb81-8"><a href="celldepot-publishing.html#cb81-8" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratMeta:</span> []                                              <span class="co"># the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds</span></span>
+<span id="cb81-9"><a href="celldepot-publishing.html#cb81-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Expression when the seurat RDS is not available (row gene/column cell)</span></span>
+<span id="cb81-10"><a href="celldepot-publishing.html#cb81-10" aria-hidden="true" tabindex="-1"></a><span class="co"># if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match</span></span>
+<span id="cb81-11"><a href="celldepot-publishing.html#cb81-11" aria-hidden="true" tabindex="-1"></a><span class="ex">expression:</span> []                                              <span class="co"># full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;</span></span>
+<span id="cb81-12"><a href="celldepot-publishing.html#cb81-12" aria-hidden="true" tabindex="-1"></a><span class="ex">dataUMI:</span> True                                               <span class="co">#if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;</span></span>
+<span id="cb81-13"><a href="celldepot-publishing.html#cb81-13" aria-hidden="true" tabindex="-1"></a><span class="co"># cell annotation (cell intersection will be used, first column is the cell ID)</span></span>
+<span id="cb81-14"><a href="celldepot-publishing.html#cb81-14" aria-hidden="true" tabindex="-1"></a><span class="ex">annotation:</span> []                                              <span class="co"># full path to the cell annotation file, first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb81-15"><a href="celldepot-publishing.html#cb81-15" aria-hidden="true" tabindex="-1"></a><span class="ex">annotationUse:</span> []                                           <span class="co"># the column names in the annotation file to be extracted for h5ad, empty list means all columns</span></span>
+<span id="cb81-16"><a href="celldepot-publishing.html#cb81-16" aria-hidden="true" tabindex="-1"></a><span class="ex">sample_column:</span>                                              <span class="co"># one column header from annotation file, if the one expression file needs to be splited into each sample</span></span>
+<span id="cb81-17"><a href="celldepot-publishing.html#cb81-17" aria-hidden="true" tabindex="-1"></a><span class="co"># cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order</span></span>
+<span id="cb81-18"><a href="celldepot-publishing.html#cb81-18" aria-hidden="true" tabindex="-1"></a><span class="ex">reduction:</span> <span class="co">#optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad</span></span>
+<span id="cb81-19"><a href="celldepot-publishing.html#cb81-19" aria-hidden="true" tabindex="-1"></a>  <span class="ex">files:</span> []                                                 <span class="co"># full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb81-20"><a href="celldepot-publishing.html#cb81-20" aria-hidden="true" tabindex="-1"></a>  <span class="ex">umap:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb81-21"><a href="celldepot-publishing.html#cb81-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">tsne:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb81-22"><a href="celldepot-publishing.html#cb81-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">pca:</span> []                                                   <span class="co"># column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)</span></span></code></pre></div>
+<p>Then run the pipeline:</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb82-1"><a href="celldepot-publishing.html#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> ~/demo_celldepot/sc2celldepot.yml</span></code></pre></div>
+<p>The results will be new h5ad files as below:</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb83-1"><a href="celldepot-publishing.html#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/demo_celldepot</span></span>
+<span id="cb83-2"><a href="celldepot-publishing.html#cb83-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> demo_sc2celldepot_rds.h5ad</span>
+<span id="cb83-3"><a href="celldepot-publishing.html#cb83-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> demo_sc2celldepot_rds.raw_added.h5ad</span>
+<span id="cb83-4"><a href="celldepot-publishing.html#cb83-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> GSE172462.SCT.For_scRef.rds</span>
+<span id="cb83-5"><a href="celldepot-publishing.html#cb83-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> sc2celldepot.20230321.log</span>
+<span id="cb83-6"><a href="celldepot-publishing.html#cb83-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">└──</span> sc2celldepot.yml</span></code></pre></div>
+<p>We provide another demo using two h5 data files from our previous <a href="https://github.com/interactivereport/scRNAsequest/tree/main/demo">demo</a> dataset. Besides that, we also need two cell level annotation files, and I have prepared them: RatMaleCigarette.annotation.csv, RatFemaleCigarette.annotation.csv.</p>
+<p>Please organize these four files in the working dir (in this demo: ~/demo_celldepot_2):</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb84-1"><a href="celldepot-publishing.html#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sc2celldepot</span> ~/demo_celldepot_2</span></code></pre></div>
+<p>The above run generated sc2celldepot.yml, and the current file hierarchy is:</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb85-1"><a href="celldepot-publishing.html#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/demo_celldepot_2</span></span>
+<span id="cb85-2"><a href="celldepot-publishing.html#cb85-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> RatFemaleCigarette.annotation.csv</span>
+<span id="cb85-3"><a href="celldepot-publishing.html#cb85-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> RatFemaleCigarette.filtered_feature_bc_matrix.h5</span>
+<span id="cb85-4"><a href="celldepot-publishing.html#cb85-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> RatMaleCigarette.annotation.csv</span>
+<span id="cb85-5"><a href="celldepot-publishing.html#cb85-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">├──</span> RatMaleCigarette.filtered_feature_bc_matrix.h5</span>
+<span id="cb85-6"><a href="celldepot-publishing.html#cb85-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">└──</span> sc2celldepot.yml</span></code></pre></div>
+<p>Then we set up the sc2celldepot.yml file in this way:</p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb86-1"><a href="celldepot-publishing.html#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co">## The config file to process public sc/sn RNAseq and generate h5ad for celldepot</span></span>
+<span id="cb86-2"><a href="celldepot-publishing.html#cb86-2" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> ~/demo_celldepot_2</span>
+<span id="cb86-3"><a href="celldepot-publishing.html#cb86-3" aria-hidden="true" tabindex="-1"></a><span class="ex">prefix:</span> demo_sc2celldepot_2                                 <span class="co"># the prefix of the file name of the h5ad</span></span>
+<span id="cb86-4"><a href="celldepot-publishing.html#cb86-4" aria-hidden="true" tabindex="-1"></a><span class="co"># seurat RDS is avaiable, otherwise please move to next section</span></span>
+<span id="cb86-5"><a href="celldepot-publishing.html#cb86-5" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratObj:</span>                                                  <span class="co"># the full path to the seurat RDS file with SCT &amp; RNA assay along with meta.data and reduction</span></span>
+<span id="cb86-6"><a href="celldepot-publishing.html#cb86-6" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratUMI:</span> RNA                                              <span class="co"># the name of the assay stores raw UMI</span></span>
+<span id="cb86-7"><a href="celldepot-publishing.html#cb86-7" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratSCT:</span> SCT                                              <span class="co"># the name of the assay stores SCT</span></span>
+<span id="cb86-8"><a href="celldepot-publishing.html#cb86-8" aria-hidden="true" tabindex="-1"></a><span class="ex">seuratMeta:</span> []                                              <span class="co"># the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds</span></span>
+<span id="cb86-9"><a href="celldepot-publishing.html#cb86-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Expression when the seurat RDS is not available (row gene/column cell)</span></span>
+<span id="cb86-10"><a href="celldepot-publishing.html#cb86-10" aria-hidden="true" tabindex="-1"></a><span class="co"># if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match</span></span>
+<span id="cb86-11"><a href="celldepot-publishing.html#cb86-11" aria-hidden="true" tabindex="-1"></a><span class="ex">expression:</span> [~/demo_celldepot_2/RatMaleCigarette.filtered_feature_bc_matrix.h5,~/demo_celldepot_2/RatFemaleCigarette.filtered_feature_bc_matrix.h5]</span>
+<span id="cb86-12"><a href="celldepot-publishing.html#cb86-12" aria-hidden="true" tabindex="-1"></a>                                                            <span class="co"># full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by &#39;,&#39;</span></span>
+<span id="cb86-13"><a href="celldepot-publishing.html#cb86-13" aria-hidden="true" tabindex="-1"></a><span class="ex">dataUMI:</span> True                                               <span class="co">#if the above expression is UMI, if the value in expression file should be used directly, please set &quot;False&quot;</span></span>
+<span id="cb86-14"><a href="celldepot-publishing.html#cb86-14" aria-hidden="true" tabindex="-1"></a><span class="co"># cell annotation (cell intersection will be used, first column is the cell ID)</span></span>
+<span id="cb86-15"><a href="celldepot-publishing.html#cb86-15" aria-hidden="true" tabindex="-1"></a><span class="ex">annotation:</span> [~/demo_celldepot_2/RatMaleCigarette.annotation.csv,~/demo_celldepot_2/RatFemaleCigarette.annotation.csv]</span>
+<span id="cb86-16"><a href="celldepot-publishing.html#cb86-16" aria-hidden="true" tabindex="-1"></a>                                                            <span class="co"># full path to the cell annotation file, first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb86-17"><a href="celldepot-publishing.html#cb86-17" aria-hidden="true" tabindex="-1"></a><span class="ex">annotationUse:</span> []                                           <span class="co"># the column names in the annotation file to be extracted for h5ad, empty list means all columns</span></span>
+<span id="cb86-18"><a href="celldepot-publishing.html#cb86-18" aria-hidden="true" tabindex="-1"></a><span class="ex">sample_column:</span>                                              <span class="co"># one column header from annotation file, if the one expression file needs to be splited into each sample</span></span>
+<span id="cb86-19"><a href="celldepot-publishing.html#cb86-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb86-20"><a href="celldepot-publishing.html#cb86-20" aria-hidden="true" tabindex="-1"></a><span class="co"># cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order</span></span>
+<span id="cb86-21"><a href="celldepot-publishing.html#cb86-21" aria-hidden="true" tabindex="-1"></a><span class="ex">reduction:</span> <span class="co">#optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad</span></span>
+<span id="cb86-22"><a href="celldepot-publishing.html#cb86-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">files:</span> []                                                 <span class="co"># full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression</span></span>
+<span id="cb86-23"><a href="celldepot-publishing.html#cb86-23" aria-hidden="true" tabindex="-1"></a>  <span class="ex">umap:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb86-24"><a href="celldepot-publishing.html#cb86-24" aria-hidden="true" tabindex="-1"></a>  <span class="ex">tsne:</span> []                                                  <span class="co"># column headers from layout file to be used, please use quote for each column header</span></span>
+<span id="cb86-25"><a href="celldepot-publishing.html#cb86-25" aria-hidden="true" tabindex="-1"></a>  <span class="ex">pca:</span> []                                                   <span class="co"># column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)</span></span></code></pre></div>
 
-</div>
 </div>
 </div>
             </section>
@@ -539,8 +422,8 @@ Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.s
           </div>
         </div>
       </div>
-<a href="reference-building.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="reference-building.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="additional-tools.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -571,7 +454,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/11-AdditionalTools.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/10-PublishCellDepot.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -579,7 +462,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/11-AdditionalTools.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/10-PublishCellDepot.Rmd",
 "text": null
 },
 "download": null,

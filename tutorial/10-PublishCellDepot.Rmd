@@ -36,7 +36,7 @@ Running **sc2celldepot** by providing a working directory will initiate the proj
 
 First, we create a new directory under the project. Then we run the **sc2celldepot** command:
 
-```
+```{bash, eval=FALSE}
 mkdir ~/E-MTAB-11115/CellDepot_publish
 sc2celldepot ~/E-MTAB-11115/CellDepot_publish
 
@@ -50,40 +50,40 @@ Here is an example after filling in the configuration **sc2celldepot.yml** file.
 
 For a simple example, we just provide a prefix and an RDS file path to this yml file. The pipeline will read the metadata and convert it to an h5ad file.
 
-```
+```{bash, eval=FALSE}
 ## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
 output: ~/E-MTAB-11115/CellDepot_publish
-prefix: E-MTAB-11115                              # the prefix of the file name of the h5ad
+prefix: E-MTAB-11115                                        # the prefix of the file name of the h5ad
 
 # seurat RDS is avaiable, otherwise please move to next section
-seuratObj: ~/E-MTAB-11115/E-MTAB-11115.rds        # the full path to the seurat RDS file with SCT & RNA assay along with meta.data and reduction
-seuratUMI: RNA                                    # the name of the assay stores raw UMI
-seuratSCT: SCT                                    # the name of the assay stores SCT
-seuratMeta: []                                    # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
+seuratObj: ~/E-MTAB-11115/E-MTAB-11115.rds                  # the full path to the seurat RDS file with SCT & RNA assay along with meta.data and reduction
+seuratUMI: RNA                                              # the name of the assay stores raw UMI
+seuratSCT: SCT                                              # the name of the assay stores SCT
+seuratMeta: []                                              # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
 
 # Expression when the seurat RDS is not available (row gene/column cell)
 # if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
-expression: [] # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by ','
-dataUMI: True #if the above expression is UMI, if the value in expression file should be used directly, please set "False"
+expression: []                                              # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by ','
+dataUMI: True                                               # if the above expression is UMI, if the value in expression file should be used directly, please set "False"
 
 # cell annotation (cell intersection will be used, first column is the cell ID)
-annotation: [] # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
-annotationUse: [] # the column names in the annotation file to be extracted for h5ad, empty list means all columns
-sample_column: #one column header from annotation file, if the one expression file needs to be splited into each sample
+annotation: []                                              # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
+annotationUse: []                                           # the column names in the annotation file to be extracted for h5ad, empty list means all columns
+sample_column:                                              # one column header from annotation file, if the one expression file needs to be splited into each sample
 
 # cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
-reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
-  files: [] #full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
-  umap: [] # column headers from layout file to be used, please use quote for each column header
-  tsne: [] # column headers from layout file to be used, please use quote for each column header
-  pca: [] # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)
+reduction:                                                  # optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
+  files: []                                                 # full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
+  umap: []                                                  # column headers from layout file to be used, please use quote for each column header
+  tsne: []                                                  # column headers from layout file to be used, please use quote for each column header
+  pca: []                                                   # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)
 ```
 
 Alternatively, if you don't have an RDS file, users can provide raw UMI files together with cell type annotation files and reduction embeddings in this way:
 
 Besides the required `output` and `prefix` parameters, in this example, the `expression` points to several h5 files or MEX folders, which is required. The `annotation` points to cell type annotation (and other cell level information) csv files, which are also required.
 
-```
+```{bash, eval=FALSE}
 ## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
 output: ~/E-MTAB-11115/CellDepot_publish
 prefix: E-MTAB-11115                                        # the prefix of the file name of the h5ad
@@ -110,12 +110,13 @@ reduction: #optional (if missing UMAP will be created), other keys can be remove
   umap: []                                                  # column headers from layout file to be used, please use quote for each column header
   tsne: []                                                  # column headers from layout file to be used, please use quote for each column header
   pca: []                                                   # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)```
+```
 
 ## Run sc2celldepot
 
 After preparing the **sc2celldepot.yml** file, we are ready to run the pipeline by the following command:
 
-```
+```{bash, eval=FALSE}
 sc2celldepot ~/E-MTAB-11115/CellDepot_publish/sc2celldepot.yml
 ```
 
@@ -123,7 +124,7 @@ This workflow will generate the output files in the working directory, **CellDep
 
 The output prefix is determined by the **prefix** parameter in the sc2celldepot.yml file.
 
-```
+```{bash, eval=FALSE}
 E-MTAB-11115/
     ├── E-MTAB-11115.rds
     └── CellDepot_publish
@@ -140,13 +141,13 @@ To demo sc2celldepot, we use the following RDS file (GSE172462.SCT.For_scRef.rds
 
 Then we run the **sc2celldepot** program by providing a working directory, in our case, for example:
 
-```
+```{bash, eval=FALSE}
 sc2celldepot ~/demo_celldepot
 ```
 
 File hierarchy after running the above command:
 
-```
+```{bash, eval=FALSE}
 ~/demo_celldepot
     ├── GSE172462.SCT.For_scRef.rds
     └── sc2celldepot.yml
@@ -154,9 +155,9 @@ File hierarchy after running the above command:
 
 We set up the sc2celldepot.yml in the following way, by just adding information to `prefix` and `seuratObj`:
 
-```
+```{bash, eval=FALSE}
 ## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
-output: /mnt/depts/dept04/compbio/projects/ndru_projects/202303_scRNASequest_demo/demo_celldepot_rds
+output: ~/demo_celldepot
 prefix: demo_sc2celldepot                                   # the prefix of the file name of the h5ad
 # seurat RDS is avaiable, otherwise please move to next section
 seuratObj: ~/demo_celldepot/GSE172462.SCT.For_scRef.rds     # the full path to the seurat RDS file with SCT & RNA assay along with meta.data and reduction
@@ -179,14 +180,94 @@ reduction: #optional (if missing UMAP will be created), other keys can be remove
   pca: []                                                   # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)
 ```
 
+Then run the pipeline:
 
-
-
-two h5 data files from our [demo](https://github.com/interactivereport/scRNAsequest/tree/main/demo) dataset. Besides that, we also need two cell level annotation files, and I have prepared them:.
-
-Please organize these four files in the working dir (in this demo: ~/demo_celldepot):
-
+```{bash, eval=FALSE}
+sc2celldepot ~/demo_celldepot/sc2celldepot.yml
 ```
 
+The results will be new h5ad files as below:
 
+```{bash, eval=FALSE}
+~/demo_celldepot
+    ├── demo_sc2celldepot_rds.h5ad
+    ├── demo_sc2celldepot_rds.raw_added.h5ad
+    ├── GSE172462.SCT.For_scRef.rds
+    ├── sc2celldepot.20230321.log
+    └── sc2celldepot.yml
 ```
+
+We provide another demo using two h5 data files from our previous [demo](https://github.com/interactivereport/scRNAsequest/tree/main/demo) dataset. Besides that, we also need two cell level annotation files, and I have prepared them: RatMaleCigarette.annotation.csv, RatFemaleCigarette.annotation.csv.
+
+Take a quick look of the csv files (Usually, the cell barcodes in the list is only a subset of all barcodes in the h5, due to filtering in previous analysis):
+```{bash, eval=FALSE}
+$ head -3 RatMaleCigarette.annotation.csv
+
+,library_id,predicted.celltype
+AAACCCACAACTGAAA-1,RatFemaleCigarette,OPC
+AAACCCACACTTTATC-1,RatFemaleCigarette,Neuron
+```
+
+Please organize these four files (2 h5 files, 2 csv files) in the working dir (in this demo: ~/demo_celldepot_2), then run the script:
+
+```{bash, eval=FALSE}
+sc2celldepot ~/demo_celldepot_2
+```
+
+The above run generated sc2celldepot.yml, and the current file hierarchy is:
+
+```{bash, eval=FALSE}
+~/demo_celldepot_2
+    ├── RatFemaleCigarette.annotation.csv
+    ├── RatFemaleCigarette.filtered_feature_bc_matrix.h5
+    ├── RatMaleCigarette.annotation.csv
+    ├── RatMaleCigarette.filtered_feature_bc_matrix.h5
+    └── sc2celldepot.yml
+```
+
+Then we set up the sc2celldepot.yml file in this way:
+
+```{bash, eval=FALSE}
+## The config file to process public sc/sn RNAseq and generate h5ad for celldepot
+output: ~/demo_celldepot_2
+prefix: demo_sc2celldepot_2                                 # the prefix of the file name of the h5ad
+# seurat RDS is avaiable, otherwise please move to next section
+seuratObj:                                                  # the full path to the seurat RDS file with SCT & RNA assay along with meta.data and reduction
+seuratUMI: RNA                                              # the name of the assay stores raw UMI
+seuratSCT: SCT                                              # the name of the assay stores SCT
+seuratMeta: []                                              # the list of cell annotations to be stored in h5ad, empty list means all meta.data entry from seurat rds
+# Expression when the seurat RDS is not available (row gene/column cell)
+# if the annotation files are seperated the same as expression files, they should be the same order, other wise cell ID will be used to match
+expression: [~/demo_celldepot_2/RatMaleCigarette.filtered_feature_bc_matrix.h5,~/demo_celldepot_2/RatFemaleCigarette.filtered_feature_bc_matrix.h5]
+                                                            # full path the gene expression file/folder (h5/csv/txt/mtx), if multiple files, please provide the list separated by ','
+dataUMI: True                                               #if the above expression is UMI, if the value in expression file should be used directly, please set "False"
+# cell annotation (cell intersection will be used, first column is the cell ID)
+annotation: [~/demo_celldepot_2/RatMaleCigarette.annotation.csv,~/demo_celldepot_2/RatFemaleCigarette.annotation.csv]
+                                                            # full path to the cell annotation file, first column is the cell ID which should match cell ID in expression
+annotationUse: []                                           # the column names in the annotation file to be extracted for h5ad, empty list means all columns
+sample_column:                                              # one column header from annotation file, if the one expression file needs to be splited into each sample
+
+# cell layout: tSNE, UMAP, PCA, if separated the same as expression files, should be the same order
+reduction: #optional (if missing UMAP will be created), other keys can be removed or added new ones, keys will be used in h5ad
+  files: []                                                 # full path to the cell layout file (contains all layouts of a set of cells), first column is the cell ID which should match cell ID in expression
+  umap: []                                                  # column headers from layout file to be used, please use quote for each column header
+  tsne: []                                                  # column headers from layout file to be used, please use quote for each column header
+  pca: []                                                   # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)
+```
+
+This will let the pipeline to process the h5 files by running normalization, and match labeled cell types to the UMAP.
+
+Files after running the pipeline:
+
+```{bash, eval=FALSE}
+~/demo_celldepot_2
+    ├── demo_sc2celldepot.h5ad
+    ├── demo_sc2celldepot.raw_added.h5ad
+    ├── demo_sc2celldepot.rds
+    ├── RatFemaleCigarette.annotation.csv
+    ├── RatFemaleCigarette.filtered_feature_bc_matrix.h5
+    ├── RatMaleCigarette.annotation.csv
+    ├── RatMaleCigarette.filtered_feature_bc_matrix.h5
+    └── sc2celldepot.yml
+```
+
