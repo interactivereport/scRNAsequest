@@ -6,64 +6,74 @@ PKGloading <- function(){
 
 # following the discussion @https://github.com/immunogenomics/harmony/issues/41
 processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
-  assayName <- "sctHarmony"
-  dimN <- 50
-  X <- getX(strH5ad)
-  gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
-  rownames(X) <- names(gID) #gsub("_","-",rownames(X))
-  D <- CreateSeuratObject(counts=X,
-                          project=assayName,
-                          meta.data=getobs(strH5ad))
-  rm(X)
-  gc()
-  Dlist <- SplitObject(D,split.by=batch)
-  rm(D)
-  gc()
-  message("\tSCT ...")
-  Dlist <- sapply(Dlist,function(one){
-    bID <- one@meta.data[1,batch]
-    message("\t\t",bID)
-    one <- suppressMessages(suppressWarnings(
-      SCTransform(one,method = 'glmGamPoi',
-                  new.assay.name=assayName,
-                  return.only.var.genes = FALSE,
-                  verbose = FALSE)
-    ))
-    one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 3000)
-    return(one)
-  })
-  
-  selFN <- 3000
-  features <- SelectIntegrationFeatures(Dlist,nfeatures=selFN)
-  if(length(Dlist)==1) D <- Dlist[[1]]
-  else D <- merge(Dlist[[1]], y=Dlist[-1],project=assayName)
-  rm(Dlist)
-  gc()
-  DefaultAssay(D) <- assayName
-  VariableFeatures(D) <- features
-  #D <- PrepSCTFindMarkers(D)
-  D <- RunPCA(D, npcs = dimN)
-  D <- RunHarmony(D,
-                      assay.use=assayName,
-                      reduction = 'pca',
-                      group.by.vars = batch)
-  
-  D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony")
-  D <- RunSPCA(D,reduction.key="harmonySPC",
-               graph = paste0(assayName,'_snn'))
-  D <- RunUMAP(D,reduction="harmony",
-               dims = 1:dimN)
-  D <- RunTSNE(D,reduction="harmony",
-               dims = 1:dimN)
-  D <- FindClusters(object = D)
-
-  X <- cbind(cID=row.names(D@meta.data),
-             D@reductions$harmony@cell.embeddings,
-             D@reductions$umap@cell.embeddings,
-             D@reductions$tsne@cell.embeddings,
-             D@meta.data[,c("seurat_clusters",batch)])
-  colnames(X) <- gsub("UMAP","umap",gsub("harmony","pca",gsub("seurat_clusters","sctHarmony_cluster",colnames(X))))
-  #save(X,D,file=gsub("csv$","RData",strOut))
+  strtemp <- paste0(strOut,".rds")
+  if(file.exists(strtemp)){
+    message("pickup revious results: ",strtemp)
+    X <- readRDS(strtemp)
+  }else{
+    assayName <- "sctHarmony"
+    dimN <- 50
+    X <- getX(strH5ad)
+    gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
+    rownames(X) <- names(gID) #gsub("_","-",rownames(X))
+    D <- CreateSeuratObject(counts=X,
+                            project=assayName,
+                            meta.data=getobs(strH5ad))
+    cellN <- dim(D)[2]
+    rm(X)
+    gc()
+    Dlist <- SplitObject(D,split.by=batch)
+    message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+    rm(D)
+    gc()
+    message("\tSCT ...")
+    Dlist <- sapply(Dlist,function(one){
+      bID <- one@meta.data[1,batch]
+      message("\t\t",bID)
+      one <- suppressMessages(suppressWarnings(
+        SCTransform(one,method = 'glmGamPoi',
+                    new.assay.name=assayName,
+                    return.only.var.genes = FALSE,
+                    verbose = FALSE)
+      ))
+      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 3000)
+      return(one)
+    })
+    
+    selFN <- 3000
+    features <- SelectIntegrationFeatures(Dlist,nfeatures=selFN)
+    if(length(Dlist)==1) D <- Dlist[[1]]
+    else D <- merge(Dlist[[1]], y=Dlist[-1],project=assayName)
+    message("memory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+    rm(Dlist)
+    gc()
+    DefaultAssay(D) <- assayName
+    VariableFeatures(D) <- features
+    #D <- PrepSCTFindMarkers(D)
+    D <- RunPCA(D, npcs = dimN)
+    D <- RunHarmony(D,
+                    assay.use=assayName,
+                    reduction = 'pca',
+                    group.by.vars = batch)
+    message("memory usage after Harmony: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+    D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony")
+    D <- RunSPCA(D,reduction.key="harmonySPC",
+                 graph = paste0(assayName,'_snn'))
+    D <- RunUMAP(D,reduction="harmony",
+                 dims = 1:dimN)
+    D <- RunTSNE(D,reduction="harmony",
+                 dims = 1:dimN)
+    D <- FindClusters(object = D)
+    
+    X <- cbind(cID=row.names(D@meta.data),
+               D@reductions$harmony@cell.embeddings,
+               D@reductions$umap@cell.embeddings,
+               D@reductions$tsne@cell.embeddings,
+               D@meta.data[,c("seurat_clusters",batch)])
+    colnames(X) <- gsub("UMAP","umap",gsub("harmony","pca",gsub("seurat_clusters","sctHarmony_cluster",colnames(X))))
+    #save(X,D,file=gsub("csv$","RData",strOut))
+    saveRDS(X,strtemp)
+  }
   message("Saving in R ...")
   data.table::fwrite(X,strOut)
   message("complete in R")

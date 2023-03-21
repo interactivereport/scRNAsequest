@@ -48,8 +48,10 @@ processSCTref <- function(strH5ad,batch,config,strOut){
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
                           meta.data=getobs(strH5ad))
+  cellN <- dim(D)[2]
   Dmedian <- median(colSums(D@assays$RNA@counts))
   Dlist <- SplitObject(D,split.by=batch)
+  message("memory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(D)
   gc()
   Dlist <- sapply(Dlist,function(one,medianUMI){
@@ -93,12 +95,13 @@ processSCTref <- function(strH5ad,batch,config,strOut){
     ))
     return(oneD)
   },Dmedian)
-  
+  message("memory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   if(length(Dlist)==1){
     SCT <- Dlist[[1]]
   }else{
     SCT <- merge(Dlist[[1]], y=Dlist[-1],merge.dr = names(Dlist[[1]]@reductions))
   }
+  message("memory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(Dlist)
   gc()
   ## save layout and annotation (not iterative mapping yet!)
