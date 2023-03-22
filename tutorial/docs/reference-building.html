@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-03-21" />
+<meta name="date" content="2023-03-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,6 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.2.1</b> Remove annotations</a></li>
 <li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.2.2</b> Add annotations</a></li>
 <li class="chapter" data-level="11.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.2.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="11.2.4" data-path="additional-tools.html"><a href="additional-tools.html#demo-sctool"><i class="fa fa-check"></i><b>11.2.4</b> Demo scTool</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -285,7 +286,7 @@ ref_label: [predicted.celltype1]        # List the annotations (case sensitive) 
                                         # The cell type label/header name you would like to transfer
 publish: False                          # Should this reference be published (added permanently) into scAnalyzer
 overwrite: False                        # Overwrite the existing scAnalyzer reference </code></pre>
-<p>For the input data, scRef can take either an h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have finished running a dataset using scAnalyzer, then you can directly use the Projectname_raw_added.h5ad (not Projectname.h5ad file) as input, and attach its path to <strong>ref_h5ad_raw</strong>. Alternatively, you can provide an RDS file using <strong>ref_rds</strong>. Either providing <strong>ref_h5ad_raw</strong> or <strong>ref_rds</strong> would be sufficient to the pipeline.</p>
+<p>For the input data, scRef can take either an h5ad file containing raw UMI and annotatino information, or an R data file in rds format. If you have finished running a dataset using scAnalyzer, then you can directly use the ProjectName_raw_added.h5ad (not ProjectName.h5ad file) as input, and attach its path to <strong>ref_h5ad_raw</strong>. Alternatively, you can provide an RDS file using <strong>ref_rds</strong>. Either providing <strong>ref_h5ad_raw</strong> or <strong>ref_rds</strong> would be sufficient to the pipeline.</p>
 <p>The <strong>ref_label</strong> is critical for label transfer if you would like to use this data as a reference in the future. It tells the program to use the cell type information in these (can be one more more) headers to perform label transfer. For a h5ad data, the easiest way is to open it using Cellxgene VIP, and identify the header that contains cell type labels, e.g. predicted.celltype1 in our case. For an RDS data, you could read it in R using the <a href="https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/readRDS" target="_blank">readRDS</a> function and identify the column names containing cell type annotation.</p>
 <p>For <strong>ref_rds</strong> input RDS file, please make sure it has been SCTransformed, and includes UMAP embeddings based on SCT values. Here are some codes to prepare it:</p>
 <pre><code>library(Seurat)
@@ -324,20 +325,20 @@ The private reference could be used by provide the following full path to &#39;r
 </div>
 <div id="demo-scref" class="section level2 hasAnchor" number="9.3">
 <h2><span class="header-section-number">9.3</span> Demo scRef<a href="reference-building.html#demo-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In this demo, we use a previously processed RDS file using cell type annotation from a public project: <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE172462">GSE172462</a>. The RDS file is: GSE172462.SCT.For_scRef.rds.</p>
+<p>In this demo, we use a previously processed RDS file using cell type annotation from a public project: <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE172462">GSE172462</a>. The RDS file is: <a href="https://github.com/interactivereport/scRNAsequest/releases/download/untagged-e92025b745dbc6f9666a/GSE172462.SCT.For_scRef.rds">GSE172462.SCT.For_scRef.rds</a>.</p>
 <p>We first run scRef by providing our working directory to generate necessary template files:</p>
 <pre><code>scRef ~/demo_scRef</code></pre>
 <p>Then we fill in the <code>refConfig.yml</code> file:</p>
 <pre><code># please check wiki page for the details
 output: ~/demo_scRef
 # the following is normally located in the same folder of celldepot hosting h5ad files
-ref_h5ad_raw: # full path to the h5ad file contains raw UMI along with cell annotation and layout
+ref_h5ad_raw:                                       # full path to the h5ad file contains raw UMI along with cell annotation and layout
 ref_batch: library_id
 # above two parameters are ignored, if a seurat object can be located in the project folder
-ref_rds: ~/demo_scRef/GSE172462.SCT.For_scRef.rds #full path to the processed seurat object including SCT assay, cell annotation and layout
+ref_rds: ~/demo_scRef/GSE172462.SCT.For_scRef.rds   #full path to the processed seurat object including SCT assay, cell annotation and layout
 
 # All information below are required
-ref_name: demo # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
+ref_name: demo                                      # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
 ref_link: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE172462 # The web link to the information of this reference
 ref_src: single nuclei # sc/&quot;single cell&quot; or sn/&quot;single nuclei&quot;
 ref_platform: 10X # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
@@ -346,10 +347,10 @@ ref_platform: 10X # which single cell/neuclei technology e.g. 10X, SNARE-seq2, d
 # this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
 # For instance, if harmony was prefered layout then providing either &#39;harmony&#39; (50 dimention) or &#39;harmony-PCA&#39;
 ref_reduction: pca 
-ref_label: [celltype, neuron_subtype, manual_anno] # list the annotations (case sensitive) to be used for transferring
-publish: False #should this reference be published into scAnalyzer
-overwrite: False #overwrite the existing scAnalyzer reference</code></pre>
-<p>In this demo, we turned off <code>publish</code> and <code>overwrite</code> to make it just to test <code>scRef</code>. This is a reduced data (with only 1000 files) to test the demo, so it may not be ideal to use it in the pipeline.</p>
+ref_label: [celltype, neuron_subtype, manual_anno]  # list the annotations (case sensitive) to be used for transferring
+publish: False                                      # should this reference be published into scAnalyzer
+overwrite: False                                    # overwrite the existing scAnalyzer reference</code></pre>
+<p>In this demo, we turned off <code>publish</code> and <code>overwrite</code> to make it just to test <code>scRef</code>. This is a reduced data (with only 1000 files) to test the demo, so it may not be ideal to use it as a real reference in the pipeline.</p>
 <p>Finally, we can run the <code>scRef</code>:</p>
 <pre><code>scRef ~/demo_scRef/refConfig.yml</code></pre>
 <p>This pipeline will finish in ~1 minute and the output file will be:</p>

@@ -2,9 +2,9 @@
 
 [CellDepot](https://www.sciencedirect.com/science/article/pii/S0022283621006665){target="_blank"} is a comprehensive data management platform for single-cell RNA-seq datasets. Publishing to CellDepot allows easy navigation and visualization of the data, and facilitates big data deposition. 
 
-If you have run through the scRNASequest pipeline using `scAnalyzer`, you will be able to use the **h5ad** file directly and add it to CellDepot, following the '4.6 Import projects' and '4.7 Create project' in the full instruction [here](https://interactivereport.github.io/CellDepot/bookdown/docs/). In this case, you won't need to run **sc2celldepot**. However, this may be cumbersome because you have to run the full `scAnalyzer` pipeline. Sometimes, you have a public data (such as an RDS file, or raw MEX/h5 UMI count files with UMAP coordinates) with cell annotation information, and you only need to use them for visualization, rather than running though the whole analysis. 
+If you have run through the scRNASequest pipeline using `scAnalyzer`, you will be able to use the **h5ad** file directly and add it to CellDepot, following the '[4.6 Import projects](https://interactivereport.github.io/CellDepot/bookdown/docs/SITutorial.html#import)' and '[4.7 Create project](https://interactivereport.github.io/CellDepot/bookdown/docs/SITutorial.html#create-project)' in the full instruction [here](https://interactivereport.github.io/CellDepot/bookdown/docs/). In this case, you won't need to run **sc2celldepot**. However, this may be cumbersome because you have to run the full `scAnalyzer` pipeline to get the h5ad files. Sometimes, you have a public data (such as an RDS file, or raw MEX/h5 UMI count files with UMAP coordinates) with cell annotation information, and you only need to use them for visualization, rather than running though the whole analysis. 
 
-Thus, the scRNASequest pipeline offers a function to publish a dataset to CellDepot using **sc2celldepot**. This workflow will use the existing cell type information (cell type, cluter id, etc.) and create an **h5ad** file. The h5ad file can be further used for uploading to the CellDepot platform. If your input is an RDS file, you can also view this pipeline as a converter from RDS to h5ad.
+Thus, the scRNASequest pipeline offers a function to publish a dataset to CellDepot using **sc2celldepot**. This workflow will use the existing cell type information (cell type, cluter id, etc.) and create an **h5ad** file. The h5ad file can be further used for uploading to the CellDepot platform. In sum, there are two cases to use this pipeline: 1) If your input is an RDS file, you can also view this pipeline as a converter from RDS to h5ad. 2) If you have raw UMI counts, together with annotated cell barcode information (e.g. cell type for each barcode), and some UMAP embedding coordinates (the embedding information is optional), you can use this pipeline to assemble them together and create an h5ad output.
 
 By running the following command, we can see the manual page of the script:
 
@@ -79,7 +79,7 @@ reduction:                                                  # optional (if missi
   pca: []                                                   # column headers from layout file to be used, please use quote for each column header (can be more than 2 dimentions though only first two will be shown in VIP)
 ```
 
-Alternatively, if you don't have an RDS file, users can provide raw UMI files together with cell type annotation files and reduction embeddings in this way:
+Alternatively, if you don't have an RDS file, users can provide raw UMI files together with cell type annotation files and reduction embeddings (optional, by default it will generate UMAP) in this way:
 
 Besides the required `output` and `prefix` parameters, in this example, the `expression` points to several h5 files or MEX folders, which is required. The `annotation` points to cell type annotation (and other cell level information) csv files, which are also required.
 

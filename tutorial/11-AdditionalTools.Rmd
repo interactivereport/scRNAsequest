@@ -178,3 +178,13 @@ scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12
 The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png)
+
+### Demo scTool
+
+We use the h5ad file generated from demo data set to test scTool: [scRNASequest_demo.h5ad](https://github.com/interactivereport/scRNAsequest/releases/download/untagged-e92025b745dbc6f9666a/scRNASequest_demo.h5ad).
+
+```{bash, eval=FALSE}
+scTool export scRNASequest_demo.h5ad App,Olig1,P2ry12
+```
+
+The output will be a scRNASequest_demo.h5ad.csv file.

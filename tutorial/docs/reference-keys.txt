@@ -49,3 +49,4 @@ sctool
 remove-annotations
 add-annotations
 export-gene-expressions
+demo-sctool

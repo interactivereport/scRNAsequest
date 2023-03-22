@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-03-21" />
+<meta name="date" content="2023-03-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,6 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.2.1</b> Remove annotations</a></li>
 <li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.2.2</b> Add annotations</a></li>
 <li class="chapter" data-level="11.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.2.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="11.2.4" data-path="additional-tools.html"><a href="additional-tools.html#demo-sctool"><i class="fa fa-check"></i><b>11.2.4</b> Demo scTool</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -369,6 +370,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb97"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb97-1"><a href="additional-tools.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> export ProjName_raw_added.h5ad App,Olig1,P2ry12</span></code></pre></div>
 <p>The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png" /></a></p>
+</div>
+<div id="demo-sctool" class="section level3 hasAnchor" number="11.2.4">
+<h3><span class="header-section-number">11.2.4</span> Demo scTool<a href="additional-tools.html#demo-sctool" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We use the h5ad file generated from demo data set to test scTool: <a href="https://github.com/interactivereport/scRNAsequest/releases/download/untagged-e92025b745dbc6f9666a/scRNASequest_demo.h5ad">scRNASequest_demo.h5ad</a>.</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb98-1"><a href="additional-tools.html#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scTool</span> export scRNASequest_demo.h5ad App,Olig1,P2ry12</span></code></pre></div>
+<p>The output will be a scRNASequest_demo.h5ad.csv file.</p>
 
 </div>
 </div>
