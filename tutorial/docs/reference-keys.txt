@@ -42,6 +42,9 @@ initialize-sc2celldepot
 run-sc2celldepot
 demo-sc2celldepot
 additional-tools
+scrmambient
+set-up-the-inputs
+run-scrmambient
 scdeg
 initialize-scdeg
 run-de-analysis

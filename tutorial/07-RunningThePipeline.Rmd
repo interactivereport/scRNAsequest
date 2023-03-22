@@ -1,5 +1,7 @@
 # Running the pipeline
 
+If you would like to perform ambient RNA removal using CellBender, please follow the instruction here to run scRMambient first. The scRMambient pipeline will run CellBender based on unfiltered h5 input files and created new h5 files to run scAnalyzer. We have a [detailed tutorial](file:///Users/ysun4/Documents/GitProjects/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient)..
+
 After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.
 
 ## Initial scAnalyzer run

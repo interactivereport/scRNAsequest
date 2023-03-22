@@ -199,17 +199,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="11" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>11</b> Additional tools</a>
 <ul>
-<li class="chapter" data-level="11.1" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>11.1</b> scDEG</a>
+<li class="chapter" data-level="11.1" data-path="additional-tools.html"><a href="additional-tools.html#scrmambient"><i class="fa fa-check"></i><b>11.1</b> scRMambient</a>
 <ul>
-<li class="chapter" data-level="11.1.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>11.1.1</b> Initialize scDEG</a></li>
-<li class="chapter" data-level="11.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>11.1.2</b> Run DE analysis</a></li>
+<li class="chapter" data-level="11.1.1" data-path="additional-tools.html"><a href="additional-tools.html#set-up-the-inputs"><i class="fa fa-check"></i><b>11.1.1</b> Set up the inputs</a></li>
+<li class="chapter" data-level="11.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-scrmambient"><i class="fa fa-check"></i><b>11.1.2</b> Run scRMambient</a></li>
 </ul></li>
-<li class="chapter" data-level="11.2" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>11.2</b> scTool</a>
+<li class="chapter" data-level="11.2" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>11.2</b> scDEG</a>
 <ul>
-<li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.2.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.2.2</b> Add annotations</a></li>
-<li class="chapter" data-level="11.2.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.2.3</b> Export gene expressions</a></li>
-<li class="chapter" data-level="11.2.4" data-path="additional-tools.html"><a href="additional-tools.html#demo-sctool"><i class="fa fa-check"></i><b>11.2.4</b> Demo scTool</a></li>
+<li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>11.2.1</b> Initialize scDEG</a></li>
+<li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>11.2.2</b> Run DE analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>11.3</b> scTool</a>
+<ul>
+<li class="chapter" data-level="11.3.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.3.1</b> Remove annotations</a></li>
+<li class="chapter" data-level="11.3.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.3.2</b> Add annotations</a></li>
+<li class="chapter" data-level="11.3.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.3.3</b> Export gene expressions</a></li>
+<li class="chapter" data-level="11.3.4" data-path="additional-tools.html"><a href="additional-tools.html#demo-sctool"><i class="fa fa-check"></i><b>11.3.4</b> Demo scTool</a></li>
 </ul></li>
 </ul></li>
 <li class="divider"></li>
@@ -233,6 +238,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="running-the-pipeline" class="section level1 hasAnchor" number="7">
 <h1><span class="header-section-number">Chapter 7</span> Running the pipeline<a href="running-the-pipeline.html#running-the-pipeline" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>If you would like to perform ambient RNA removal using CellBender, please follow the instruction here to run scRMambient first. The scRMambient pipeline will run CellBender based on unfiltered h5 input files and created new h5 files to run scAnalyzer. We have a <a href="file:///Users/ysun4/Documents/GitProjects/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient">detailed tutorial</a>..</p>
 <p>After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.</p>
 <div id="initial-scanalyzer-run" class="section level2 hasAnchor" number="7.1">
 <h2><span class="header-section-number">7.1</span> Initial scAnalyzer run<a href="running-the-pipeline.html#initial-scanalyzer-run" class="anchor-section" aria-label="Anchor link to header"></a></h2>
