@@ -245,68 +245,68 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.1</span> Demo run with Conda<a href="demo-run.html#demo-run-with-conda" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Continuing from section 3.1.1, we assume that the pipeline was installed in: ~/scRNASequest.</p>
 <p>First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory, and other lines don’t need to be changed:</p>
-<pre><code>...
-ref_name: ~/scRNASequest/demo/ref/rat_cortex_ref.rds   # choose one from scAnalyzer call without argument
-output: ~/scRNASequest/demo                            # output path   
-...
-sample_meta: ~/scRNASequest/demo/sampleMeta.csv
-...
-DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis. To save time, this demo run doesn&#39;t include DE analysis
-...</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="demo-run.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb20-2"><a href="demo-run.html#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ref_name:</span> ~/scRNASequest/demo/ref/rat_cortex_ref.rds   <span class="co"># choose one from scAnalyzer call without argument</span></span>
+<span id="cb20-3"><a href="demo-run.html#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">output:</span> ~/scRNASequest/demo                            <span class="co"># output path   </span></span>
+<span id="cb20-4"><a href="demo-run.html#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb20-5"><a href="demo-run.html#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="ex">sample_meta:</span> ~/scRNASequest/demo/sampleMeta.csv</span>
+<span id="cb20-6"><a href="demo-run.html#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb20-7"><a href="demo-run.html#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="ex">DEG_desp:</span> ~/scRNASequest/demo/DEGinfo.csv              <span class="co"># for DEG analysis. To save time, this demo run doesn&#39;t include DE analysis</span></span>
+<span id="cb20-8"><a href="demo-run.html#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
 <p>Then execute the following command:</p>
-<pre><code>scAnalyzer ~/scRNASequest/demo/config.yml</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="demo-run.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/scRNASequest/demo/config.yml</span></code></pre></div>
 </div>
 <div id="demo-run-with-docker" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> Demo run with Docker<a href="demo-run.html#demo-run-with-docker" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After following section 3.1.2 to set up the pipeline, we are ready to run this demo:</p>
-<pre><code>docker exec -t -i &lt;container_name&gt; scAnalyzer /demo/config.yml</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="demo-run.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> scAnalyzer /demo/config.yml</span></code></pre></div>
 <p>After running this demo, a list of files will be created:</p>
-<pre><code>config.yml                        #Original config.yml file
-config.yml.20230314.log           #Log file during pipeline run
-data/                             #Original data files
-  ├──RatFemaleCigarette.filtered_feature_bc_matrix.h5
-  ├──RatFemaleCigarette.metrics_summary.csv
-  ├──RatMaleCigarette.filtered_feature_bc_matrix.h5
-  └──RatMaleCigarette.metrics_summary.csv
-DEGinfo.csv                       #Comparison file. In this demo, this is empty
-evaluation/                       #Evaluation of harmonization
-  ├──scRNASequest_demo_kBET_umap_k0_100.pdf
-  └──scRNASequest_demo_Silhouette_boxplot_pc50.pdf
-log/                              #Log files for each step
-  ├──kBET.log
-  ├──sctHarmony.log
-  ├──SCT.log
-  ├──SeuratRef.log
-  └──ssilhouette.log
-QC/                               #QC files
-  ├──postfilter.QC.pdf
-  ├──prefilter.QC.pdf
-  ├──sequencingQC.csv
-  └──sequencingQC.pdf
-raw/                              #Original UMI counts, with and withour filtering
-  ├──scRNASequest_demo.h5ad
-  └──scRNASequest_demo_raw_prefilter.h5ad
-ref/
-  └──ref.Rds                      #Azimuth reference RSD file for cell type label transfer
-Rmarkdown/                        #Pre-generated QC figures, for generating Bookdown report
-sampleMeta.csv                    #Input sample metainformation file
-scRNASequest_demo.h5ad            #This is the final output h5ad file, and the expression values have been normalized
-                                   cellxgene VIP will use this file for visualization
-scRNASequest_demo.h5seurat        #Result in h5seurat format
-scRNASequest_demo_raw_added.h5ad  #Since AnnData object can only have one count matrix, this one uses the raw UMI
-SCT/                              #Results related to SCT transformation
-  ├──scRNASequest_demo.cID
-  ├──scRNASequest_demo.gID
-  ├──scRNASequest_demo.h5
-  ├──scRNASequest_demo.h5ad
-  ├──scRNASequest_demo.h5.rds
-  └──scRNASequest_demo.scaleF
-sctHarmony/                       #SCT+Harmony results
-  ├──scRNASequest_demo.csv
-  └──scRNASequest_demo.h5ad
-SeuratRef/                       #Seurat reference mapping results
-  ├──scRNASequest_demo.csv
-  └──scRNASequest_demo.h5ad</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="demo-run.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">config.yml</span>                        <span class="co">#Original config.yml file</span></span>
+<span id="cb23-2"><a href="demo-run.html#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">config.yml.20230314.log</span>           <span class="co">#Log file during pipeline run</span></span>
+<span id="cb23-3"><a href="demo-run.html#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="ex">data/</span>                             <span class="co">#Original data files</span></span>
+<span id="cb23-4"><a href="demo-run.html#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──RatFemaleCigarette.filtered_feature_bc_matrix.h5</span></span>
+<span id="cb23-5"><a href="demo-run.html#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──RatFemaleCigarette.metrics_summary.csv</span></span>
+<span id="cb23-6"><a href="demo-run.html#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──RatMaleCigarette.filtered_feature_bc_matrix.h5</span></span>
+<span id="cb23-7"><a href="demo-run.html#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──RatMaleCigarette.metrics_summary.csv</span></span>
+<span id="cb23-8"><a href="demo-run.html#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="ex">DEGinfo.csv</span>                       <span class="co">#Comparison file. In this demo, this is empty</span></span>
+<span id="cb23-9"><a href="demo-run.html#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="ex">evaluation/</span>                       <span class="co">#Evaluation of harmonization</span></span>
+<span id="cb23-10"><a href="demo-run.html#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo_kBET_umap_k0_100.pdf</span></span>
+<span id="cb23-11"><a href="demo-run.html#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──scRNASequest_demo_Silhouette_boxplot_pc50.pdf</span></span>
+<span id="cb23-12"><a href="demo-run.html#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="ex">log/</span>                              <span class="co">#Log files for each step</span></span>
+<span id="cb23-13"><a href="demo-run.html#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──kBET.log</span></span>
+<span id="cb23-14"><a href="demo-run.html#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──sctHarmony.log</span></span>
+<span id="cb23-15"><a href="demo-run.html#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──SCT.log</span></span>
+<span id="cb23-16"><a href="demo-run.html#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──SeuratRef.log</span></span>
+<span id="cb23-17"><a href="demo-run.html#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──ssilhouette.log</span></span>
+<span id="cb23-18"><a href="demo-run.html#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="ex">QC/</span>                               <span class="co">#QC files</span></span>
+<span id="cb23-19"><a href="demo-run.html#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──postfilter.QC.pdf</span></span>
+<span id="cb23-20"><a href="demo-run.html#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──prefilter.QC.pdf</span></span>
+<span id="cb23-21"><a href="demo-run.html#cb23-21" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──sequencingQC.csv</span></span>
+<span id="cb23-22"><a href="demo-run.html#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──sequencingQC.pdf</span></span>
+<span id="cb23-23"><a href="demo-run.html#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="ex">raw/</span>                              <span class="co">#Original UMI counts, with and withour filtering</span></span>
+<span id="cb23-24"><a href="demo-run.html#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.h5ad</span></span>
+<span id="cb23-25"><a href="demo-run.html#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──scRNASequest_demo_raw_prefilter.h5ad</span></span>
+<span id="cb23-26"><a href="demo-run.html#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="ex">ref/</span></span>
+<span id="cb23-27"><a href="demo-run.html#cb23-27" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──ref.Rds</span>                      <span class="co">#Azimuth reference RSD file for cell type label transfer</span></span>
+<span id="cb23-28"><a href="demo-run.html#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="ex">Rmarkdown/</span>                        <span class="co">#Pre-generated QC figures, for generating Bookdown report</span></span>
+<span id="cb23-29"><a href="demo-run.html#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="ex">sampleMeta.csv</span>                    <span class="co">#Input sample metainformation file</span></span>
+<span id="cb23-30"><a href="demo-run.html#cb23-30" aria-hidden="true" tabindex="-1"></a><span class="ex">scRNASequest_demo.h5ad</span>            <span class="co">#This is the final output h5ad file, and the expression values have been normalized</span></span>
+<span id="cb23-31"><a href="demo-run.html#cb23-31" aria-hidden="true" tabindex="-1"></a>                                   <span class="ex">cellxgene</span> VIP will use this file for visualization</span>
+<span id="cb23-32"><a href="demo-run.html#cb23-32" aria-hidden="true" tabindex="-1"></a><span class="ex">scRNASequest_demo.h5seurat</span>        <span class="co">#Result in h5seurat format</span></span>
+<span id="cb23-33"><a href="demo-run.html#cb23-33" aria-hidden="true" tabindex="-1"></a><span class="ex">scRNASequest_demo_raw_added.h5ad</span>  <span class="co">#Since AnnData object can only have one count matrix, this one uses the raw UMI</span></span>
+<span id="cb23-34"><a href="demo-run.html#cb23-34" aria-hidden="true" tabindex="-1"></a><span class="ex">SCT/</span>                              <span class="co">#Results related to SCT transformation</span></span>
+<span id="cb23-35"><a href="demo-run.html#cb23-35" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.cID</span></span>
+<span id="cb23-36"><a href="demo-run.html#cb23-36" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.gID</span></span>
+<span id="cb23-37"><a href="demo-run.html#cb23-37" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.h5</span></span>
+<span id="cb23-38"><a href="demo-run.html#cb23-38" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.h5ad</span></span>
+<span id="cb23-39"><a href="demo-run.html#cb23-39" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.h5.rds</span></span>
+<span id="cb23-40"><a href="demo-run.html#cb23-40" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──scRNASequest_demo.scaleF</span></span>
+<span id="cb23-41"><a href="demo-run.html#cb23-41" aria-hidden="true" tabindex="-1"></a><span class="ex">sctHarmony/</span>                       <span class="co">#SCT+Harmony results</span></span>
+<span id="cb23-42"><a href="demo-run.html#cb23-42" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.csv</span></span>
+<span id="cb23-43"><a href="demo-run.html#cb23-43" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──scRNASequest_demo.h5ad</span></span>
+<span id="cb23-44"><a href="demo-run.html#cb23-44" aria-hidden="true" tabindex="-1"></a><span class="ex">SeuratRef/</span>                       <span class="co">#Seurat reference mapping results</span></span>
+<span id="cb23-45"><a href="demo-run.html#cb23-45" aria-hidden="true" tabindex="-1"></a>  <span class="ex">├──scRNASequest_demo.csv</span></span>
+<span id="cb23-46"><a href="demo-run.html#cb23-46" aria-hidden="true" tabindex="-1"></a>  <span class="ex">└──scRNASequest_demo.h5ad</span></span></code></pre></div>
 
 </div>
 </div>

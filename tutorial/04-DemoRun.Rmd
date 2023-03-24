@@ -12,7 +12,7 @@ Continuing from section 3.1.1, we assume that the pipeline was installed in: ~/s
 
 First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory, and other lines don't need to be changed:
 
-```
+```{bash, eval=FALSE}
 ...
 ref_name: ~/scRNASequest/demo/ref/rat_cortex_ref.rds   # choose one from scAnalyzer call without argument
 output: ~/scRNASequest/demo                            # output path   
@@ -25,7 +25,7 @@ DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis. To sa
 
 Then execute the following command:
 
-```
+```{bash, eval=FALSE}
 scAnalyzer ~/scRNASequest/demo/config.yml
 ```
 
@@ -33,13 +33,13 @@ scAnalyzer ~/scRNASequest/demo/config.yml
 
 After following section 3.1.2 to set up the pipeline, we are ready to run this demo:
 
-```
+```{bash, eval=FALSE}
 docker exec -t -i <container_name> scAnalyzer /demo/config.yml
 ```
 
 After running this demo, a list of files will be created:
 
-```
+```{bash, eval=FALSE}
 config.yml                        #Original config.yml file
 config.yml.20230314.log           #Log file during pipeline run
 data/                             #Original data files
