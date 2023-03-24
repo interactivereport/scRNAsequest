@@ -1,5 +1,5 @@
 --- 
-title: "scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing"
+title: "scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" 
 author:
   - name: Kejie Li
     email: kejie.li@biogen.com
@@ -12,6 +12,12 @@ author:
     affiliation: BioInfoRx
   - name: Soumya Negi
     email: soumya.negi@biogen.com
+    affiliation: Biogen
+  - name: Zhen Gao
+    email: zhen.gao@biogen.com
+    affiliation: Biogen
+  - name: Jing Zhu
+    email: jing.zhu@biogen.com
     affiliation: Biogen
   - name: Wanli Wang
     email: wanli.wang@biogen.com
@@ -64,3 +70,5 @@ site: bookdown::bookdown_site
 
 # Preface
 This is a *user manual* written using Bookdown, which provides a detailed guide for scRNASequest.
+
+[![](https://interactivereport.github.io/scRNAsequest/images/Cover.png)](https://interactivereport.github.io/scRNAsequest/images/Cover.png)
