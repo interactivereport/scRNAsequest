@@ -71,3 +71,4 @@ site: bookdown::bookdown_site
 # Preface
 This is a *user manual* written using Bookdown, which provides a detailed guide for scRNASequest.
 
+[![](https://interactivereport.github.io/scRNAsequest/images/Cover.png)](https://interactivereport.github.io/scRNAsequest/images/Cover.png)
