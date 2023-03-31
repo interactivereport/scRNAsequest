@@ -22,7 +22,7 @@ source $condaPath/etc/profile.d/conda.sh
 conda activate $appEnvName
 mamba env update -f install/install.yml
 
-echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $CONDA_PREFIX'" > $src/.env
+echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $appEnvName'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
 echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
 echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
