@@ -127,7 +127,9 @@ overwrite: True
 
 ## Prepare the sample meta file {#section52}
 
-The sample meta file, usually named as **sampleMeta.csv**, is a csv file storing data information. The minimal columns for this file are **Sample_Name** (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and **h5path**. If you have the cell type annotation information, you can provide is by adding a column called **metapath**. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.
+The sample meta file, usually named as **sampleMeta.csv**, is a csv file storing data information. The minimal columns for this file are **Sample_Name** (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and **h5path**. If you have the cell type annotation information, you can provide is by adding a column called **metapath**, which is an optional column. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.
+
+Another usage of the **metapath** column in **sampleMeta.csv** is to subset the cells. The pipeline will only use the cells included in the **metapath** file to run analysis. Thus, you can adjust this information by selecting only a subset of barcodes.
 
 ### h5 input
 

@@ -1,8 +1,8 @@
 # Running the pipeline
 
-If you would like to perform ambient RNA removal using CellBender, please follow the instruction here to run scRMambient first. The scRMambient pipeline will run CellBender based on unfiltered h5 input files and created new h5 files to run scAnalyzer. We have a [detailed tutorial](file:///Users/ysun4/Documents/GitProjects/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient)..
+If you would like to perform ambient RNA removal using CellBender, please follow the instruction here to run **scRMambient** first. The **scRMambient** pipeline will run CellBender based on unfiltered h5 input files and created new h5 files to run scAnalyzer. We have a [detailed tutorial](file:///Users/ysun4/Documents/GitProjects/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient)..
 
-After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once.
+After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once, especially for finaling the QC parameters.
 
 ## Initial scAnalyzer run
 
@@ -25,7 +25,7 @@ scAnalyzer ~/E-MTAB-11115/processing/config.yml
 
 Output files:
 
-```
+```{bash, eval=FALSE}
 outputdir
     ├── BookdownReport/                #Full bookdown report folder. This is same as the BookdownReport.tar.gz below
     ├── config.yml
@@ -42,7 +42,7 @@ outputdir
 
 After the initial `scAnalyzer` run, a bookdown report, named **ProjName_BookdownReport.tar.gz** will be generated. Please open the report (index.html) to review cell numbers and figures before and after the filtering step, and adjust the following thresholds in the config.yml file if needed:
 
-```
+```{bash, eval=FALSE}
 # Cell filtering parameters in the config.yml file:
 gene_group:
   MT:
@@ -72,7 +72,7 @@ This is an optional step if you have already reviewed the Bookdown report. This 
 
 The QC report can be turned into a online slide deck format for better sharing and demonstration. To achieve this, please use the **Slidedeck.Rmd** file under the /src folder and follow the steps below:
 
-```
+```{bash, eval=FALSE}
 # create a new directory inside the project, and link the existed files and folder:
 cd ~/E-MTAB-11115/processing/
 mkdir Slidedeck && cd Slidedeck
@@ -95,31 +95,64 @@ Please download **the whole Slidedeck directory** and open the **Output.html** f
 
 Please find an example of the bookdown report here: [E-MTAB-11115 slidedeck](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html){target="_blank"}
 
+## Cell type label transfer
+
+Cell type label transfer is to label our new data using a reference single-cell RNA-seq data from the same tissue (i.e. brain, muscle, etc.). It automatically assigns cell types to each single cell. scRNASequest pipeline can do this if you provide a reference in the **config.yml** file.
+
+However, this is optional, so leaving 'ref_name' parameter as blank won't affect running the pipeline. But we strongly suggest you perform label transfer to better understand the biology of the data.
+
+To check all available references, run scAnalyzer without any parameter and they will be printed out on the screen if you have added any references using scRef, see section [Reference building]. Alternatively, you can provide your own reference in [Azimuth format](https://azimuth.hubmapconsortium.org/references/) to the pipeline.
+
+Example 1, if you have a named reference that has been added to the pipeline, for example, human_cortex is included already:
+
+```{bash, eval=FALSE}
+ref_name: human_cortex
+```
+
+Example 2, if you have an rds with cell type labels, you can also provide a path to the reference file and use it to label the current dataset. In the [demo dataset](https://github.com/interactivereport/scRNAsequest/tree/main/demo/ref), we have a reference rds file prepared and you can use it directly:
+
+```{bash, eval=FALSE}
+ref_name: ~/scRNAsequest/rat_cortex_ref.rds
+```
+
+The above rds file must be in [Azimuth format](https://azimuth.hubmapconsortium.org/references/), which can be prepared by running scRef.
+
+## Adjust major_cluster_rate
+
+If you have turned on cell type label transfer by providing a reference dataset, you may consider adjusting **major_cluster_rate** in the config.yml file. This major cluster rate means the proportion (by default 0.7) of cells of an integration cluster to be assigned to a Seurat reference label.
+
+In the final cell type labels, the **predicted.celltype** is the the labels predicted by Seurat label transfer. The following predicted labels: **liger_cluster_predicted.celltype**, **normalized.louvain_predicted.celltype**, **raw.louvain_predicted.celltype**, and **sctHarmony_cluster.predicted.celltype** are re-labelled cell types considering dimension reduction/integration clusters. The dimension reduction/integration algorithms generate numeric clusters, and our pipeline will look through each cluster and check if over 0.7 (by default, 70%) of the cells belong to one label. If yes, the whole cluster will be assigned to that cell type label. If not, it will leave that numeric cluster in the final result. We can consider those numeric labeling as a mixture or 'Unclassified' cell types.
+
+So, if you find cell type labels with just numbers and you don't want to see them (The numbers indicating original cluster id whose cells belong to any label is lower than the threshold), you can turn this off by removing the default number 0.7 and leaving it empty like this in the config.yml file:
+
+```{bash, eval=FALSE}
+major_cluster_rate:
+```
+
+## Run the pipeline in parallel
+
+As mentioned in the previous section [Input configuration], users can choose **sge** or **slurm** based on your scheduler option in the **config.yml** file to run your jobs parallelly. For large datasets, we highly recommend that users make full use of the CPU parallelization. Here is an example of using 8 cores on slurm HPC scheduler, in the config.yml file:
+
+```{bash, eval=FALSE}
+parallel: slurm              #False by default. Use 'slurm' for Edge cluster, and use 'sge' for Cambridge HPC
+core: 8                      #Number of cores to use
+```
+
+If you don't have **sge** or **slurm** scheduler, simply use 'parallel: False' as default.
+
 ## Run the full analysis
 
-After the filtering step is done, we are ready to turn on the *runAnalysis* parameter and run the full pipeline:
+We have finalized the filtering criteria and made necessary adjustment in the config.yml file to set up label transfer, major_cluster_rate, and parallelization.
 
-```
+Now, we are ready to turn on the *runAnalysis* parameter in the config.yml and run the full pipeline:
+
+```{bash, eval=FALSE}
 # Change the following setting in the config.yml file:
 runAnalysis: True
 overwrite: True    #Overwrite the previous results if we run this again, for example, after adjusting some parameters.
 ```
 
-Please also pay attention to the **reference** data, and if the user would like to turn on the label transfer function for cell type annotation, set the following parameter, for example, using **human_cortex** as the reference:
-
-```
-ref_name: human_cortex
-```
-
-To check all available references, run `scAnalyzer` without any parameter, which will read the src/sys.yml file to check available references. To add new references, please see section 8: [Reference Building].
-
-Alternatively, you can provide a path to the **ref.Rds** reference file in the [Azimuth reference format](https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format){target="_blank"}:
-
-```
-ref_name: path/to/ref.Rds
-```
-
-An example reference file is the demo/ref/rat_cortex_ref.rds file associated with this pipeline.
+You can always go to our [demo dataset](https://github.com/interactivereport/scRNAsequest/tree/main/demo) to review related data and [demo config.yml](https://github.com/interactivereport/scRNAsequest/blob/main/demo/config.yml) settings.
 
 Then run the following command again:
 

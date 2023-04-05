@@ -1,0 +1,17 @@
+# Miscellaneous
+
+This section documents some use cases of this pipeline.
+
+## Cell subsetting
+
+This feature allows users to subset cells from an existing analysis and rerun the pipeline. The following solution takes advantage of the **metapath** column in the **sampleMeta.csv** file to subset the cell barcodes to be included in the analysis. To review the setting of the **sampleMeta.csv** file, please see the previous section [here](#section52).
+
+Here are the steps:
+
+  - 1. After the first round of analysis, a user can extract a subset of the cell ids along with some cell-level annotation (keep a record of how the subset is done) from h5ad/seruat, or on Cellxgene VIP (through heatmap getData).
+
+  - 2. A user can then split the cell ids into each sample according to the prefix, and remove the prefix (cell id without the prefix to be the first column in the csv file).
+  
+  - 3. Add this cell-level annotation csv file into the **metapath** in the sample sheet for each sample.
+
+  - 4. Then run scAnalyzer on this new sample sheet, the original data will be subsetted, and a message of how many cells were extracted for each sample will be on stdout.

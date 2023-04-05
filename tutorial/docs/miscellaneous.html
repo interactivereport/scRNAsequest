@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
-  <meta name="description" content="Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <title>Chapter 12 Miscellaneous | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
+  <meta name="description" content="Chapter 12 Miscellaneous | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta property="og:title" content="Chapter 12 Miscellaneous | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
+  <meta name="twitter:title" content="Chapter 12 Miscellaneous | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   
   
   
@@ -29,8 +29,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="data-preparation.html"/>
-<link rel="next" href="running-the-pipeline.html"/>
+<link rel="prev" href="additional-tools.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -243,180 +243,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="input-configuration" class="section level1 hasAnchor" number="6">
-<h1><span class="header-section-number">Chapter 6</span> Input configuration<a href="input-configuration.html#input-configuration" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>First, make sure the .env has been created in the src folder under the pipeline directory:</p>
-<pre><code>ls ~/scRNAsequest/src/.env</code></pre>
-<div id="generate-template-files" class="section level2 hasAnchor" number="6.1">
-<h2><span class="header-section-number">6.1</span> Generate template files<a href="input-configuration.html#generate-template-files" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Now we are ready to run the pipeline. Since the main pipeline script <code>scAnalyzer</code> requires a <strong>config.yml</strong> file, a sample metadata file <strong>sampleMeta.csv</strong>, and a <strong>DEGinfo.csv</strong> file for DE analysis (can be filled in later), we can first generate templates for these files.</p>
-<p>We run <code>scAnalyzer</code> by providing a path to our working directory. This can be any directory on you system:</p>
-<pre><code>scAnalyzer /path/to/working/dir</code></pre>
-<p>Then you will see the following files generate:</p>
-<pre><code>config.yml          #This is the pipeline configuration file
-DEGinfo.csv         #This is for DE analysis, see the &#39;Differential expression (DE) analysis&#39; section for more details
-                    #This file can be left blank, which means skip DE analysis
-sampleMeta.csv      #Sample metadata file, storing sample level information
-sc20230320.init.log #Log file</code></pre>
-<p>In the log file, we can also see the following messages:</p>
-<pre><code>*****
-External data, please fill the config file and provide sample sheet with two mandatory columns:
-Two columns with names &#39;Sample_Name&#39; and &#39;h5path&#39; indicating sample name and UMI path
-Option columns for sample annotation
-Option column &#39;metapath&#39; can be provided for cell level annotation first column cell bar code
-*****</code></pre>
-<p>Please following the instructions below to set up these files.</p>
-</div>
-<div id="prepare-the-config.yml-file" class="section level2 hasAnchor" number="6.2">
-<h2><span class="header-section-number">6.2</span> Prepare the config.yml file<a href="input-configuration.html#prepare-the-config.yml-file" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To run the scRNAsequest pipeline, a config.yml file is required to be filled in. Please use the following template as an example to prepare this file:</p>
-<p><a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml" target="_blank">config.yml</a></p>
-<pre><code>## Project info and filtering parameters
-prj_name: E-MTAB-11115            #required, project name
-prj_title: &quot;Cell2location maps fine-grained cell types in spatial transcriptomics&quot; #required, and quotes might be needed
-ref_name:                         #optional. You can choose one from scAnalyzer call without an argument
-output: /home/ysun4/E-MTAB-11115/ #required, output path
-sample_name: Sample_Name
-sample_meta: ~/E-MTAB-11115/sampleMeta.csv   #required, sample meta information, see section 5.1
-gene_group:
-  MT:
-    startwith: [&quot;MT-&quot;,&quot;Mt-&quot;,&quot;mt-&quot;]
-    cutoff: 20           # percentage cutoff to filter out the cells (larger than this cutoff)
-    rm: False            # this means the genes specified &quot;startwith&quot; will be REMOVED from the downstream analysis
-  # The following is an example (Ribosomal genes) to add additional gene set/list to be quantified the percentage over total UMI per cell
-  # additional gene set/list can be added as the format
-  RP:
-    startwith: [MRPL,MRPS,RPL,RPS]
-    cutoff: 50
-    rm: False
-filter_step: True        #if False, the above &#39;gene_group&#39; filtering will be skipped as well
-min.cells: 3             #filtering genes by minimal cell
-min.features: 50         #filtering cells by minimal genes
-highCount.cutoff: 10000  #any cells with higher total counts to be removed
-highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
-group:                   #if provided, a 10X QC box plot will be ploted in QC plot
-rasterizeFig: True       #should image in pdf be rasterized
-
-reRunQC: True            #if satisfied with the above setting, please set this to False to save time 
-runAnalysis: False       #False means only run QC steps before data normalization and harmonization
-                         #If QC looks good, turn this to True to run the full pipeline
-newProcess: False
-methods: [SCT,Liger,SeuratRef,SeuratRPCA,sctHarmony]    #SCT method (including log1p) is required expression normalization
-                         #The listed methods include all available analyses. If you want to ignore Liger, for example, you can delete it here
-expScaler: 10000         #integer value, 0: SCT (along with following option); 1-100: logNormal with scale.factor to be the specified quantile
-                         #&gt;100: logNormal with scale.factor to be the specified value                                         
-PrepSCTFindMarkers: True # should the &quot;PrepSCTFindMarkers&quot; applied on SCT to be exported for visualization expression                                                             
-parallel: False          #&quot;sge&quot; or &quot;slurm&quot;
-core: 2
-overwrite: False         #if you are rerunning the same project, set this to True to overwrite previous results
-major_cluster_rate: 0.7  #the proportion of cells of an integration cluster to be assigned to a seurat reference label
-
-## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
-DEG_desp:  ~/E-MTAB-11115/DEGinfo.csv         #required for DEG analysis, but you can leave this empty if not going to run DEG
-# Please be causion of changing the following default filtering
-# More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/
-# Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment
-min.cells.per.gene: 3                         # if `perc_filter` is FALSE, then keep only genes that have expression in at least min.cells.per.gene
-min.genes.per.cell: 250                       # keep cells with expression in at least min.genes.per.cell genes.
-min.perc.cells.per.gene: 0.00 #if &#39;perc_filter&#39;`&#39; is TRUE, then keep only genes that have expression in at least min.per.cells.per.gene * 100 percent of cells
-perc_filter: TRUE                             # if TRUE, apply the cells.per.gene filter using percentages (expressed as a decimal) rather than an absolute threshold
-# Apply the 2nd round of biostats filtering.  For &quot;group&quot; mode, the filtering is applied to `ref_group` and `alt_group` for the given cell type of interest.
-R6_min.cells.per.gene: 3                      # minimum cells expressed per gene.  This filter is applied if `R6_perc.cells.filter` is FALSE
-R6_min.perc.cells.per.gene: 0.1               # minimum % cells expressed per gene filtering (use decimal form of percentage).  This threshold is applied if &#39;R6_perc.cells.filter&#39; is TRUE and &#39;R6_cells.per.gene.filter&#39; is TRUE
-R6_min.cells.per.gene.type: &quot;or&quot;              # The type of cell per gene filtering.  If it has the value &quot;and&quot; then it requires the gene be expressed in both reference and non-reference groups. If it has the value &quot;or&quot; then it requires the gene be expressed in either group
-R6_cells.per.gene.filter: TRUE                # TRUE means apply cells per gene filtering
-R6_perc.cells.filter: TRUE                    # TRUE means apply cell.per.gene filtering by use of a percentage rather than absolute threshold.  If the percentage results in a number less than R6_min.cells.per.gene, the code will automatically switch to min.cells.per.gene absolute thresholding
-R6_perc.filter: FALSE                         # If TRUE, then apply the 75th percentile gene filtering
-R6_perc.filter.type: &quot;and&quot;                    # The type of percentile gene filtering.  If it has the value &quot;and&quot; then any gene that has 75th percentile of zero in both groups will be filtered out.  If it has the value &quot;or&quot; then any gene that has a 75th percentile of zero in either group will be filtered out.
-R6_perc_threshold: 0.90                       # Percentile threshold, 75th percentile is default.  Express percentile as a decimal value.
-R6_min.ave.pseudo.bulk.cpm: 1 #cpm filtering threshold
-R6_pseudo.bulk.cpm.filter: FALSE              # if TRUE, then apply a cpm filter on the pseudo-bulk counts
-R6_min.cells.per.subj: 3                      # Minimum cells required per subject, must be a nonzero number
-
-## publish to celldepot
-publish: False</code></pre>
-<p>In the first run (see the below section 7.1 scAnalyzer section on how to run the pipeline), the user can set <code>runAnalysis: False</code> and use the above default parameters to perform cell filtering and QC.</p>
-<p>Then this pipeline will only run basic QC checking and output a Bookdown report with QC figures. This step is semi-automated because different datasets may need distinct filtering criteria. The design of this pipeline is to pause here to make sure the filtering step is adequate before running through the whole analysis.</p>
-<p>For HPC clusters, if you set <code>parallel</code> to be “sge” or “slurm” based on your cluster, the pipeline will automatically submit separate jobs and monitor the run. Finally, it will collect results and summarize them.</p>
-<p>Once the filtering step is validated by checking the QC report, the user can change the following settings and run the full analysis:</p>
-<pre><code>runAnalysis: True
-overwrite: True</code></pre>
-</div>
-<div id="section52" class="section level2 hasAnchor" number="6.3">
-<h2><span class="header-section-number">6.3</span> Prepare the sample meta file<a href="input-configuration.html#section52" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The sample meta file, usually named as <strong>sampleMeta.csv</strong>, is a csv file storing data information. The minimal columns for this file are <strong>Sample_Name</strong> (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and <strong>h5path</strong>. If you have the cell type annotation information, you can provide is by adding a column called <strong>metapath</strong>, which is an optional column. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.</p>
-<p>Another usage of the <strong>metapath</strong> column in <strong>sampleMeta.csv</strong> is to subset the cells. The pipeline will only use the cells included in the <strong>metapath</strong> file to run analysis. Thus, you can adjust this information by selecting only a subset of barcodes.</p>
-<div id="h5-input" class="section level3 hasAnchor" number="6.3.1">
-<h3><span class="header-section-number">6.3.1</span> h5 input<a href="input-configuration.html#h5-input" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Here is an example with minimal information for the public dataset <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> (10X h5 format):</p>
-<pre><code>Sample_Name,h5path
-5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280.filtered_feature_bc_matrix.h5
-5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281.filtered_feature_bc_matrix.h5
-5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282.filtered_feature_bc_matrix.h5
-5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283.filtered_feature_bc_matrix.h5
-5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284.filtered_feature_bc_matrix.h5
-5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285.filtered_feature_bc_matrix.h5</code></pre>
-<p>Another example if you would like to use the <strong>cell type annotation</strong> defined by their analysis, which can be included in the <strong>metapath</strong> column. Moreover, the user has the freedom to provide further information such as sex and age:</p>
-<pre><code>Sample_Name,h5path,metapath,sex,age
-5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058280_annotation.csv,Female,56d
-5705STDY8058281,~/E-MTAB-11115/data/5705STDY8058281_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058281_annotation.csv,Female,56d
-5705STDY8058282,~/E-MTAB-11115/data/5705STDY8058282_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058282_annotation.csv,Female,56d
-5705STDY8058283,~/E-MTAB-11115/data/5705STDY8058283_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058283_annotation.csv,Male,56d
-5705STDY8058284,~/E-MTAB-11115/data/5705STDY8058284_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058284_annotation.csv,Male,56d
-5705STDY8058285,~/E-MTAB-11115/data/5705STDY8058285_filtered_feature_bc_matrix.h5,~/E-MTAB-11115/data/5705STDY8058285_annotation.csv,Male,56d
-
-#A brief look at the annotation file used in the metapath column:
-$ head -3 5705STDY8058280_annotation.csv
-Cell.ID,sample,annotation_1,annotation_1_print
-AAACCCAAGGAAGTAG-1,5705STDY8058280,Ext_L25,23_Ext_L25
-AAACCCAAGGGCAGTT-1,5705STDY8058280,Ext_L56,24_Ext_L56</code></pre>
-</div>
-<div id="mex-input" class="section level3 hasAnchor" number="6.3.2">
-<h3><span class="header-section-number">6.3.2</span> MEX input<a href="input-configuration.html#mex-input" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Since each data has three MEX files (barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz), here we provide the <strong>path to each MEX result directory</strong>. The minimal information in the sample meta file:</p>
-<pre><code>Sample_Name,h5path
-FCtr,~/10XGenomicsData/GSM5617891_snRNA_FCtr
-FEcig,~/10XGenomicsData/GSM5617892_snRNA_FEcig
-MCtr,~/10XGenomicsData/GSM5617893_snRNA_MCtr
-MEcig,~/10XGenomicsData/GSM5617894_snRNA_MEcig</code></pre>
-<p>Another example with additional information:</p>
-<pre><code>Sample_Name,h5path,Treatment,Sex
-FCtr,~/10XGenomicsData/GSM5617891_snRNA_FCtr,Control,Female
-FEcig,~/10XGenomicsData/GSM5617892_snRNA_FEcig,EcTreated,Female
-MCtr,~/10XGenomicsData/GSM5617893_snRNA_MCtr,Control,Male
-MEcig,~/10XGenomicsData/GSM5617894_snRNA_MEcig,EcTreated,Male</code></pre>
-</div>
-</div>
-<div id="file-hierarchy" class="section level2 hasAnchor" number="6.4">
-<h2><span class="header-section-number">6.4</span> File hierarchy<a href="input-configuration.html#file-hierarchy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Before running the pipeline, please check the file hierarchy. Here are examples for h5 and MEX inputs, and we suggest creating a separate folder (such as <em>processing</em>) to store the config.yml and sampleMeta.csv files. The output files will be generated in the directory specified in config.yml.</p>
-<p>For data downloaded in 10X h5 format:</p>
-<pre><code>E-MTAB-11115/
-    ├── data
-        ├── 5705STDY8058280.annotation.csv           (optional)
-        ├── 5705STDY8058280.metrics_summary.csv      (optional)
-        ├── 5705STDY8058280.raw_feature_bc_matrix.h5
-        ├── 5705STDY8058281.annotation.csv           (optional)
-        ├── 5705STDY8058281.metrics_summary.csv      (optional)
-        ├── 5705STDY8058281.raw_feature_bc_matrix.h5
-        ...
-    ├── processing
-        ├── config.yml
-        └── sampleMeta.csv</code></pre>
-<p>For data downloaded in 10X MEX format:</p>
-<pre><code>GSE185538/
-    ├── GSM5617891_snRNA_FCtr
-        ├── barcodes.tsv.gz
-        ├── features.tsv.gz
-        └── matrix.mtx.gz
-    ├── GSM5617892_snRNA_FEcig
-        ├── barcodes.tsv.gz
-        ├── features.tsv.gz
-        └── matrix.mtx.gz
-    ...
-    ├── processing
-        ├── config.yml
-        └── sampleMeta.csv</code></pre>
+<div id="miscellaneous" class="section level1 hasAnchor" number="12">
+<h1><span class="header-section-number">Chapter 12</span> Miscellaneous<a href="miscellaneous.html#miscellaneous" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This section documents some use cases of this pipeline.</p>
+<div id="cell-subsetting" class="section level2 hasAnchor" number="12.1">
+<h2><span class="header-section-number">12.1</span> Cell subsetting<a href="miscellaneous.html#cell-subsetting" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This feature allows users to subset cells from an existing analysis and rerun the pipeline. The following solution takes advantage of the <strong>metapath</strong> column in the <strong>sampleMeta.csv</strong> file to subset the cell barcodes to be included in the analysis. To review the setting of the <strong>sampleMeta.csv</strong> file, please see the previous section <a href="input-configuration.html#section52">here</a>.</p>
+<p>Here are the steps:</p>
+<ul>
+<li><ol style="list-style-type: decimal">
+<li>After the first round of analysis, a user can extract a subset of the cell ids along with some cell-level annotation (keep a record of how the subset is done) from h5ad/seruat, or on Cellxgene VIP (through heatmap getData).</li>
+</ol></li>
+<li><ol start="2" style="list-style-type: decimal">
+<li>A user can then split the cell ids into each sample according to the prefix, and remove the prefix (cell id without the prefix to be the first column in the csv file).</li>
+</ol></li>
+<li><ol start="3" style="list-style-type: decimal">
+<li>Add this cell-level annotation csv file into the <strong>metapath</strong> in the sample sheet for each sample.</li>
+</ol></li>
+<li><ol start="4" style="list-style-type: decimal">
+<li>Then run scAnalyzer on this new sample sheet, the original data will be subsetted, and a message of how many cells were extracted for each sample will be on stdout.</li>
+</ol></li>
+</ul>
 
 </div>
 </div>
@@ -425,8 +272,8 @@ MEcig,~/10XGenomicsData/GSM5617894_snRNA_MEcig,EcTreated,Male</code></pre>
           </div>
         </div>
       </div>
-<a href="data-preparation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="running-the-pipeline.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="additional-tools.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -457,7 +304,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/06-InputConfiguration.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/edit/gh-pages/12-Miscellaneous.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -465,7 +312,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/06-InputConfiguration.Rmd",
+"link": "https://github.com/interactivereport/scRNAsequest/blob/gh-pages/12-Miscellaneous.Rmd",
 "text": null
 },
 "download": null,

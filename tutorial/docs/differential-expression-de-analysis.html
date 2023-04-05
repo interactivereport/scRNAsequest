@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-03-24" />
+<meta name="date" content="2023-04-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -177,8 +177,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>7.1</b> Initial scAnalyzer run</a></li>
 <li class="chapter" data-level="7.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>7.2</b> Review the bookdown report</a></li>
 <li class="chapter" data-level="7.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>7.3</b> Generate a slide deck</a></li>
-<li class="chapter" data-level="7.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>7.4</b> Run the full analysis</a></li>
-<li class="chapter" data-level="7.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>7.5</b> Visualize the harmonized results</a></li>
+<li class="chapter" data-level="7.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#cell-type-label-transfer"><i class="fa fa-check"></i><b>7.4</b> Cell type label transfer</a></li>
+<li class="chapter" data-level="7.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#adjust-major_cluster_rate"><i class="fa fa-check"></i><b>7.5</b> Adjust major_cluster_rate</a></li>
+<li class="chapter" data-level="7.6" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-pipeline-in-parallel"><i class="fa fa-check"></i><b>7.6</b> Run the pipeline in parallel</a></li>
+<li class="chapter" data-level="7.7" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>7.7</b> Run the full analysis</a></li>
+<li class="chapter" data-level="7.8" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>7.8</b> Visualize the harmonized results</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>8</b> Differential expression (DE) analysis</a>
 <ul>
@@ -217,6 +220,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="11.3.4" data-path="additional-tools.html"><a href="additional-tools.html#demo-sctool"><i class="fa fa-check"></i><b>11.3.4</b> Demo scTool</a></li>
 </ul></li>
 </ul></li>
+<li class="chapter" data-level="12" data-path="miscellaneous.html"><a href="miscellaneous.html"><i class="fa fa-check"></i><b>12</b> Miscellaneous</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="miscellaneous.html"><a href="miscellaneous.html#cell-subsetting"><i class="fa fa-check"></i><b>12.1</b> Cell subsetting</a></li>
+</ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -246,7 +253,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Covariate adjustment:</strong></p>
 <p>Adjusting covariates is optional. By default, NEBULA considers the value of <strong>log of total UMI (library size)</strong> as the offset covariate in our pipeline, so you don’t need to adjust this again in <strong>“covars”</strong>.</p>
 <p>If needed, you can put a formula in the <strong>“covars”</strong> column using the meta information from the sampleMeta.csv file, such as Sex, Age, etc. You can also include QC metrics such as mitochondria percentage (pct_MT), etc. Please find a full list of QC metrics below. You can also open the Cellxgene VIP and check the right side. All numeric covariates are listed there.</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb54-1"><a href="differential-expression-de-analysis.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb56-1"><a href="differential-expression-de-analysis.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
 <p>You may consider <strong>pct_MT</strong> as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the <strong>“covars”</strong> column: <strong>Age+Sex+pct_MT</strong>.</p>
 <p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:</p>
 <p>We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:</p>
@@ -257,15 +264,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We can also add <em>covars</em> if needed, but this is optional.</p>
 <p>The default DE analysis is performed by <a href="https://www.nature.com/articles/s42003-021-02146-6" target="_blank"><strong>NEBULA</strong></a>. As for the model, NEBULA provides two choices: <strong>HL</strong> and <strong>LN</strong>. For more details about them, please refer to the <a href="https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl" target="_blank">NEBULA manual</a>.</p>
 <p>Here is the DEGinfo.csv we described above:</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb55-1"><a href="differential-expression-de-analysis.html#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
-<span id="cb55-2"><a href="differential-expression-de-analysis.html#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</span></span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="differential-expression-de-analysis.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
+<span id="cb57-2"><a href="differential-expression-de-analysis.html#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</span></span></code></pre></div>
 <p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="differential-expression-de-analysis.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb57-2"><a href="differential-expression-de-analysis.html#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-3"><a href="differential-expression-de-analysis.html#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb57-4"><a href="differential-expression-de-analysis.html#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb59-1"><a href="differential-expression-de-analysis.html#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb59-2"><a href="differential-expression-de-analysis.html#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="differential-expression-de-analysis.html#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb59-4"><a href="differential-expression-de-analysis.html#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step may take a few hours to run. The output files will be generated in the directory:</p>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4
@@ -284,7 +291,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-30">Table 8.1: </span>DEG analysis of Female.vs.Male in astrocytes
+<span id="tab:unnamed-chunk-38">Table 8.1: </span>DEG analysis of Female.vs.Male in astrocytes
 </caption>
 <thead>
 <tr>
@@ -678,7 +685,7 @@ Comparison_Ast_vs_Oligo,library_id,SelectAll,predicted.celltype1,astrocytes,Olig
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-31">Table 8.2: </span>DEG analysis of astrocytes.vs.Oligos
+<span id="tab:unnamed-chunk-39">Table 8.2: </span>DEG analysis of astrocytes.vs.Oligos
 </caption>
 <thead>
 <tr>

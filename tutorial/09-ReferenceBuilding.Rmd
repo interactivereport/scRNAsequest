@@ -82,7 +82,7 @@ Data <- RunUMAP(Data, dims = 1:30, verbose = FALSE)
 Data <- FindNeighbors(Data, dims = 1:30, verbose = FALSE)
 Data <- FindClusters(Data, verbose = FALSE)
 
-saveRDS(Data_clean, file = "Annotated.ForRuningscRef.rds")
+saveRDS(Data, file = "Annotated.ForRuningscRef.rds")
 ```
 
 ## Submit scRef

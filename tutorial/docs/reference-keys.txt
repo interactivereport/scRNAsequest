@@ -1,6 +1,6 @@
 tab:unnamed-chunk-1
-tab:unnamed-chunk-30
-tab:unnamed-chunk-31
+tab:unnamed-chunk-38
+tab:unnamed-chunk-39
 preface
 introduction
 installation
@@ -28,6 +28,9 @@ running-the-pipeline
 initial-scanalyzer-run
 review-the-bookdown-report
 generate-a-slide-deck
+cell-type-label-transfer
+adjust-major_cluster_rate
+run-the-pipeline-in-parallel
 run-the-full-analysis
 visualize-the-harmonized-results
 differential-expression-de-analysis
@@ -53,3 +56,5 @@ remove-annotations
 add-annotations
 export-gene-expressions
 demo-sctool
+miscellaneous
+cell-subsetting
