@@ -45,6 +45,7 @@ dependencies:
   - bioconductor-ensdb.hsapiens.v86=2.99.0
   - bioconductor-scater=1.18.6
   - bioconductor-rhdf5=2.34.0
+  - bioconductor-scdblfinder=1.4.0
   - pandas=1.4.1
   - scipy=1.8.0=py38h56a6a73_1
   - numpy=1.22.3
