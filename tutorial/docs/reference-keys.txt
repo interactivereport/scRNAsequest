@@ -1,6 +1,6 @@
 tab:unnamed-chunk-1
-tab:unnamed-chunk-38
-tab:unnamed-chunk-39
+tab:unnamed-chunk-40
+tab:unnamed-chunk-41
 preface
 introduction
 installation
@@ -28,6 +28,7 @@ running-the-pipeline
 initial-scanalyzer-run
 review-the-bookdown-report
 generate-a-slide-deck
+doublet-detection
 cell-type-label-transfer
 adjust-major_cluster_rate
 run-the-pipeline-in-parallel

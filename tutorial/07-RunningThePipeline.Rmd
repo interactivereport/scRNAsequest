@@ -1,6 +1,6 @@
 # Running the pipeline
 
-If you would like to perform ambient RNA removal using CellBender, please follow the instruction here to run **scRMambient** first. The **scRMambient** pipeline will run CellBender based on unfiltered h5 input files and created new h5 files to run scAnalyzer. We have a [detailed tutorial](file:///Users/ysun4/Documents/GitProjects/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient)..
+If you would like to perform ambient RNA removal using CellBender, please follow the instruction here to run **scRMambient** first. The **scRMambient** pipeline will run CellBender based on unfiltered h5 input files and created new h5 files to run scAnalyzer. We have a [detailed tutorial](https://interactivereport.github.io/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient).
 
 After preparing the input data and configuration files (config.yml and sampleMeta.csv), we are ready to run the pipeline. Please be aware that scRNASequest is a semi-automated pipeline, and certain steps require the user to review the outputs and determine the parameters. Thus, the same step may need to be run for more than once, especially for finaling the QC parameters.
 
@@ -60,7 +60,7 @@ highCount.cutoff: 10000  #any cells with higher total counts to be removed
 highGene.cutoff: 3000    #any cells with a higher number of detected genes to be removed
 ```
 
-The **min.cells** cutoff is to filter out *genes* that have low representation in cells, and the **min.features** cutoff is to filter out *cells* that have low number of genes (features) detected. The last two cutoffs, **highCount.cutoff** and **highGene.cutoff** can be used to filter cells if they have too many total counts or UMI detected, possibly due to multiplets. Please evaluate these cutoffs carefully, because the default values here are arbitrary.
+The **min.cells** cutoff is to filter out *genes* that have low representation in cells, and the **min.features** cutoff is to filter out *cells* that have low number of genes (features) detected. The last two cutoffs, **highCount.cutoff** and **highGene.cutoff** can be used to filter cells if they have too many total counts or UMI detected, possibly due to multiplets. Please evaluate these cutoffs carefully, because the default values here may not be suitable for all datasets.
 
 The user may need to adjust the thresholds and rerun `scAnalyzer` to visualize the results. This step may be repeated until the threshold is adequate for the data.
 
@@ -94,6 +94,24 @@ Rscript -e 'rmarkdown::render("Slidedeck.Rmd", output_file="Output.html")'
 Please download **the whole Slidedeck directory** and open the **Output.html** file in a web browser.
 
 Please find an example of the bookdown report here: [E-MTAB-11115 slidedeck](https://interactivereport.github.io/scRNAsequest/examples/E-MTAB-11115/slidedeck/index.html){target="_blank"}
+
+## Doublet detection
+
+Based on the recent [benchmarking paper](https://www.sciencedirect.com/science/article/pii/S2405471220304592) and single-cell RNA-seq analysis [guideline](https://www.nature.com/articles/s41576-023-00586-w), we implement [**scDblFinder**](https://github.com/plger/scDblFinder) in our pipeline to perform doublet detection. By default, the pipeline runs scDblFinder on each sample and produces doublet scores (0-1, higher means high probability to be doublet) and classification results (singlet or doublet) using its own cutoff. If you speculate ambient RNA contamination in your data, we also suggest running [scRMambient](https://interactivereport.github.io/scRNAsequest/tutorial/docs/additional-tools.html#scrmambient) first.
+
+Users can control whether to remove these cells by setting `dbl_filter` in the config.yml file. `False` means not removing doublets, but the score (column name: scDblFinder.score) and classification (column name: scDblFinder.class) will be added to the final results for evaluation. If `True`, then all doublets will be removed.
+
+```{bash, eval=FALSE}
+dbl_filter: False
+```
+
+The scDblFinder automatically determines the doublet rates based on cell number, i.e., for N thousand cells, the doublet rate will be close to N %.
+
+However, you can adjust this manually by providing a numeric number between 0~1 in the config.yml file to enforce your own cutoff on the doublet score:
+
+```{bash, eval=FALSE}
+dbl_filter: 0.95
+```
 
 ## Cell type label transfer
 

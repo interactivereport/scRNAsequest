@@ -23,6 +23,14 @@ DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis. To sa
 ...
 ```
 
+Accordingly, we modify the sampleMeta.csv file by providing the full path to .h5 files by adding '~/scRNASequest':
+
+```
+Sample_Name,h5path,Sex
+RatFemaleCigarette,~/scRNASequest/demo/data/RatFemaleCigarette.filtered_feature_bc_matrix.h5,Female
+RatMaleCigarette,~/scRNASequest/demo/data/RatMaleCigarette.filtered_feature_bc_matrix.h5,Male
+```
+
 Then execute the following command:
 
 ```{bash, eval=FALSE}
