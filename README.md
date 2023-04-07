@@ -186,7 +186,7 @@ All necessary files for this demo have been prepared under the `demo` directory.
 
 Continuing from section 1.1, we assume that the pipeline was installed in: ~/scRNASequest.
 
-First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory, and other lines don't need to be changed:
+First, we set up the config file (~/scRNASequest/demo/config.yml) by pointing these parameters to your directory because the default directory was /demo, and other lines don't need to be changed:
 
 ```
 ...
@@ -197,6 +197,14 @@ sample_meta: ~/scRNASequest/demo/sampleMeta.csv
 ...
 DEG_desp: ~/scRNASequest/demo/DEGinfo.csv              # for DEG analysis
 ...
+```
+
+Accordingly, we modify the sampleMeta.csv file by providing the full path to .h5 files by adding '~/scRNASequest':
+
+```
+Sample_Name,h5path,Sex
+RatFemaleCigarette,~/scRNASequest/demo/data/RatFemaleCigarette.filtered_feature_bc_matrix.h5,Female
+RatMaleCigarette,~/scRNASequest/demo/data/RatMaleCigarette.filtered_feature_bc_matrix.h5,Male
 ```
 
 Then execute the following command:
