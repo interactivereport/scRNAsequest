@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix
 from natsort import natsorted
 import barcodeRankPlot as BRP
+import dbl
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 sc.set_figure_params(vector_friendly=True, dpi_save=300)
@@ -549,12 +550,16 @@ def runQC(config,meta):
         adata.write("%s_raw_prefilter.h5ad"%prefix)
       else:
         adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
+      print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
+      filterRes=["Filter,cutoff,cell_number,gene_number\n"]
+      filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
+      adata,filterRes = dbl.dbl(config,"%s_raw_prefilter.h5ad"%prefix,adata,filterRes)
       adata = preprocess(adata,config)
       strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
       if not os.path.isfile(strPrefilterQC):
         plotQC(adata,strPrefilterQC,config["group"])
       if config["filter_step"]:
-        adata = filtering(adata,config)
+        adata = filtering(adata,config,filterRes)
         plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
     checkCells(adata)
     if not config["runAnalysis"]:
@@ -763,15 +768,12 @@ def preprocess(adata,config):
     Exit("Unknown config format! Either 'MTstring' or 'gene_group' is required")
 
   return adata
-def filtering(adata,config):
+def filtering(adata,config,filterRes):
   print("filtering ...")
-  print("10X report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
   min_cells=config["min.cells"]
   min_features=config["min.features"]
   highCount_cutoff=config["highCount.cutoff"]
   highGene_cutoff=config["highGene.cutoff"]
-
-  filterRes=["Filter,cutoff,cell_number,gene_number\n"]
 
   print("\tfiltering cells and genes")
   if "mt.cutoff" in config.keys():
