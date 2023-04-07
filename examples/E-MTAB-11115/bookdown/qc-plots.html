@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 QC plots | Bookdown report of E-MTAB-11115</title>
-  <meta name="description" content="Chapter 1 QC plots | Bookdown report of E-MTAB-11115" />
+  <title>Chapter 1 QC plots | Bookdown report of Mouse_brain_snRNAseq</title>
+  <meta name="description" content="Chapter 1 QC plots | Bookdown report of Mouse_brain_snRNAseq" />
   <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 QC plots | Bookdown report of E-MTAB-11115" />
+  <meta property="og:title" content="Chapter 1 QC plots | Bookdown report of Mouse_brain_snRNAseq" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 QC plots | Bookdown report of E-MTAB-11115" />
+  <meta name="twitter:title" content="Chapter 1 QC plots | Bookdown report of Mouse_brain_snRNAseq" />
   
   
   
@@ -50,8 +50,6 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
-<script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 
 
@@ -75,7 +73,6 @@
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
 <ul>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html#project-overview"><i class="fa fa-check"></i>Project Overview</a></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html#sample-meta-information"><i class="fa fa-check"></i>Sample meta information</a></li>
 </ul></li>
 <li class="chapter" data-level="1" data-path="qc-plots.html"><a href="qc-plots.html"><i class="fa fa-check"></i><b>1</b> QC plots</a>
 <ul>
@@ -142,7 +139,7 @@
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Bookdown report of E-MTAB-11115</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Bookdown report of Mouse_brain_snRNAseq</a>
           </h1>
         </div>
 
@@ -188,480 +185,15 @@
 <div id="qc-summary-table" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> QC summary table<a href="qc-plots.html#qc-summary-table" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The following table shows a summary of all QC metrics if provided to the pipeline.</p>
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>
-<span id="tab:unnamed-chunk-4">Table 1.1: </span>Summary of sqeuencing QC metrics
-</caption>
-<thead>
-<tr>
-<th style="text-align:center;">
-X
-</th>
-<th style="text-align:center;">
-Estimated.Number.of.Cells
-</th>
-<th style="text-align:center;">
-Mean.Reads.per.Cell
-</th>
-<th style="text-align:center;">
-Median.Genes.per.Cell
-</th>
-<th style="text-align:center;">
-Number.of.Reads
-</th>
-<th style="text-align:center;">
-Valid.Barcodes.
-</th>
-<th style="text-align:center;">
-Sequencing.Saturation.
-</th>
-<th style="text-align:center;">
-Q30.Bases.in.Barcode.
-</th>
-<th style="text-align:center;">
-Q30.Bases.in.RNA.Read.
-</th>
-<th style="text-align:center;">
-Q30.Bases.in.Sample.Index.
-</th>
-<th style="text-align:center;">
-Q30.Bases.in.UMI.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.to.Genome.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.Confidently.to.Genome.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.Confidently.to.Intergenic.Regions.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.Confidently.to.Intronic.Regions.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.Confidently.to.Exonic.Regions.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.Confidently.to.Transcriptome.
-</th>
-<th style="text-align:center;">
-Reads.Mapped.Antisense.to.Gene.
-</th>
-<th style="text-align:center;">
-Fraction.Reads.in.Cells.
-</th>
-<th style="text-align:center;">
-Total.Genes.Detected
-</th>
-<th style="text-align:center;">
-Median.UMI.Counts.per.Cell
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-5705STDY8058280
-</td>
-<td style="text-align:center;">
-8,809
-</td>
-<td style="text-align:center;">
-33,409
-</td>
-<td style="text-align:center;">
-2,082
-</td>
-<td style="text-align:center;">
-294,303,040
-</td>
-<td style="text-align:center;">
-96.4
-</td>
-<td style="text-align:center;">
-44.0
-</td>
-<td style="text-align:center;">
-96.3
-</td>
-<td style="text-align:center;">
-76.2
-</td>
-<td style="text-align:center;">
-92.7
-</td>
-<td style="text-align:center;">
-95.7
-</td>
-<td style="text-align:center;">
-90.8
-</td>
-<td style="text-align:center;">
-89.0
-</td>
-<td style="text-align:center;">
-5.4
-</td>
-<td style="text-align:center;">
-0
-</td>
-<td style="text-align:center;">
-83.7
-</td>
-<td style="text-align:center;">
-33.8
-</td>
-<td style="text-align:center;">
-46.9
-</td>
-<td style="text-align:center;">
-77.8
-</td>
-<td style="text-align:center;">
-24,734
-</td>
-<td style="text-align:center;">
-4,080
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-5705STDY8058281
-</td>
-<td style="text-align:center;">
-8,913
-</td>
-<td style="text-align:center;">
-35,170
-</td>
-<td style="text-align:center;">
-2,088
-</td>
-<td style="text-align:center;">
-313,473,408
-</td>
-<td style="text-align:center;">
-96.3
-</td>
-<td style="text-align:center;">
-44.8
-</td>
-<td style="text-align:center;">
-96.2
-</td>
-<td style="text-align:center;">
-73.8
-</td>
-<td style="text-align:center;">
-93.1
-</td>
-<td style="text-align:center;">
-95.5
-</td>
-<td style="text-align:center;">
-90.3
-</td>
-<td style="text-align:center;">
-88.5
-</td>
-<td style="text-align:center;">
-5.3
-</td>
-<td style="text-align:center;">
-0
-</td>
-<td style="text-align:center;">
-83.2
-</td>
-<td style="text-align:center;">
-32.9
-</td>
-<td style="text-align:center;">
-47.4
-</td>
-<td style="text-align:center;">
-79.9
-</td>
-<td style="text-align:center;">
-24,855
-</td>
-<td style="text-align:center;">
-4,087
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-5705STDY8058282
-</td>
-<td style="text-align:center;">
-6,233
-</td>
-<td style="text-align:center;">
-46,470
-</td>
-<td style="text-align:center;">
-1,900
-</td>
-<td style="text-align:center;">
-289,649,860
-</td>
-<td style="text-align:center;">
-96.4
-</td>
-<td style="text-align:center;">
-55.1
-</td>
-<td style="text-align:center;">
-96.2
-</td>
-<td style="text-align:center;">
-75.1
-</td>
-<td style="text-align:center;">
-92.9
-</td>
-<td style="text-align:center;">
-95.6
-</td>
-<td style="text-align:center;">
-90.9
-</td>
-<td style="text-align:center;">
-89.1
-</td>
-<td style="text-align:center;">
-5.3
-</td>
-<td style="text-align:center;">
-0
-</td>
-<td style="text-align:center;">
-83.8
-</td>
-<td style="text-align:center;">
-35.8
-</td>
-<td style="text-align:center;">
-44.9
-</td>
-<td style="text-align:center;">
-80.1
-</td>
-<td style="text-align:center;">
-24,647
-</td>
-<td style="text-align:center;">
-3,746
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-5705STDY8058283
-</td>
-<td style="text-align:center;">
-5,751
-</td>
-<td style="text-align:center;">
-53,592
-</td>
-<td style="text-align:center;">
-2,521
-</td>
-<td style="text-align:center;">
-308,213,276
-</td>
-<td style="text-align:center;">
-96.7
-</td>
-<td style="text-align:center;">
-55.4
-</td>
-<td style="text-align:center;">
-96.5
-</td>
-<td style="text-align:center;">
-72.1
-</td>
-<td style="text-align:center;">
-88.8
-</td>
-<td style="text-align:center;">
-95.9
-</td>
-<td style="text-align:center;">
-90.7
-</td>
-<td style="text-align:center;">
-88.6
-</td>
-<td style="text-align:center;">
-5.4
-</td>
-<td style="text-align:center;">
-0
-</td>
-<td style="text-align:center;">
-83.3
-</td>
-<td style="text-align:center;">
-37.7
-</td>
-<td style="text-align:center;">
-42.2
-</td>
-<td style="text-align:center;">
-75.3
-</td>
-<td style="text-align:center;">
-24,695
-</td>
-<td style="text-align:center;">
-5,414
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-5705STDY8058284
-</td>
-<td style="text-align:center;">
-3,284
-</td>
-<td style="text-align:center;">
-97,293
-</td>
-<td style="text-align:center;">
-3,005
-</td>
-<td style="text-align:center;">
-319,513,432
-</td>
-<td style="text-align:center;">
-96.8
-</td>
-<td style="text-align:center;">
-67.8
-</td>
-<td style="text-align:center;">
-96.6
-</td>
-<td style="text-align:center;">
-71.7
-</td>
-<td style="text-align:center;">
-88.6
-</td>
-<td style="text-align:center;">
-96.1
-</td>
-<td style="text-align:center;">
-90.6
-</td>
-<td style="text-align:center;">
-88.6
-</td>
-<td style="text-align:center;">
-5.4
-</td>
-<td style="text-align:center;">
-0
-</td>
-<td style="text-align:center;">
-83.3
-</td>
-<td style="text-align:center;">
-37.2
-</td>
-<td style="text-align:center;">
-42.9
-</td>
-<td style="text-align:center;">
-77.3
-</td>
-<td style="text-align:center;">
-24,413
-</td>
-<td style="text-align:center;">
-7,031
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-5705STDY8058285
-</td>
-<td style="text-align:center;">
-11,439
-</td>
-<td style="text-align:center;">
-28,164
-</td>
-<td style="text-align:center;">
-1,964
-</td>
-<td style="text-align:center;">
-322,176,634
-</td>
-<td style="text-align:center;">
-96.3
-</td>
-<td style="text-align:center;">
-40.6
-</td>
-<td style="text-align:center;">
-96.2
-</td>
-<td style="text-align:center;">
-76.3
-</td>
-<td style="text-align:center;">
-93.2
-</td>
-<td style="text-align:center;">
-95.5
-</td>
-<td style="text-align:center;">
-91.3
-</td>
-<td style="text-align:center;">
-89.5
-</td>
-<td style="text-align:center;">
-5.4
-</td>
-<td style="text-align:center;">
-0
-</td>
-<td style="text-align:center;">
-84.1
-</td>
-<td style="text-align:center;">
-37.4
-</td>
-<td style="text-align:center;">
-43.3
-</td>
-<td style="text-align:center;">
-78.4
-</td>
-<td style="text-align:center;">
-24,956
-</td>
-<td style="text-align:center;">
-3,786
-</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>No table generated because the sequencingQC.csv is not provided.</p>
 <ul>
 <li><p><strong>Estimated.Number.of.Cells</strong>: Total cells estimated. 10X strategy can target up to 10,000 cells per sample. For more information, see <a href="https://kb.10xgenomics.com/hc/en-us/articles/115001800523-What-is-the-minimum-number-of-cells-that-can-be-profiled-" target="_blank">here</a>.</p></li>
-<li><p><strong>Mean.Reads.per.Cell</strong>: 10X recommends 30,000 and 70,000 reads per cell. Usually, 50,000 would be a good number.</p></li>
+<li><p><strong>Mean.Reads.per.Cell</strong>: 10X recommends 30,000-70,000 reads per cell. Usually, &gt;50,000 would be a good number.</p></li>
 <li><p><strong>Median.Genes.per.Cell</strong>: This depends on the biology that how many genes expressed, and how many genes in the annotation. For mouse datasets, it is usually ~2,000 genes.</p></li>
-<li><p><strong>Sequencing.Saturation</strong>: This measures how saturate is the sequencing. For more information, see <a href="https://kb.10xgenomics.com/hc/en-us/articles/115005062366-What-is-sequencing-saturation-" target="_blank">here</a>.</p></li>
-<li><p><strong>Reads.Mapped.Confidently.to.Intronic.Regions</strong>: Percentage of reads mapped to annotated introns. This rate is expected to be higher in single-nucleus RNAseq experiments, usually &gt;50%. For more information, see <a href="https://kb.10xgenomics.com/hc/en-us/articles/360000087552-Why-do-I-have-a-high-percentage-of-reads-mapping-to-intronic-regions-" target="_blank">here</a>.</p></li>
-<li><p><strong>Reads.Mapped.Antisense.to.Gene</strong>: It it also common to see antisense mapping reads to genes. In mouse data, this rate can be &gt;40%, but it also depends on your data.</p></li>
-<li><p><strong>Median.UMI.Counts.per.Cell</strong>: The median UMI per cell is a metric independent to the annotation. It would be good to see 3,000-4,000 UMI per cell.</p></li>
+<li><p><strong>Sequencing.Saturation</strong>: This measures how saturate the sequencing is. For more information, see <a href="https://kb.10xgenomics.com/hc/en-us/articles/115005062366-What-is-sequencing-saturation-" target="_blank">here</a>.</p></li>
+<li><p><strong>Reads.Mapped.Confidently.to.Intronic.Regions</strong>: This measures the percentage of reads mapped to annotated introns. This rate is expected to be higher in single-nucleus RNAseq experiments, usually &gt;50%. For more information, see <a href="https://kb.10xgenomics.com/hc/en-us/articles/360000087552-Why-do-I-have-a-high-percentage-of-reads-mapping-to-intronic-regions-" target="_blank">here</a>.</p></li>
+<li><p><strong>Reads.Mapped.Antisense.to.Gene</strong>: It it also common to see antisense mapping reads to genes. In mouse data, this rate can be &gt;40%, but it may vary from sample to sample</p></li>
+<li><p><strong>Median.UMI.Counts.per.Cell</strong>: The median UMI per cell is a metric independent to the annotation, counting how many UMI in each cell. It would be ideal to see 3,000-4,000 UMI per cell.</p></li>
 </ul>
 </div>
 <div id="general-qc" class="section level2 hasAnchor" number="1.2">
