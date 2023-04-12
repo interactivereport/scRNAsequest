@@ -73,3 +73,4 @@ dependencies:
   - pypdf2=2.11.1
   - openssl=1.1.1t
   - pyopenssl=23.0.0
+  - pytables=3.6.1
