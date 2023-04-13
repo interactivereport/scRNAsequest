@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-R -q -e 'suppressWarnings({if(!require(revealjs)) install.packages("revealjs",repos="https://cran.rstudio.com/")})'
-R -q -e 'suppressWarnings({if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade="never",upgrade_dependencies=F)})'
-R -q -e 'suppressWarnings({if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v1.1.7",upgrade="never",upgrade_dependencies=F)})'
-R -q -e 'suppressWarnings({if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.4.1",upgrade="never",upgrade_dependencies=F)})'
+R -q -e 'if(!require(revealjs)) install.packages("revealjs",repos="https://cran.rstudio.com/")'
+R -q -e 'if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade="never",upgrade_dependencies=F)'
+R -q -e 'if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v1.1.7",upgrade="never",upgrade_dependencies=F)'
+R -q -e 'if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.4.1",upgrade="never",upgrade_dependencies=F)'
 pip3 install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
 python -m pip install git+https://github.com/broadinstitute/CellBender@b9fd92dec1cb89ac923df19aee3cf44543d23fa6
 
