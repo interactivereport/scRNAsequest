@@ -18,6 +18,8 @@ def plot(strRawMeta):
     meta[sampleNameCol]=[re.sub(".h5$","",re.sub(".raw_feature_bc_matrix.h5$","",os.path.basename(one))) for one in meta[UMIcol]]
 
   print("Barcode Rank Plot")
+  vline=[2000,5000,10000,15000,20000]
+  vlineColor="#fb8072"
   cN = 3
   rN = math.ceil(meta.shape[0]/cN)
   fig = make_subplots(rows=rN,cols=cN,
@@ -25,6 +27,10 @@ def plot(strRawMeta):
   for i in range(meta.shape[0]):
     fig.add_trace(plotOne(meta[UMIcol][i],meta[sampleNameCol][i]),
       row=int(i/cN)+1,col=i%cN+1)
+    fig.add_trace(go.Scatter(x=vline,y=[1+k*k for k in range(len(vline))],mode="text",text=["%dk"%int(k/1000) for k in vline],showlegend=False),
+                 row=int(i/cN)+1,col=i%cN+1)
+  for x in vline:
+    fig.add_vline(x=x,line_dash="dot",line_color=vlineColor,row="all",col="all")
   fig.update_xaxes(type='log',title_text="Cell Rank")
   fig.update_yaxes(type='log',title_text="UMI Count")
   fig.update_layout(height=400*rN, width=1500, title_text="Barcode Rank Plot",template='plotly_white')
