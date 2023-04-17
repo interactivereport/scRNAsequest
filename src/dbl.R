@@ -6,8 +6,6 @@ PKGloading <- function(){
 }
 
 dbl <- function(strH5ad,batch,strOut){
-  conn <- file(paste0(strOut,".log"),"w")
-  sink(conn,type="message")
   X <- getX(strH5ad)
   gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
   rownames(X) <- names(gID)
@@ -27,8 +25,6 @@ dbl <- function(strH5ad,batch,strOut){
     message("\n")
     return(cbind(data.frame(Xdbl@colData),one@meta.data[colnames(Xdbl),]))
   })
-  sink(type="message")
-  close(conn)
   rm(Dlist)
   gc()
   DBL <- dplyr::bind_rows(DBL)

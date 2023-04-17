@@ -17,12 +17,15 @@ def dbl(config,strH5ad,adata,filterRes):
   # run dbl process
   os.makedirs(os.path.join(config["output"],"dbl"),exist_ok=True)
   strDBL = "%s.csv"%os.path.join(config["output"],"dbl",config["prj_name"])
-  cmd = "Rscript %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
-                            strH5ad,strDBL)
-  #print(cmd)
-  subprocess.run(cmd,shell=True,check=True)#,capture_output=True,text=True
+  cmd = "Rscript %s %s %s |& tee %s/scDblFinder.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
+                            strH5ad,strDBL,os.path.dirname(strDBL))
+  if os.path.isfile(strDBL):
+    print("Using previous scDBL results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strDBL)
+  else:  
+    subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
   if not os.path.isfile(strDBL):
-    msgError("ERROR: doublet finding failed!")
+    msgError("\tERROR: doublet finding failed!")
+
   print("=== doublet finding process is completed! ===")
   # merge dbl results
   meta = pd.read_csv(strDBL,index_col=0,header=0)

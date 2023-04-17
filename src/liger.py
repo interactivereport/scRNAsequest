@@ -39,9 +39,14 @@ def main():
   Dbatch = D.obs["library_id"].copy()
   
   strCSV = re.sub("_hvg.csv$",".csv",strHVG)#strH5ad.replace("raw.h5ad","liger.csv")
-  cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"liger.R"),
-                            strH5ad,strHVG,strCSV)
-  subprocess.run(cmd,shell=True,check=True)
+  cmd = "Rscript %s %s %s %s |& tee %s/LIGER.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"liger.R"),
+                            strH5ad,strHVG,strCSV,os.path.dirname(strCSV))
+  if os.path.isfile(strCSV):
+    print("Using previous LIGER results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strCSV)
+  else:  
+    subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
+  if not os.path.isfile(strCSV):
+    msgError("\tERROR: LIGER failed!")
 
   meta = pd.read_csv(strCSV,index_col=0,header=0)
   meta.index = list(meta.index)

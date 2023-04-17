@@ -29,11 +29,15 @@ def main():
     config = yaml.safe_load(f)
   strOut = "%s.csv.gz"%os.path.join(config["output"],"SeuratRPCA",config["prj_name"])#strH5ad.replace("raw.h5ad","seurat_rpca.csv.gz")
 
-  print("\tRPCA integration ...")
-  cmd = "Rscript %s %s %s"%(os.path.join(strPipePath,"seuratRPCA.R"),
-                            strH5ad,strOut)
-  subprocess.run(cmd,shell=True,check=True)
-  
+  cmd = "Rscript %s %s %s |& tee %s/SeuratRPCA.log"%(os.path.join(strPipePath,"seuratRPCA.R"),
+                            strH5ad,strOut,os.path.dirname(strOut))
+  if os.path.isfile(strOut):
+    print("Using previous SeuratRPCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strOut)
+  else:  
+    subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
+  if not os.path.isfile(strOut):
+    msgError("\tERROR: SeuratRPCA failed!")
+
   D = ad.read_h5ad(strH5ad,backed="r")
   Dbatch = D.obs["library_id"].copy()
   meta = pd.read_csv(strOut,index_col=0,header=0)
