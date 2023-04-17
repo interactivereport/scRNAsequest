@@ -75,14 +75,16 @@ def submit_cmd(cmds,config,core=None,memG=0):
       if cmds[one] is None:
         continue
       print("\n\n\nsubmitting %s"%one)
-      strLog = os.path.join(config["output"],"log","%s.log"%one)
-      oneCMD=cmds[one]+" 2>&1 | tee "+ strLog
-      print("\tPlease check log: %s"%strLog)
-      print(oneCMD)
+      #strLog = os.path.join(config["output"],"log","%s.log"%one)
+      oneCMD=cmds[one] #+" 2>&1 | tee "+ strLog
+      #print("\tPlease check log: %s"%strLog)
+      #print(oneCMD)
       try:
-        cmdR = subprocess.run(oneCMD,shell=True,check=True)
+        #cmdR = subprocess.run(oneCMD,shell=True,check=True)
+        subprocess.run(oneCMD,shell=True,check=True)
       except:
-        print("%s process error return: @%s"%(one,strLog))
+        #print("%s process error return: @%s"%(one,strLog))
+        print("%s process error return!"%one)
       #run_cmd(oneCMD)
   elif parallel=="sge":
     jID = qsub(cmds,config['output'],core,memG=memG)
@@ -931,6 +933,13 @@ def checkLock(config,sysConfig):
     if os.path.isfile(strLock):
       os.remove(strLock)
     run_cmd("touch %s"%strLock)
+def rmLock(config):
+  sysConfig = getConfig()
+  strH5ad = os.path.join(sysConfig['celldepotDir'],"%s.h5ad"%config['prj_name'])
+  strLock = "%s.lock"%strH5ad
+  if os.path.isfile(strLock):
+      os.remove(strLock)
+  
 def combine(mIDs,prefix,config):
   print("Evaluating all methods ...")
   CKmethods = [one for one in mIDs if os.path.isfile("%s.h5ad"%os.path.join(config['output'],one,config["prj_name"]))]+['raw']
@@ -944,19 +953,17 @@ def combine(mIDs,prefix,config):
 
   print("combining all methods results ...")
   D = integrateH5ad("%s.h5ad"%os.path.join(config['output'],"SCT",config["prj_name"]),
-    CKmethods,prefix,config.get("major_cluster_rate"))
-  Draw = integrateH5ad("%s.h5ad"%os.path.join(config['output'],"raw",config["prj_name"]),
-    CKmethods,prefix,config.get("major_cluster_rate"))
+    CKmethods,prefix,config.get("major_cluster_rate"),config.get("ref_name"))
+  Draw = integrateH5ad("%s.h5ad"%os.path.join(config['output'],tempDir,config["prj_name"]),
+    CKmethods,prefix,config.get("major_cluster_rate"),config.get("ref_name"))
   
   print("saving combined results ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     D.write("%s.h5ad"%prefix)
     Draw.write("%s_raw_added.h5ad"%prefix)
-    if os.path.isfile("%s.h5ad.lock"%prefix):
-      os.remove("%s.h5ad.lock"%prefix)
   return D.uns.get('scaleF')
-def integrateH5ad(strH5ad,methods,prefix,majorR=None):
+def integrateH5ad(strH5ad,methods,prefix,majorR=None,ref_name=None):
   D = ad.read_h5ad(strH5ad)
   obsm = pd.DataFrame(index=D.obs.index)
   seuratRefLab = None
@@ -981,7 +988,7 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None):
       obsm1 = obsm.merge(pd.DataFrame(D1.obsm[k],index=D1.obs.index),how="left",left_index=True,right_index=True)
       D.obsm[kname] = obsm1.fillna(0).to_numpy()
   ## assign seurat labels to other integration clusters
-  if majorR is not None and seuratRefLab is not None:
+  if majorR is not None and seuratRefLab is not None and ref_name is not None:
     print("----- Reassign cluster/louvain to seurat label transfer")
     for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
       if aCluster in seuratRefLab:
@@ -1023,8 +1030,12 @@ def moveCellDepot(prefix,config,scaleF=None):
     print("*** CellDeport is NOT setup ***")
     print("=== scAnalyzer is completed ===")
     return()
+  strCDfile = os.path.join(sysConfig['celldepotDir'],os.path.basename("%s.h5ad"%prefix))
+  if os.path.isfile(strCDfile):
+    os.remove(strCDfile)
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
   shutil.copy("%s_raw_added.h5ad"%prefix, sysConfig['celldepotDir'])
+  rmLock(config)
   
   # create description file
   expScaler = config.get('expScaler')

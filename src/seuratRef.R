@@ -5,10 +5,8 @@ PKGloading <- function(){
   require(sctransform)
   options(future.globals.maxsize=3145728000)
 }
-mapOne <- function(oneD){
-  
-}
-checkRef <- function(ref,config){
+refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
+updateRef <- function(ref,config){
   checkList <- list(ref_assay="refAssay",
                     ref_neighbors="refdr.annoy.neighbors",
                     ref_reduction="refDR",
@@ -36,12 +34,12 @@ checkRef <- function(ref,config){
 
   return(list(config=config,ref=ref))
 }
-processSCTref <- function(strH5ad,batch,config,strOut){
+processSCTrefOne <- function(strH5ad,batch,config){
   if(grepl("^http",config$ref_file))
     reference <- readRDS(url(config$ref_file))
   else
     reference <- readRDS(config$ref_file)
-  res <- checkRef(reference,config)
+  res <- updateRef(reference,config)
   config <- res$config
   reference <- res$ref
   rm(res)
@@ -51,12 +49,12 @@ processSCTref <- function(strH5ad,batch,config,strOut){
   cellN <- dim(D)[2]
   Dmedian <- median(colSums(D@assays$RNA@counts))
   Dlist <- SplitObject(D,split.by=batch)
-  message("memory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+  message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(D)
   gc()
   Dlist <- sapply(Dlist,function(one,medianUMI){
     bID <- one@meta.data[1,batch]
-    message("\t\tmapping ",bID)
+    message("\tmapping ",bID)
     #after checking/testing, the below would return proper SCT nomralized data
     #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
     #https://github.com/satijalab/sctransform/issues/128
@@ -95,13 +93,13 @@ processSCTref <- function(strH5ad,batch,config,strOut){
     ))
     return(oneD)
   },Dmedian)
-  message("memory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+  message("\tmemory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   if(length(Dlist)==1){
     SCT <- Dlist[[1]]
   }else{
     SCT <- merge(Dlist[[1]], y=Dlist[-1],merge.dr = names(Dlist[[1]]@reductions))
   }
-  message("memory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+  message("\tmemory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(Dlist)
   gc()
   ## save layout and annotation (not iterative mapping yet!)
@@ -118,7 +116,49 @@ processSCTref <- function(strH5ad,batch,config,strOut){
     })#paste0("seuratRef_",colnames(layout))
   X <- cbind(meta,layout)
   X <- cbind(cID=rownames(X),X)
-  data.table::fwrite(X,strOut)
+  return(X)
+  #data.table::fwrite(X,strOut)
+}
+processSCTref <- function(strH5ad,batch,refList,strOut){
+  D <- NULL
+  for(one in names(refList)){
+    message("*** Mapping ",one)
+    X <- processSCTrefOne(strH5ad,batch,refList[[one]])
+    if(one!=refTmpName){
+      cNames <- gsub("^predicted",paste0("predicted.",one),colnames(X))
+      cNames[!grepl("^cID$|^predicted",cNames)] <- 
+        sapply(strsplit(cNames[!grepl("^cID$|^predicted",cNames)],"_"),
+               function(x){return(paste(c(head(x,-1),one,tail(x,1)),collapse="_"))})
+      colnames(X) <- cNames
+    }
+    if(is.null(D)) D <- X
+    else{
+      D <- merge(D,X,by="cID",all=T)
+    }
+  }
+  data.table::fwrite(D,strOut)
+}
+checkRef <- function(refNames,sysConfig){
+  if(!is.list(refNames)){
+    refNames <- setNames(list(refNames),refTmpName)
+  }
+  strRef <- list()
+  for(one in names(refNames)){
+    if(is.null(one) || nchar(one)==0)
+      stop("missing ref name!")
+    if(grepl(":",one) && is.null(refNames[[one]]))
+      stop(paste("A space is required after ':' in define reference:",one))
+    
+    if(grepl("rds$",refNames[[one]]) && file.exists(refNames[[one]])){
+      strRef <- c(strRef,setNames(list(list(ref_file=refNames[[one]])),one))
+    }else if(!is.null(refNames[[one]]) && refNames[[one]]%in%names(sysConfig)){
+      strRef <- c(strRef,setNames(list(sysConfig[[refNames[[one]]]]),one))
+    }
+  }
+  if(length(strRef)==0){
+    stop(paste("unknown reference:",paste(refNames,collapse=", ")))
+  }
+  return(strRef)
 }
 main <- function(){
   selfPath <- gsub("^--file=","",grep("^--file=",commandArgs(),value=T)[1])
@@ -133,20 +173,13 @@ main <- function(){
   
   config <- yaml::read_yaml(strConfig)
   sysConfig <- yaml::read_yaml(paste0(dirname(selfPath),"/sys.yml"))
-  if(file.exists(config$ref_name) && grepl("rds$",config$ref_name)){
-    oneRef <- list(ref_file=config$ref_name)
-  }else if(!is.null(config$ref_name) && config$ref_name%in%names(sysConfig)){
-    oneRef <- sysConfig[[config$ref_name]]
-  }else{
-    stop(paste("unknown reference:",config$ref_name))
-  }
+  strRef <- checkRef(config$ref_name,sysConfig)
 
   strOut <- args[3]
   if(length(args)>3) batchKey <- args[4]
   
   source(paste0(dirname(selfPath),"/readH5ad.R"))
-  processSCTref(strH5ad,batchKey,oneRef,strOut)
-  
+  processSCTref(strH5ad,batchKey,strRef,strOut)
 }
 
 main()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, logging, yaml, re
+import subprocess, os, h5py, sys, warnings, logging, yaml, re, datetime
 import anndata as ad
 from scipy import sparse
 from scipy.sparse import csc_matrix
@@ -30,13 +30,18 @@ def main():
     print("No reference specified, END")
     return
 
-  D = ad.read_h5ad(strH5ad) #,backed=True
+  D = ad.read_h5ad(strH5ad,backed="r") #,backed=True
   Dbatch = D.obs["library_id"].copy()
 
   strCSV = "%s.csv"%os.path.join(config["output"],"SeuratRef",config["prj_name"])#strH5ad.replace("raw.h5ad","seuratRef.csv")
-  cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"seuratRef.R"),
-                            strH5ad,strConfig,strCSV)
-  subprocess.run(cmd,shell=True,check=True)
+  cmd = "Rscript %s %s %s %s |& tee %s/SeuratRef.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"seuratRef.R"),
+                            strH5ad,strConfig,strCSV,os.path.dirname(strCSV))
+  if os.path.isfile(strCSV):
+    print("Using previous SeuratRef results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strCSV)
+  else:  
+    subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
+  if not os.path.isfile(strCSV):
+    msgError("\tERROR: SeuratRef failed!")
   
   meta = pd.read_csv(strCSV,index_col=0,header=0)
   meta.index = list(meta.index)
