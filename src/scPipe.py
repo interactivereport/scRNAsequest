@@ -967,6 +967,7 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None,ref_name=None):
   D = ad.read_h5ad(strH5ad)
   obsm = pd.DataFrame(index=D.obs.index)
   seuratRefLab = None
+  seuratRefCluster= None
   for one in methods:
     if one in ["SCT","raw"]:
       continue
@@ -979,7 +980,11 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None,ref_name=None):
     obs = D1.obs.copy()
     addObs = [one for one in obs.columns if not one in D.obs.columns]
     if one == "SeuratRef":
-      seuratRefLab = [i for i in addObs if not i.endswith("score")]
+      seuratRefCluster=obs.columns
+      prefix_ref=""
+      if isinstance(ref_name,dict):
+        prefix_ref=list(ref_name.keys())[0]
+      seuratRefLab = [i for i in addObs if not i.endswith("score") and i.startswith("predicted."+prefix_ref)]
     if len(addObs)>0:
       D.obs=D.obs.merge(obs[addObs],how="left",left_index=True,right_index=True)
     # check the order of cells
@@ -991,7 +996,7 @@ def integrateH5ad(strH5ad,methods,prefix,majorR=None,ref_name=None):
   if majorR is not None and seuratRefLab is not None and ref_name is not None:
     print("----- Reassign cluster/louvain to seurat label transfer")
     for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
-      if aCluster in seuratRefLab:
+      if aCluster in seuratRefCluster:
         continue
       for aLabel in seuratRefLab:
         D.obs["%s_%s"%(aCluster,aLabel)] = findMajor(D.obs[[aCluster,aLabel]],majorR)
