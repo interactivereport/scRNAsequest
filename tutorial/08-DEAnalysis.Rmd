@@ -22,6 +22,30 @@ n_genes_by_counts, log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_coun
 
 You may consider **pct_MT** as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the **"covars"** column: **Age+Sex+pct_MT**.
 
+**DE software choices:**
+
+Based on the previous [benckmarking analysis](https://www.mdpi.com/2075-1729/12/6/850), NEBULA outperforms other software in singl-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.
+
+  - **u_test**: Mann–Whitney U test, also called Wilcoxon rank-sum test, is a nonparametric test. See [Wiki](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test). In our single-cell RNA-seq analysis, this is a pseudobulk method.
+  
+  - **t_test**: Student's t-test, statistical test based on Student's t-distribution. See [Wiki](https://en.wikipedia.org/wiki/Student%27s_t-test). In our single-cell RNA-seq analysis, this is a pseudobulk method.
+  
+  - **edgeR**: Using the [edgeR package](https://bioconductor.org/packages/release/bioc/html/edgeR.html) to perform pseudobulk DE analysis. Refer to their [paper](https://academic.oup.com/bioinformatics/article/26/1/139/182458) for more details.
+  
+  - **limma**: Using the [limma-voom method](http://bioconductor.org/packages/release/bioc/html/limma.html) to perform pseudobulk DE analysis. Refer to their [paper](https://academic.oup.com/nar/article/43/7/e47/2414268) for more details.
+  
+  - **DESeq2**: Using the [DESeq2 package](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) to perform pseudobulk DE analysis. Refer to their [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for more details.
+  
+  - **ANCOVA**: Using the [ANCOVA](https://www.r-bloggers.com/2021/10/analysis-of-covariance-ancova-using-r/) to perform pseudobulk DE analysis.
+
+  - **MAST**: Using the [MAST package](https://www.bioconductor.org/packages/release/bioc/html/MAST.html) to perform single-cell DE analysis. Refer to their [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5) for more details.
+  
+  - **NEBULA**: Using the [NEBULA software](https://github.com/lhe17/nebula) to perform single-cell DE analysis. Refer to their [paper](https://www.nature.com/articles/s42003-021-02146-6) for more details.
+  
+  - **glmmTMB**: Using the [glmmTMB (nbinom2 family function)](https://glmmtmb.github.io/glmmTMB/) to perform single-cell DE analysis.
+  
+  - **limma_cell_level**: This also uses [limma](http://bioconductor.org/packages/release/bioc/html/limma.html) but not a pseudobulk method.
+  
 Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:
 
 We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:
