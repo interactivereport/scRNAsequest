@@ -37,6 +37,7 @@ visualize-the-harmonized-results
 differential-expression-de-analysis
 example-1
 example-2
+example-3
 reference-building
 initialize-scref
 submit-scref

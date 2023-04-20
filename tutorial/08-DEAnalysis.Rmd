@@ -24,7 +24,7 @@ You may consider **pct_MT** as a covariate to adjust, but be careful to adjust o
 
 **DE software choices:**
 
-Based on the previous [benckmarking analysis](https://www.mdpi.com/2075-1729/12/6/850), NEBULA outperforms other software in singl-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.
+Based on the previous [benchmarking analysis](https://www.mdpi.com/2075-1729/12/6/850), NEBULA outperforms other software in single-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.
 
   - **u_test**: Mann–Whitney U test, also called Wilcoxon rank-sum test, is a nonparametric test. See [Wiki](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test). In our single-cell RNA-seq analysis, this is a pseudobulk method.
   
@@ -205,3 +205,29 @@ kable(Data, caption = "DEG analysis of astrocytes.vs.Oligos", align = "c", bookt
 An example of the DE png file (astrocytes.vs.Oligos_SelectAll:Everything_NEBULA.png):
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Astrocytes_Oligos.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/DEG_Astrocytes_Oligos.png)
+
+## Example 3
+
+In this example, we show how to perform DE analysis using multiple software. In the config file, each line is a comparison, and for the same comparison (treat v.s. control), we can set up multiple runs using different DE tools as below:
+
+```{bash, eval=FALSE}
+comparisonName,sample,cluster,group,alt,ref,covars[+ separated],method[default NEBULA],model[default HL]
+Treated_vs_Control_nebula,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,NEBULA,HL
+Treated_vs_Control_t_test,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,t_test,
+Treated_vs_Control_u_test,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,u_test,
+Treated_vs_Control_edgeR,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,edgeR,
+Treated_vs_Control_limma,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,limma,
+Treated_vs_Control_DESeq2,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,DESeq2,
+Treated_vs_Control_MAST,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,MAST,
+Treated_vs_Control_limma_cell_level,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,limma_cell_level,
+Treated_vs_Control_glmmTMB,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,glmmTMB,poisson
+Treated_vs_Control_ancova,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,ancova,
+```
+
+Please note that NEBULA and glmmTMB require **model** information.
+
+For NEBULA, users can choose from **HL** and **LN**, and the pipeline uses 'HL' by default. The differences between them can be found in the [NEBULA GitHub page](https://github.com/lhe17/nebula):
+
+"NEBULA-LN is faster and performs particularly well when the number of cells per subject (CPS) is large. In addition, NEBULA-LN is much more accurate in estimating a very large subject-level overdispersion. In contrast, NEBULA-HL is slower but more accurate in estimating the cell-level overdispersion."
+
+For glmmTMB, it is required to choose a model from the following: "nbinom2", "nbinom1", "poisson", "nbinom2zi", "nbinom1zi".
