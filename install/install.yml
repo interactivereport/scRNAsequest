@@ -74,3 +74,5 @@ dependencies:
   - openssl=1.1.1t
   - pyopenssl=23.0.0
   - pytables=3.6.1
+  - pdf2image=1.16.3
+  - pillow=9.2.0

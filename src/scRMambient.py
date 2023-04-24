@@ -3,8 +3,12 @@ import pandas as pd
 import scanpy as sc
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from PyPDF2 import PdfWriter,PdfReader
-from PyPDF2.generic import AnnotationBuilder
+#from PyPDF2 import PdfWriter,PdfReader
+#from PyPDF2.generic import AnnotationBuilder
+from pdf2image import convert_from_path
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 import seaborn as sns
 sns.set_style('whitegrid')
 
@@ -78,23 +82,21 @@ def cellbenderMergeLog(H5pair,strOut):
           shutil.copyfileobj(f,outf)
 def cellbenderMergePdf(H5pair,strOut):
   print("\tmergeing pdf ...")
-  onePDF=PdfWriter()
-  pageN=0
+  myFont = ImageFont.truetype('FreeSerifBold.ttf', 36)
+  images=[]
+  n=0
   for one in H5pair:
+    n+=1
     strF = re.sub("_filtered.h5$",".pdf",one['new_path'])
+    print("\t\t%d/%d: %s"%(n,len(H5pair),os.path.basename(strF)))
     if os.path.isfile(strF):
-      onePDF.append_pages_from_reader(PdfReader(strF))
-      addText = AnnotationBuilder.free_text(
-        one[sampleNameCol],
-        rect=(200,800,350,820),
-        font_size="20pt",
-        font_color="00ff00",
-        background_color="cdcdcd"
-      )
-      onePDF.add_annotation(page_number=pageN, annotation=addText)
-      pageN+=1
-  with open(os.path.join(strOut,'all_cellbender.pdf'),"wb") as fp:
-    onePDF.write(fp)
+      img=convert_from_path(strF)[0]
+      oneI = ImageDraw.Draw(img)
+      oneI.text((400, 800),one[sampleNameCol],fill=(255, 0, 0),font=myFont)
+      images = images+[img]
+    else:
+      print("\t\t\tmissing%s")
+  images[0].save(os.path.join(strOut,'all_cellbender.pdf'),resolution=100,save_all=True,append_images=images[1:])
 def cellbenderQC(H5pair,strOut):
   print("Cellbender QC ...")
   rmR={}
