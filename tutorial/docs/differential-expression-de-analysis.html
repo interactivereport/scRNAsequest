@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-04-20" />
+<meta name="date" content="2023-04-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -258,18 +258,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb59"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb59-1"><a href="differential-expression-de-analysis.html#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
 <p>You may consider <strong>pct_MT</strong> as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the <strong>“covars”</strong> column: <strong>Age+Sex+pct_MT</strong>.</p>
 <p><strong>DE software choices:</strong></p>
-<p>Based on the previous <a href="https://www.mdpi.com/2075-1729/12/6/850">benchmarking analysis</a>, NEBULA outperforms other software in single-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.</p>
+<p>Based on the previous <a href="https://www.mdpi.com/2075-1729/12/6/850" target="_blank">benchmarking analysis</a>, NEBULA outperforms other software in single-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.</p>
 <ul>
-<li><p><strong>u_test</strong>: Mann–Whitney U test, also called Wilcoxon rank-sum test, is a nonparametric test. See <a href="https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test">Wiki</a>. In our single-cell RNA-seq analysis, this is a pseudobulk method.</p></li>
-<li><p><strong>t_test</strong>: Student’s t-test, statistical test based on Student’s t-distribution. See <a href="https://en.wikipedia.org/wiki/Student%27s_t-test">Wiki</a>. In our single-cell RNA-seq analysis, this is a pseudobulk method.</p></li>
-<li><p><strong>edgeR</strong>: Using the <a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html">edgeR package</a> to perform pseudobulk DE analysis. Refer to their <a href="https://academic.oup.com/bioinformatics/article/26/1/139/182458">paper</a> for more details.</p></li>
-<li><p><strong>limma</strong>: Using the <a href="http://bioconductor.org/packages/release/bioc/html/limma.html">limma-voom method</a> to perform pseudobulk DE analysis. Refer to their <a href="https://academic.oup.com/nar/article/43/7/e47/2414268">paper</a> for more details.</p></li>
-<li><p><strong>DESeq2</strong>: Using the <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2 package</a> to perform pseudobulk DE analysis. Refer to their <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8">paper</a> for more details.</p></li>
-<li><p><strong>ANCOVA</strong>: Using the <a href="https://www.r-bloggers.com/2021/10/analysis-of-covariance-ancova-using-r/">ANCOVA</a> to perform pseudobulk DE analysis.</p></li>
-<li><p><strong>MAST</strong>: Using the <a href="https://www.bioconductor.org/packages/release/bioc/html/MAST.html">MAST package</a> to perform single-cell DE analysis. Refer to their <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5">paper</a> for more details.</p></li>
-<li><p><strong>NEBULA</strong>: Using the <a href="https://github.com/lhe17/nebula">NEBULA software</a> to perform single-cell DE analysis. Refer to their <a href="https://www.nature.com/articles/s42003-021-02146-6">paper</a> for more details.</p></li>
-<li><p><strong>glmmTMB</strong>: Using the <a href="https://glmmtmb.github.io/glmmTMB/">glmmTMB (nbinom2 family function)</a> to perform single-cell DE analysis.</p></li>
-<li><p><strong>limma_cell_level</strong>: This also uses <a href="http://bioconductor.org/packages/release/bioc/html/limma.html">limma</a> but not a pseudobulk method.</p></li>
+<li><p><strong>u_test</strong>: Mann–Whitney U test, also called Wilcoxon rank-sum test, is a nonparametric test. See <a href="https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test" target="_blank">Wiki</a>. In our single-cell RNA-seq analysis, this is a pseudobulk method.</p></li>
+<li><p><strong>t_test</strong>: Student’s t-test, statistical test based on Student’s t-distribution. See <a href="https://en.wikipedia.org/wiki/Student%27s_t-test" target="_blank">Wiki</a>. In our single-cell RNA-seq analysis, this is a pseudobulk method.</p></li>
+<li><p><strong>edgeR</strong>: Using the <a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" target="_blank">edgeR package</a> to perform pseudobulk DE analysis. Refer to their <a href="https://academic.oup.com/bioinformatics/article/26/1/139/182458" target="_blank">paper</a> for more details.</p></li>
+<li><p><strong>limma</strong>: Using the <a href="http://bioconductor.org/packages/release/bioc/html/limma.html" target="_blank">limma-voom method</a> to perform pseudobulk DE analysis. Refer to their <a href="https://academic.oup.com/nar/article/43/7/e47/2414268" target="_blank">paper</a> for more details.</p></li>
+<li><p><strong>DESeq2</strong>: Using the <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html" target="_blank">DESeq2 package</a> to perform pseudobulk DE analysis. Refer to their <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8" target="_blank">paper</a> for more details.</p></li>
+<li><p><strong>ANCOVA</strong>: Using the <a href="https://www.r-bloggers.com/2021/10/analysis-of-covariance-ancova-using-r/" target="_blank">ANCOVA</a> to perform pseudobulk DE analysis.</p></li>
+<li><p><strong>MAST</strong>: Using the <a href="https://www.bioconductor.org/packages/release/bioc/html/MAST.html" target="_blank">MAST package</a> to perform single-cell DE analysis. Refer to their <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5" target="_blank">paper</a> for more details.</p></li>
+<li><p><strong>NEBULA</strong>: Using the <a href="https://github.com/lhe17/nebula" target="_blank">NEBULA software</a> to perform single-cell DE analysis. Refer to their <a href="https://www.nature.com/articles/s42003-021-02146-6" target="_blank">paper</a> for more details.</p></li>
+<li><p><strong>glmmTMB</strong>: Using the <a href="https://glmmtmb.github.io/glmmTMB/" target="_blank">glmmTMB (nbinom2 family function)</a> to perform single-cell DE analysis.</p></li>
+<li><p><strong>limma_cell_level</strong>: This also uses <a href="http://bioconductor.org/packages/release/bioc/html/limma.html" target="_blank">limma</a> but not a pseudobulk method.</p></li>
 </ul>
 <p>Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:</p>
 <p>We use a UMAP with label transferred cell type annotation as an example dataset. Label transfer is strongly suggested if you would like to run DE analysis because the clusters are more meaningful than the original clusters assigned by the software:</p>
@@ -1081,7 +1081,7 @@ NBGMM (HL)
 <span id="cb67-10"><a href="differential-expression-de-analysis.html#cb67-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_glmmTMB,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,glmmTMB,poisson</span></span>
 <span id="cb67-11"><a href="differential-expression-de-analysis.html#cb67-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_ancova,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,ancova,</span></span></code></pre></div>
 <p>Please note that NEBULA and glmmTMB require <strong>model</strong> information.</p>
-<p>For NEBULA, users can choose from <strong>HL</strong> and <strong>LN</strong>, and the pipeline uses ‘HL’ by default. The differences between them can be found in the <a href="https://github.com/lhe17/nebula">NEBULA GitHub page</a>:</p>
+<p>For NEBULA, users can choose from <strong>HL</strong> and <strong>LN</strong>, and the pipeline uses ‘HL’ by default. The differences between them can be found in the <a href="https://github.com/lhe17/nebula" target="_blank">NEBULA GitHub page</a>:</p>
 <p>“NEBULA-LN is faster and performs particularly well when the number of cells per subject (CPS) is large. In addition, NEBULA-LN is much more accurate in estimating a very large subject-level overdispersion. In contrast, NEBULA-HL is slower but more accurate in estimating the cell-level overdispersion.”</p>
 <p>For glmmTMB, it is required to choose a model from the following: “nbinom2”, “nbinom1”, “poisson”, “nbinom2zi”, “nbinom1zi”.</p>
 

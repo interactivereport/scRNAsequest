@@ -24,27 +24,27 @@ You may consider **pct_MT** as a covariate to adjust, but be careful to adjust o
 
 **DE software choices:**
 
-Based on the previous [benchmarking analysis](https://www.mdpi.com/2075-1729/12/6/850), NEBULA outperforms other software in single-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.
+Based on the previous [benchmarking analysis](https://www.mdpi.com/2075-1729/12/6/850){target="_blank"}, NEBULA outperforms other software in single-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.
 
-  - **u_test**: Mann–Whitney U test, also called Wilcoxon rank-sum test, is a nonparametric test. See [Wiki](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test). In our single-cell RNA-seq analysis, this is a pseudobulk method.
+  - **u_test**: Mann–Whitney U test, also called Wilcoxon rank-sum test, is a nonparametric test. See [Wiki](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test){target="_blank"}. In our single-cell RNA-seq analysis, this is a pseudobulk method.
   
-  - **t_test**: Student's t-test, statistical test based on Student's t-distribution. See [Wiki](https://en.wikipedia.org/wiki/Student%27s_t-test). In our single-cell RNA-seq analysis, this is a pseudobulk method.
+  - **t_test**: Student's t-test, statistical test based on Student's t-distribution. See [Wiki](https://en.wikipedia.org/wiki/Student%27s_t-test){target="_blank"}. In our single-cell RNA-seq analysis, this is a pseudobulk method.
   
-  - **edgeR**: Using the [edgeR package](https://bioconductor.org/packages/release/bioc/html/edgeR.html) to perform pseudobulk DE analysis. Refer to their [paper](https://academic.oup.com/bioinformatics/article/26/1/139/182458) for more details.
+  - **edgeR**: Using the [edgeR package](https://bioconductor.org/packages/release/bioc/html/edgeR.html){target="_blank"} to perform pseudobulk DE analysis. Refer to their [paper](https://academic.oup.com/bioinformatics/article/26/1/139/182458){target="_blank"} for more details.
   
-  - **limma**: Using the [limma-voom method](http://bioconductor.org/packages/release/bioc/html/limma.html) to perform pseudobulk DE analysis. Refer to their [paper](https://academic.oup.com/nar/article/43/7/e47/2414268) for more details.
+  - **limma**: Using the [limma-voom method](http://bioconductor.org/packages/release/bioc/html/limma.html){target="_blank"} to perform pseudobulk DE analysis. Refer to their [paper](https://academic.oup.com/nar/article/43/7/e47/2414268){target="_blank"} for more details.
   
-  - **DESeq2**: Using the [DESeq2 package](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) to perform pseudobulk DE analysis. Refer to their [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) for more details.
+  - **DESeq2**: Using the [DESeq2 package](https://bioconductor.org/packages/release/bioc/html/DESeq2.html){target="_blank"} to perform pseudobulk DE analysis. Refer to their [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8){target="_blank"} for more details.
   
-  - **ANCOVA**: Using the [ANCOVA](https://www.r-bloggers.com/2021/10/analysis-of-covariance-ancova-using-r/) to perform pseudobulk DE analysis.
+  - **ANCOVA**: Using the [ANCOVA](https://www.r-bloggers.com/2021/10/analysis-of-covariance-ancova-using-r/){target="_blank"} to perform pseudobulk DE analysis.
 
-  - **MAST**: Using the [MAST package](https://www.bioconductor.org/packages/release/bioc/html/MAST.html) to perform single-cell DE analysis. Refer to their [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5) for more details.
+  - **MAST**: Using the [MAST package](https://www.bioconductor.org/packages/release/bioc/html/MAST.html){target="_blank"} to perform single-cell DE analysis. Refer to their [paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0844-5){target="_blank"} for more details.
   
-  - **NEBULA**: Using the [NEBULA software](https://github.com/lhe17/nebula) to perform single-cell DE analysis. Refer to their [paper](https://www.nature.com/articles/s42003-021-02146-6) for more details.
+  - **NEBULA**: Using the [NEBULA software](https://github.com/lhe17/nebula){target="_blank"} to perform single-cell DE analysis. Refer to their [paper](https://www.nature.com/articles/s42003-021-02146-6){target="_blank"} for more details.
   
-  - **glmmTMB**: Using the [glmmTMB (nbinom2 family function)](https://glmmtmb.github.io/glmmTMB/) to perform single-cell DE analysis.
+  - **glmmTMB**: Using the [glmmTMB (nbinom2 family function)](https://glmmtmb.github.io/glmmTMB/){target="_blank"} to perform single-cell DE analysis.
   
-  - **limma_cell_level**: This also uses [limma](http://bioconductor.org/packages/release/bioc/html/limma.html) but not a pseudobulk method.
+  - **limma_cell_level**: This also uses [limma](http://bioconductor.org/packages/release/bioc/html/limma.html){target="_blank"} but not a pseudobulk method.
   
 Here, this tutorial provides several examples to illustrate the DE analysis in scRNASequest:
 
@@ -226,7 +226,7 @@ Treated_vs_Control_ancova,library_id,sctHarmony_cluster_predicted.celltype,Treat
 
 Please note that NEBULA and glmmTMB require **model** information.
 
-For NEBULA, users can choose from **HL** and **LN**, and the pipeline uses 'HL' by default. The differences between them can be found in the [NEBULA GitHub page](https://github.com/lhe17/nebula):
+For NEBULA, users can choose from **HL** and **LN**, and the pipeline uses 'HL' by default. The differences between them can be found in the [NEBULA GitHub page](https://github.com/lhe17/nebula){target="_blank"}:
 
 "NEBULA-LN is faster and performs particularly well when the number of cells per subject (CPS) is large. In addition, NEBULA-LN is much more accurate in estimating a very large subject-level overdispersion. In contrast, NEBULA-HL is slower but more accurate in estimating the cell-level overdispersion."
 
