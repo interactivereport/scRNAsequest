@@ -3,6 +3,8 @@ PKGloading <- function(){
   require(SeuratObject)
   require(SeuratDisk)
   require(sctransform)
+  require(ggplot2)
+  require(reshape2)
   options(future.globals.maxsize=3145728000)
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
@@ -137,6 +139,29 @@ processSCTref <- function(strH5ad,batch,refList,strOut){
     }
   }
   data.table::fwrite(D,strOut)
+  plotCrossAnno(D,names(refList),strOut)
+}
+plotCrossAnno <- function(D,refID,strOut){
+  if(length(refID)==1) return()
+  pdf(gsub("csv$","pdf",strOut),width=8,height=8)
+  for(i in 1:(length(refID)-1)){
+    for(j in (i+1):length(refID)){
+      sel1 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("predicted.",refID[i]),colnames(D))]
+      sel2 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("predicted.",refID[j]),colnames(D))]
+      for(selA in sel1){
+        for(selB in sel2){
+          X <- melt(table(D[,c(selA,selB)]))
+          print(ggplot(X,aes_string(selA,selB))+
+                  geom_tile(aes(fill = value),show.legend=F)+
+                  geom_text(aes(label = value))+
+                  scale_fill_gradient(low = "white", high = "red")+
+                  theme_minimal()+
+                  theme(axis.text.x = element_text(angle=90)))
+        }
+      }
+    }
+  }
+  a <- dev.off()
 }
 checkRef <- function(refNames,sysConfig){
   if(!is.list(refNames)){
