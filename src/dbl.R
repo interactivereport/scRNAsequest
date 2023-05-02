@@ -37,7 +37,7 @@ dbl_single <- function(strUMI,strOut){
   if(dir.exists(strUMI)){
     X <- Read10X(strUMI)
   }else if(grepl("h5$",strUMI)){
-    X <- Read10X_h5(strUMI)
+    suppressWarnings(X <- Read10X_h5(strUMI))
   }else if(grepl("csv$|tsv$",strUMI)){
     X <- data.table::fread(strUMI)
     X <- as(as.matrix(data.frame(row.names=unlist(X[,1]),X[,-1])),"sparseMatrix")
@@ -48,9 +48,9 @@ dbl_single <- function(strUMI,strOut){
   Xdbl <- scDblFinder(X)
   DBL <- cbind(data.frame(Xdbl@colData),
                nCount_RNA=colSums(X),
-               nFeature_RNA=apply(X,2,function(x)return(sum(x>0))))
-  dbl_plot(DBL,strOut)
+               nFeature_RNA=diff(X@p))
   saveRDS(DBL,paste0(strOut,".rds"))
+  dbl_plot(DBL,strOut)
   write.csv(DBL[,c("scDblFinder.class","scDblFinder.score")],file=strOut)
 }
 dbl_plot <- function(D,strF,batch=NULL){
