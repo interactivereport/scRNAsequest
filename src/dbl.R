@@ -2,6 +2,7 @@ PKGloading <- function(){
   require(Seurat)
   require(scDblFinder)
   require(ggplot2)
+  require(Matrix)
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
 }
 
@@ -28,29 +29,55 @@ dbl <- function(strH5ad,batch,strOut){
   rm(Dlist)
   gc()
   DBL <- dplyr::bind_rows(DBL)
-  dbl_plot(DBL,batch,strOut)
+  dbl_plot(DBL,strOut,batch)
   saveRDS(DBL,paste0(strOut,".rds"))
   write.csv(DBL[,c("scDblFinder.class","scDblFinder.score")],file=strOut)
 }
-dbl_plot <- function(D,batch,strF){
+dbl_single <- function(strUMI,strOut){
+  if(dir.exists(strUMI)){
+    X <- Read10X(strUMI)
+  }else if(grepl("h5$",strUMI)){
+    X <- Read10X_h5(strUMI)
+  }else if(grepl("csv$|tsv$",strUMI)){
+    X <- data.table::fread(strUMI)
+    X <- as(as.matrix(data.frame(row.names=unlist(X[,1]),X[,-1])),"sparseMatrix")
+  }else{
+    stop(paste("Unsupported UMI format:",strUMI))
+  }
+  X <- X[,colSums(X)>0]
+  Xdbl <- scDblFinder(X)
+  DBL <- cbind(data.frame(Xdbl@colData),
+               nCount_RNA=colSums(X),
+               nFeature_RNA=apply(X,2,function(x)return(sum(x>0))))
+  dbl_plot(DBL,strOut)
+  saveRDS(DBL,paste0(strOut,".rds"))
+  write.csv(DBL[,c("scDblFinder.class","scDblFinder.score")],file=strOut)
+}
+dbl_plot <- function(D,strF,batch=NULL){
   pdf(paste0(strF,".pdf"))
   D <- D[order(D$scDblFinder.score),]
-  for(one in unique(D[,batch])){
-    DD <- D[D[,batch]==one,]
-    dbNum <- sum(DD[,"scDblFinder.class"]=="doublet")
-    print(ggplot(DD,aes(nCount_RNA,nFeature_RNA,color=scDblFinder.class))+
-            geom_point(size=1)+
-            ggtitle(one)+
-            annotate(geom="text",label=paste0(dbNum," (",round(dbNum/nrow(DD)*100,2),"%) doublets"),
-                     x=Inf,y=-Inf,hjust=1,vjust=0)+
-            theme_light())
-    print(ggplot(DD,aes(nCount_RNA,nFeature_RNA,color=scDblFinder.score))+
-            geom_point(size=1)+
-            scale_color_continuous(type="viridis")+
-            ggtitle(one)+
-            theme_light())
+  if(is.null(batch)){
+    dbl_oneplot(D)
+  }else{
+    for(one in unique(D[,batch])){
+      dbl_oneplot(D[D[,batch]==one,],one)
+    }
   }
   a<- dev.off()
+}
+dbl_oneplot <- function(DD,gTitle=""){
+  dbNum <- sum(DD[,"scDblFinder.class"]=="doublet")
+  print(ggplot(DD,aes(nCount_RNA,nFeature_RNA,color=scDblFinder.class))+
+          geom_point(size=1)+
+          ggtitle(gTitle)+
+          annotate(geom="text",label=paste0(dbNum," (",round(dbNum/nrow(DD)*100,2),"%) doublets"),
+                   x=Inf,y=-Inf,hjust=1,vjust=0)+
+          theme_light())
+  print(ggplot(DD,aes(nCount_RNA,nFeature_RNA,color=scDblFinder.score))+
+          geom_point(size=1)+
+          scale_color_continuous(type="viridis")+
+          ggtitle(gTitle)+
+          theme_light())
 }
 #source("../../src/dbl.R");dbl("raw/TST11837_oyoung_raw_prefilter.h5ad","library_id","dbl/TST11837_oyoung.csv")
 main <- function(){
@@ -63,7 +90,12 @@ main <- function(){
   strOut <- args[2]
   if(length(args)>2) batchKey <- args[3]
   
-  print(system.time(dbl(strH5ad,batchKey,strOut)))
+  if(grepl("h5ad$",strH5ad)){
+    print(system.time(dbl(strH5ad,batchKey,strOut)))
+  }else{
+    print(system.time(dbl_single(strH5ad,strOut)))
+  }
+  
 }
 
 main()
