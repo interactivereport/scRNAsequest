@@ -1,4 +1,4 @@
-import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3, glob, gzip
+import yaml, io, os, sys, subprocess, errno, json, re, logging, warnings, shutil, time, random, pwd, math, configparser, sqlite3, glob, gzip, tracemalloc
 import pandas as pd
 from datetime import datetime
 import scanpy as sc
@@ -548,8 +548,11 @@ def runQC(config,meta):
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
       if not os.path.isfile("%s_raw_prefilter.h5ad"%prefix) or config["newProcess"]:
+        tracemalloc.start()
         adata = getData(meta,config["sample_name"])
         adata.write("%s_raw_prefilter.h5ad"%prefix)
+        print("\tMemory peak usage in reading: %.2fG"%(tracemalloc.get_traced_memory()[1]/(1024*1024*1024)))
+        tracemalloc.stop()
       else:
         adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
       print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
@@ -668,8 +671,30 @@ def getSampleMeta(strMeta):
     Exit("The UMI file %s is not supported (only supports .h5/csv/tsv matrix and mtx folder)"%oneH5)
   return(meta)
 def getData(meta,sID):
+  # considering large samples to merge, saving memory
+  sampleN = meta.shape[0]
+  stepN=50
+  if sampleN<stepN:
+    return(getData_block(meta,sID))
+  bIndex = sorted(list(set(list(range(0,sampleN,stepN))+[sampleN])))
+  if (bIndex[-1]-bIndex[-2])==1:
+    del bIndex[-2]
+  D = None
+  for i in range(len(bIndex)-1):
+    print("+++ block %d: %d-%d +++"%(i,bIndex[i],bIndex[i+1]))
+    D1 = getData_block(meta.iloc[bIndex[i]:bIndex[i+1],:].copy(),sID)
+    if D is None:
+      D = D1
+    else:
+      D = D.concatenate(D1,batch_key=None,index_unique=None)
+    print("+++ %d cells +++"%D.shape[0])
+    del D1
+  return(D)
+def getData_block(meta,sID):
   print("processing sample UMI ...")
+  meta.reset_index(drop=True,inplace=True)
   adatals = []
+  cellN = 0
   for i in range(meta.shape[0]):
     print("\t%s"%meta[sID][i])
     if os.path.isdir(meta[UMIcol][i]):
@@ -708,7 +733,10 @@ def getData(meta,sID):
     for one in meta.columns:
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
+    cellN += adata.shape[0]
+    print("\t\tTotal cells so far: %d"%cellN)
     adatals.append(adata)
+  print("\tmerging samples ...")
   if len(adatals)==1:
     adata = adatals[0]
     adata.obs[batchKey]=meta[sID][0]
@@ -716,6 +744,7 @@ def getData(meta,sID):
     adata = sc.AnnData.concatenate(*adatals,
       batch_categories=meta[sID],
       batch_key=batchKey)
+  print("\tmerging samples completed!")
   #filter genes after (inner) concatenate
   sc.pp.filter_genes(adata,min_cells=1)
   ## remove duplicated columns in var
@@ -723,6 +752,7 @@ def getData(meta,sID):
   varInx = [i for i,v in enumerate(varCol) if not v in varCol[:i]]
   adata.var = adata.var.iloc[:,varInx]
   adata.var.columns=[varCol[i] for i in varInx]
+  print("\treturning adata")
   return(adata)
 def getIntronExon(strF,cID):
   IEcount = pd.read_csv(strF,sep=None,index_col=0)
