@@ -3,6 +3,7 @@ PKGloading <- function(){
   require(scDblFinder)
   require(ggplot2)
   require(Matrix)
+  require(BiocParallel)
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
 }
 
@@ -33,7 +34,7 @@ dbl <- function(strH5ad,batch,strOut){
   saveRDS(DBL,paste0(strOut,".rds"))
   write.csv(DBL[,c("scDblFinder.class","scDblFinder.score")],file=strOut)
 }
-dbl_single <- function(strUMI,strOut){
+dbl_single <- function(strUMI,strOut,strBarcode="library_id"){
   if(dir.exists(strUMI)){
     X <- Read10X(strUMI)
   }else if(grepl("h5$",strUMI)){
@@ -44,8 +45,12 @@ dbl_single <- function(strUMI,strOut){
   }else{
     stop(paste("Unsupported UMI format:",strUMI))
   }
-  X <- X[,colSums(X)>0]
-  Xdbl <- scDblFinder(X)
+  if(file.exists(strBarcode)){
+    barcodes <- unlist(data.table::fread(strBarcode,header=F)[,1],use.names=F)
+    X <- X[,barcodes]
+  }
+  message(ncol(X),"\tcells for scDblFinder")
+  Xdbl <- scDblFinder(X,BPPARAM=MulticoreParam(max(1,parallelly::availableCores()-2)))
   DBL <- cbind(data.frame(Xdbl@colData),
                nCount_RNA=colSums(X),
                nFeature_RNA=diff(X@p))
@@ -93,7 +98,7 @@ main <- function(){
   if(grepl("h5ad$",strH5ad)){
     print(system.time(dbl(strH5ad,batchKey,strOut)))
   }else{
-    print(system.time(dbl_single(strH5ad,strOut)))
+    print(system.time(dbl_single(strH5ad,strOut,batchKey)))
   }
   
 }

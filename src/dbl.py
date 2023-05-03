@@ -34,12 +34,15 @@ def dbl(config,strH5ad,adata):
 def singleDBL(config,strUMI,sID,adata):
   print("\t\tstarting doublet finding ...")
   os.makedirs(os.path.join(config["output"],"dbl"),exist_ok=True)
+  strBarcode= "%s_barcode.csv"%os.path.join(config["output"],"dbl",sID)
+  with open(strBarcode,"w") as f:
+    f.write("\n".join(adata.obs.index))
   strDBL = "%s.csv"%os.path.join(config["output"],"dbl",sID)
-  cmd = "Rscript %s %s %s &> %s/%s.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
-                            strUMI,strDBL,os.path.dirname(strDBL),sID)
+  cmd = "Rscript %s %s %s %s &> %s/%s.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
+                            strUMI,strDBL,strBarcode,os.path.dirname(strDBL),sID)
   if os.path.isfile(strDBL):
     print("Using previous scDBL results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strDBL)
-  else:  
+  else:
     subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
   if not os.path.isfile(strDBL):
     msgError("\tERROR: doublet finding failed!")
