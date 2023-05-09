@@ -43,7 +43,16 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
     selFN <- 3000
     features <- SelectIntegrationFeatures(Dlist,nfeatures=selFN)
     if(length(Dlist)==1) D <- Dlist[[1]]
-    else D <- merge(Dlist[[1]], y=Dlist[-1],project=assayName)
+    else{
+      #D <- merge(Dlist[[1]], y=Dlist[-1],project=assayName)
+      # according to the test the blow save almost half of memory comparing the above
+      D <- Dlist[[1]]
+      Dlist[[1]] <- NULL
+      for(i in 1:length(Dlist)){
+        D <- merge(D,Dlist[[1]])
+        Dlist[[1]] <- NULL
+      }
+    }
     message("memory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
     rm(Dlist)
     gc()

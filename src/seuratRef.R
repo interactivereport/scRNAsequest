@@ -99,7 +99,14 @@ processSCTrefOne <- function(strH5ad,batch,config){
   if(length(Dlist)==1){
     SCT <- Dlist[[1]]
   }else{
-    SCT <- merge(Dlist[[1]], y=Dlist[-1],merge.dr = names(Dlist[[1]]@reductions))
+    #SCT <- merge(Dlist[[1]], y=Dlist[-1],merge.dr = names(Dlist[[1]]@reductions))
+    # according to the test the blow save almost half of memory comparing the above
+    SCT <- Dlist[[1]]
+    Dlist[[1]] <- NULL
+    for(i in 1:length(Dlist)){
+      SCT <- merge(SCT,Dlist[[1]],merge.dr = names(Dlist[[1]]@reductions))
+      Dlist[[1]] <- NULL
+    }
   }
   message("\tmemory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(Dlist)

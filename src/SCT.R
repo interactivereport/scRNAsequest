@@ -42,7 +42,14 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
     if(length(Dlist)==1){
       D <- Dlist[[1]]
     }else{
-      D <- merge(Dlist[[1]], y=Dlist[-1])
+      #D <- merge(Dlist[[1]], y=Dlist[-1])
+      # according to the test the blow save almost half of memory comparing the above
+      D <- Dlist[[1]]
+      Dlist[[1]] <- NULL
+      for(i in 1:length(Dlist)){
+        D <- merge(D,Dlist[[1]])
+        Dlist[[1]] <- NULL
+      }
       if(!is.null(bPrepSCT) && bPrepSCT){
         message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
         D <- PrepSCTFindMarkers(D)
