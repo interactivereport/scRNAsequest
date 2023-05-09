@@ -104,6 +104,9 @@ def submit_cmd(cmds,config,core=None,memG=0):
         print("\t--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
       print("\n*** Please check log files in %s folder and consider rerun the analysis!"%jID)
   elif parallel=="slurm":
+    if memG==0 and config.get('memory') is not None and config.get('memory').endswith("G"):
+      print("Assign memory according to config: ",config.get('memory'))
+      memG=int(re.sub("G$","",config.get('memory')))
     jID = sbatch(cmds,config['output'],core,memG=memG,gpu=config.get('gpu'))
     print("----- Monitoring all submitted SLURM jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
@@ -539,47 +542,51 @@ def checkConfig(config):
 def runQC(config,meta):
   prefix = os.path.join(config["output"],tempDir,config["prj_name"])
   reRunQC = True if config.get('reRunQC') is None else config.get('reRunQC')
-  if os.path.isfile("%s.h5ad"%prefix) and not reRunQC:
-    print("QC skip: %s.h5ad exists"%prefix)
-    return
   plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
   setupDir(os.path.dirname(prefix))
-  if not config["runAnalysis"] or not os.path.isfile("%s_raw.h5ad"%prefix) or config["newProcess"]:
+  if not os.path.isfile("%s_raw_prefilter.h5ad"%prefix) or config["newProcess"]:
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
-      if not os.path.isfile("%s_raw_prefilter.h5ad"%prefix) or config["newProcess"]:
-        tracemalloc.start()
-        adata = getData(meta,config)
-        adata.write("%s_raw_prefilter.h5ad"%prefix)
-        print("\tMemory peak usage in reading: %.2fG"%(tracemalloc.get_traced_memory()[1]/(1024*1024*1024)))
-        tracemalloc.stop()
-      else:
-        adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
-      print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
-      filterRes=["Filter,cutoff,cell_number,gene_number\n"]
-      filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
-      #adata = dbl.dbl(config,"%s_raw_prefilter.h5ad"%prefix,adata)
+      tracemalloc.start()
+      adata = getData(meta,config)
+      adata.write("%s_raw_prefilter.h5ad"%prefix)
+      print("\tMemory peak usage in reading: %.2fG"%(tracemalloc.get_traced_memory()[1]/(1024*1024*1024)))
+      tracemalloc.stop()
+  if not os.path.isfile("%s_raw_postfilter.h5ad"%prefix) or reRunQC or config["newProcess"]:
+    if not 'adata' in locals():
+      adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
+    print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
+    filterRes=["Filter,cutoff,cell_number,gene_number\n"]
+    filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
+    #adata = dbl.dbl(config,"%s_raw_prefilter.h5ad"%prefix,adata)
+    adata = preprocess(adata,config)
+    strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
+    if not os.path.isfile(strPrefilterQC):
+      plotQC(adata,strPrefilterQC,config["group"])
+    if config["filter_step"]:
       adata = dbl.filterDBL(adata,config,filterRes)
-      adata = preprocess(adata,config)
-      strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
-      if not os.path.isfile(strPrefilterQC):
-        plotQC(adata,strPrefilterQC,config["group"])
-      if config["filter_step"]:
-        adata = filtering(adata,config,filterRes)
-        plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
+      adata = filtering(adata,config,filterRes)
+      plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
     checkCells(adata)
-    if not config["runAnalysis"]:
-      runQCmsg(config)
-      exit()
     with warnings.catch_warnings():
       warnings.simplefilter("ignore")
-      if "MTstring" in config.keys():
-        regress_out = ['total_counts', 'pct_counts_mt']
-      elif "gene_group" in config.keys():
-        regress_out = ["pct_%s"%k for k in config["gene_group"].keys() if "pct_%s"%k in adata.obs.columns]
-        regress_out.append("total_counts")
-      adata.obs,adata.obsm=obtainRAWobsm(adata.copy(),regress_out)
-      adata.write("%s.h5ad"%prefix)
+      adata.write("%s_raw_postfilter.h5ad"%prefix)
+  if config["runAnalysis"]:
+    if not os.path.isfile("%s.h5ad"%prefix) or reRunQC or config["newProcess"]:
+      if not 'adata' in locals():
+        adata = sc.read_h5ad("%s_raw_postfilter.h5ad"%prefix)
+      with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        if "MTstring" in config.keys():
+          regress_out = ['total_counts', 'pct_counts_mt']
+        elif "gene_group" in config.keys():
+          regress_out = ["pct_counts_%s"%k for k in config["gene_group"].keys() if "pct_counts_%s"%k in adata.obs.columns]
+          regress_out.append("total_counts")
+        adata.obs,adata.obsm=obtainRAWobsm(adata.copy(),regress_out)
+        adata.write("%s.h5ad"%prefix)
+  else:
+    runQCmsg(config)
+    exit()
 def runQCmsg(config):
   print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%os.path.join(config["output"],qcDir))
   print("And then:")
@@ -720,8 +727,6 @@ def getData_block(meta,config):
     adata.var_names_make_unique()
     sc.pp.filter_cells(adata,min_counts=1)
     adata.X = csc_matrix(adata.X)
-    # add dbl detection
-    adata=dbl.singleDBL(config,meta[UMIcol][i],meta[sID][i],adata)
     ## add intro/exon counts/ratio if exists
     if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
       IE = getIntronExon(meta[IntronExon][i],adata.obs_names)
@@ -737,6 +742,8 @@ def getData_block(meta,config):
     for one in meta.columns:
       if not 'path' in one and not one==sID:
         adata.obs[one]=meta[one][i]
+    # add dbl detection
+    adata=dbl.singleDBL(config,meta[UMIcol][i],meta[sID][i],adata)
     cellN += adata.shape[0]
     print("\t\tTotal cells so far: %d"%cellN)
     adatals.append(adata)
@@ -769,7 +776,8 @@ def getIntronExon(strF,cID):
   return(IE)
 def preprocess(adata,config):
   print("preprocessing ...")
-  sc.pp.calculate_qc_metrics(adata, inplace=True)
+  varKey=[]
+  rmGene=np.full(adata.shape[1],False)
   if "MTstring" in config.keys():#older version
     MTstring=config["MTstring"]
     #get MT genes
@@ -791,18 +799,30 @@ def preprocess(adata,config):
       gList = np.full(adata.shape[1],False)
       for one in config['gene_group'][k]['startwith']:
         if len(one)>1:
-          gList = gList | adata.var_names.str.startswith(one)
+          gList |= adata.var_names.str.startswith(one)
       if gList.sum()==0:
         print("\tNo genes found for %s"%k)
         continue
       print("\tGene group %s contains %d genes"%(k,gList.sum()))
-      adata.obs['pct_%s'%k] = np.sum(adata[:, gList].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
+      adata.var[k]=gList
+      varKey += [k]
+      #adata.obs['pct_%s'%k] = np.sum(adata[:, gList].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
       if config['gene_group'][k]['rm']:
-        print("\t%s genes are removed"%k)
-        adata = adata[:, np.invert(gList)]
+        print("\t%s genes will be removed"%k)
+        rmGene |= gList
   else:
     Exit("Unknown config format! Either 'MTstring' or 'gene_group' is required")
-
+  if len(varKey)>0:
+    sc.pp.calculate_qc_metrics(adata,qc_vars=varKey,inplace=True)
+    for k in varKey:
+      adata.obs.drop("total_counts_%s"%k,axis=1,inplace=True)
+      adata.obs.drop("log1p_total_counts_%s"%k,axis=1,inplace=True)
+  else:
+    sc.pp.calculate_qc_metrics(adata, inplace=True)
+  if rmGene.sum()>0:
+    adata = adata[:, np.invert(rmGene)]
+    print("\tTotal of %d genes are removed",rmGene.sum())
+  print("\tcompleted!")
   return adata
 def filtering(adata,config,filterRes):
   print("filtering ...")
@@ -819,20 +839,22 @@ def filtering(adata,config,filterRes):
     print("\t\tfiltered cells with mt.cutoff %d left %d cells"%(mt_cutoff,adata.shape[0]))
   elif "gene_group" in config.keys():
     for k in config['gene_group']:
-      if not "pct_%s"%k in adata.obs.columns:
+      if not "pct_counts_%s"%k in adata.obs.columns:
         print("\t\tskip %s"%k)
         continue
-      adata = adata[adata.obs["pct_%s"%k]<config['gene_group'][k]["cutoff"],:]
+      adata = adata[adata.obs["pct_counts_%s"%k]<config['gene_group'][k]["cutoff"],:]
       filterRes.append("%s,%f,%d,%d\n"%(k,config['gene_group'][k]["cutoff"],adata.shape[0],adata.shape[1]))
       print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],adata.shape[0]))
   else:
     Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
 
   ## filtering low content cells and low genes
-  sc.pp.filter_genes(adata,min_cells=min_cells)
+  #sc.pp.filter_genes(adata,min_cells=min_cells)
+  adata = adata[:,adata.var['n_cells_by_counts']>=min_cells]
   filterRes.append("min cell,%d,%d,%d\n"%(min_cells,adata.shape[0],adata.shape[1]))
   print("\t\tfiltered genes with min.cells %d left %d genes"%(min_cells,adata.shape[1]))
-  sc.pp.filter_cells(adata,min_genes=min_features)
+  #sc.pp.filter_cells(adata,min_genes=min_features) # cost a lot more memories
+  adata = adata[adata.obs.n_genes_by_counts>=min_features,:]
   filterRes.append("min gene,%d,%d,%d\n"%(min_features,adata.shape[0],adata.shape[1]))
   print("\t\tfiltered cells with min.features %d left %d cells"%(min_features,adata.shape[0]))
 
@@ -857,7 +879,6 @@ def obtainRAWobsm(D,reg=None):
   D = D[:, D.var.highly_variable]
   if not reg is None:
     sc.pp.regress_out(D, reg)#['total_counts', 'pct_counts_mt']
-
   sc.pp.scale(D, max_value=10)
   sc.tl.pca(D, svd_solver='arpack',n_comps = 100)
   npcs = 50
@@ -892,7 +913,7 @@ def plotQC(adata,strPDF,grp=None):
     savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90,show=False),
       pdf,"%s_genes.png"%strRmark)
 
-    for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
+    for k in [one for one in adata.obs.columns if one.startswith('pct_counts_')]:
       savePDF_PNG(sc.pl.violin(adata, keys =k,groupby=batchKey,rotation=90,show=False),
         pdf,"%s_%s.png"%(strRmark,k))
 
@@ -912,7 +933,7 @@ def plotQC(adata,strPDF,grp=None):
           savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
                       pdf,"%s_%s_counts.png"%(strRmark,oneG))
 
-          for k in [one for one in adata.obs.columns if one.startswith('pct_')]:
+          for k in [one for one in adata.obs.columns if one.startswith('pct_counts_')]:
             savePDF_PNG(sc.pl.violin(adata, keys =k,groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
                         pdf,"%s_%s_%s.png"%(strRmark,oneG,k))
           plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']

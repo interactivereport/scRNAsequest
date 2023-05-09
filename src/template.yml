@@ -33,6 +33,7 @@ expScaler: 10000 #integer value, 0: SCT (along with following option); 1-100: lo
 PrepSCTFindMarkers: True # should the "PrepSCTFindMarkers" applied on SCT to be exported for visualization expression
 parallel: False #"sge" or "slurm"
 core: 2
+memory: #if provided (e.g. 100G), it will be used to request cluster schedulare  
 overwrite: False
 major_cluster_rate: 0.7 # the proportion of cells of an integration cluster to be assigned to a seurat reference label
 
