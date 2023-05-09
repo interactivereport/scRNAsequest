@@ -49,6 +49,8 @@ getX <- function(strH5ad,useRaw=T){
   }else{
     X <- h5read(strH5ad,"X")
   }
+  if(length(X$data)>(2^31-1))
+    stop(paste("Max elements in sparse matrix is 2^31-1, input:",length(X$data)))
   message("\t\textracting gene name")
   if(useRaw && sum(grepl("/raw/var",keys$group))>0){
     message("\t\t\tFound .raw.var")
