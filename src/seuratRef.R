@@ -5,6 +5,7 @@ PKGloading <- function(){
   require(sctransform)
   require(ggplot2)
   require(reshape2)
+  require(peakRAM)
   options(future.globals.maxsize=3145728000)
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
@@ -45,88 +46,87 @@ processSCTrefOne <- function(strH5ad,batch,config){
   config <- res$config
   reference <- res$ref
   rm(res)
-  D <- CreateSeuratObject(counts=getX(strH5ad),
-                          project="SCT",
-                          meta.data=getobs(strH5ad))
-  cellN <- dim(D)[2]
-  Dmedian <- median(colSums(D@assays$RNA@counts))
-  Dlist <- SplitObject(D,split.by=batch)
-  message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
-  rm(D)
-  gc()
-  Dlist <- sapply(Dlist,function(one,medianUMI){
-    bID <- one@meta.data[1,batch]
-    message("\tmapping ",bID)
-    #after checking/testing, the below would return proper SCT nomralized data
-    #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
-    #https://github.com/satijalab/sctransform/issues/128
-    oneD <- suppressMessages(suppressWarnings(
-      SCTransform(one,method = 'glmGamPoi',
-                  new.assay.name="SCT",
-                  return.only.var.genes = FALSE,
-                  scale_factor=medianUMI,
-                  verbose = FALSE)
-    ))
-    anchors <- suppressMessages(suppressWarnings(
-      FindTransferAnchors(
-        reference = reference,
-        query = oneD,
-        k.filter = NA,
-        reference.neighbors = config$ref_neighbors,
-        reference.assay = config$ref_assay,
-        query.assay = "SCT",
-        reference.reduction = config$ref_reduction,
-        normalization.method = "SCT",
-        features = intersect(rownames(x = reference), VariableFeatures(object = oneD)),
-        dims = 1:50,
-        mapping.score.k = 100
-      )
-    ))
-    oneD <- suppressMessages(suppressWarnings(
-      MapQuery(
-        anchorset = anchors,
-        query = oneD,
-        reference = reference,
-        refdata = setNames(as.list(config$ref_label),config$ref_label),
-        reference.reduction = config$ref_reduction, 
-        reduction.model = config$ref_reduction.model,
-        verbose=F
-      )
-    ))
-    return(oneD)
-  },Dmedian)
-  message("\tmemory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
-  if(length(Dlist)==1){
-    SCT <- Dlist[[1]]
-  }else{
-    #SCT <- merge(Dlist[[1]], y=Dlist[-1],merge.dr = names(Dlist[[1]]@reductions))
-    # according to the test the blow save almost half of memory comparing the above
-    SCT <- Dlist[[1]]
-    Dlist[[1]] <- NULL
-    for(i in 1:length(Dlist)){
-      SCT <- merge(SCT,Dlist[[1]],merge.dr = names(Dlist[[1]]@reductions))
-      Dlist[[1]] <- NULL
+  print(peakRAM({
+    message("\t\tCreating seurat object ...")
+    D <- CreateSeuratObject(counts=getX(strH5ad),
+                            project="SCT",
+                            meta.data=getobs(strH5ad))
+    cellN <- dim(D)[2]
+    Dmedian <- median(colSums(D@assays$RNA@counts))
+    Dlist <- SplitObject(D,split.by=batch)
+    #message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+    rm(D)
+    gc()
+  }))
+  print(peakRAM({
+    Dlist <- sapply(Dlist,function(one,medianUMI){
+      bID <- one@meta.data[1,batch]
+      message("\t\tmapping ",bID)
+      #after checking/testing, the below would return proper SCT nomralized data
+      #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
+      #https://github.com/satijalab/sctransform/issues/128
+      oneD <- suppressMessages(suppressWarnings(
+        SCTransform(one,method = 'glmGamPoi',
+                    new.assay.name="SCT",
+                    return.only.var.genes = FALSE,
+                    scale_factor=medianUMI,
+                    verbose = FALSE)
+      ))
+      anchors <- suppressMessages(suppressWarnings(
+        FindTransferAnchors(
+          reference = reference,
+          query = oneD,
+          k.filter = NA,
+          reference.neighbors = config$ref_neighbors,
+          reference.assay = config$ref_assay,
+          query.assay = "SCT",
+          reference.reduction = config$ref_reduction,
+          normalization.method = "SCT",
+          features = intersect(rownames(x = reference), VariableFeatures(object = oneD)),
+          dims = 1:50,
+          mapping.score.k = 100,
+          verbose=F
+        )
+      ))
+      oneD <- suppressMessages(suppressWarnings(
+        MapQuery(
+          anchorset = anchors,
+          query = oneD,
+          reference = reference,
+          refdata = setNames(as.list(config$ref_label),config$ref_label),
+          reference.reduction = config$ref_reduction, 
+          reduction.model = config$ref_reduction.model,
+          verbose=F
+        )
+      ))
+      return(oneD)
+    },Dmedian)
+  }))
+  #message("\tmemory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+  print(peakRAM({
+    meta = extractX(Dlist,batch)
+  }))
+  return(meta)
+}
+extractX <- function(Dlist,batch){
+  meta <- NULL
+  for(i in 1:length(Dlist)){
+    message("\t\tmerging ",Dlist[[i]]@meta.data[1,batch])
+    X <- Dlist[[i]]@meta.data[,grep("^predicted",colnames(Dlist[[i]]@meta.data)),drop=F]
+    layout <- c()
+    for(j in names(Dlist[[i]]@reductions)){
+      layout <- cbind(layout,Dlist[[i]]@reductions[[j]]@cell.embeddings[,1:2])
     }
+    colnames(layout) <- sapply(strsplit(colnames(layout),"_"),function(x){
+      ix <- grep("umap",x,ignore.case = T)
+      if(length(ix)>0) x[ix] <- "umap"
+      return(paste(x,collapse="_"))
+    })
+    X <- cbind(X,layout)
+    X <- cbind(cID=rownames(X),X)
+    meta <- rbind(meta,X)
   }
-  message("\tmemory usage after merging: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
-  rm(Dlist)
-  gc()
-  ## save layout and annotation (not iterative mapping yet!)
-  meta <- SCT@meta.data[,grep("^predicted",colnames(SCT@meta.data)),drop=F]
-  layout <- c()
-  for(i in names(SCT@reductions)){
-    layout <- cbind(layout,SCT@reductions[[i]]@cell.embeddings[,1:2])
-  }
-  #colnames(layout) <- paste0("seuratRef_",colnames(layout))
-  colnames(layout) <- sapply(strsplit(colnames(layout),"_"),function(x){
-    ix <- grep("umap",x,ignore.case = T)
-    if(length(ix)>0) x[ix] <- "umap"
-    return(paste(x,collapse="_"))
-    })#paste0("seuratRef_",colnames(layout))
-  X <- cbind(meta,layout)
-  X <- cbind(cID=rownames(X),X)
-  return(X)
-  #data.table::fwrite(X,strOut)
+  return(meta)
 }
 processSCTref <- function(strH5ad,batch,refList,strOut){
   D <- NULL
