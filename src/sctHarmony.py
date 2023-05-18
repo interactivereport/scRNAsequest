@@ -47,11 +47,12 @@ def splitBatch(strH5ad,strPCA):
       sID=[]
       cellN=0
       batchN=0
-      for one in list(sampleCellN.index):
+      sName=random.choices(sampleCellN.index,k=sampleCellN.shape[0])
+      for one in sName:
         sID.append(one)
         cellN+=sampleCellN[one]
         print(cellN)
-        if cellN>batchCell or one==list(sampleCellN.index)[-1]:
+        if cellN>batchCell or one==sName[-1]:
           print("batch %d: %d samples"%(batchN,len(sID)))
           strH5ad=strOut+"tmp_%d.h5ad"%batchN
           batchN +=1
@@ -76,7 +77,7 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
   if os.path.isfile(strPCA):
     print("\tUsing previous sct PCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strPCA)
     return()
-  h5adList = splitBatch(strH5ad,strPCA)
+  h5adList = sorted(splitBatch(strH5ad,strPCA))
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
