@@ -6,6 +6,7 @@ PKGloading <- function(){
   require(ggplot2)
   require(reshape2)
   require(peakRAM)
+  require(BiocParallel)
   options(future.globals.maxSize=8000*1024^2) 
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
@@ -52,14 +53,14 @@ processSCTrefOne <- function(strH5ad,batch,config){
                             project="SCT",
                             meta.data=getobs(strH5ad))
     cellN <- dim(D)[2]
-    Dmedian <- median(colSums(D@assays$RNA@counts))
+    #Dmedian <- median(colSums(D@assays$RNA@counts))
     Dlist <- SplitObject(D,split.by=batch)
     #message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
     rm(D)
     gc()
   }))
   print(peakRAM({
-    Dlist <- sapply(Dlist,function(one,medianUMI){
+    Dlist <- bplapply(Dlist,function(one){#,medianUMI
       bID <- one@meta.data[1,batch]
       message("\t\tmapping ",bID)
       #after checking/testing, the below would return proper SCT nomralized data
@@ -69,7 +70,7 @@ processSCTrefOne <- function(strH5ad,batch,config){
         SCTransform(one,method = 'glmGamPoi',
                     new.assay.name="SCT",
                     return.only.var.genes = FALSE,
-                    scale_factor=medianUMI,
+                    #scale_factor=medianUMI,
                     verbose = FALSE)
       ))
       anchors <- suppressMessages(suppressWarnings(
@@ -100,7 +101,7 @@ processSCTrefOne <- function(strH5ad,batch,config){
         )
       ))
       return(oneD)
-    },Dmedian)
+    })#,Dmedian
   }))
   #message("\tmemory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   print(peakRAM({
