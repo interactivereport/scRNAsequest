@@ -6,6 +6,7 @@ from scipy.sparse import csc_matrix
 import pandas as pd
 import anndata as ad
 import scanpy as sc
+import numpy as np
 
 print=functools.partial(print, flush=True)
 
@@ -72,6 +73,9 @@ def runOneSCT(oneH5ad,strConfig,oneCSV):
   subprocess.run(cmd,shell=True,check=True)
 
 def sct(strH5ad,strConfig,strPCA,batchKey):
+  if os.path.isfile(strPCA):
+    print("\tUsing previous sct PCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strPCA)
+    return()
   h5adList = splitBatch(strH5ad,strPCA)
   if len(h5adList)==0:
     msgError("No h5ad!")
@@ -85,17 +89,20 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
     if not os.path.isfile(oneCSV):
       msgError("\tERROR: %s sctHarmony failed in SCT step!"%os.path.basename(oneH5ad))
     oneD=sc.read_csv(oneCSV)
-    print("***** finishing  *****\n\n\n\n")
+    print("***** finishing  %d cells and %d genes *****\n\n\n\n"%(oneD.shape[0],oneD.shape[1]))
     if sctD is None:
       sctD = oneD
     else:
-      sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None)
+      sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None,join='outer')
+  sctD.X[np.isnan(sctD.X)] = 0
+  print("Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
   batchV=sc.read_h5ad(strH5ad,backed="r").obs[batchKey].copy()
   sctD.obs[batchKey]=batchV[sctD.obs.index]
-  sc.tl.pca(sctD, svd_solver='arpack')
+  sc.tl.pca(sctD,n_comps=50,svd_solver='arpack')
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     sctD.write(strPCA)
+  print("\tThe SCT step for all samples are completed!")
   return None
 
 def runRharmony(strPCA,strCSV):
@@ -113,7 +120,7 @@ def sctHarmony(strH5ad,strConfig,strCSV,batchKey):
   sct(strH5ad,strConfig,strPCA,batchKey)
   runRharmony(strPCA,strCSV)
   if not os.path.isfile(strCSV):
-    msgError("\tERROR: %s sctHarmony failed in final harmony step!")
+    msgError("\tERROR: sctHarmony failed in final harmony step!")
   meta = pd.read_csv(strCSV,index_col=0,header=0)
   meta.index = list(meta.index)
   meta.to_csv(strCSV)

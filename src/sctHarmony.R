@@ -1,7 +1,9 @@
 PKGloading <- function(){
   require(Seurat)
   require(harmony)
-  options(stringsAsFactors = FALSE)
+  options(stringsAsFactors = FALSE,future.globals.maxSize=8000*1024^2)
+  require(future)
+  plan("multicore")
 }
 
 # following the discussion @https://github.com/immunogenomics/harmony/issues/41
@@ -117,29 +119,28 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
                     return.only.var.genes = FALSE,
                     verbose = FALSE)
       ))
-      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 5000,verbose=F)
+      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 3000,verbose=F)
       return(one)
     })
     message("\tsaving ...")
     D <- NULL
     for(i in 1:length(Dlist)){
       message("\t\t",Dlist[[1]]@meta.data[1,batch])
-      oneD <- t(Dlist[[1]]@assays[[assayName]]@scale.data[Dlist[[1]]@assays[[assayName]]@var.features,])
-      if(is.null(D)) D <- oneD
+      oneD <- data.frame(t(Dlist[[1]]@assays[[assayName]]@scale.data[Dlist[[1]]@assays[[assayName]]@var.features,]))
+      if(is.null(D)) D <-oneD
       else{
-        g <- intersect(colnames(D),colnames(oneD))
-        D <- rbind(D[,g],oneD[,g])
+        D <- dplyr::bind_rows(D,oneD)
       }
       Dlist[[1]] <- NULL
       #print(gc())
     }
     rm(Dlist)
-    D <- cbind(cID=rownames(D),data.frame(D))
+    D[is.na(D)] <- 0
+    D <- cbind(cID=rownames(D),D)
     data.table::fwrite(D,strOut)
   }
   
 }
-
 processPCA <- function(strPCA,strOut,batch){
   message("starting Harmony ...")
   PCA <- getobsm(strPCA,"X_pca")
@@ -147,16 +148,24 @@ processPCA <- function(strPCA,strOut,batch){
   PCA <- harmony::HarmonyMatrix(PCA,meta,batch,do_pca=FALSE,verbose=FALSE)
   message("Finishing Harmony ...")
   dimN <- ncol(PCA)
+  colnames(PCA) <- paste0("pca_",1:dimN)
   D <- CreateSeuratObject(counts=matrix(0,nrow=2,ncol=nrow(PCA),dimnames=list(paste0("G",1:2),rownames(PCA))),
                           project="sctHarmony",
                           meta.data=meta)
   D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="RNA")
+  saveRDS(D,"sctHarmony.rds")
   message("Find Neighbor ...")
   D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
   message("UMAP ...")
   D <- RunUMAP(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
   message("tSNE ...")
-  D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
+  tryCatch({D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)},
+           error=function(cond){
+             message("\terror:")
+             message(cond)
+             message()
+             })
+  #D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
   message("Clustering ...")
   D <- FindClusters(D,verbose = FALSE)
   
