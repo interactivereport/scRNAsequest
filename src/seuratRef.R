@@ -6,7 +6,7 @@ PKGloading <- function(){
   require(ggplot2)
   require(reshape2)
   require(peakRAM)
-  #require(BiocParallel)
+  require(BiocParallel)
   options(future.globals.maxSize=8000*1024^2) 
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
@@ -47,66 +47,59 @@ processSCTrefOne <- function(strH5ad,batch,config){
   config <- res$config
   reference <- res$ref
   rm(res)
-  print(peakRAM({
-    message("\t\tCreating seurat object ...")
-    D <- CreateSeuratObject(counts=getX(strH5ad),
-                            project="SCT",
-                            meta.data=getobs(strH5ad))
-    cellN <- dim(D)[2]
-    #Dmedian <- median(colSums(D@assays$RNA@counts))
-    Dlist <- SplitObject(D,split.by=batch)
-    #message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
-    rm(D)
-    gc()
-  }))
-  print(peakRAM({
-    Dlist <- lapply(Dlist,function(one){#,medianUMI
-      bID <- one@meta.data[1,batch]
-      message("\t\tmapping ",bID)
-      #after checking/testing, the below would return proper SCT nomralized data
-      #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
-      #https://github.com/satijalab/sctransform/issues/128
-      oneD <- suppressMessages(suppressWarnings(
-        SCTransform(one,method = 'glmGamPoi',
-                    new.assay.name="SCT",
-                    return.only.var.genes = FALSE,
-                    #scale_factor=medianUMI,
-                    verbose = FALSE)
-      ))
-      anchors <- suppressMessages(suppressWarnings(
-        FindTransferAnchors(
-          reference = reference,
-          query = oneD,
-          k.filter = NA,
-          reference.neighbors = config$ref_neighbors,
-          reference.assay = config$ref_assay,
-          query.assay = "SCT",
-          reference.reduction = config$ref_reduction,
-          normalization.method = "SCT",
-          features = intersect(rownames(x = reference), VariableFeatures(object = oneD)),
-          dims = 1:50,
-          mapping.score.k = 100,
-          verbose=F
-        )
-      ))
-      oneD <- suppressMessages(suppressWarnings(
-        MapQuery(
-          anchorset = anchors,
-          query = oneD,
-          reference = reference,
-          refdata = setNames(as.list(config$ref_label),config$ref_label),
-          reference.reduction = config$ref_reduction, 
-          reduction.model = config$ref_reduction.model,
-          verbose=F
-        )
-      ))
-      return(oneD)
-    })#,Dmedian
-  }))
-  #message("\tmemory usage after mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
-  print(peakRAM({
-    meta = extractX(Dlist,batch)
-  }))
+  message("\t\tCreating seurat object ...")
+  D <- CreateSeuratObject(counts=getX(strH5ad),
+                          project="SCT",
+                          meta.data=getobs(strH5ad))
+  cellN <- dim(D)[2]
+  #Dmedian <- median(colSums(D@assays$RNA@counts))
+  Dlist <- SplitObject(D,split.by=batch)
+  #message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+  rm(D)
+  gc()
+  Dlist <- bplapply(1:length(Dlist),function(i){#,medianUMI
+    bID <- Dlist[[i]]@meta.data[1,batch]
+    message("\t\tmapping ",bID)
+    #after checking/testing, the below would return proper SCT nomralized data
+    #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
+    #https://github.com/satijalab/sctransform/issues/128
+    oneD <- suppressMessages(suppressWarnings(
+      SCTransform(Dlist[[i]],method = 'glmGamPoi',
+                  new.assay.name="SCT",
+                  return.only.var.genes = FALSE,
+                  #scale_factor=medianUMI,
+                  verbose = FALSE)
+    ))
+    anchors <- suppressMessages(suppressWarnings(
+      FindTransferAnchors(
+        reference = reference,
+        query = oneD,
+        k.filter = NA,
+        reference.neighbors = config$ref_neighbors,
+        reference.assay = config$ref_assay,
+        query.assay = "SCT",
+        reference.reduction = config$ref_reduction,
+        normalization.method = "SCT",
+        features = intersect(rownames(x = reference), VariableFeatures(object = oneD)),
+        dims = 1:50,
+        mapping.score.k = 100,
+        verbose=F
+      )
+    ))
+    oneD <- suppressMessages(suppressWarnings(
+      MapQuery(
+        anchorset = anchors,
+        query = oneD,
+        reference = reference,
+        refdata = setNames(as.list(config$ref_label),config$ref_label),
+        reference.reduction = config$ref_reduction, 
+        reduction.model = config$ref_reduction.model,
+        verbose=F
+      )
+    ))
+    return(oneD)
+  },BPPARAM = MulticoreParam(workers=min(length(Dlist),parallelly::availableCores()-2),tasks=length(Dlist)))
+  meta = extractX(Dlist,batch)
   return(meta)
 }
 extractX <- function(Dlist,batch){
@@ -133,7 +126,7 @@ processSCTref <- function(strH5ad,batch,refList,strOut){
   D <- NULL
   for(one in names(refList)){
     message("*** Mapping ",one)
-    X <- processSCTrefOne(strH5ad,batch,refList[[one]])
+    X <- print(peakRAM(processSCTrefOne(strH5ad,batch,refList[[one]])))
     if(one!=refTmpName){
       cNames <- gsub("^predicted",paste0("predicted.",one),colnames(X))
       cNames[!grepl("^cID$|^predicted",cNames)] <- 
