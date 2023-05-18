@@ -109,7 +109,7 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
     Dlist <- SplitObject(D,split.by=batch)
     #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
     rm(D)
-    message("\tSCT ...")
+    message("\tSCT ",length(Dlist)," samples ...")
     Dlist <- sapply(Dlist,function(one){
       bID <- one@meta.data[1,batch]
       message("\t\t",bID)
