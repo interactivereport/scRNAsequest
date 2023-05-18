@@ -7,7 +7,7 @@ PKGloading <- function(){
   require(Matrix)
   #require(future) #no effect on SCT
   #plan("multiprocess", workers = 8)
-  options(future.globals.maxsize=3145728000)
+  options(future.globals.maxSize=8000*1024^2)
 }
 
 processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){

@@ -3,7 +3,7 @@
 PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
-  options(future.globals.maxsize=3145728000,stringsAsFactors=F)
+  options(future.globals.maxSize=8000*1024^2,stringsAsFactors=F)
 }
 #
 checkFileExist <- function(strF,msg="file"){

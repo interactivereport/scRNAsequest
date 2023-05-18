@@ -6,7 +6,7 @@ PKGloading <- function(){
   require(ggplot2)
   require(reshape2)
   require(peakRAM)
-  options(future.globals.maxsize=3145728000)
+  options(future.globals.maxSize=8000*1024^2) 
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
 updateRef <- function(ref,config){

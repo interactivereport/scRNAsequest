@@ -11,7 +11,7 @@ loadingPKG <- function(){
   require(Matrix)
   require(Azimuth)
   require(scales)
-  options(future.globals.maxsize=3145728000,stringsAsFactors=F)
+  options(future.globals.maxSize=8000*1024^2,stringsAsFactors=F)
   #source(paste0(strPipePath,"/src/azimuth.R"))
 }
 ## msg -----
