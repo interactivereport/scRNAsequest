@@ -6,7 +6,7 @@ PKGloading <- function(){
   require(ggplot2)
   require(reshape2)
   require(peakRAM)
-  require(BiocParallel)
+  #require(BiocParallel)
   options(future.globals.maxSize=8000*1024^2) 
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
@@ -60,7 +60,7 @@ processSCTrefOne <- function(strH5ad,batch,config){
     gc()
   }))
   print(peakRAM({
-    Dlist <- bplapply(Dlist,function(one){#,medianUMI
+    Dlist <- lapply(Dlist,function(one){#,medianUMI
       bID <- one@meta.data[1,batch]
       message("\t\tmapping ",bID)
       #after checking/testing, the below would return proper SCT nomralized data
