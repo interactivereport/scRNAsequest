@@ -1,6 +1,9 @@
 PKGloading <- function(){
   require(Seurat)
   require(harmony)
+  require(peakRAM)
+  require(BiocParallel)#parallelly::availableCores()-2
+  #register(MulticoreParam())#parallelly::availableCores()-2
   options(stringsAsFactors = FALSE,future.globals.maxSize=8000*1024^2)
   require(future)
   plan("multicore")
@@ -110,26 +113,69 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
     #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
     rm(D)
     message("\tSCT ",length(Dlist)," samples ...")
-    Dlist <- sapply(Dlist,function(one){
-      bID <- one@meta.data[1,batch]
-      message("\t\t",bID)
-      one <- suppressMessages(suppressWarnings(
-        SCTransform(one,method = 'glmGamPoi',
-                    new.assay.name=assayName,
-                    return.only.var.genes = FALSE,
-                    verbose = FALSE)
-      ))
-      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 3000,verbose=F)
-      return(one)
-    })
+    if(F){
+      Dlist <- lapply(Dlist,function(one){
+        bID <- one@meta.data[1,batch]
+        message("\t\t",bID)
+        one <- suppressMessages(suppressWarnings(
+          SCTransform(one,method = 'glmGamPoi',
+                      new.assay.name=assayName,
+                      return.only.var.genes = FALSE,
+                      verbose = FALSE)
+        ))
+        #one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 5000,verbose=F)
+        return(one)
+      })#,BPPARAM = MulticoreParam(workers=2)
+    }else{
+      Dlist <- bplapply(1:length(Dlist),function(i){
+        bID <- Dlist[[i]]@meta.data[1,batch]
+        message("\t\t",bID)
+        one <- suppressMessages(suppressWarnings(
+          SCTransform(Dlist[[i]],vst.flavor="v2",#method = 'glmGamPoi',
+                      new.assay.name=assayName,
+                      return.only.var.genes = FALSE,
+                      verbose = FALSE)
+        ))
+        #one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 5000,verbose=F)
+        return(one)
+      },BPPARAM = MulticoreParam(workers=5))#
+    }
+    message("\tFinding Common Highly Variable Features ...")
+    minN <- 2000
+    allGene <- NULL
+    for(one in Dlist){
+      if(is.null(allGene)) allGene <- rownames(one@assays[[assayName]]@scale.data)
+      else allGene <- intersect(allGene,rownames(one@assays[[assayName]]@scale.data))
+      if(length(allGene)<minN)
+        stop("Cannot find enough scaled genes!")
+    }
+    selGene <- c()
+    startN <- 3000
+    while(length(selGene)<minN){
+      message("\t\tSearch gene: ",startN)
+      selGene <- c()
+      for(one in Dlist){
+        one <- FindVariableFeatures(one,selection.method="vst",nfeatures=startN,verbose=F)
+        if(length(selGene)==0) selGene <- VariableFeatures(one)
+        else selGene <- intersect(selGene,VariableFeatures(one))
+        if(length(selGene)<minN) break
+      }
+      selGene <- intersect(selGene,allGene)
+      startN <- startN + 500
+      if(startN>15000){
+        warning("The common highly variable genes is limited: ",length(selGene))
+        break
+      }
+    }
     message("\tsaving ...")
     D <- NULL
     for(i in 1:length(Dlist)){
       message("\t\t",Dlist[[1]]@meta.data[1,batch])
-      oneD <- data.frame(t(Dlist[[1]]@assays[[assayName]]@scale.data[Dlist[[1]]@assays[[assayName]]@var.features,]))
+      oneD <- data.frame(t(Dlist[[1]]@assays[[assayName]]@scale.data[selGene,]))
       if(is.null(D)) D <-oneD
       else{
-        D <- dplyr::bind_rows(D,oneD)
+        D <- rbind(D,oneD)
+        #print(peakRAM(D <- dplyr::bind_rows(D,oneD)))
       }
       Dlist[[1]] <- NULL
       #print(gc())
@@ -189,7 +235,7 @@ main <- function(){
   if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
   strOut <- args[2]
   if(length(args)<3){
-    print(system.time(processPCA(strH5ad,strOut,batchKey)))
+    print(peakRAM(processPCA(strH5ad,strOut,batchKey)))
     return()
   }
   strConfig <- args[3]
@@ -200,7 +246,7 @@ main <- function(){
   }
   if(length(args)>3) batchKey <- args[4]
   #print(system.time(processH5ad(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
-  print(system.time(processSCT(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
+  print(peakRAM(processSCT(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
 }
 
 main()
