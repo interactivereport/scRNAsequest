@@ -102,8 +102,7 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
     assayName <- "sctHarmony"
     dimN <- 50
     X <- getX(strH5ad)
-    gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
-    rownames(X) <- names(gID) #gsub("_","-",rownames(X))
+    rownames(X) <- gsub("_","-",rownames(X))
     D <- CreateSeuratObject(counts=X,
                             project=assayName,
                             meta.data=getobs(strH5ad))
@@ -113,6 +112,7 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
     #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
     rm(D)
     message("\tSCT ",length(Dlist)," samples ...")
+    startN <- 3000
     if(F){
       Dlist <- lapply(Dlist,function(one){
         bID <- one@meta.data[1,batch]
@@ -136,32 +136,33 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
                       return.only.var.genes = FALSE,
                       verbose = FALSE)
         ))
-        #one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 5000,verbose=F)
+        one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = startN,verbose=F)
         return(one)
-      },BPPARAM = MulticoreParam(workers=min(length(Dlist),parallelly::availableCores()-2),tasks=length(Dlist)))#
+      },BPPARAM = MulticoreParam(workers=5,tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
     }
-    message("\tFinding Common Highly Variable Features ...")
-    minN <- 2000
+    message("\tFinding Union Highly Variable Features ...")
+    minN <- 5000
     allGene <- NULL
+    selGene <- NULL
     for(one in Dlist){
       if(is.null(allGene)) allGene <- rownames(one@assays[[assayName]]@scale.data)
       else allGene <- intersect(allGene,rownames(one@assays[[assayName]]@scale.data))
       if(length(allGene)<minN)
-        stop("Cannot find enough scaled genes!")
+        stop("Cannot find enough common scaled genes!")
+      if(is.null(selGene)) selGene <- VariableFeatures(one)
+      else selGene <- unique(c(selGene,VariableFeatures(one)))
     }
-    selGene <- c()
-    startN <- 3000
+    selGene <- intersect(selGene,allGene)
     while(length(selGene)<minN){
+      startN <- startN+500
       message("\t\tSearch gene: ",startN)
-      selGene <- c()
+      selGene <- NULL
       for(one in Dlist){
         one <- FindVariableFeatures(one,selection.method="vst",nfeatures=startN,verbose=F)
-        if(length(selGene)==0) selGene <- VariableFeatures(one)
-        else selGene <- intersect(selGene,VariableFeatures(one))
-        if(length(selGene)<minN) break
+        if(is.null(selGene)) selGene <- VariableFeatures(one)
+        else selGene <- unique(c(selGene,VariableFeatures(one)))
       }
       selGene <- intersect(selGene,allGene)
-      startN <- startN + 500
       if(startN>15000){
         warning("The common highly variable genes is limited: ",length(selGene))
         break

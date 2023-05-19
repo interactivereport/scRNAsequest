@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools
+import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
@@ -84,17 +84,19 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
   sctD=None
   for oneH5ad in h5adList:
     print("***** batch: %s *****"%os.path.basename(oneH5ad))
-    oneCSV = re.sub("h5ad$","csv",oneH5ad)
+    oneCSV = re.sub(".h5ad$",".csv",oneH5ad)
     if not os.path.isfile(oneCSV):
       runOneSCT(oneH5ad,strConfig,oneCSV)
     if not os.path.isfile(oneCSV):
       msgError("\tERROR: %s sctHarmony failed in SCT step!"%os.path.basename(oneH5ad))
     oneD=sc.read_csv(oneCSV)
     print("***** finishing  %d cells and %d genes *****\n\n\n\n"%(oneD.shape[0],oneD.shape[1]))
+    #exit()
     if sctD is None:
       sctD = oneD
     else:
-      sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None,join='outer')
+      sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None)#,join='outer'
+      print("After merge: %d cells %d genes"%(sctD.shape[0],sctD.shape[1]))
   sctD.X[np.isnan(sctD.X)] = 0
   print("Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
   batchV=sc.read_h5ad(strH5ad,backed="r").obs[batchKey].copy()
