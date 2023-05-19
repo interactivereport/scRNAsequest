@@ -47,7 +47,8 @@ def splitBatch(strH5ad,strPCA):
       sID=[]
       cellN=0
       batchN=0
-      sName=random.choices(sampleCellN.index,k=sampleCellN.shape[0])
+      sName=list(sampleCellN.index)
+      random.shuffle(sName)
       for one in sName:
         sID.append(one)
         cellN+=sampleCellN[one]
@@ -90,13 +91,13 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
     if not os.path.isfile(oneCSV):
       msgError("\tERROR: %s sctHarmony failed in SCT step!"%os.path.basename(oneH5ad))
     oneD=sc.read_csv(oneCSV)
-    print("***** finishing  %d cells and %d genes *****\n\n\n\n"%(oneD.shape[0],oneD.shape[1]))
+    print("***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
     #exit()
     if sctD is None:
       sctD = oneD
     else:
       sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None)#,join='outer'
-      print("After merge: %d cells %d genes"%(sctD.shape[0],sctD.shape[1]))
+      print("After merge: %d cells %d genes\n\n"%(sctD.shape[0],sctD.shape[1]))
   sctD.X[np.isnan(sctD.X)] = 0
   print("Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
   batchV=sc.read_h5ad(strH5ad,backed="r").obs[batchKey].copy()

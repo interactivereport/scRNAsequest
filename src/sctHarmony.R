@@ -138,7 +138,8 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
         ))
         one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = startN,verbose=F)
         return(one)
-      },BPPARAM = MulticoreParam(workers=5,tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
+      },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),parallelly::availableCores()-2),
+                                 tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
     }
     message("\tFinding Union Highly Variable Features ...")
     minN <- 5000
