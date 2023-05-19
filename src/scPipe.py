@@ -1154,7 +1154,7 @@ def formatDEG(prefix):
       print("\tprocessing: ",f)
       tab = pd.read_csv(strCSV).iloc[:,0:4]
       tab.columns = ["gene","log2fc","pval","qval"]
-      tags = f[:-4].split("_")
+      tags = f[:-4].split("__")
       tab["contrast"] = tags[0]
       tab["tags"] = ";".join(tags[1:])
       csv += [tab]

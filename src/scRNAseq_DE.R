@@ -229,9 +229,9 @@ scRNAseq_DE_one <- function(
     message("===== ",env$method,":",cluster_interest," =====")
     strOut <- env$output
     if(!is.null(env$column_group)){
-      strF <- file.path(strOut,paste0(env$grp_alt,".vs.",env$grp_ref,"_",
-                                      gsub("_",".",paste(env$column_cluster,cluster_interest,sep=":")),"_",
-                                      env$method,
+      strF <- file.path(strOut,paste0(gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref)),"__",
+                                      gsub("__","_",paste(env$column_cluster,cluster_interest,sep=":")),"__",
+                                      gsub("__","_",env$method),
                                       ".csv"))
     }else{
       strF <- file.path(strOut,paste0(cluster_interest,".vs.Rest","_",gsub("_",".",env$column_cluster),".csv"))
