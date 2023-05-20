@@ -127,7 +127,7 @@ def sctHarmony(strH5ad,strConfig,strCSV,batchKey):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
   meta = pd.read_csv(strCSV,index_col=0,header=0)
   meta.index = list(meta.index)
-  meta.to_csv(strCSV)
+  #meta.to_csv(strCSV)
   print("sctHarmony completed")
   return(meta)
 
