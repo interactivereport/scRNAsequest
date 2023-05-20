@@ -169,6 +169,7 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
         break
       }
     }
+    message("\t\t",length(selGene)," features")
     message("\tsaving ...")
     D <- NULL
     for(i in 1:length(Dlist)){
@@ -201,7 +202,7 @@ processPCA <- function(strPCA,strOut,batch){
                           project="sctHarmony",
                           meta.data=meta)
   D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="RNA")
-  saveRDS(D,"sctHarmony.rds")
+  #saveRDS(D,"sctHarmony.rds")
   message("Find Neighbor ...")
   D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
   message("UMAP ...")

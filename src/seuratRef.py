@@ -44,7 +44,7 @@ def splitBatch(strH5ad,strCSV):
       print("Reading ...")
       D=ad.read_h5ad(strH5ad)
       sampleCellN = D.obs.library_id.value_counts()
-      print(sampleCellN)
+      #print(sampleCellN)
       sID=[]
       cellN=0
       batchN=0
