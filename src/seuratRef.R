@@ -126,7 +126,7 @@ processSCTref <- function(strH5ad,batch,refList,strOut){
   D <- NULL
   for(one in names(refList)){
     message("*** Mapping ",one)
-    X <- print(peakRAM(processSCTrefOne(strH5ad,batch,refList[[one]])))
+    print(peakRAM(X <- processSCTrefOne(strH5ad,batch,refList[[one]])))
     if(one!=refTmpName){
       cNames <- gsub("^predicted",paste0("predicted.",one),colnames(X))
       cNames[!grepl("^cID$|^predicted",cNames)] <- 
