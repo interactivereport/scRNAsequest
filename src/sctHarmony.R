@@ -238,8 +238,8 @@ processPCA <- function(strPCA,strOut,batch){
     tryCatch(data.table::fwrite(X,strOut),
              error=function(cond){
                message("\tSaving error, try again:",tryN," times")
+               file.remove(strOut)
              })
-    file.remove(strOut)
     Sys.sleep(5)
     tryN <- tryN+1
   }
