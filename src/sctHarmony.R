@@ -241,6 +241,7 @@ processPCA <- function(strPCA,strOut,batch){
                file.remove(strOut)
              })
     Sys.sleep(5)
+    if(file.exists(strOut)) break
     tryN <- tryN+1
   }
 }
