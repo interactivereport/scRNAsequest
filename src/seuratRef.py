@@ -51,7 +51,7 @@ def splitBatch(strH5ad,strCSV):
       for one in list(sampleCellN.index):
         sID.append(one)
         cellN+=sampleCellN[one]
-        print(cellN)
+        #print(cellN)
         if cellN>batchCell or one==list(sampleCellN.index)[-1]:
           print("batch %d: %d samples"%(batchN,len(sID)))
           strH5ad=strOut+"tmp_%d.h5ad"%batchN

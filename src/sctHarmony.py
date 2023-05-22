@@ -97,7 +97,7 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
       sctD = oneD
     else:
       sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None)#,join='outer'
-      print("After merge: %d cells %d genes\n\n"%(sctD.shape[0],sctD.shape[1]))
+    print("After merge: %d cells %d genes\n\n"%(sctD.shape[0],sctD.shape[1]))
   sctD.X[np.isnan(sctD.X)] = 0
   print("Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
   batchV=sc.read_h5ad(strH5ad,backed="r").obs[batchKey].copy()

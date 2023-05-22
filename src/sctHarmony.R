@@ -138,9 +138,10 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
         ))
         one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = startN,verbose=F)
         return(one)
-      },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),parallelly::availableCores()-2),
+      },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
                                  tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
     }
+    #saveRDS(Dlist,"sctHarmony.rds")
     message("\tFinding Union Highly Variable Features ...")
     minN <- 5000
     allGene <- NULL
@@ -150,6 +151,7 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
       else allGene <- intersect(allGene,rownames(one@assays[[assayName]]@scale.data))
       if(length(allGene)<minN)
         stop("Cannot find enough common scaled genes!")
+      #message("\t\tVariable Features number: ",length(VariableFeatures(one)))
       if(is.null(selGene)) selGene <- VariableFeatures(one)
       else selGene <- unique(c(selGene,VariableFeatures(one)))
     }

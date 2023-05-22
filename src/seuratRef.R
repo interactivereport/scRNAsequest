@@ -98,7 +98,8 @@ processSCTrefOne <- function(strH5ad,batch,config){
       )
     ))
     return(oneD)
-  },BPPARAM = MulticoreParam(workers=min(length(Dlist),parallelly::availableCores()-2),tasks=length(Dlist)))
+  },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
+                             tasks=length(Dlist)))
   meta = extractX(Dlist,batch)
   return(meta)
 }
