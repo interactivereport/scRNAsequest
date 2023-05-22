@@ -194,58 +194,40 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
 }
 processPCA <- function(strPCA,strOut,batch){
   message("starting Harmony ...")
-  strtemp <- paste0(strOut,".rds")
-  if(file.exists(strtemp)){
-    message("pickup revious results: ",strtemp)
-    message("if you want to rerun the harmony, please rename/remove the above file")
-    X <- readRDS(strtemp)
-  }else{
-    PCA <- getobsm(strPCA,"X_pca")
-    meta <- getobs(strPCA)
-    PCA <- harmony::HarmonyMatrix(PCA,meta,batch,do_pca=FALSE,verbose=FALSE)
-    message("Finishing Harmony ...")
-    dimN <- ncol(PCA)
-    colnames(PCA) <- paste0("pca_",1:dimN)
-    D <- CreateSeuratObject(counts=matrix(0,nrow=2,ncol=nrow(PCA),dimnames=list(paste0("G",1:2),rownames(PCA))),
-                            project="sctHarmony",
-                            meta.data=meta)
-    D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="RNA")
-    #saveRDS(D,"sctHarmony.rds")
-    message("Find Neighbor ...")
-    D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
-    message("UMAP ...")
-    D <- RunUMAP(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
-    message("tSNE ...")
-    tryCatch({D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)},
-             error=function(cond){
-               message("\terror:")
-               message(cond)
-               message()
-               })
-    #D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
-    message("Clustering ...")
-    D <- FindClusters(D,verbose = FALSE)
-    
-    message("saving ...")
-    X <- cbind(cID=row.names(D@meta.data),
-               D@reductions$harmony@cell.embeddings,
-               D@reductions$umap@cell.embeddings,
-               D@reductions$tsne@cell.embeddings,
-               D@meta.data[,c("seurat_clusters",batch)])
-    colnames(X) <- gsub("UMAP","umap",gsub("harmony","pca",gsub("seurat_clusters","sctHarmony_cluster",colnames(X))))
-    saveRDS(X,strtemp)
-  }
-  tryN <- 1
-  while(tryN<4){
-    tryCatch(data.table::fwrite(X,strOut),
-             error=function(cond){
-               message("\tSaving error, try again:",tryN," times")
-               file.remove(strOut)
-             })
-    Sys.sleep(5)
-    if(file.exists(strOut)) break
-    tryN <- tryN+1
-  }
+  PCA <- getobsm(strPCA,"X_pca")
+  meta <- getobs(strPCA)
+  PCA <- harmony::HarmonyMatrix(PCA,meta,batch,do_pca=FALSE,verbose=FALSE)
+  message("Finishing Harmony ...")
+  dimN <- ncol(PCA)
+  colnames(PCA) <- paste0("pca_",1:dimN)
+  D <- CreateSeuratObject(counts=matrix(0,nrow=2,ncol=nrow(PCA),dimnames=list(paste0("G",1:2),rownames(PCA))),
+                          project="sctHarmony",
+                          meta.data=meta)
+  D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="RNA")
+  #saveRDS(D,"sctHarmony.rds")
+  message("Find Neighbor ...")
+  D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
+  message("UMAP ...")
+  D <- RunUMAP(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
+  message("tSNE ...")
+  tryCatch({D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)},
+           error=function(cond){
+             message("\terror:")
+             message(cond)
+             message()
+           })
+  #D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
+  message("Clustering ...")
+  D <- FindClusters(D,verbose = FALSE)
+  
+  message("saving ...")
+  X <- cbind(#cID=row.names(D@meta.data),
+    D@reductions$harmony@cell.embeddings,
+    D@reductions$umap@cell.embeddings,
+    D@reductions$tsne@cell.embeddings,
+    D@meta.data[,c("seurat_clusters",batch)])
+  colnames(X) <- gsub("UMAP","umap",gsub("harmony","pca",gsub("seurat_clusters","sctHarmony_cluster",colnames(X))))
+  saveRDS(X,strOut)
 }
 
 main <- function(){

@@ -7,6 +7,9 @@ import pandas as pd
 import anndata as ad
 import scanpy as sc
 import numpy as np
+import rpy2.robjects as robjects
+from rpy2.robjects import pandas2ri
+readRDS = robjects.r['readRDS']
 
 print=functools.partial(print, flush=True)
 
@@ -109,25 +112,22 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
   print("\tThe SCT step for all samples are completed!")
   return None
 
-def runRharmony(strPCA,strCSV):
+def runRharmony(strPCA,strMeta):
   cmd = "Rscript %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
-                              strPCA,strCSV,os.path.dirname(strCSV))
+                              strPCA,strMeta,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strCSV,batchKey):
-  if os.path.isfile(strCSV):
-    print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strCSV)
-    meta = pd.read_csv(strCSV,index_col=0,header=0)
-    meta.index = list(meta.index)
+def sctHarmony(strH5ad,strConfig,strMeta,batchKey):
+  if os.path.isfile(strMeta):
+    print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
+    meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
     return(meta)
-  strPCA = re.sub("csv$","pca.h5ad",strCSV)
+  strPCA = re.sub("rds$","pca.h5ad",strMeta)
   sct(strH5ad,strConfig,strPCA,batchKey)
-  runRharmony(strPCA,strCSV)
-  if not os.path.isfile(strCSV):
+  runRharmony(strPCA,strMeta)
+  if not os.path.isfile(strMeta):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
-  meta = pd.read_csv(strCSV,index_col=0,header=0)
-  meta.index = list(meta.index)
-  #meta.to_csv(strCSV)
+  meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
   print("sctHarmony completed")
   return(meta)
 
@@ -140,8 +140,8 @@ def main():
   strH5ad = sys.argv[1]
   strConfig=sys.argv[2]
 
-  strCSV = "%s.csv"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
-  meta = sctHarmony(strH5ad,strConfig,strCSV,batchKey)
+  strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
+  meta = sctHarmony(strH5ad,strConfig,strMeta,batchKey)
 
   for one in meta.columns:
     if meta[one].nunique()<100:
@@ -158,7 +158,7 @@ def main():
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    D.write(re.sub("csv$","h5ad",strCSV))
+    D.write(re.sub("rds$","h5ad",strMeta))
   print("sctHarmony process completed!")
 
 if __name__ == "__main__":
