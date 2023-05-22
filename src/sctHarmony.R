@@ -94,103 +94,62 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   message("complete in R")
 }
 processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
-  strtemp <- paste0(strOut,".rds")
-  if(file.exists(strtemp)){
-    message("pickup revious results: ",strtemp)
-    X <- readRDS(strtemp)
+  assayName <- "sctHarmony"
+  dimN <- 50
+  X <- getX(strH5ad)
+  rownames(X) <- gsub("_","-",rownames(X))
+  D <- CreateSeuratObject(counts=X,
+                          project=assayName,
+                          meta.data=getobs(strH5ad))
+  cellN <- dim(D)[2]
+  rm(X)
+  Dlist <- SplitObject(D,split.by=batch)
+  #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
+  rm(D)
+  message("\tSCT ",length(Dlist)," samples ...")
+  startN <- 3000
+  if(F){
+    Dlist <- lapply(Dlist,function(one){
+      bID <- one@meta.data[1,batch]
+      message("\t\t",bID)
+      one <- suppressMessages(suppressWarnings(
+        SCTransform(one,method = 'glmGamPoi',
+                    new.assay.name=assayName,
+                    return.only.var.genes = FALSE,
+                    verbose = FALSE)
+      ))
+      #one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 5000,verbose=F)
+      return(one)
+    })#,BPPARAM = MulticoreParam(workers=2)
   }else{
-    assayName <- "sctHarmony"
-    dimN <- 50
-    X <- getX(strH5ad)
-    rownames(X) <- gsub("_","-",rownames(X))
-    D <- CreateSeuratObject(counts=X,
-                            project=assayName,
-                            meta.data=getobs(strH5ad))
-    cellN <- dim(D)[2]
-    rm(X)
-    Dlist <- SplitObject(D,split.by=batch)
-    #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
-    rm(D)
-    message("\tSCT ",length(Dlist)," samples ...")
-    startN <- 3000
-    if(F){
-      Dlist <- lapply(Dlist,function(one){
-        bID <- one@meta.data[1,batch]
-        message("\t\t",bID)
-        one <- suppressMessages(suppressWarnings(
-          SCTransform(one,method = 'glmGamPoi',
-                      new.assay.name=assayName,
-                      return.only.var.genes = FALSE,
-                      verbose = FALSE)
-        ))
-        #one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = 5000,verbose=F)
-        return(one)
-      })#,BPPARAM = MulticoreParam(workers=2)
-    }else{
-      Dlist <- bplapply(1:length(Dlist),function(i){
-        bID <- Dlist[[i]]@meta.data[1,batch]
-        message("\t\t",bID)
-        one <- suppressMessages(suppressWarnings(
-          SCTransform(Dlist[[i]],vst.flavor="v2",#method = 'glmGamPoi',
-                      new.assay.name=assayName,
-                      return.only.var.genes = FALSE,
-                      verbose = FALSE)
-        ))
-        one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = startN,verbose=F)
-        return(one)
-      },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
-                                 tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
-    }
-    #saveRDS(Dlist,"sctHarmony.rds")
-    message("\tFinding Union Highly Variable Features ...")
-    minN <- 5000
-    allGene <- NULL
-    selGene <- NULL
-    for(one in Dlist){
-      if(is.null(allGene)) allGene <- rownames(one@assays[[assayName]]@scale.data)
-      else allGene <- intersect(allGene,rownames(one@assays[[assayName]]@scale.data))
-      if(length(allGene)<minN)
-        stop("Cannot find enough common scaled genes!")
-      #message("\t\tVariable Features number: ",length(VariableFeatures(one)))
-      if(is.null(selGene)) selGene <- VariableFeatures(one)
-      else selGene <- unique(c(selGene,VariableFeatures(one)))
-    }
-    selGene <- intersect(selGene,allGene)
-    while(length(selGene)<minN){
-      startN <- startN+500
-      message("\t\tSearch gene: ",startN)
-      selGene <- NULL
-      for(one in Dlist){
-        one <- FindVariableFeatures(one,selection.method="vst",nfeatures=startN,verbose=F)
-        if(is.null(selGene)) selGene <- VariableFeatures(one)
-        else selGene <- unique(c(selGene,VariableFeatures(one)))
-      }
-      selGene <- intersect(selGene,allGene)
-      if(startN>15000){
-        warning("The common highly variable genes is limited: ",length(selGene))
-        break
-      }
-    }
-    message("\t\t",length(selGene)," features")
-    message("\tsaving ...")
-    D <- NULL
-    for(i in 1:length(Dlist)){
-      message("\t\t",Dlist[[1]]@meta.data[1,batch])
-      oneD <- data.frame(t(Dlist[[1]]@assays[[assayName]]@scale.data[selGene,]))
-      if(is.null(D)) D <-oneD
-      else{
-        D <- rbind(D,oneD)
-        #print(peakRAM(D <- dplyr::bind_rows(D,oneD)))
-      }
-      Dlist[[1]] <- NULL
-      #print(gc())
-    }
-    rm(Dlist)
-    D[is.na(D)] <- 0
-    D <- cbind(cID=rownames(D),D)
-    data.table::fwrite(D,strOut)
+    Dlist <- bplapply(1:length(Dlist),function(i){
+      bID <- Dlist[[i]]@meta.data[1,batch]
+      message("\t\t",bID)
+      one <- suppressMessages(suppressWarnings(
+        SCTransform(Dlist[[i]],vst.flavor="v2",#method = 'glmGamPoi',
+                    new.assay.name=assayName,
+                    return.only.var.genes = FALSE,
+                    verbose = FALSE)
+      ))
+      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = startN,verbose=F)
+      return(one)
+    },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
+                               tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
   }
-  
+  message("\tFinding Highly Variable Features by SelectIntegrationFeatures ...")
+  selG <- SelectIntegrationFeatures(Dlist,nfeatures=10000)
+  message("\t\t",length(selGene)," features")
+  message("\tsaving ...")
+  D <- NULL
+  for(i in 1:length(Dlist)){
+    message("\t\t",Dlist[[1]]@meta.data[1,batch])
+    oneD <- data.frame(t(Dlist[[1]]@assays[[assayName]]@scale.data[selGene,]),check.names=F)
+    if(is.null(D)) D <- oneD
+    else D <- rbind(D,oneD)
+    Dlist[[1]] <- NULL
+  }
+  rm(Dlist)
+  saveRDS(D,strOut)
 }
 processPCA <- function(strPCA,strOut,batch){
   message("starting Harmony ...")

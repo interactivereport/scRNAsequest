@@ -72,9 +72,9 @@ def splitBatch(strH5ad,strPCA):
       del D
   return(h5adList)
 
-def runOneSCT(oneH5ad,strConfig,oneCSV):
+def runOneSCT(oneH5ad,strConfig,strSCT):
   cmd = "Rscript %s %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
-                              oneH5ad,oneCSV,strConfig,os.path.dirname(oneCSV))
+                              oneH5ad,strSCT,strConfig,os.path.dirname(strSCT))
   subprocess.run(cmd,shell=True,check=True)
 
 def sct(strH5ad,strConfig,strPCA,batchKey):
@@ -88,14 +88,13 @@ def sct(strH5ad,strConfig,strPCA,batchKey):
   sctD=None
   for oneH5ad in h5adList:
     print("***** batch: %s *****"%os.path.basename(oneH5ad))
-    oneCSV = re.sub(".h5ad$",".csv",oneH5ad)
-    if not os.path.isfile(oneCSV):
-      runOneSCT(oneH5ad,strConfig,oneCSV)
-    if not os.path.isfile(oneCSV):
+    strSCT = re.sub(".h5ad$",".rds",oneH5ad)
+    if not os.path.isfile(strSCT):
+      runOneSCT(oneH5ad,strConfig,strSCT)
+    if not os.path.isfile(strSCT):
       msgError("\tERROR: %s sctHarmony failed in SCT step!"%os.path.basename(oneH5ad))
-    oneD=sc.read_csv(oneCSV)
+    oneD=ad.AnnData(pandas2ri.rpy2py_dataframe(readRDS(strSCT)))
     print("***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
-    #exit()
     if sctD is None:
       sctD = oneD
     else:
