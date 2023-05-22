@@ -77,8 +77,11 @@ def batchRef(strH5ad,strConfig,strCSV):
   if os.path.isfile(strCSV):
     print("Using previous SeuratRef results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strCSV)
     meta = pd.read_csv(strCSV,index_col=0,header=0)
-    meta.index = list(meta.index)
-    return(meta)
+    if meta.shape[0]<10:
+      os.remove(strCSV)
+    else:
+      meta.index = list(meta.index)
+      return(meta)
   h5adList = splitBatch(strH5ad,strCSV)
   if len(h5adList)==0:
     msgError("No h5ad!")
