@@ -1001,11 +1001,6 @@ def combine(mIDs,prefix,config):
   if not "SCT" in CKmethods:
     Exit("SCT is missing! and it is required expression for visualization!")
 
-  cmd="Rscript %s/src/kBET.R %s %s"%(strPipePath,prefix,",".join(CKmethods))
-  submit_cmd({"kBET":cmd,
-              "silhouette":"%s/src/silhouette.py %s %s"%(strPipePath,prefix,",".join(CKmethods))},
-            config)
-
   print("combining all methods results ...")
   D = integrateH5ad("%s.h5ad"%os.path.join(config['output'],"SCT",config["prj_name"]),
     CKmethods,prefix,config.get("major_cluster_rate"),config.get("ref_name"))
@@ -1017,6 +1012,12 @@ def combine(mIDs,prefix,config):
     warnings.simplefilter("ignore")
     D.write("%s.h5ad"%prefix)
     Draw.write("%s_raw_added.h5ad"%prefix)
+    
+  print("kBET & silhouette evaluation ...")
+  submit_cmd({"kBET":"Rscript %s/src/kBET.R %s.h5ad %s/evaluation/kBet.pdf"%(strPipePath,prefix,os.path.dirname(prefix)),
+              "silhouette":"python -u %s/src/silhouette.py %s.h5ad %s/evaluation/silhouette.pdf"%(strPipePath,prefix,os.path.dirname(prefix))},
+            config)
+  
   return D.uns.get('scaleF')
 def integrateH5ad(strH5ad,methods,prefix,majorR=None,ref_name=None):
   D = ad.read_h5ad(strH5ad)

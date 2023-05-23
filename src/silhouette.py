@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 from sklearn.metrics import silhouette_samples
-import os, re, sys
+import os, re, sys, multiprocessing
 import matplotlib.pyplot as plt
 
 def msgError(msg):
@@ -35,6 +35,20 @@ def calc_sil_pca50(prefix,oneM):
   sil_coeff = silhouette_samples(X=adata.obsm['X_pca'][:, :50], labels=np.array(adata.obs[cKey[0]].values))
   return oneM,sil_coeff
 
+def cal_sil_pca50_one(pcaKey,strH5ad):
+  k = re.sub("^X_|_pca","",pcaKey)
+  if k=='pca':
+    k="raw"
+  sil_coeff = None
+  adata = sc.read(strH5ad,backed=True)
+  obs = adata.obs.copy()
+  X = adata.obsm[pcaKey].copy()
+  cKey=[one for one in obs.columns if re.search('^%s.*cluster$|^%s.*louvain$'%(k,k),one,re.IGNORECASE)]
+  if len(cKey)>0:
+    print("\t%s: %s"%(pcaKey,cKey[0]))
+    sil_coeff = silhouette_samples(X=X[:, :50], labels=np.array(obs[cKey[0]].values))
+  return k,sil_coeff
+
 def make_df(i):
   ## make individual coeff_pca50 to a pandas df
   df0 = pd.DataFrame(i[1])
@@ -51,11 +65,17 @@ def setupDir(strOut):
 def main():
   print("starting silhouette evaluation ...")
   if len(sys.argv)<3:
-    msgError("ERROR: project prefix and methods required!")
-  prefix = sys.argv[1]
-  methods = sys.argv[2].split(",")
+    msgError("ERROR: project final h5ad and output are required!")
+  strH5ad = sys.argv[1]
+  strPDF = sys.argv[2]
   
-  coeff_pca50 = [one for one in [calc_sil_pca50(prefix,m) for m in methods] if one[1] is not None]
+  PCAkey = [(one,strH5ad) for one in sc.read(strH5ad,backed=True).obsm.keys() if '_pca' in one]
+  print(PCAkey)
+  print(len(PCAkey))
+  with multiprocessing.Pool(processes=len(PCAkey)) as pool:
+    coeff_pca50 = pool.starmap(cal_sil_pca50_one,PCAkey)
+  coeff_pca50 = [one for one in coeff_pca50 if one[1] is not None]
+
   coeff_pca50_dfs = list(map(make_df, coeff_pca50))
   ## bind
   coeff_pca50_df = pd.concat(coeff_pca50_dfs)
@@ -63,7 +83,7 @@ def main():
   ax = coeff_pca50_df.boxplot(by='method',rot=90)
   ax.set_title("Silhouette_coefficients")
   plt.grid()
-  strPDF = "%s_Silhouette_boxplot_pc50.pdf"%os.path.join(os.path.dirname(prefix),'evaluation',os.path.basename(prefix))
+  #strPDF = "%s_Silhouette_boxplot_pc50.pdf"%os.path.join(os.path.dirname(prefix),'evaluation',os.path.basename(prefix))
   setupDir(os.path.dirname(strPDF))
   plt.savefig(strPDF,bbox_inches="tight")
   plt.close()
