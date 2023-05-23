@@ -36,7 +36,7 @@ core: 32
 memory: 480G #if provided (e.g. 100G), it will be used to request cluster schedulare  
 overwrite: False
 major_cluster_rate: 0.7 # the proportion of cells of an integration cluster to be assigned to a seurat reference label
-batchCell: 2000000 # the number of cells to be put into one batch to save memory
+batchCell: 2000000 # the number of cells to be put into one batch to save memory (please remove/rename the 'tmp' folder in sctHarmony/SeuratRef, if rerun is needed)
 harmonyBatchGene: 5000 # the number of high variable genes for each batch during sctHarmony step
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation

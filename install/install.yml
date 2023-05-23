@@ -77,3 +77,4 @@ dependencies:
   - pdf2image=1.16.3
   - pillow=9.2.0
   - r-globals=0.16.1
+  - pyarrow=10.0.1

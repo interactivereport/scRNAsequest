@@ -7,7 +7,7 @@ PKGloading <- function(){
   require(reshape2)
   require(peakRAM)
   require(BiocParallel)
-  options(future.globals.maxSize=8000*1024^2) 
+  options(future.globals.maxSize=8000*1024^2,check.names=F) 
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
 updateRef <- function(ref,config){
@@ -140,12 +140,15 @@ processSCTref <- function(strH5ad,batch,refList,strOut){
       D <- merge(D,X,by="cID",all=T)
     }
   }
-  data.table::fwrite(D,strOut)
+  saveRDS(data.frame(row.names=D[,"cID"],
+                     D[,grep("cID",colnames(D),invert=T,value=T)],
+                     check.names=F),strOut)
+  #data.table::fwrite(D,strOut)
   plotCrossAnno(D,names(refList),strOut)
 }
 plotCrossAnno <- function(D,refID,strOut){
   if(length(refID)==1) return()
-  pdf(gsub("csv$","pdf",strOut),width=8,height=8)
+  pdf(paste0(strOut,".pdf"),width=8,height=8)
   for(i in 1:(length(refID)-1)){
     for(j in (i+1):length(refID)){
       sel1 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("predicted.",refID[i]),colnames(D))]
