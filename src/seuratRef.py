@@ -28,10 +28,7 @@ def inputCheck(args):
     return False
   return config
 
-def splitBatch(strH5ad,strCSV):
-  with open(strPipePath+"/sys.yml","r") as f:
-    sysCon = yaml.safe_load(f)
-  batchCell= sysCon.get("batchCell")
+def splitBatch(strH5ad,strCSV,batchCell):
   if batchCell is None:
     print("Batch process (batchCell) is not set in sys.yml, large amount of memory might be required")
     h5adList=[strH5ad]
@@ -73,7 +70,7 @@ def runOneBatch(oneH5ad,strConfig,oneCSV):
                             oneH5ad,strConfig,oneCSV,re.sub("csv$","log",oneCSV))
   subprocess.run(cmd,shell=True,check=True)
   
-def batchRef(strH5ad,strConfig,strCSV):
+def batchRef(strH5ad,strConfig,strCSV,batchCell):
   if os.path.isfile(strCSV):
     print("Using previous SeuratRef results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strCSV)
     meta = pd.read_csv(strCSV,index_col=0,header=0)
@@ -82,7 +79,7 @@ def batchRef(strH5ad,strConfig,strCSV):
     else:
       meta.index = list(meta.index)
       return(meta)
-  h5adList = splitBatch(strH5ad,strCSV)
+  h5adList = splitBatch(strH5ad,strCSV,batchCell)
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
@@ -116,7 +113,7 @@ def main():
   D = ad.read_h5ad(strH5ad,backed="r") #,backed=True
   Dbatch = D.obs["library_id"].copy()
   strCSV = "%s.csv"%os.path.join(config["output"],"SeuratRef",config["prj_name"])#strH5ad.replace("raw.h5ad","seuratRef.csv")
-  meta = batchRef(strH5ad,strConfig,strCSV)
+  meta = batchRef(strH5ad,strConfig,strCSV,config.get('batchCell'))
   
   FakeD = pd.DataFrame({"FakeG%d"%i:[0 for j in range(meta.shape[0])] for i in range(2)},
                       index=meta.index)

@@ -93,7 +93,7 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
   data.table::fwrite(X,strOut)
   message("complete in R")
 }
-processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
+processSCT <- function(strH5ad,batch,strOut,geneN){
   assayName <- "sctHarmony"
   dimN <- 50
   X <- getX(strH5ad)
@@ -107,7 +107,7 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
   #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(D)
   message("\tSCT ",length(Dlist)," samples ...")
-  startN <- 3000
+  if(is.null(geneN)) geneN <- 3000
   if(F){
     Dlist <- lapply(Dlist,function(one){
       bID <- one@meta.data[1,batch]
@@ -131,13 +131,13 @@ processSCT <- function(strH5ad,batch,strOut,bPrepSCT){
                     return.only.var.genes = FALSE,
                     verbose = FALSE)
       ))
-      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = startN,verbose=F)
+      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = geneN,verbose=F)
       return(one)
     },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
                                tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
   }
   message("\tFinding Highly Variable Features by SelectIntegrationFeatures ...")
-  selG <- SelectIntegrationFeatures(Dlist,nfeatures=10000)
+  selGene <- SelectIntegrationFeatures(Dlist,nfeatures=geneN)
   message("\t\t",length(selGene)," features")
   message("\tsaving ...")
   D <- NULL
@@ -210,7 +210,7 @@ main <- function(){
   }
   if(length(args)>3) batchKey <- args[4]
   #print(system.time(processH5ad(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
-  print(peakRAM(processSCT(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
+  print(peakRAM(processSCT(strH5ad,batchKey,strOut,config$harmonyBatchGene)))
 }
 
 main()

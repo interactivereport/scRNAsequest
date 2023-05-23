@@ -30,10 +30,7 @@ def inputCheck(args):
     config = yaml.safe_load(f)
   return config
 
-def splitBatch(strH5ad,strPCA):
-  with open(strPipePath+"/sys.yml","r") as f:
-    sysCon = yaml.safe_load(f)
-  batchCell= sysCon.get("batchCell")
+def splitBatch(strH5ad,strPCA,batchCell):
   if batchCell is None:
     print("Batch process (batchCell) is not set in sys.yml, large amount of memory might be required")
     h5adList=[strH5ad]
@@ -77,11 +74,11 @@ def runOneSCT(oneH5ad,strConfig,strSCT):
                               oneH5ad,strSCT,strConfig,os.path.dirname(strSCT))
   subprocess.run(cmd,shell=True,check=True)
 
-def sct(strH5ad,strConfig,strPCA,batchKey):
+def sct(strH5ad,strConfig,strPCA,batchKey,batchCell):
   if os.path.isfile(strPCA):
     print("\tUsing previous sct PCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strPCA)
     return()
-  h5adList = sorted(splitBatch(strH5ad,strPCA))
+  h5adList = sorted(splitBatch(strH5ad,strPCA,batchCell))
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
@@ -116,13 +113,13 @@ def runRharmony(strPCA,strMeta):
                               strPCA,strMeta,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strMeta,batchKey):
+def sctHarmony(strH5ad,strConfig,strMeta,batchKey,batchCell):
   if os.path.isfile(strMeta):
     print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
     return(meta)
   strPCA = re.sub("rds$","pca.h5ad",strMeta)
-  sct(strH5ad,strConfig,strPCA,batchKey)
+  sct(strH5ad,strConfig,strPCA,batchKey,batchCell)
   runRharmony(strPCA,strMeta)
   if not os.path.isfile(strMeta):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
@@ -140,7 +137,7 @@ def main():
   strConfig=sys.argv[2]
 
   strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
-  meta = sctHarmony(strH5ad,strConfig,strMeta,batchKey)
+  meta = sctHarmony(strH5ad,strConfig,strMeta,batchKey,config.get('batchCell'))
 
   for one in meta.columns:
     if meta[one].nunique()<100:
