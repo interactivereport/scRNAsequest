@@ -169,13 +169,13 @@ processPCA <- function(strPCA,strOut,batch){
   D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
   message("UMAP ...")
   D <- RunUMAP(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
-  message("tSNE ...")
-  tryCatch({D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)},
-           error=function(cond){
-             message("\terror:")
-             message(cond)
-             message()
-           })
+  #message("tSNE ...")
+  #tryCatch({D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)},
+  #         error=function(cond){
+  #           message("\terror:")
+  #           message(cond)
+  #           message()
+  #         })
   #D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
   message("Clustering ...")
   D <- FindClusters(D,verbose = FALSE)
