@@ -1,3 +1,4 @@
+#https://github.com/immunogenomics/harmony/issues/41
 PKGloading <- function(){
   require(Seurat)
   require(harmony)
