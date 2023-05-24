@@ -9,13 +9,14 @@ PKGloading <- function(){
 estimateBatch <- function(i,umapList,batchKey){
   tryCatch({
     oneM <- names(umapList)[i]
-    message("\t working on ",oneM)
+    #message("\t working on ",oneM)
     umap <- umapList[[i]]
     batch <- unlist(umap[,batchKey])
     umap <- umap[,colnames(umap)!=batchKey]
     batch.estimate <- kBET::kBET(umap, batch, do.pca=FALSE, plot = FALSE, k0 = 100) ## look at 100 neighbors
     kbet <- data.frame(kBET = batch.estimate$stats$kBET.observed,
                        method = oneM, stringsAsFactors = FALSE)
+    message("\tFinishing ",oneM)
     return(kbet)
   },error=function(e){
     print(e)
@@ -63,6 +64,7 @@ main <- function(){
   strH5ad <- args[1]
   strOut <- args[2]
   umapList <- getUMAP(strH5ad,batchKey)
+  message("\tWorking on ",paste(names(umapList),collapse=", "))
   kBETall <- bind_rows(bplapply(1:length(umapList),estimateBatch,
                                 umapList,batchKey,
                                 BPPARAM = MulticoreParam(workers=min(length(umapList),max(1,parallelly::availableCores()-2)),
