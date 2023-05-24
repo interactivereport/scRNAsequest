@@ -1135,7 +1135,9 @@ def runDEG(strConfig,prefix,config):
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
       scDEGtask = json.load(f)
     umiF = config.get('UMI')
-    if umiF is None:
+    if not config.get('memory') is None:
+      memG=int(re.sub("G$","",config.get('memory')))
+    elif umiF is None:
       memG = math.ceil(os.path.getsize("%s_raw_added.h5ad"%prefix)*50/1e9)
     else:
       memG = math.ceil(os.path.getsize(umiF)*50/1e9)
