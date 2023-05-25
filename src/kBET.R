@@ -1,3 +1,4 @@
+require(peakRAM)
 PKGloading <- function(){
   require(kBET)
   require(ggplot2)
@@ -48,7 +49,12 @@ getUMAP <- function(strH5ad,batchKey){
   for(one in grep("umap",umapKey,value=T)){
     mID <- gsub("^X_|_umap","",one)
     if(mID=="umap") mID <- "raw"
-    uList[[mID]] <- cbind(data.frame(getobsm(strH5ad,one)[rownames(meta),]),meta[,batchKey])
+    X <- getobsm(strH5ad,one)
+    if(sum(apply(X,1,function(x)return(sum(abs(x))))<0.001)>(nrow(X)/4)){
+      message("--> More than a quarter of cells has zero ",mID," UMAP: SKIP! <--")
+      next
+    }
+    uList[[mID]] <- cbind(data.frame(X[rownames(meta),]),meta[,batchKey])
     colnames(uList[[mID]]) <- c(paste0("umap_",1:(ncol(uList[[mID]])-1)),batchKey)
   }
   return(uList)
@@ -71,4 +77,4 @@ main <- function(){
                                                          tasks=length(umapList))))
   plotBatch(kBETall,strOut)
 }
-main()
+print(peakRAM(main()))
