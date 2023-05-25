@@ -7,6 +7,9 @@ import numpy as np
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
+import rpy2.robjects as robjects
+from rpy2.robjects import pandas2ri
+readRDS = robjects.r['readRDS']
 
 def msgError(msg):
   print(msg)
@@ -38,17 +41,17 @@ def main():
   D.var.highly_variable.to_csv(strHVG)
   Dbatch = D.obs["library_id"].copy()
   
-  strCSV = re.sub("_hvg.csv$",".csv",strHVG)#strH5ad.replace("raw.h5ad","liger.csv")
+  strMeta = re.sub("_hvg.csv$",".rds",strHVG)#strH5ad.replace("raw.h5ad","liger.csv")
   cmd = "Rscript %s %s %s %s |& tee %s/LIGER.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"liger.R"),
-                            strH5ad,strHVG,strCSV,os.path.dirname(strCSV))
-  if os.path.isfile(strCSV):
-    print("Using previous LIGER results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strCSV)
+                            strH5ad,strHVG,strMeta,os.path.dirname(strMeta))
+  if os.path.isfile(strMeta):
+    print("Using previous LIGER results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
   else:  
     subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
-  if not os.path.isfile(strCSV):
+  if not os.path.isfile(strMeta):
     msgError("\tERROR: LIGER failed!")
 
-  meta = pd.read_csv(strCSV,index_col=0,header=0)
+  meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))#pd.read_csv(strCSV,index_col=0,header=0)
   meta.index = list(meta.index)
   for one in meta.columns:
     if meta[one].nunique()<100:

@@ -49,7 +49,8 @@ runLiger <- function(strH5ad,strHVG,batchKey,strOut){
   
   layout <- cbind(layout,liger_cluster=adatalg@clusters)
   layout <- cbind(cID=rownames(layout),layout)
-  data.table::fwrite(layout,strOut)
+  saveRDS(layout,strOut)
+  #data.table::fwrite(layout,strOut)
 }
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
