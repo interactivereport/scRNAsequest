@@ -43,10 +43,13 @@ def cal_sil_pca50_one(pcaKey,strH5ad):
   adata = sc.read(strH5ad,backed=True)
   obs = adata.obs.copy()
   X = adata.obsm[pcaKey].copy()
-  cKey=[one for one in obs.columns if re.search('^%s.*cluster$|^%s.*louvain$'%(k,k),one,re.IGNORECASE)]
-  if len(cKey)>0:
-    print("\t%s: %s"%(pcaKey,cKey[0]))
-    sil_coeff = silhouette_samples(X=X[:, :50], labels=np.array(obs[cKey[0]].values))
+  if np.count_nonzero(np.abs(X).sum(axis=1)<0.001) > X.shape[0]/4:
+    print("--> More than a quarter cells with zero in %s PCA: SKIP! <--"%k)
+  else:
+    cKey=[one for one in obs.columns if re.search('^%s.*cluster$|^%s.*louvain$'%(k,k),one,re.IGNORECASE)]
+    if len(cKey)>0:
+      sil_coeff = silhouette_samples(X=X[:, :50], labels=np.array(obs[cKey[0]].values))
+    print(print("\tFinishing %s: %s"%(pcaKey,cKey[0])))
   return k,sil_coeff
 
 def make_df(i):
@@ -70,8 +73,7 @@ def main():
   strPDF = sys.argv[2]
   
   PCAkey = [(one,strH5ad) for one in sc.read(strH5ad,backed=True).obsm.keys() if '_pca' in one]
-  print(PCAkey)
-  print(len(PCAkey))
+  print("\tworking on",", ".join([a[0] for a in PCAkey]))
   with multiprocessing.Pool(processes=len(PCAkey)) as pool:
     coeff_pca50 = pool.starmap(cal_sil_pca50_one,PCAkey)
   coeff_pca50 = [one for one in coeff_pca50 if one[1] is not None]
