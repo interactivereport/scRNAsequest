@@ -137,9 +137,18 @@ processSCT <- function(strH5ad,batch,strOut,geneN){
     },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
                                tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
   }
-  message("\tFinding Highly Variable Features by SelectIntegrationFeatures ...")
-  selGene <- SelectIntegrationFeatures(Dlist,nfeatures=geneN)
+  strHVG <- paste0(dirname(strH5ad),"/hvg.csv")
+  if(file.exists(strHVG)){
+    message("\tUsing Highly Variable Features from scanpy.highly_variable_genes")
+    hvg <- data.table::fread(strHVG,header=T)
+    selGene <- intersect(unlist(hvg[[1]]),Reduce(intersect,lapply(Dlist,function(one)return(rownames(one[[assayName]])))))
+  }else{
+    message("\tFinding Highly Variable Features by Seurat.SelectIntegrationFeatures ...")
+    selGene <- SelectIntegrationFeatures(Dlist,nfeatures=geneN)
+  }
   message("\t\t",length(selGene)," features")
+  if(length(selGene)<100) stop("Two few features! Please increase the number of harmonyBatchGene (remove tmp folder)!")
+  #saveRDS(Dlist,file="sctHarmony.rds")
   message("\tsaving ...")
   D <- NULL
   for(i in 1:length(Dlist)){
