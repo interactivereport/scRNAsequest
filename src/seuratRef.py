@@ -5,6 +5,7 @@ import anndata as ad
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
+import batchUtility as bU
 import pyarrow.feather as feather
 import rpy2.robjects as robjects
 from rpy2.robjects import pandas2ri
@@ -13,6 +14,7 @@ readRDS = robjects.r['readRDS']
 print=functools.partial(print, flush=True)
 logging.disable()
 strPipePath=os.path.dirname(os.path.realpath(__file__))
+batchKey="library_id"
 
 def msgError(msg):
   print(msg)
@@ -32,43 +34,6 @@ def inputCheck(args):
     return False
   return config
 
-def splitBatch(strH5ad,strMeta,batchCell):
-  if batchCell is None:
-    print("Batch process (batchCell) is not set in sys.yml, large amount of memory might be required")
-    h5adList=[strH5ad]
-  else:
-    print("Batch process")
-    strOut=os.path.dirname(strMeta)+"/tmp/"
-    os.makedirs(strOut,exist_ok=True)
-    h5adList= glob.glob(strOut+"*.h5ad")
-    if len(h5adList)==0:
-      print("Reading ...")
-      D=ad.read_h5ad(strH5ad)
-      sampleCellN = D.obs.library_id.value_counts()
-      #print(sampleCellN)
-      sID=[]
-      cellN=0
-      batchN=0
-      for one in list(sampleCellN.index):
-        sID.append(one)
-        cellN+=sampleCellN[one]
-        #print(cellN)
-        if cellN>batchCell or one==list(sampleCellN.index)[-1]:
-          print("batch %d: %d samples"%(batchN,len(sID)))
-          strH5ad=strOut+"tmp_%d.h5ad"%batchN
-          batchN +=1
-          with open(re.sub("h5ad$","txt",strH5ad),"w") as f:
-            f.write("\n".join(sID))
-          with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            D1=D[D.obs.library_id.isin(sID),:]
-            D1.write(strH5ad)
-          sID=[]
-          cellN=0
-          h5adList.append(strH5ad)
-      del D
-  return(h5adList)
-
 def runOneBatch(oneH5ad,strConfig,oneMeta):
   cmd = "Rscript %s %s %s %s |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
                             oneH5ad,strConfig,oneMeta,re.sub("rds$","log",oneMeta))
@@ -79,7 +44,7 @@ def batchRef(strH5ad,strConfig,strMeta,batchCell):
     print("Using previous SeuratRef results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = feather.read_feather(strMeta)
     return(meta)
-  h5adList = splitBatch(strH5ad,strMeta,batchCell)
+  h5adList = sorted(bU.splitBatch(strH5ad,os.path.join(os.path.dirname(strMeta),"tmp"),batchCell,batchKey))
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
@@ -111,7 +76,7 @@ def main():
   strConfig=sys.argv[2]
 
   D = ad.read_h5ad(strH5ad,backed="r") #,backed=True
-  Dbatch = D.obs["library_id"].copy()
+  Dbatch = D.obs[batchKey].copy()
   strMeta = "%s.feather"%os.path.join(config["output"],"SeuratRef",config["prj_name"])#strH5ad.replace("raw.h5ad","seuratRef.csv")
   meta = batchRef(strH5ad,strConfig,strMeta,config.get('batchCell'))
   

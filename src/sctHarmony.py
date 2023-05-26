@@ -7,6 +7,7 @@ import pandas as pd
 import anndata as ad
 import scanpy as sc
 import numpy as np
+import batchUtility as bU
 import rpy2.robjects as robjects
 from rpy2.robjects import pandas2ri
 readRDS = robjects.r['readRDS']
@@ -15,6 +16,7 @@ print=functools.partial(print, flush=True)
 
 logging.disable()
 strPipePath=os.path.dirname(os.path.realpath(__file__))
+batchKey="library_id"
 def msgError(msg):
   print(msg)
   exit()
@@ -30,7 +32,7 @@ def inputCheck(args):
     config = yaml.safe_load(f)
   return config
 
-def splitBatch(strH5ad,strPCA,batchCell,batchKey,hvgN):
+def splitBatch(strH5ad,strPCA,batchCell,hvgN):
   if batchCell is None:
     print("Batch process (batchCell) is not set in config, large amount of memory might be required")
     h5adList=[strH5ad]
@@ -77,11 +79,11 @@ def runOneSCT(oneH5ad,strConfig,strSCT):
                               oneH5ad,strSCT,strConfig,os.path.dirname(strSCT))
   subprocess.run(cmd,shell=True,check=True)
 
-def sct(strH5ad,strConfig,strPCA,batchKey,batchCell,hvgN):
+def sct(strH5ad,strConfig,strPCA,batchCell,hvgN):
   if os.path.isfile(strPCA):
     print("\tUsing previous sct PCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strPCA)
     return()
-  h5adList = sorted(splitBatch(strH5ad,strPCA,batchCell,batchKey,hvgN))
+  h5adList = sorted(bU.splitBatch(strH5ad,os.path.join(os.path.dirname(strPCA),"tmp"),batchCell,batchKey,hvgN))
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
@@ -116,13 +118,13 @@ def runRharmony(strPCA,strMeta):
                               strPCA,strMeta,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strMeta,batchKey,batchCell,hvgN):
+def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN):
   if os.path.isfile(strMeta):
     print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
     return(meta)
   strPCA = re.sub("rds$","pca.h5ad",strMeta)
-  sct(strH5ad,strConfig,strPCA,batchKey,batchCell,hvgN)
+  sct(strH5ad,strConfig,strPCA,batchCell,hvgN)
   runRharmony(strPCA,strMeta)
   if not os.path.isfile(strMeta):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
@@ -132,7 +134,6 @@ def sctHarmony(strH5ad,strConfig,strMeta,batchKey,batchCell,hvgN):
 
 def main():
   print("starting SCT+Harmony ...")
-  batchKey="library_id"
   if len(sys.argv)<2:
     msgError("ERROR: raw h5ad file and the config file are required!")
   config = inputCheck(sys.argv)
@@ -140,7 +141,7 @@ def main():
   strConfig=sys.argv[2]
 
   strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
-  meta = sctHarmony(strH5ad,strConfig,strMeta,batchKey,config.get('batchCell'),config.get('harmonyBatchGene'))
+  meta = sctHarmony(strH5ad,strConfig,strMeta,config.get('batchCell'),config.get('harmonyBatchGene'))
 
   for one in meta.columns:
     if meta[one].nunique()<100:

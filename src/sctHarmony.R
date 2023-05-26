@@ -147,7 +147,7 @@ processSCT <- function(strH5ad,batch,strOut,geneN){
     selGene <- SelectIntegrationFeatures(Dlist,nfeatures=geneN)
   }
   message("\t\t",length(selGene)," features")
-  if(length(selGene)<100) stop("Two few features! Please increase the number of harmonyBatchGene (remove tmp folder)!")
+  if(length(selGene)<100) stop(paste0("Two few features (",length(selGene),")! Please increase the number of harmonyBatchGene (remove tmp folder)!"))
   #saveRDS(Dlist,file="sctHarmony.rds")
   message("\tsaving ...")
   D <- NULL
