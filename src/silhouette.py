@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-import scanpy as sc
+#import scanpy as sc
+import anndata as ad
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -19,7 +20,7 @@ def calc_sil_pca50(prefix,oneM):
   #strH5ad = "%s_%s.h5ad"%(prefix,oneM)
   strH5ad="%s.h5ad"%os.path.join(os.path.dirname(prefix),oneM,os.path.basename(prefix))
   print(strH5ad)
-  adata = sc.read(strH5ad,backed=True)
+  adata = ad.read_h5ad(strH5ad,backed="r")
   sil_coeff = None
   if not 'X_pca' in adata.obsm.keys():
     print("%s is missing obsm 'X_pca'"%strH5ad)
@@ -40,7 +41,7 @@ def cal_sil_pca50_one(pcaKey,strH5ad):
   if k=='pca':
     k="raw"
   sil_coeff = None
-  adata = sc.read(strH5ad,backed=True)
+  adata = ad.read_h5ad(strH5ad,backed="r")
   obs = adata.obs.copy()
   X = adata.obsm[pcaKey].copy()
   if np.count_nonzero(np.abs(X).sum(axis=1)<0.001) > X.shape[0]/4:
@@ -49,7 +50,7 @@ def cal_sil_pca50_one(pcaKey,strH5ad):
     cKey=[one for one in obs.columns if re.search('^%s.*cluster$|^%s.*louvain$'%(k,k),one,re.IGNORECASE)]
     if len(cKey)>0:
       sil_coeff = silhouette_samples(X=X[:, :50], labels=np.array(obs[cKey[0]].values))
-    print(print("\tFinishing %s: %s"%(pcaKey,cKey[0])))
+    print("\tFinishing %s: %s"%(pcaKey,cKey[0]))
   return k,sil_coeff
 
 def make_df(i):
@@ -72,7 +73,7 @@ def main():
   strH5ad = sys.argv[1]
   strPDF = sys.argv[2]
   
-  PCAkey = [(one,strH5ad) for one in sc.read(strH5ad,backed=True).obsm.keys() if '_pca' in one]
+  PCAkey = [(one,strH5ad) for one in ad.read_h5ad(strH5ad,backed="r").obsm.keys() if '_pca' in one]
   print("\tworking on",", ".join([a[0] for a in PCAkey]))
   with multiprocessing.Pool(processes=len(PCAkey)) as pool:
     coeff_pca50 = pool.starmap(cal_sil_pca50_one,PCAkey)

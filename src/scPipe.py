@@ -996,7 +996,7 @@ def rmLock(config):
       os.remove(strLock)
   
 def combine(mIDs,prefix,config):
-  print("Evaluating all methods ...")
+  #print("Evaluating all methods ...")
   CKmethods = [one for one in mIDs if os.path.isfile("%s.h5ad"%os.path.join(config['output'],one,config["prj_name"]))]+['raw']
   if not "SCT" in CKmethods:
     Exit("SCT is missing! and it is required expression for visualization!")
