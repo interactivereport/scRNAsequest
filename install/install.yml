@@ -78,3 +78,4 @@ dependencies:
   - pillow=9.2.0
   - r-globals=0.16.1
   - pyarrow=10.0.1
+  - scikit-misc=0.1.4
