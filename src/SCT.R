@@ -7,6 +7,7 @@ PKGloading <- function(){
   require(Matrix)
   #require(future) #no effect on SCT
   #plan("multiprocess", workers = 8)
+  require(peakRAM)
   options(future.globals.maxSize=8000*1024^2)
 }
 
@@ -19,7 +20,7 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
                           project="SCT",
                           meta.data=getobs(strH5ad))
   if(is.null(expScale) || expScale==0){
-    message("\n\n===== SCT normalization is selected =====")
+    message("\t\t--> SCT normalization is selected <--")
     Dmedian <- NA
     if(!bPrepSCT){
       message("\t***median UMI is used to normalize across samples by scale_factor from vst***")
@@ -53,19 +54,17 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
       if(!is.null(bPrepSCT) && bPrepSCT){
         message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
         D <- PrepSCTFindMarkers(D)
-        expScale <- D@assays$SCT@SCTModel.list[[1]]@median_umi
+        #expScale <- D@assays$SCT@SCTModel.list[[1]]@median_umi
       }
     }
   }else{
-    message("\n\n===== LogNormal normalization is selected =====")
-    if(expScale<=100)
-      expScale <- round(quantile(D@meta.data$nCount_RNA,expScale/100)/1e3)*1e3
+    message("\t\t--> LogNormal normalization is selected <--")
     message("\tScale: ",expScale)
-    D <- NormalizeData(D,assay="RNA",normalization.method = "LogNormalize", scale.factor = expScale)
+    D <- NormalizeData(D,assay="RNA",normalization.method = "LogNormalize", scale.factor = expScale,verbose = FALSE)
   }
-  saveX(D,strOut,gID,expScale)
+  saveX(D,strOut,gID)
 }
-saveX <- function(D,strH5,gID,expScale){
+saveX <- function(D,strH5,gID){
   message("\tsaving expression: ",strH5)
   saveRDS(D,paste0(strH5,".rds"))
   if("SCT"%in%names(D)){
@@ -93,13 +92,34 @@ saveX <- function(D,strH5,gID,expScale){
   
   cat(paste(rownames(X),collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
   cat(paste(gID[colnames(X)],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
-  cat(expScale,file=gsub("h5$","scaleF",strH5))
+  #cat(expScale,file=gsub("h5$","scaleF",strH5))
+}
+mergeAllbatches <- function(strRDS,strOut,batchKey){
+  D <- NULL
+  message("\tmerge all normalized seruat objects")
+  for(one in strRDS){
+    oneD <- readRDS(one)
+    message("\t\t",oneD@meta.data[1,batchKey],"\t",which(strRDS==one),"/",length(strRDS))
+    if(is.null(D)) D <- oneD
+    else D <- merge(D,oneD)
+  }
+  if("SCT" %in% names(D)){
+    message("\tPrepSCTFindMarkers might take a while")
+    D <- PrepSCTFindMarkers(D)
+    cat(D@assays$SCT@SCTModel.list[[1]]@median_umi,file=gsub("rds$","scaleF",strOut))
+  }
+  saveRDS(D,strOut)
 }
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
   args = commandArgs(trailingOnly=TRUE)
-  if(length(args)<3) stop("Path to h5ad file, the output file and config file are required!")
+  if(length(args)<2) stop("Path to h5ad file, the output file and config file are required!")
+  if(length(args)==2){
+    strRDS <- paste0(unlist(strsplit(args[1],",")),".rds")
+    print(peakRAM(mergeAllbatches(strRDS,args[2],batchKey)))
+    return()
+  }
   strH5ad <- args[1]
   if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
   strOut <- args[2]
@@ -109,10 +129,11 @@ main <- function(){
   }else{
     config <- yaml::read_yaml(strConfig)
   }
-  if(length(args)>3) batchKey <- args[4]
+  scaleF=as.numeric(args[4])
+  if(length(args)>4) batchKey <- args[5]
   
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
-  print(system.time(processH5ad(strH5ad,batchKey,strOut,config$expScaler,config$PrepSCTFindMarkers)))
+  print(peakRAM(processH5ad(strH5ad,batchKey,strOut,scaleF,config$PrepSCTFindMarkers)))
 }
 
 main()

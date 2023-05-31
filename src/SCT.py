@@ -1,76 +1,116 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re, yaml
+import subprocess, os, h5py, sys, warnings, re, yaml,functools,logging,math
 import scanpy as sc
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
+import batchUtility as bU
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+logging.disable(level=logging.INFO)
+batchKey="library_id"
+strPipePath=os.path.dirname(os.path.realpath(__file__))
+print=functools.partial(print, flush=True)
 
 def msgError(msg):
   print(msg)
   exit()
-  
-def main():
-  print("starting SCTransform ...")
-  if len(sys.argv)<1:
-    msgError("ERROR: raw h5ad file required!")
-  strH5ad = sys.argv[1]
-  if not os.path.isfile(strH5ad):
-    msgError("ERROR: %s does not exist!"%strH5ad)
-  #if not strH5ad.endswith("raw.h5ad"):
-  #  msgError("ERROR: %s is not raw h5ad file required!"%strH5ad)
-  
-  strConfig = sys.argv[2]
-  if not os.path.isfile(strConfig):
-    msgError("ERROR: %s does not exist!"%strConfig)
+def runOneBatch(oneH5ad,strConfig,strExp,scaleF):
+  cmd = "Rscript %s %s %s %s %d |& tee %s"%(os.path.join(strPipePath,"SCT.R"),
+                            oneH5ad,strExp,strConfig,scaleF,re.sub("h5$","log",strExp))
+  subprocess.run(cmd,shell=True,check=True)
+def runMergeSeurat(h5List,seuratF):
+  cmd = "Rscript %s %s %s |& tee %s"%(os.path.join(strPipePath,"SCT.R"),
+                            ",".join(h5List),seuratF,re.sub("rds$","log",seuratF))
+  subprocess.run(cmd,shell=True,check=True)
+def saveScale(strH5ad,strConfig,newH5ad):
   with open(strConfig,"r") as f:
     config = yaml.safe_load(f)
-  strH5 = "%s.h5"%os.path.join(config["output"],"SCT",config["prj_name"])
-  
-  cmd = "Rscript %s %s %s %s"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"SCT.R"),
-                            strH5ad,strH5,strConfig)
-  subprocess.run(cmd,shell=True,check=True)
-  if not os.path.isfile(strH5):
-    msgError("".join(cmdR.stdout.decode("utf-8"))+"\nERROR: SCTransform failed!")
-  print("\tcreating h5ad from SCT h5 ...")
-  f = h5py.File(strH5,'r')
-  X = sparse.csc_matrix((f['data'],f['indices'],f['indptr']),f['shape'])
-  #cID = [one.decode('utf-8') for one in f['row_names']]
-  #gID = [one.decode('utf-8') for one in f['col_names']]
-  f.close()
-
-  cID = pd.read_csv(re.sub("h5$","cID",strH5),header=None,index_col=0)
-  gID = pd.read_csv(re.sub("h5$","gID",strH5),header=None,index_col=0)
-
-  D = sc.AnnData(X)
-  #D.obs_names = pd.Index(cID)
-  #D.var_names = pd.Index(gID)
-  D.obs_names = list(cID.index)
-  D.var_names = list(gID.index)
-  D.uns['scaleF'] = pd.read_csv(re.sub("h5$","scaleF",strH5),header=None,index_col=0).index[0]
-  #with h5py.File(re.sub("h5$","info.h5",strH5),"r") as f:
-  #  D.obs_names = [i.decode() for i in list(f['cID'])]
-  #  D.var_names = [i.decode() for i in list(f['gID'])]
-  #  scaleF = list(f['scaleFactor'])[0]
-
-  Draw = sc.read_h5ad(strH5ad)
-  D.obs=pd.concat([D.obs,Draw.obs],axis=1,join="inner")
-  D.var=pd.concat([D.var,Draw.var],axis=1,join='inner')
+  scaleF = 0 if config.get("expScaler") is None else config.get("expScaler")
+  D = sc.read_h5ad(strH5ad,backed="r")
+  if scaleF<=100 and scaleF>0:
+    scaleF = math.ceil(np.percentile(D.obs.n_counts,scaleF)/1000)*1000
+  with open(re.sub("h5ad$","scaleF",newH5ad),"w") as f:
+    f.write(str(scaleF))
+  return scaleF
+def batchNorm(strH5ad,strConfig,newH5ad,batchCell):
+  if os.path.isfile(newH5ad):
+    print("Using previous Normalized Expression: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%newH5ad)
+    return
+  scaleF = saveScale(strH5ad,strConfig,newH5ad)
+  h5adList = sorted(bU.splitBatch(strH5ad,os.path.join(os.path.dirname(newH5ad),"tmp"),batchCell,batchKey))
+  if len(h5adList)==0:
+    msgError("No h5ad!")
+  print("There are total of %d batches"%len(h5adList))
+  Exp=None
+  h5List = []
+  for oneH5ad in h5adList:
+    print("***** batch: %s *****"%os.path.basename(oneH5ad))
+    oneH5 = re.sub("h5ad$","h5",oneH5ad)
+    if not os.path.isfile(oneH5):
+      runOneBatch(oneH5ad,strConfig,oneH5,scaleF)
+    if not os.path.isfile(oneH5):
+      msgError("\tERROR: %s Expression normalization failed!"%os.path.basename(oneH5ad))
+    print("\tcreating h5ad from normlized h5 ...")
+    h5List.append(oneH5)
+    f = h5py.File(oneH5,'r')
+    X = sparse.csc_matrix((f['data'],f['indices'],f['indptr']),f['shape'])
+    f.close()
+    cID = pd.read_csv(re.sub("h5$","cID",oneH5),header=None,index_col=0)
+    gID = pd.read_csv(re.sub("h5$","gID",oneH5),header=None,index_col=0)
+    oneD = sc.AnnData(X)
+    oneD.obs_names = list(cID.index)
+    oneD.var_names = list(gID.index)
+    print("***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
+    if Exp is None:
+      Exp = oneD
+    else:
+      Exp = Exp.concatenate(oneD,batch_key=None,index_unique=None)#,join='outer'
+    print("After merge: %d cells %d genes\n\n"%(Exp.shape[0],Exp.shape[1]))
+  runMergeSeurat(h5List,re.sub("h5ad$","rds",newH5ad))
+  Exp.uns['scaleF'] = pd.read_csv(re.sub("h5ad$","scaleF",newH5ad),header=None,index_col=0).index[0]
+  rawD=sc.read_h5ad(strH5ad,backed="r")
+  Exp.obs=rawD.obs.copy().loc[Exp.obs.index,:]
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
+    print("\thighly_variable_genes ...")
+    sc.pp.highly_variable_genes(Exp,n_top_genes=3000,batch_key=batchKey)
+    Exp1 = Exp[:, Exp.var.highly_variable].copy()
+    sc.pp.scale(Exp1, max_value=10)
     print("\tPCA ...")
-    sc.tl.pca(D, svd_solver='arpack', n_comps = 100)
     npc = 50
-    sc.pp.neighbors(D, n_neighbors=10, n_pcs=npc)
-    sc.tl.louvain(D,key_added="normalized.louvain")
-    print("\tembedding ...")
-    sc.tl.umap(D)
-    sc.tl.rank_genes_groups(D, 'normalized.louvain')
-    sc.tl.tsne(D, n_pcs=npc)
+    clusterKey = "normalized_cluster"
+    sc.tl.pca(Exp1, svd_solver='arpack', n_comps = npc)
+    sc.pp.neighbors(Exp1, n_neighbors=10, n_pcs=npc)
+    sc.tl.leiden(Exp1,key_added=clusterKey)
+    print("\tUMAP ...")
+    sc.tl.umap(Exp1)
+    print("\ttSNE ...")
+    sc.tl.rank_genes_groups(Exp1,clusterKey)
+    sc.tl.tsne(Exp1, n_pcs=npc)
     print("\tsaving ...")
-    D.write(re.sub("h5$","h5ad",strH5))
+    Exp1 = Exp1[Exp.obs_names]
+    Exp.obs[clusterKey]=Exp1.obs[clusterKey]
+    Exp.obsm['X_normalized_umap'] = Exp1.obsm["X_umap"]
+    Exp.obsm['X_normalized_tsne'] = Exp1.obsm["X_tsne"]
+    Exp.obsm['X_normalized_pca'] = Exp1.obsm["X_pca"]
+    Exp.write(newH5ad)
+  return
   
-  print("Completed SCTransform ...")
+def main():
+  print("starting expression normalization ...")
+  if len(sys.argv)<1:
+    msgError("ERROR: raw h5ad file required!")
+  config = bU.inputCheck(sys.argv)
+  strH5ad = sys.argv[1]
+  strConfig = sys.argv[2]
+  newH5ad = "%s.h5ad"%os.path.join(config["output"],"SCT",config["prj_name"])
+  
+  batchNorm(strH5ad,strConfig,newH5ad,config.get("batchCell"))
+  if not os.path.isfile(newH5ad):
+    msgError("Error in normalization step!")
+  print("Express normalization completed")
 
 if __name__ == "__main__":
   main()
