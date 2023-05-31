@@ -21,20 +21,6 @@ def msgError(msg):
   print(msg)
   exit()
 
-def inputCheck(args):
-  strH5ad = args[1]
-  if not os.path.isfile(strH5ad):
-    msgError("ERROR: %s does not exist!"%strH5ad)
-  strConfig = sys.argv[2]
-  if not os.path.isfile(strConfig):
-    msgError("ERROR: %s does not exist!"%strConfig)
-  with open(strConfig,"r") as f:
-    config = yaml.safe_load(f)
-  if config['ref_name'] is None:
-    print("No reference specified, END")
-    return False
-  return config
-
 def runOneBatch(oneH5ad,strConfig,oneMeta):
   cmd = "Rscript %s %s %s %s |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
                             oneH5ad,strConfig,oneMeta,re.sub("rds$","log",oneMeta))
@@ -70,7 +56,7 @@ def main():
   print("starting seurat reference mapping ...")
   if len(sys.argv)<2:
     msgError("ERROR: raw h5ad file and the config file are required!")
-  config = inputCheck(sys.argv)
+  config = bU.inputCheck(sys.argv)
   if config == False :
     return()
   strH5ad = sys.argv[1]
