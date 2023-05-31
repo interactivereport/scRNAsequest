@@ -195,7 +195,7 @@ processPCA <- function(strPCA,strOut,batch){
     D@reductions$umap@cell.embeddings,
     #D@reductions$tsne@cell.embeddings,
     D@meta.data[,c("seurat_clusters",batch)])
-  colnames(X) <- gsub("UMAP","umap",gsub("harmony","pca",gsub("seurat_clusters","sctHarmony_cluster",colnames(X))))
+  colnames(X) <- gsub("UMAP","umap",gsub("seurat_clusters","sctHarmony_cluster",colnames(X)))
   saveRDS(X,strOut)
 }
 

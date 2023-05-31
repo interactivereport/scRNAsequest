@@ -25,7 +25,7 @@ def inputCheck(args):
   strH5ad = args[1]
   if not os.path.isfile(strH5ad):
     msgError("ERROR: %s does not exist!"%strH5ad)
-  strConfig = sys.argv[2]
+  strConfig = args[2]
   if not os.path.isfile(strConfig):
     msgError("ERROR: %s does not exist!"%strConfig)
   with open(strConfig,"r") as f:
@@ -45,7 +45,18 @@ def splitBatch(strH5ad,strPCA,batchCell,hvgN):
       print("Reading ...")
       D=ad.read_h5ad(strH5ad)
       hvgN=hvgN if not hvgN is None else 3000
-      hvg = sc.pp.highly_variable_genes(D,flavor='seurat_v3',inplace=False,batch_key=batchKey,n_top_genes=hvgN)
+      print("\thighly_variable_genes seurat_v3 ...")
+      span=0.3
+      print("\t\thttps://github.com/scverse/scanpy/issues/1504")
+      while span<=1:
+        print("\t\ttry with span: %.2f"%span)
+        try:
+          hvg = sc.pp.highly_variable_genes(D,flavor='seurat_v3',inplace=False,batch_key=batchKey,n_top_genes=hvgN)
+          break
+        except:
+          span += 0.1
+      if span>1:
+        msgError("Cannot find highly_variable_genes with span<%.2f, possible: too many low expressed genes in some batches!")
       hvg[hvg.highly_variable].to_csv(strOut+"/hvg.csv")
       sampleCellN = D.obs.library_id.value_counts()
       print(sampleCellN)
@@ -154,7 +165,7 @@ def main():
   selMeta = [one for one in meta.columns if 'cluster' in one.lower()]+[batchKey]
   D.obs = meta[selMeta]
   for one in set([one.rsplit("_",1)[0] for one in [one for one in meta.columns if not one in selMeta]]):
-    D.obsm['X_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
+    D.obsm['X_sctHarmony_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
