@@ -85,7 +85,7 @@ def main():
   D = ad.AnnData(FakeD)
   D.obs = pd.concat([meta[[one for one in meta.columns if one.startswith("predicted")]],Dbatch],axis=1,join="inner")
   for one in set([one.rsplit("_",1)[0] for one in [one for one in meta.columns if not one.startswith("predicted")]]):
-    D.obsm['X_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
+    D.obsm['X_SeuratRef_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
