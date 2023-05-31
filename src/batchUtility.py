@@ -29,7 +29,18 @@ def splitBatch(strH5ad,strOut,batchCell=None,batchKey=None,hvgN=None):
       print("Reading ...")
       D=ad.read_h5ad(strH5ad)
       hvgN = 3000 if hvgN is None else hvgN
-      hvg = sc.pp.highly_variable_genes(D,flavor='seurat_v3',inplace=False,batch_key=batchKey,n_top_genes=hvgN)
+      print("\thighly_variable_genes seurat_v3 ...")
+      span=0.3
+      print("\t\thttps://github.com/scverse/scanpy/issues/1504")
+      while span<=1:
+        print("\t\ttry with span: %.2f"%span)
+        try:
+          hvg = sc.pp.highly_variable_genes(D,flavor='seurat_v3',inplace=False,batch_key=batchKey,n_top_genes=hvgN,span=span)
+          break
+        except:
+          span += 0.1
+      if span>1:
+        msgError("Cannot find highly_variable_genes with span<%.2f, possible: too many low expressed genes in some batches!"%span)
       hvg[hvg.highly_variable].to_csv(os.path.join(strOut,"hvg.csv"))
       sampleCellN = D.obs[batchKey].value_counts()
       print(sampleCellN)
