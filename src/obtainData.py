@@ -1,4 +1,4 @@
-import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml
+import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools
 from datetime import datetime
 import scanpy as sc
 import pandas as pd
@@ -6,6 +6,7 @@ from scipy.sparse import csc_matrix
 import cmdUtility as cU
 import dbl
 
+print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 

@@ -13,8 +13,8 @@ from rpy2.robjects import pandas2ri
 readRDS = robjects.r['readRDS']
 
 print=functools.partial(print, flush=True)
-
-logging.disable()
+warnings.simplefilter(action='ignore', category=FutureWarning)
+logging.disable(level=logging.INFO)
 strPipePath=os.path.dirname(os.path.realpath(__file__))
 batchKey="library_id"
 def msgError(msg):

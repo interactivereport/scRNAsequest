@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, math, re, yaml
+import subprocess, os, h5py, sys, warnings, math, re, yaml, functools, logging
 import anndata as ad
 import scanpy as sc
 import numpy as np
@@ -10,6 +10,10 @@ import pandas as pd
 import rpy2.robjects as robjects
 from rpy2.robjects import pandas2ri
 readRDS = robjects.r['readRDS']
+
+print=functools.partial(print, flush=True)
+logging.disable(level=logging.INFO)
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def msgError(msg):
   print(msg)

@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, yaml, re
+import subprocess, os, h5py, sys, warnings, yaml, re, functools, logging
 import anndata as ad
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import time
+
+print=functools.partial(print, flush=True)
+warnings.simplefilter(action='ignore', category=FutureWarning)
+logging.disable(level=logging.INFO)
 
 def msgError(msg):
   print(msg)

@@ -7,11 +7,11 @@ from scipy.sparse import csc_matrix
 import pandas as pd
 import batchUtility as bU
 
+print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 batchKey="library_id"
 strPipePath=os.path.dirname(os.path.realpath(__file__))
-print=functools.partial(print, flush=True)
 
 def msgError(msg):
   print(msg)

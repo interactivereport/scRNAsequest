@@ -1,6 +1,10 @@
-import random, re, warnings, os, glob, yaml
+import random, re, warnings, os, glob, yaml, logging, functools
 import anndata as ad
 import scanpy as sc
+
+print=functools.partial(print, flush=True)
+warnings.simplefilter(action='ignore', category=FutureWarning)
+logging.disable(level=logging.INFO)
 
 def inputCheck(args):
   strH5ad = args[1]

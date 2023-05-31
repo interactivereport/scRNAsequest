@@ -1,4 +1,4 @@
-import yaml, io, os, sys, re, logging, warnings, glob, math
+import yaml, io, os, sys, re, logging, warnings, glob, math, functools
 import pandas as pd
 import scanpy as sc
 import anndata as ad
@@ -13,6 +13,7 @@ import cmdUtility as cU
 import obtainData as oD
 import dbl
 
+print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 batchKey="library_id"

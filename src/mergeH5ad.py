@@ -1,10 +1,11 @@
-import yaml,io,os,sys,subprocess,re,logging,warnings,glob
+import yaml,io,os,sys,subprocess,re,logging,warnings,glob,functools
 import pandas as pd
 import scanpy as sc
 import anndata as ad
 import numpy as np
 import cmdUtility as cU
 
+print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 tempDir="raw"
