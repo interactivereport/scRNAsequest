@@ -47,8 +47,8 @@ runLiger <- function(strH5ad,strHVG,batchKey,strOut){
   layout <- cbind(layout,
                   setNames(as.data.frame(adatalg@tsne.coords),paste0("tsne_",1:ncol(adatalg@tsne.coords))))
   
-  layout <- cbind(layout,liger_cluster=adatalg@clusters)
-  layout <- cbind(cID=rownames(layout),layout)
+  layout <- cbind(layout,Liger_cluster=adatalg@clusters)
+  #layout <- cbind(cID=rownames(layout),layout)
   saveRDS(layout,strOut)
   #data.table::fwrite(layout,strOut)
 }

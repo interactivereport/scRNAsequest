@@ -61,9 +61,9 @@ def main():
   FakeD = pd.DataFrame({"FakeG%d"%i:[0 for j in range(meta.shape[0])] for i in range(2)},
                       index=meta.index)
   D = ad.AnnData(FakeD)
-  D.obs = pd.concat([meta[[one for one in meta.columns if one.startswith("liger")]],Dbatch],axis=1,join="inner")
-  for one in set([one.rsplit("_",1)[0] for one in [one for one in meta.columns if not one.startswith("liger")]]):
-    D.obsm['X_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
+  D.obs = pd.concat([meta[[one for one in meta.columns if one.startswith("Liger")]],Dbatch],axis=1,join="inner")
+  for one in set([one.rsplit("_",1)[0] for one in [one for one in meta.columns if not one.startswith("Liger")]]):
+    D.obsm['X_Liger_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
   print("\tsaving ...")
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
