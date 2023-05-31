@@ -4,14 +4,13 @@ from datetime import datetime
 import scanpy as sc
 import anndata as ad
 import numpy as np
-import seaborn as sns
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix
-from natsort import natsorted
 import barcodeRankPlot as BRP
-import dbl
+import processQC as pQ
+import cmdUtility as cU
+import mergeH5ad as mH
 
+logging.disable(level=logging.INFO)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 sc.set_figure_params(vector_friendly=True, dpi_save=300)
 strPipePath=""
@@ -23,22 +22,8 @@ CB_expCellNcol="expected_cells"
 CB_dropletNcol="droplets_included"
 CB_count="low_count_threshold"
 CB_learningR="learning_rate"
-Rmarkdown="Rmarkdown"
 beRaster=True
-qcDir="QC"
 tempDir="raw"
-# maximum number of a parallel job can be re-submited is 5
-maxJobSubmitRepN=2
-logging.disable()
-def run_cmd(cmd):
-  #print(cmd)
-  try:
-    cmdR = subprocess.run(cmd,shell=True,check=True,stdout=subprocess.PIPE)#capture_output=True,
-  except subprocess.CalledProcessError as e:
-    if not e.returncode==1:
-      print("%s process return above error"%cmd)#,e.stderr.decode("utf-8")
-    cmdR = e
-  return cmdR
 def Exit(msg=""):
   if len(msg)>3:
     print(msg)
@@ -60,266 +45,6 @@ def checkInstallSetting():
     print("=====\nPlease set the sys.yml in %s.\n"%strPipePath)
     print("An example is '%s/src/sys_example.yml.\n====="%strPipePath)
     exit()
-
-## parallel job management
-def submit_cmd(cmds,config,core=None,memG=0):
-  #cmds = {k:v for i, (k,v) in enumerate(cmds.items()) if not v is None}
-  if len(cmds)==0:
-    return
-  if core is None:
-    core=config['core']
-  parallel = config["parallel"]
-  if not parallel:
-    os.makedirs(os.path.join(config["output"],"log"),exist_ok=True)
-    for one in cmds.keys():
-      if cmds[one] is None:
-        continue
-      print("\n\n\nsubmitting %s"%one)
-      #strLog = os.path.join(config["output"],"log","%s.log"%one)
-      oneCMD=cmds[one] #+" 2>&1 | tee "+ strLog
-      #print("\tPlease check log: %s"%strLog)
-      #print(oneCMD)
-      try:
-        #cmdR = subprocess.run(oneCMD,shell=True,check=True)
-        subprocess.run(oneCMD,shell=True,check=True)
-      except:
-        #print("%s process error return: @%s"%(one,strLog))
-        print("%s process error return!"%one)
-      #run_cmd(oneCMD)
-  elif parallel=="sge":
-    jID = qsub(cmds,config['output'],core,memG=memG)
-    print("----- Monitoring all submitted SGE jobs: %s ..."%jID)
-    ## in case of long waiting time to avoid Recursion (too deep)
-    cmdN = {one:1 for one in cmds.keys()}
-    failedJobs = {}
-    while True:
-      qstat(jID,config['output'],cmds,cmdN,core,memG,failedJobs)
-      if len(cmds)==0:
-        break
-      ## wait for 1 min if any running jobs
-      time.sleep(60)
-    if len(failedJobs)>0:
-      print("\n\n*** The following jobs failed:")
-      for k,one in failedJobs.items():
-        print("\t--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
-      print("\n*** Please check log files in %s folder and consider rerun the analysis!"%jID)
-  elif parallel=="slurm":
-    if memG==0 and config.get('memory') is not None and config.get('memory').endswith("G"):
-      print("Assign memory according to config: ",config.get('memory'))
-      memG=int(re.sub("G$","",config.get('memory')))
-    jID = sbatch(cmds,config['output'],core,memG=memG,gpu=config.get('gpu'))
-    print("----- Monitoring all submitted SLURM jobs: %s ..."%jID)
-    ## in case of long waiting time to avoid Recursion (too deep)
-    cmdN = {one:1 for one in cmds.keys()}
-    failedJobs = {}
-    while True:
-      squeue(jID,config['output'],cmds,cmdN,core,memG,failedJobs,gpu=config.get('gpu'))
-      if len(cmds)==0:
-        break
-      ## wait for 1 min if any running jobs
-      time.sleep(60)
-    if len(failedJobs)>0:
-      print("\n\n*** The following jobs failed:")
-      for k,one in failedJobs.items():
-        print("\t--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
-      print("\n*** Please check log files in %s folder and consider rerun the analysis!"%jID)
-  else:
-    print("ERROR: unknown parallel setting: %s"%parallel)
-    exit()
-
-def qsub(cmds,strPath,core,memG=0,jID=None):
-  if jID is None:
-    jID = "j%d"%random.randint(10,99)
-  strWD = os.path.join(strPath,jID)
-  try:
-    os.makedirs(strWD)
-  except FileExistsError:
-    pass
-  noRun = []
-  if memG==0:
-    qsubTmp = "\n".join([i for i in qsubScript.split("\n") if not "MEMFREE" in i])
-  else:
-    qsubTmp = qsubScript.replace('MEMFREE',str(memG))
-  for one in cmds.keys():
-    oneScript = (qsubTmp.replace('qsubCore',str(core))
-                            .replace('jName',one)
-                            .replace('wkPath',strWD)
-                            .replace("jID",jID)
-                            .replace("sysPath",strPipePath)
-                            .replace("strCMD",cmds[one]))
-    strF=os.path.join(strWD,"%s.sh"%one)
-    with open(strF,"w") as f:
-      f.write(oneScript)
-    run_cmd("qsub %s"%strF)
-  for one in noRun:
-    del cmds[one]
-  return jID
-def qstat(jID,strPath,cmds,cmdN,core,memG,failedJobs):
-  print(".",end="")
-  strWD = os.path.join(strPath,jID)
-  qstateCol=4 # make sure the state of qstat is the 4th column (0-index)
-  qJobCol=0 # make sure the job-id of qstat is the 0th column (0-index)
-  # remove the job in wrong stats: Eqw and obtain the running and waiting job names
-  qs = run_cmd("qstat | grep '%s_'"%jID).stdout.decode("utf-8").split("\n")
-  jNames = []
-  for one in qs:
-    if len(one)<5:
-      continue
-    oneJob = [a.strip() for a in one.split(" ") if len(a.strip())>0 ]
-    if oneJob[qstateCol]=='Eqw':
-      run_cmd("qdel %s"%oneJob[qJobCol])
-      continue
-    jobDetail = [' '.join(one.split()) for one in run_cmd("qstat -j %s"%oneJob[qJobCol])
-                                                    .stdout
-                                                    .decode("utf-8")
-                                                    .split("\n")]
-    aProperty="job_name"
-    jName=[a.replace("%s: %s_"%(aProperty,jID),"").strip() for a in jobDetail if aProperty in a]
-    if len(jName)==0:
-      continue
-    jNames.append(jName[0])
-  # check the finished job, resubmit if not sucessfully finished
-  resub = {}
-  finishedJob = []
-  for one in cmds.keys():
-    if not one in jNames:
-      strLog = os.path.join(strWD,"%s.log"%one)
-      if not "DONE" in run_cmd("tail -n 1 %s"%strLog).stdout.decode("utf-8"):
-        cmdN[one] += 1
-        if cmdN[one]>maxJobSubmitRepN:
-          #print("\n--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
-          failedJobs[len(failedJobs)+1] = one
-          finishedJob.append(one)
-          continue
-        resub[one] = cmds[one]
-      else:
-        print("\n\t===== %s ====="%one)
-        with open(strLog,"r") as f:
-          print(f.read())
-        print("\tFinished: %s"%one)
-        finishedJob.append(one)
-  if len(resub)>0:
-    re1=qsub(resub,strPath,core,memG,jID)
-    time.sleep(5) #might not needed for the qsub to get in
-  for one in finishedJob:
-    del cmds[one]
-  ### in case of long waiting time to avoid Recursion (too deep)
-  #if len(cmds)>0:
-  #  ## wait for 1 min if any running jobs
-  #  time.sleep(60)
-  #  qstat(jID,strPath,cmds,core,iN)
-
-def sbatch(cmds,strPath,core,memG=0,jID=None,gpu=False):
-  gpu=False if gpu is None else gpu
-  sbatchScript=sbatchScriptCPU
-  if gpu:
-    sbatchScript=sbatchScriptGPU
-  if jID is None:
-    jID = "j%d"%random.randint(10,99)
-  strWD = os.path.join(strPath,jID)
-  setupDir(strWD)
-  if memG==0:
-    pScript = "\n".join([i for i in sbatchScript.split("\n") if not "MEMFREE" in i])
-  else:
-    pScript = sbatchScript.replace('MEMFREE',str(memG))
-  for one in cmds.keys():
-    oneScript = (pScript.replace('CoreNum',str(core))
-                            .replace('jName',one)
-                            .replace('wkPath',strWD)
-                            .replace("jID",jID)
-                            .replace("sysPath",strPipePath)
-                            .replace("strCMD",cmds[one]))
-    strF=os.path.join(strWD,"%s.sh"%one)
-    with open(strF,"w") as f:
-      f.write(oneScript)
-    run_cmd("sbatch %s"%strF)
-  return jID
-def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
-  gpu=False if gpu is None else gpu
-  print(".",end="")
-  strWD = os.path.join(strPath,jID)
-  qstateCol=4 # make sure the state of qstat is the 4th column (0-index)
-  qJobCol=0 # make sure the job-id of qstat is the 0th column (0-index)
-  # remove the job in wrong stats: Eqw and obtain the running and waiting job names
-  qs = run_cmd("squeue")
-  if qs.returncode!=0:
-    return
-  qs = pd.DataFrame([[a.strip() for a in one.split(" ") if len(a.strip())>0 ] for one in qs.stdout.decode("utf-8").split("\n") if len(one)>6 and '%s_'%jID in one])
-  errID=[]
-  runID=[]
-  if qs.shape[0]>0:
-    qs[0] = [a.split("_")[0] for a in qs[0]]
-    errID = set(qs[qs[qstateCol].isin(['S','ST'])][qJobCol])
-    runID = set(qs[~qs[qstateCol].isin(['S','ST'])][qJobCol])
-
-  for one in errID:
-    run_cmd("scancel %s"%one)
-    runID.discard(one)
-  jNames = []
-  for oneJob in runID:
-    if len(oneJob)<5:
-      continue
-    jobDetail = parseSlurmJob(oneJob)
-    jName=jobDetail.get('JobName')
-    if jName is None:
-      continue
-    jNames.append(jName.replace(jID+"_",""))
-  # check the finished job, resubmit if not sucessfully finished
-  jNames=list(set(jNames))
-  resub = {}
-  finishedJob = []
-  for one in cmds.keys():
-    if not one in jNames:
-      strLog = glob.glob(os.path.join(strWD,"%s.log"%one))
-      if len(strLog)==0 or not "DONE" in run_cmd("tail -n 1 %s"%natsorted(strLog,reverse=True)[0]).stdout.decode("utf-8"):
-        cmdN[one] += 1
-        if cmdN[one]>maxJobSubmitRepN:
-          #print("\n--->ERROR failed with %d times qsub: %s"%(maxJobSubmitRepN,one))
-          failedJobs[len(failedJobs)+1] = one
-          finishedJob.append(one)
-          continue
-        resub[one] = cmds[one]
-      else:
-        print("\n\t===== %s ====="%one)
-        with open(strLog[0],"r") as f:
-          print(f.read())
-        print("\tFinished: %s"%one)
-        finishedJob.append(one)
-  if len(resub)>0:
-    re1=sbatch(resub,strPath,core,memG,jID,gpu=gpu)
-    time.sleep(5) #might not needed for the qsub to get in
-  for one in finishedJob:
-    del cmds[one]
-def parseSlurmJob(jobID):
-  jInfo = {}
-  for one in (run_cmd("scontrol show job %s"%jobID)
-              .stdout
-              .decode("utf-8")
-              .split("\n")):
-    tmp = one.split("=")
-    if len(tmp)<2:
-      continue
-    if len(tmp)==2:
-      jInfo[tmp[0].strip()]=tmp[1].strip()
-      continue
-    k=tmp[0].strip()
-    if k in jInfo.keys():
-      break
-    v=""
-    for i in range(1,len(tmp)-1):
-      vk=tmp[i].rsplit(" ",1)
-      if len(vk)<2:
-        v += "="+vk[0]
-        continue
-      if len(v)>0:
-        vk[0]= v.strip("=")+"="+vk[0]
-      jInfo[k] = vk[0]
-      k=vk[1].strip()
-    if len(v)>0:
-      tmp[-1] = v.strip("=")+"="+tmp[-1]
-    jInfo[k]=tmp[-1].strip()
-  return(jInfo)
-
 
 ## msg
 def MsgPower():
@@ -456,7 +181,8 @@ def initSave(meta,strInput,saveRaw=True):
   config = [one.replace("initOutput",strOut)
                 .replace("initPrjMeta",strMeta)
                 .replace("initDEG",strDEG)
-                .replace("initMethods",'[%s]'%','.join(sysConfig['methods'].keys())) for one in config]
+                .replace("initMethods",'[%s]'%','.join(sysConfig['methods'].keys())) for one in config
+                .replace("initJob","j%d"%random.randint(10,99))]
   strConfig = os.path.join(strOut,"config.yml")
   with open(strConfig,"w") as f:
     f.writelines(config)
@@ -506,17 +232,15 @@ def runPipe(strConfig):
   config = getConfig(strConfig,bSys=False)
   config = checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
-  runQC(config,meta)
+  postH5ad,rawH5ad = pQ.runQC(config,meta,strConfig)
+  if not config["runAnalysis"]:
+    MsgPower()
+    exit()
   
   prefix = os.path.join(config["output"],config["prj_name"])
-  if not os.path.isfile("%s.h5ad"%prefix) or config["newProcess"]:
-    methods = runMethods(strConfig)
-    scaleF = combine(methods,prefix,config)
-  else:
-    D = ad.read_h5ad("%s.h5ad"%prefix,backed="r")
-    scaleF = D.uns.get('scaleF')
-  if not os.path.isfile("%s.h5seurat"%prefix) or config["newProcess"]:
-    saveSeuratObj(prefix)
+  methods = runMethods(strConfig)
+  scaleF = mH.combine(methods,prefix,config)
+
   runDEG(strConfig,prefix,config)
   moveCellDepot(prefix,config,scaleF)
   MsgPower()
@@ -539,129 +263,6 @@ def checkConfig(config):
     config["rasterizeFig"] = True
   beRaster = config["rasterizeFig"]
   return config
-def runQC(config,meta):
-  prefix = os.path.join(config["output"],tempDir,config["prj_name"])
-  reRunQC = True if config.get('reRunQC') is None else config.get('reRunQC')
-  plotSeqQC(meta,config["sample_name"],config["output"],config["group"])
-  setupDir(os.path.dirname(prefix))
-  if not os.path.isfile("%s_raw_prefilter.h5ad"%prefix) or config["newProcess"]:
-    with warnings.catch_warnings():
-      warnings.simplefilter("ignore")
-      tracemalloc.start()
-      adata = getData(meta,config)
-      adata.write("%s_raw_prefilter.h5ad"%prefix)
-      print("\tMemory peak usage in reading: %.2fG"%(tracemalloc.get_traced_memory()[1]/(1024*1024*1024)))
-      tracemalloc.stop()
-  if not os.path.isfile("%s_raw_postfilter.h5ad"%prefix) or reRunQC or config["newProcess"]:
-    if not 'adata' in locals():
-      adata = sc.read_h5ad("%s_raw_prefilter.h5ad"%prefix)
-    print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
-    filterRes=["Filter,cutoff,cell_number,gene_number\n"]
-    filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
-    #adata = dbl.dbl(config,"%s_raw_prefilter.h5ad"%prefix,adata)
-    adata = preprocess(adata,config)
-    strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
-    if not os.path.isfile(strPrefilterQC):
-      plotQC(adata,strPrefilterQC,config["group"])
-    if config["filter_step"]:
-      adata = dbl.filterDBL(adata,config,filterRes)
-      adata = filtering(adata,config,filterRes)
-      plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
-    checkCells(adata)
-    with warnings.catch_warnings():
-      warnings.simplefilter("ignore")
-      adata.write("%s_raw_postfilter.h5ad"%prefix)
-  if config["runAnalysis"]:
-    if not os.path.isfile("%s.h5ad"%prefix) or reRunQC or config["newProcess"]:
-      if not 'adata' in locals():
-        adata = sc.read_h5ad("%s_raw_postfilter.h5ad"%prefix)
-      with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        if "MTstring" in config.keys():
-          regress_out = ['total_counts', 'pct_counts_mt']
-        elif "gene_group" in config.keys():
-          regress_out = ["pct_counts_%s"%k for k in config["gene_group"].keys() if "pct_counts_%s"%k in adata.obs.columns]
-          regress_out.append("total_counts")
-        adata.obs,adata.obsm=obtainRAWobsm(adata.copy(),regress_out)
-        adata.write("%s.h5ad"%prefix)
-  else:
-    runQCmsg(config)
-    exit()
-def runQCmsg(config):
-  print("Please check the following QC files @%s:\n\tsequencingQC.csv\n\tsequencingQC.pdf\n\tprefilter.QC.pdf\n\tpostfilter.QC.pdf"%os.path.join(config["output"],qcDir))
-  print("And then:")
-  print("\t1. Remove any outlier sample from the sample meta table %s"%config['sample_meta'])
-  print("\t2. Update config file on cutoff values for cell filtering")
-  print("\t3. After making sure the cell filtering setting (might several iteration), set 'runAnalysis: True' in the config file.")
-  print("\t4. (Optional) consider to enable parallel by setting: 'parallel: sge' for CAMHPC or 'parallel: slurm' for EdgeHPC.")
-  MsgPower()
-def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
-  print("plotting sequence QC ...")
-  global Rmarkdown
-  Rmarkdown = os.path.join(strOut,Rmarkdown)
-  strOut = os.path.join(strOut,qcDir)
-  setupDir(strOut)
-  if not os.path.isdir(Rmarkdown):
-    os.mkdir(Rmarkdown)
-
-  seqQC = []
-  for i in range(meta.shape[0]):
-    strF = glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
-    #strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
-    #if os.path.isfile(strF):
-    if len(strF)>0:
-      strF = strF[0]
-      print("\tQC: %s"%strF)
-      one = pd.read_csv(strF,thousands=",")
-      one.index=[meta[sID][i]]
-      seqQC.append(one)
-    else:
-      print("\tMissing QC: ",meta[sID][i])
-      #return
-  if len(seqQC)<1:
-    print("***NO sequence QC***")
-    return
-  QC = pd.concat(seqQC)
-  k=list(QC.columns)
-  for i,one in enumerate(k):
-    if pd.api.types.is_string_dtype(QC[one]) and QC[one][0].endswith("%"):
-      QC[one] = QC[one].str.rstrip('%').astype('float')
-      k[i]=one+"%"
-  QC.columns=k
-  QC.to_csv("%s/sequencingQC.csv"%strOut)
-  QC['sample'] = QC.index
-  h = 4.8
-  w = max(6.4,QC.shape[0]*2/10)
-
-  with PdfPages("%s/sequencingQC.pdf"%strOut) as pdf:
-    for one in k:
-      ax = QC.plot.bar(x='sample',y=one,rot=90,legend=False,figsize=(w,h))
-      ax.set_title(one)
-      plt.grid()
-      pdf.savefig(bbox_inches="tight")
-      plt.savefig(os.path.join(Rmarkdown,"sequencingQC_%s.png"%formatFileName(one)),bbox_inches="tight")
-      plt.close()
-    if not grp==None:
-      for oneG in grp:
-        if oneG in meta.columns:
-          QC[oneG] = list(meta[oneG])
-          w = max(4,meta[oneG].nunique()*2/10)
-          for one in k:
-            ax = QC[[one,oneG]].boxplot(by=oneG,rot=90,figsize=(w,h))
-            ax.set_title(one)
-            plt.grid()
-            pdf.savefig(bbox_inches="tight")
-            plt.savefig(os.path.join(Rmarkdown,"sequencingQC_%s_%s.png"%(oneG,formatFileName(one))),bbox_inches="tight")
-            plt.close()
-def checkCells(adata):
-  sysConfig = getConfig()
-  cellN = adata.obs[batchKey].value_counts()
-  cellN = cellN[cellN<sysConfig["minCell"]]
-  if cellN.shape[0]==0:
-    return
-  Exit("The following samples contains less than %d cells, please either relax the filtering or remove them:\n\t%s"%(sysConfig["minCell"],", ".join(list(cellN.index))))
-def formatFileName(strF):
-  return re.sub('_$','',re.sub('[^A-Za-z0-9]+','_',strF))
 def getSampleMeta(strMeta):
   print("processing sample meta information ...")
   if not os.path.isfile(strMeta):
@@ -678,273 +279,6 @@ def getSampleMeta(strMeta):
       continue
     Exit("The UMI file %s is not supported (only supports .h5/csv/tsv matrix and mtx folder)"%oneH5)
   return(meta)
-def getData(meta,config):
-  # considering large samples to merge, saving memory
-  sampleN = meta.shape[0]
-  stepN=50
-  if sampleN<stepN:
-    return(getData_block(meta,config))
-  bIndex = sorted(list(set(list(range(0,sampleN,stepN))+[sampleN])))
-  if (bIndex[-1]-bIndex[-2])==1:
-    del bIndex[-2]
-  D = None
-  for i in range(len(bIndex)-1):
-    print("+++ block %d: %d-%d +++"%(i,bIndex[i],bIndex[i+1]))
-    D1 = getData_block(meta.iloc[bIndex[i]:bIndex[i+1],:].copy(),config)
-    if D is None:
-      D = D1
-    else:
-      D = D.concatenate(D1,batch_key=None,index_unique=None)
-    print("+++ %d cells +++"%D.shape[0])
-    del D1
-  return(D)
-def getData_block(meta,config):
-  sID=config["sample_name"]
-  print("processing sample UMI ...")
-  meta.reset_index(drop=True,inplace=True)
-  adatals = []
-  cellN = 0
-  for i in range(meta.shape[0]):
-    print("\t%s"%meta[sID][i])
-    if os.path.isdir(meta[UMIcol][i]):
-      for one in glob.glob("%s/*mtx"%meta[UMIcol][i])+glob.glob("%s/*tsv"%meta[UMIcol][i]):
-        if not os.path.isfile("%s.gz"%one):
-          print("\t\tsave %s as gz"%one)
-          with open(one,"rb") as Fin:
-            with gzip.open("%s.gz"%one,"wb") as Fout:
-              shutil.copyfileobj(Fin, Fout)
-      with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        adata = sc.read_10x_mtx(meta[UMIcol][i])
-    elif meta[UMIcol][i].endswith('.h5'):
-      adata = sc.read_10x_h5(meta[UMIcol][i])
-    elif meta[UMIcol][i].endswith('.csv'):
-      adata = sc.read_csv(meta[UMIcol][i]).transpose()
-    elif meta[UMIcol][i].endswith('.tsv'):
-      adata = sc.read_csv(meta[UMIcol][i],'\t').transpose()
-    else:
-      Exit("Unsupported UMI format: %s"%meta[UMIcol][i])
-    adata.var_names_make_unique()
-    sc.pp.filter_cells(adata,min_counts=1)
-    adata.X = csc_matrix(adata.X)
-    ## add intro/exon counts/ratio if exists
-    if IntronExon in meta.columns and os.path.isfile(meta[IntronExon][i]):
-      IE = getIntronExon(meta[IntronExon][i],adata.obs_names)
-      adata.obs = adata.obs.merge(IE,left_index=True,right_index=True)
-    if ANNcol in meta.columns and not pd.isna(meta[ANNcol][i]):
-      if not os.path.exists(meta[ANNcol][i]):
-        print("\t\tWarning: cell level meta file does not exist!\n\t\t\t%s"%meta[ANNcol][i])
-      else:
-        annMeta = pd.read_csv(meta[ANNcol][i],index_col=0)
-        adata = adata[adata.obs.index.isin(list(annMeta.index))]
-        adata.obs = pd.merge(adata.obs,annMeta,left_index=True,right_index=True)
-        print("\t\tCell level meta available, cell number: %d"%adata.shape[0])
-    for one in meta.columns:
-      if not 'path' in one and not one==sID:
-        adata.obs[one]=meta[one][i]
-    # add dbl detection
-    adata=dbl.singleDBL(config,meta[UMIcol][i],meta[sID][i],adata)
-    cellN += adata.shape[0]
-    print("\t\tTotal cells so far: %d"%cellN)
-    adatals.append(adata)
-  print("\tmerging samples ...")
-  if len(adatals)==1:
-    adata = adatals[0]
-    adata.obs[batchKey]=meta[sID][0]
-  else:   
-    adata = sc.AnnData.concatenate(*adatals,
-      batch_categories=meta[sID],
-      batch_key=batchKey)
-  print("\tmerging samples completed!")
-  #filter genes after (inner) concatenate
-  sc.pp.filter_genes(adata,min_cells=1)
-  ## remove duplicated columns in var
-  varCol = [one.split("-")[0] for one in adata.var.columns]
-  varInx = [i for i,v in enumerate(varCol) if not v in varCol[:i]]
-  adata.var = adata.var.iloc[:,varInx]
-  adata.var.columns=[varCol[i] for i in varInx]
-  print("\treturning adata")
-  return(adata)
-def getIntronExon(strF,cID):
-  IEcount = pd.read_csv(strF,sep=None,index_col=0)
-  if len(list(set(IEcount.index) & set(cID)))<len(cID):
-    IEcount.index = list(IEcount.index+"-1")
-  IEcount = IEcount.loc[cID,:]
-  IErate = IEcount.apply(lambda x:x/sum(x),axis=1)
-  IErate.columns = [a.replace("count","rate") for a in IErate.columns]
-  IE = IEcount.merge(IErate,left_index=True,right_index=True)
-  return(IE)
-def preprocess(adata,config):
-  print("preprocessing ...")
-  varKey=[]
-  rmGene=np.full(adata.shape[1],False)
-  if "MTstring" in config.keys():#older version
-    MTstring=config["MTstring"]
-    #get MT genes
-    if MTstring is None or len(MTstring)<2:
-      for one in ["MT-","Mt-","mt-"]:
-        mito_genes = adata.var_names.str.startswith(one)
-        if (mito_genes).sum()>0:
-          break
-    else:
-      mito_genes = adata.var_names.str.startswith(MTstring)
-    adata.obs['pct_counts_mt'] = np.sum(adata[:, mito_genes].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
-    if config["rmMT"]:
-      print("\tall mitochondrial genes removed")
-      adata = adata[:, np.invert(mito_genes)]
-  elif "gene_group" in config.keys():
-    for k in config['gene_group']:
-      if type(config['gene_group'][k]['startwith']) is not list:
-        Exit("config error with %s, 'startwith' has to be a list"%k)
-      gList = np.full(adata.shape[1],False)
-      for one in config['gene_group'][k]['startwith']:
-        if len(one)>1:
-          gList |= adata.var_names.str.startswith(one)
-      if gList.sum()==0:
-        print("\tNo genes found for %s"%k)
-        continue
-      print("\tGene group %s contains %d genes"%(k,gList.sum()))
-      adata.var[k]=gList
-      varKey += [k]
-      #adata.obs['pct_%s'%k] = np.sum(adata[:, gList].X, axis=1).A1 / np.sum(adata.X, axis=1).A1 * 100
-      if config['gene_group'][k]['rm']:
-        print("\t%s genes will be removed"%k)
-        rmGene |= gList
-  else:
-    Exit("Unknown config format! Either 'MTstring' or 'gene_group' is required")
-  if len(varKey)>0:
-    sc.pp.calculate_qc_metrics(adata,qc_vars=varKey,inplace=True)
-    for k in varKey:
-      adata.obs.drop("total_counts_%s"%k,axis=1,inplace=True)
-      adata.obs.drop("log1p_total_counts_%s"%k,axis=1,inplace=True)
-  else:
-    sc.pp.calculate_qc_metrics(adata, inplace=True)
-  if rmGene.sum()>0:
-    adata = adata[:, np.invert(rmGene)]
-    print("\tTotal of %d genes are removed",rmGene.sum())
-  print("\tcompleted!")
-  return adata
-def filtering(adata,config,filterRes):
-  print("filtering ...")
-  min_cells=config["min.cells"]
-  min_features=config["min.features"]
-  highCount_cutoff=config["highCount.cutoff"]
-  highGene_cutoff=config["highGene.cutoff"]
-
-  print("\tfiltering cells and genes")
-  if "mt.cutoff" in config.keys():
-    mt_cutoff=config["mt.cutoff"]
-    adata = adata[adata.obs.pct_counts_mt<mt_cutoff,:]
-    filterRes.append("MT cutoff,%f,%d,%d\n"%(mt_cutoff,adata.shape[0],adata.shape[1]))
-    print("\t\tfiltered cells with mt.cutoff %d left %d cells"%(mt_cutoff,adata.shape[0]))
-  elif "gene_group" in config.keys():
-    for k in config['gene_group']:
-      if not "pct_counts_%s"%k in adata.obs.columns:
-        print("\t\tskip %s"%k)
-        continue
-      adata = adata[adata.obs["pct_counts_%s"%k]<config['gene_group'][k]["cutoff"],:]
-      filterRes.append("%s,%f,%d,%d\n"%(k,config['gene_group'][k]["cutoff"],adata.shape[0],adata.shape[1]))
-      print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],adata.shape[0]))
-  else:
-    Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
-
-  ## filtering low content cells and low genes
-  #sc.pp.filter_genes(adata,min_cells=min_cells)
-  adata = adata[:,adata.var['n_cells_by_counts']>=min_cells]
-  filterRes.append("min cell,%d,%d,%d\n"%(min_cells,adata.shape[0],adata.shape[1]))
-  print("\t\tfiltered genes with min.cells %d left %d genes"%(min_cells,adata.shape[1]))
-  #sc.pp.filter_cells(adata,min_genes=min_features) # cost a lot more memories
-  adata = adata[adata.obs.n_genes_by_counts>=min_features,:]
-  filterRes.append("min gene,%d,%d,%d\n"%(min_features,adata.shape[0],adata.shape[1]))
-  print("\t\tfiltered cells with min.features %d left %d cells"%(min_features,adata.shape[0]))
-
-  adata = adata[adata.obs.n_genes_by_counts<highGene_cutoff,:]
-  filterRes.append("max gene,%d,%d,%d\n"%(highGene_cutoff,adata.shape[0],adata.shape[1]))
-  print("\t\tfiltered cells with highGene.cutoff %d left %d cells"%(highGene_cutoff,adata.shape[0]))
-  adata = adata[adata.obs.total_counts<highCount_cutoff,:]
-  filterRes.append("max UMI,%d,%d,%d\n"%(highCount_cutoff,adata.shape[0],adata.shape[1]))
-  print("\t\tfiltered cells with highCount.cutoff %d left %d cells"%(highCount_cutoff,adata.shape[0]))
-  with open("%s/filter.csv"%Rmarkdown,"w") as f:
-    f.writelines(filterRes)
-
-  if adata.shape[0]<10:
-    Exit("Few cells (%d<10) left after filtering, please check the filtering setting in config to contitue!"%adata.shape[0])
-  return adata
-def obtainRAWobsm(D,reg=None):
-  # 95 percentile to normalize
-  print("\tinitializing layout")
-  sc.pp.normalize_total(D,target_sum=math.ceil(np.percentile(D.X.sum(axis=1).transpose().tolist()[0],95)))
-  sc.pp.log1p(D)
-  sc.pp.highly_variable_genes(D, min_mean=0.01, max_mean=3, min_disp=0.5)
-  D = D[:, D.var.highly_variable]
-  if not reg is None:
-    sc.pp.regress_out(D, reg)#['total_counts', 'pct_counts_mt']
-  sc.pp.scale(D, max_value=10)
-  sc.tl.pca(D, svd_solver='arpack',n_comps = 100)
-  npcs = 50
-  sc.pp.neighbors(D, n_neighbors=10, n_pcs=npcs)
-  with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    sc.tl.louvain(D,key_added="raw.louvain")
-    ## umap embedding
-    print("\tembedding ...")
-    sc.tl.umap(D, init_pos='spectral')
-    sc.tl.rank_genes_groups(D, 'raw.louvain')
-    sc.tl.tsne(D, n_pcs=npcs)
-  return D.obs,D.obsm #, D.var.highly_variable
-def plotQC(adata,strPDF,grp=None):
-  print("plotting UMI QC ...")
-  strRmark = os.path.join(Rmarkdown,os.path.splitext(os.path.basename(strPDF))[0])
-  with PdfPages(strPDF) as pdf:
-    savePDF_PNG(sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=batchKey,alpha=0.5,show=False),
-      pdf,"%s_couts_genes.png"%strRmark)
-    savePDF_PNG(sc.pl.highest_expr_genes(adata, n_top=20,show=False),
-      pdf,"%s_topGene.png"%strRmark)
-
-    w = max(6.4,adata.obs[batchKey].nunique()*2/10)
-    plt.rcParams["figure.figsize"] = (w,4.8)
-    
-    pltUMI = sc.pl.violin(adata, keys = 'total_counts',groupby=batchKey,rotation=90,show=False)
-    adataM = adata.obs['total_counts'].median()
-    pltUMI.hlines(adataM,xmin=-1,xmax=adata.obs[batchKey].nunique(),color='b')#"Median: %d"%round(adataM)
-    pltUMI.set_title("Median: %d"%round(adataM))
-    savePDF_PNG(pltUMI,
-      pdf,"%s_counts.png"%strRmark)
-    savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=batchKey,rotation=90,show=False),
-      pdf,"%s_genes.png"%strRmark)
-
-    for k in [one for one in adata.obs.columns if one.startswith('pct_counts_')]:
-      savePDF_PNG(sc.pl.violin(adata, keys =k,groupby=batchKey,rotation=90,show=False),
-        pdf,"%s_%s.png"%(strRmark,k))
-
-    plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
-
-    if not grp==None:
-      for oneG in grp:
-        if oneG in adata.obs.columns:
-          savePDF_PNG(sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts',color=oneG,alpha=0.5,show=False),
-                      pdf,"%s_%s_couts_genes.png"%(strRmark,oneG))
-
-          w = max(6.4,adata.obs[oneG].nunique()*2/10)
-          plt.rcParams["figure.figsize"] = (w,4.8)
-
-          savePDF_PNG(sc.pl.violin(adata, keys = 'n_genes_by_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
-                      pdf,"%s_%s_genes.png"%(strRmark,oneG))
-          savePDF_PNG(sc.pl.violin(adata, keys = 'total_counts',groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
-                      pdf,"%s_%s_counts.png"%(strRmark,oneG))
-
-          for k in [one for one in adata.obs.columns if one.startswith('pct_counts_')]:
-            savePDF_PNG(sc.pl.violin(adata, keys =k,groupby=oneG,rotation=90,show=False,order=list(adata.obs[oneG].unique())),
-                        pdf,"%s_%s_%s.png"%(strRmark,oneG,k))
-          plt.rcParams['figure.figsize'] = plt.rcParamsDefault['figure.figsize']
-def savePDF_PNG(ax,pdf,strPNG):
-  if beRaster:
-    for one in ax.get_children():
-      if 'PathCollection' in str(one):
-        one.set_rasterized(True)
-  pdf.savefig(bbox_inches="tight")
-  plt.savefig(strPNG,bbox_inches="tight")
-  plt.close()
 
 def runMethods(strConfig):
   print("starting the process by each method ...")
@@ -952,7 +286,6 @@ def runMethods(strConfig):
   config = getConfig(strConfig,bSys=False)
   checkLock(config,sysConfig)
 
-  cmds = {}
   allM = sysConfig['methods']
   if 'methods' in config.keys():
     selM = list(set(config['methods']) & set(allM.keys()))
@@ -961,18 +294,23 @@ def runMethods(strConfig):
     allM = {a:allM[a] for a in selM}
 
   prefix = os.path.join(config["output"],tempDir,config["prj_name"])
+  cmds = {}
+  if not os.path.isfile(prefix+".h5ad"):
+    cmds = {'raw':"python -u %s/src/processQC.py %s %s"%(strPipePath,prefix+"_raw_postfilter.h5ad",prefix+".h5ad")}
   for m in allM.keys():
     strH5ad = "%s.h5ad"%os.path.join(config["output"],m,config["prj_name"])
     if not config["newProcess"] and os.path.isfile(strH5ad):
+      print("\tUsing previous %s results: %s\n\t\tPlease rename/remove the above file to rerun!"%(m,strH5ad))
       continue
     setupDir(os.path.dirname(strH5ad))
-    cmd="%s/src/%s %s.h5ad %s"%(strPipePath,#_%s
+    cmds[m]="%s/src/%s %s_raw_postfilter.h5ad %s"%(strPipePath,#_%s
                                     allM[m][0],
                                     prefix,
                                     #allM[m][1],
                                     strConfig)
-    cmds[m]=cmd
-  submit_cmd(cmds,config)
+    
+  if len(cmds)>0:
+    cU.submit_cmd(cmds,config)
   return allM.keys()
 def checkLock(config,sysConfig):
   if sysConfig['celldepotDir'] is not None:
@@ -987,7 +325,7 @@ def checkLock(config,sysConfig):
         Exit("ERROR: User %s is in the process of project %s. If you are sure to overwrite, please update config with 'overwrite: True'!"%(uName,config['prj_name']))
     if os.path.isfile(strLock):
       os.remove(strLock)
-    run_cmd("touch %s"%strLock)
+    cU.run_cmd("touch %s"%strLock)
 def rmLock(config):
   sysConfig = getConfig()
   strH5ad = os.path.join(sysConfig['celldepotDir'],"%s.h5ad"%config['prj_name'])
@@ -995,96 +333,11 @@ def rmLock(config):
   if os.path.isfile(strLock):
       os.remove(strLock)
   
-def combine(mIDs,prefix,config):
-  #print("Evaluating all methods ...")
-  CKmethods = [one for one in mIDs if os.path.isfile("%s.h5ad"%os.path.join(config['output'],one,config["prj_name"]))]+['raw']
-  if not "SCT" in CKmethods:
-    Exit("SCT is missing! and it is required expression for visualization!")
-
-  print("combining all methods results ...")
-  D = integrateH5ad("%s.h5ad"%os.path.join(config['output'],"SCT",config["prj_name"]),
-    CKmethods,prefix,config.get("major_cluster_rate"),config.get("ref_name"))
-  Draw = integrateH5ad("%s.h5ad"%os.path.join(config['output'],tempDir,config["prj_name"]),
-    CKmethods,prefix,config.get("major_cluster_rate"),config.get("ref_name"))
-  
-  print("saving combined results ...")
-  with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    D.write("%s.h5ad"%prefix)
-    Draw.write("%s_raw_added.h5ad"%prefix)
-    
-  print("kBET & silhouette evaluation ...")
-  submit_cmd({"kBET":"Rscript %s/src/kBET.R %s.h5ad %s/evaluation/kBet.pdf"%(strPipePath,prefix,os.path.dirname(prefix)),
-              "silhouette":"python -u %s/src/silhouette.py %s.h5ad %s/evaluation/silhouette.pdf"%(strPipePath,prefix,os.path.dirname(prefix))},
-            config)
-  
-  return D.uns.get('scaleF')
-def integrateH5ad(strH5ad,methods,prefix,majorR=None,ref_name=None):
-  D = ad.read_h5ad(strH5ad)
-  obsm = pd.DataFrame(index=D.obs.index)
-  seuratRefLab = None
-  seuratRefCluster= None
-  for one in methods:
-    if one in ["SCT","raw"]:
-      continue
-    oneH5ad = "%s.h5ad"%os.path.join(os.path.dirname(prefix),one,os.path.basename(prefix))#"%s_%s.h5ad"%(prefix,one)
-    if not os.path.isfile(oneH5ad):
-      print("Warning: ignore missing h5ad (%s) for method %s"%(oneH5ad,one))
-      continue
-    print("\tmerging ",one)
-    D1 = ad.read_h5ad(oneH5ad,backed=True)
-    obs = D1.obs.copy()
-    addObs = [one for one in obs.columns if not one in D.obs.columns]
-    if one == "SeuratRef":
-      seuratRefCluster=obs.columns
-      prefix_ref=""
-      if isinstance(ref_name,dict):
-        prefix_ref=list(ref_name.keys())[0]
-      seuratRefLab = [i for i in addObs if not i.endswith("score") and i.startswith("predicted."+prefix_ref)]
-    if len(addObs)>0:
-      D.obs=D.obs.merge(obs[addObs],how="left",left_index=True,right_index=True)
-    # check the order of cells
-    for k in D1.obsm.keys():
-      kname = k.replace("X_","X_%s_"%one)
-      obsm1 = obsm.merge(pd.DataFrame(D1.obsm[k],index=D1.obs.index),how="left",left_index=True,right_index=True)
-      D.obsm[kname] = obsm1.fillna(0).to_numpy()
-  ## assign seurat labels to other integration clusters
-  if majorR is not None and seuratRefLab is not None and ref_name is not None:
-    print("----- Reassign cluster/louvain to seurat label transfer")
-    for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
-      if aCluster in seuratRefCluster:
-        continue
-      for aLabel in seuratRefLab:
-        D.obs["%s_%s"%(aCluster,aLabel)] = findMajor(D.obs[[aCluster,aLabel]],majorR)
-  ## remove NA/nan
-  for one in D.obs.columns:
-    if D.obs[one].isna().sum()>0:
-      print("Fix NA: %s"%one)
-      if D.obs[one].dtype == 'category':
-        D.obs[one] = list(D.obs[one])
-        D.obs[one].fillna("NA")
-  return D
-def findMajor(X,majorR):
-  # first column is the cluster number, second column is the label
-  colName = list(X.columns)
-  Xsize = X.groupby(colName).size().reset_index().rename(columns={0:'count'})
-  Xmax = (Xsize[Xsize.groupby(colName[0])['count'].transform(max)==Xsize['count']]
-    .merge(Xsize.groupby(colName[0])['count'].sum().reset_index().rename(columns={'count':'sum'}),on=colName[0]))
-  Xmax["name"] = Xmax.apply(lambda x:x[colName[1]] if x['count']/x['sum']>majorR else x[colName[0]],axis=1)
-  Xsel = Xmax.set_index(colName[0])['name'].to_dict()
-  return(X[colName[0]].map(Xsel))
-def saveSeuratObj(prefix):
-  strH5ad = "%s.h5ad"%prefix
-  strRDS = glob.glob('%s*.rds'%os.path.join(os.path.dirname(prefix),"SCT",os.path.basename(prefix)))[0]
-  if os.path.exists(strRDS):
-    run_cmd("Rscript %s/src/seuratObj.R %s %s"%(strPipePath,strRDS,strH5ad))
-  
 def description(strF,strDesc):
   print(strF)
   with open(strF,"w") as f:
     f.write(strDesc+"\n")
   os.chmod(strF,0o664)
-  
 def moveCellDepot(prefix,config,scaleF=None):
   sysConfig = getConfig()
   if sysConfig['celldepotDir'] is None:
@@ -1095,7 +348,7 @@ def moveCellDepot(prefix,config,scaleF=None):
   if os.path.isfile(strCDfile):
     os.remove(strCDfile)
   shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
-  shutil.copy("%s_raw_added.h5ad"%prefix, sysConfig['celldepotDir'])
+  shutil.copy("%s_raw_obsAdd.h5ad"%prefix, sysConfig['celldepotDir'])
   rmLock(config)
   
   # create description file
@@ -1129,7 +382,7 @@ def runDEG(strConfig,prefix,config):
     return
   
   cmd = "Rscript %s/src/scRNAseq_DE.R %s"%(strPipePath,strConfig)
-  msg = run_cmd(cmd).stdout.decode("utf-8")
+  msg = cU.run_cmd(cmd).stdout.decode("utf-8")
   #msg="scDEG task creation completed"
   if "scDEG task creation completed" in msg:
     with open("%s_scDEG.cmd.json"%prefix,"r") as f:
@@ -1141,7 +394,7 @@ def runDEG(strConfig,prefix,config):
       memG = math.ceil(os.path.getsize("%s_raw_added.h5ad"%prefix)*50/1e9)
     else:
       memG = math.ceil(os.path.getsize(umiF)*50/1e9)
-    submit_cmd(scDEGtask,config,1,memG)
+    cU.submit_cmd(scDEGtask,config,1,memG)
     formatDEG(prefix)
 def formatDEG(prefix):
   print("=== Formating scDEG results to create the db file ===")
@@ -1187,59 +440,6 @@ def main():
     runPipe(os.path.realpath(strPath))
   else:
     print("The config file is required, and %s doesn't exist!"%strPath)
-
-qsubScript='''#!/bin/bash
-#$ -N jID_jName
-#$ -wd wkPath
-#$ -pe node qsubCore
-#$ -l m_mem_free=MEMFREEG
-#$ -o jName.log
-#$ -e jName.log
-#- End UGE embedded arguments
-: > $SGE_STDOUT_PATH
-cat $PE_HOSTFILE
-echo 'end of HOST'
-
-# exit
-set -e
-
-env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
-echo 'DONE'
-'''
-sbatchScriptCPU='''#!/bin/bash
-#SBATCH -J jID_jName
-#SBATCH -D wkPath
-#SBATCH -n CoreNum
-#SBATCH -t 72:0:0
-#SBATCH --mem=MEMFREEG
-#SBATCH -o jName.log
-#SBATCH -e jName.log
-#- End embedded arguments
-echo $SLURM_JOB_NODELIST
-echo 'end of HOST'
-# exit
-set -e
-env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
-echo 'DONE'
-'''
-sbatchScriptGPU='''#!/bin/bash
-#SBATCH --job-name=jID_jName
-#SBATCH -D wkPath
-#SBATCH --gres=gpu:1
-#SBATCH --time=24:00:00
-#SBATCH --requeue
-#SBATCH -p gpu
-#SBATCH --mem=MEMFREE
-#SBATCH -o jName.log
-#SBATCH -e jName.log
-#- End embedded arguments
-echo $SLURM_JOB_NODELIST
-echo 'end of HOST'
-# exit
-set -e
-env -i bash -c 'source sysPath/src/.env;eval $condaEnv;strCMD'
-echo 'DONE'
-'''
 
 if __name__ == "__main__":
   start_time = time.time()
