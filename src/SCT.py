@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re, yaml,functools,logging,math
+import subprocess, os, h5py, sys, warnings, re, yaml,functools,logging,math,time
 import scanpy as sc
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
 import batchUtility as bU
+import timeoutFun as tF
 
 print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -85,15 +86,21 @@ def batchNorm(strH5ad,strConfig,newH5ad,batchCell):
     sc.pp.neighbors(Exp1, n_neighbors=10, n_pcs=npc)
     sc.tl.leiden(Exp1,key_added=clusterKey)
     print("\tUMAP ...")
+    sTime=time.time()
     sc.tl.umap(Exp1)
-    print("\ttSNE ...")
     sc.tl.rank_genes_groups(Exp1,clusterKey)
-    sc.tl.tsne(Exp1, n_pcs=npc)
+    print("\ttSNE ...")
+    try:
+      with tF.time_limit(max(3600*10,5*int(time.time()-sTime))):
+        sc.tl.tsne(Exp1, n_pcs=npc)
+    except tF.TimeoutException as e:
+      print("\t\tTime out! NO tSNE!")
     print("\tsaving ...")
     Exp1 = Exp1[Exp.obs_names]
     Exp.obs[clusterKey]=Exp1.obs[clusterKey]
     Exp.obsm['X_normalized_umap'] = Exp1.obsm["X_umap"]
-    Exp.obsm['X_normalized_tsne'] = Exp1.obsm["X_tsne"]
+    if "X_tsne" in Exp1.obsm_keys():
+      Exp.obsm['X_normalized_tsne'] = Exp1.obsm["X_tsne"]
     Exp.obsm['X_normalized_pca'] = Exp1.obsm["X_pca"]
     Exp.write(newH5ad)
   return

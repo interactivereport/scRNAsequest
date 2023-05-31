@@ -1,4 +1,4 @@
-import yaml, io, os, sys, re, logging, warnings, glob, math, functools
+import yaml, io, os, sys, re, logging, warnings, glob, math, functools, time
 import pandas as pd
 import scanpy as sc
 import anndata as ad
@@ -12,6 +12,7 @@ from timeit import default_timer as timer
 import cmdUtility as cU
 import obtainData as oD
 import dbl
+import timeoutFun as tF
 
 print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -291,13 +292,17 @@ def obtainRAWobsm(D,reg=None):
     sc.tl.leiden(D,key_added=clusterKey)
     ## umap embedding
     print("\tumap ...")
+    sTime = time.time()
     sc.tl.umap(D, init_pos='spectral')
     sc.tl.rank_genes_groups(D,clusterKey)
     print("\ttSNE ...")
-    sc.tl.tsne(D, n_pcs=npcs)
+    try:
+      with tF.time_limit(max(3600*10,5*int(time.time()-sTime))):
+        sc.tl.tsne(D, n_pcs=npcs)
+    except tF.TimeoutException as e:
+      print("\t\tTime out! NO tSNE!")
     for one in D.obsm_keys():
       D.obsm[re.sub("^X_","X_raw_",one)] = D.obsm.pop(one)
-    
   return D.obs,D.obsm #, D.var.highly_variable
 def main():
   if len(sys.argv)==3:
