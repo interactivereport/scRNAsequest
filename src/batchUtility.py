@@ -1,7 +1,17 @@
-import random, re, warnings, os, glob
+import random, re, warnings, os, glob, yaml
 import anndata as ad
 import scanpy as sc
 
+def inputCheck(args):
+  strH5ad = args[1]
+  if not os.path.isfile(strH5ad):
+    msgError("ERROR: %s does not exist!"%strH5ad)
+  strConfig = args[2]
+  if not os.path.isfile(strConfig):
+    msgError("ERROR: %s does not exist!"%strConfig)
+  with open(strConfig,"r") as f:
+    config = yaml.safe_load(f)
+  return config
 
 def splitBatch(strH5ad,strOut,batchCell=None,batchKey=None,hvgN=None):
   if batchCell is None:
@@ -10,7 +20,7 @@ def splitBatch(strH5ad,strOut,batchCell=None,batchKey=None,hvgN=None):
   else:
     print("Initialize batch process")
     os.makedirs(strOut,exist_ok=True)
-    h5adList= glob.glob(strOut+"*.h5ad")
+    h5adList= glob.glob(os.path.join(strOut,"tmp*.h5ad"))
     if len(h5adList)==0:
       print("Reading ...")
       D=ad.read_h5ad(strH5ad)
