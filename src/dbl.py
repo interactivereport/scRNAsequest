@@ -31,13 +31,13 @@ def dbl(config,strH5ad,adata):
   meta = pd.read_csv(strDBL,index_col=0,header=0)
   adata.obs = adata.obs.merge(meta,how='left',left_index=True,right_index=True)
   return adata
-def singleDBL(config,strUMI,sID,adata):
+def singleDBL(strOut,strUMI,sID,adata):
   print("\t\tstarting doublet finding ...")
-  os.makedirs(os.path.join(config["output"],"dbl"),exist_ok=True)
-  strBarcode= "%s_barcode.csv"%os.path.join(config["output"],"dbl",sID)
+  os.makedirs(os.path.join(strOut,"dbl"),exist_ok=True)
+  strBarcode= "%s_barcode.csv"%os.path.join(strOut,"dbl",sID)
   with open(strBarcode,"w") as f:
     f.write("\n".join(adata.obs.index))
-  strDBL = "%s.csv"%os.path.join(config["output"],"dbl",sID)
+  strDBL = "%s.csv"%os.path.join(strOut,"dbl",sID)
   cmd = "Rscript %s %s %s %s &> %s/%s.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
                             strUMI,strDBL,strBarcode,os.path.dirname(strDBL),sID)
   if os.path.isfile(strDBL):
@@ -55,13 +55,15 @@ def singleDBL(config,strUMI,sID,adata):
 def filterDBL(adata,config,filterRes):
   # filtering
   if config.get("dbl_filter") is True:
-    adata = adata[adata.obs['scDblFinder.class'].isin(['singlet'])]
+    #adata = adata[adata.obs['scDblFinder.class'].isin(['singlet'])]
+    adata._inplace_subset_obs(adata.obs['scDblFinder.class'].isin(['singlet']))
     print("Filtering by dbl class: ",adata.shape[0]," cells")
     filterRes.append("doublet,byClass,%d,%d\n"%(adata.shape[0],adata.shape[1]))
   if type(config.get("dbl_filter")) is float:
-    adata = adata[adata.obs['scDblFinder.score']<=config.get("dbl_filter")]
+    #adata = adata[adata.obs['scDblFinder.score']<=config.get("dbl_filter")]
+    adata._inplace_subset_obs(adata.obs['scDblFinder.score']<=config.get("dbl_filter"))
     print("Filtering by dbl score (",config.get("dbl_filter"),"): ",adata.shape[0]," cells")
     filterRes.append("doublet,byScore(%f),%d,%d\n"%(config.get("dbl_filter"),adata.shape[0],adata.shape[1]))
-  return adata
+  #return adata
   
   
