@@ -18,15 +18,16 @@ gene_group:
     rm: False
 filter_step: True # if False, the above 'gene_group' filtering will be skipped as well
 dbl_filter: False # if True, the dbl finding class will be used to remove the predicted doublets, if a numeric (0~1), cells with larger predicted doublet scores will be removed
-min.cells: 5 #filtering genes by minimal cell
+min.cells: 5 #filtering genes by minimal cell, please increase this when there is a large number of cells
 min.features: 50 #filtering cells by minimal genes
 highCount.cutoff: 80000 # any cells with higher total counts to be removed
 highGene.cutoff: 6000 # any cells with higher number of detected genes to be removed
 group: #if provided, a 10X QC box plot will be ploted in QC plot
 rasterizeFig: True # should image in pdf be rasterized
 
-reRunQC: True # if satisfied with the above setting, please set this to False to save time 
 runAnalysis: False
+reRunQC: True # if satisfied with the above setting, please set this to False to save time 
+overwrite: False
 newProcess: False
 methods: initMethods #SCT method (including log1p) is required expression normalization
 expScaler: 10000 #integer value, 0: SCT (along with following option); 1-100: logNormal with scale.factor to be the specified quantile; >100: logNormal with scale.factor to be the specified value
@@ -34,7 +35,8 @@ PrepSCTFindMarkers: True # should the "PrepSCTFindMarkers" applied on SCT to be 
 parallel: False #"sge" or "slurm"
 core: 32
 memory: 480G #if provided (e.g. 100G), it will be used to request cluster scheduler  
-overwrite: False
+jobID: initJob # please make sure this job id is different with your other projects which would be run at the same time
+
 major_cluster_rate: 0.7 # the proportion of cells of an integration cluster to be assigned to a seurat reference label
 batchCell: 200000 # the number of cells to be put into one batch to limit memory usage (please remove/rename the 'tmp' folder in sctHarmony/SeuratRef, if rerun is needed)
 harmonyBatchGene: 5000 # the number of high variable genes for each batch during sctHarmony step
