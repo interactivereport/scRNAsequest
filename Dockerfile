@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM debian:stable-20220316
 
 USER root
 ENV TZ=America/New_York
