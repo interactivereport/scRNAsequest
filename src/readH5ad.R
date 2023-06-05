@@ -26,6 +26,8 @@ getobs <- function(strH5ad){
   # for anndata v 0.8
   for(one in names(obs)[sapply(obs,function(x)return(!is.null(names(x))))&!grepl("^_|index$",names(obs))]){
     if(sum(c("categories","codes")%in%names(obs[[one]]))!=2) next
+    if(sum(obs[[one]]$codes<0)>0)
+      stop(paste0("NaN or NA found in ",one,", please use a string such as 'unknown' or 'undetermined' instead!"))
     meta[[one]] <- obs[[one]]$categories[1+obs[[one]]$codes]
   }
   return(meta)
