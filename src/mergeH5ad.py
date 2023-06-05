@@ -78,7 +78,7 @@ def integrateH5ad(strH5ad,methods,prefix,outH5ad,majorR=None,ref_name=None):
       print("Warning: ignore missing h5ad (%s) for method %s"%(oneH5ad,one))
       continue
     print("\tmerging ",one)
-    D1 = ad.read_h5ad(oneH5ad,backed=True)
+    D1 = ad.read_h5ad(oneH5ad,backed="r")
     obs = D1.obs.copy()
     addObs = [one for one in obs.columns if not one in D.obs.columns]
     if one == "SeuratRef":
@@ -126,7 +126,7 @@ def saveSeuratObj(prefix):
     cU.run_cmd("Rscript %s/seuratObj.R %s %s"%(strPipePath,strRDS[0],strH5ad))
 
 def main():
-  print(sys.argv)
+  #print(sys.argv)
   if len(sys.argv)==2:
     saveSeuratObj(sys.argv[1])
     return()
