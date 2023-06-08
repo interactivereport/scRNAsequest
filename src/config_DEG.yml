@@ -3,6 +3,7 @@ meta: #required, can be a cell annotation data.frame rds or a h5ad file
 output: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest/src
 DBname: cellxgeneVIP
 parallel: slurm # False or "sge" or "slurm"
+memory: 16G # the memory allocation for scDEG on each cluster
 newProcess: False #False use existing DEG results## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest/src/DEGinfo.csv #required for DEG analysis
 # Please be causion of changing the following default filtering
