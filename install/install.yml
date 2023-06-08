@@ -16,7 +16,7 @@ dependencies:
   - r-ggplot2=3.3.5
   - r-patchwork=1.1.1
   - r-harmony=0.1
-  - r-matrix=1.4_1
+  - r-matrix=1.4_0
   - r-liger=0.5.0.9000
   - r-rjson=0.2.21
   - r-rcppcnpy=0.2.10

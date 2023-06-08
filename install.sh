@@ -13,8 +13,8 @@ fi
 
 src="$(dirname $0)/src"
 if { conda env list | grep "^$appEnvName"; } >/dev/null 2>/dev/null; then conda env remove -n $appEnvName; fi
-# mamba is not in the base conda
-conda create -y -n $appEnvName "python=3.8.13=h582c2e5_0_cpython" "mamba=1.1.0" -c conda-forge
+# mamba is not in the base conda=h582c2e5_0_cpython
+conda create -y -n $appEnvName "python=3.8.13" "mamba=1.1.0" -c conda-forge
 #conda env create -f install.yml
 condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
