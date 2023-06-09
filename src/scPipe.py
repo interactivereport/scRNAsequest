@@ -181,8 +181,8 @@ def initSave(meta,strInput,saveRaw=True):
   config = [one.replace("initOutput",strOut)
                 .replace("initPrjMeta",strMeta)
                 .replace("initDEG",strDEG)
-                .replace("initMethods",'[%s]'%','.join(sysConfig['methods'].keys())) for one in config
-                .replace("initJob","j%d"%random.randint(10,99))]
+                .replace("initMethods",'[%s]'%','.join(sysConfig['methods'].keys()))
+                .replace("initJob","j%d"%random.randint(10,99)) for one in config]
   strConfig = os.path.join(strOut,"config.yml")
   with open(strConfig,"w") as f:
     f.writelines(config)
