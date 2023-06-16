@@ -173,7 +173,7 @@ def filtering(adata,config,filterRes):
       print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],np.sum(selObs)))
   else:
     Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
-
+    
   ## filtering low content cells and low genes
   selVar=np.logical_and(selVar,adata.var['n_cells_by_counts']>=min_cells)
   filterRes.append("min cell,%d,%d,%d\n"%(min_cells,np.sum(selObs),np.sum(selVar)))
@@ -187,6 +187,14 @@ def filtering(adata,config,filterRes):
   selObs = np.logical_and(selObs,adata.obs.total_counts<highCount_cutoff)
   filterRes.append("max UMI,%d,%d,%d\n"%(highCount_cutoff,np.sum(selObs),np.sum(selVar)))
   print("\t\tfiltered cells with highCount.cutoff %d left %d cells"%(highCount_cutoff,np.sum(selObs)))
+  if "intron.cutoff" in config.keys():
+    sel = [item for item in adata.obs.columns if re.search('intron.*rate$', item,re.IGNORECASE)]
+    if len(sel)==1:
+      sel = sel[0]
+      selObs = np.logical_and(selObs,adata.obs[sel]<config["intron.cutoff"])
+      filterRes.append("intron rate,%f,%d,%d\n"%(config["intron.cutoff"],np.sum(selObs),np.sum(selVar)))
+      print("\t\tfiltered cells with intron.cutoff %f left %d cells"%(config["intron.cutoff"],np.sum(selObs)))
+    
   with open(os.path.join(Rmarkdown,"filter.csv"),"w") as f:
     f.writelines(filterRes)
 
