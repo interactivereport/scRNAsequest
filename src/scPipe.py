@@ -394,7 +394,7 @@ def runDEG(strConfig,prefix,config):
       memG = math.ceil(os.path.getsize("%s_raw_added.h5ad"%prefix)*50/1e9)
     else:
       memG = math.ceil(os.path.getsize(umiF)*50/1e9)
-    cU.submit_cmd(scDEGtask,config,1,memG)
+    cU.submit_cmd(scDEGtask,config,math.ceil(memG/16),memG)
     formatDEG(prefix)
 def formatDEG(prefix):
   print("=== Formating scDEG results to create the db file ===")
