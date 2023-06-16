@@ -24,6 +24,7 @@ def initProject(strInput):
       "output: "+strInput+"\n",
       "DBname: cellxgeneVIP\n",
       'parallel: slurm # False or "sge" or "slurm"\n',
+      'memory: 16G\n',
       'newProcess: False #False use existing DEG results']+DEGconfig
 
   strConfig = os.path.join(strInput,"config.yml")
