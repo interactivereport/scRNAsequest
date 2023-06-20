@@ -3,6 +3,7 @@
 PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
+  require(peakRAM)
   options(future.globals.maxSize=8000*1024^2,stringsAsFactors=F)
 }
 #
@@ -224,7 +225,6 @@ scRNAseq_DE_one <- function(
     cluster_interest,
     strSrc=NULL
 ){
-    suppressMessages(suppressWarnings(PKGloading()))
     if(!is.null(strSrc)) source(paste0(strSrc,"/pipeline_class.R"))
     message("===== ",env$method,":",cluster_interest," =====")
     strOut <- env$output
@@ -298,8 +298,9 @@ scRNAseq_DE_one <- function(
         write.csv(de$res.tab, file=strF, row.names = FALSE)
         p <- sce_qc$volcanoPlot(FDR_threshold = 0.05, FC_threshold = 2, title = env$method)
         ggsave(gsub("csv","png",strF))
+        return(c(file.info(env$strCount)$size/(1024*1024),sum(allMeta[,env$column_cluster]==cluster_interest)))
     }
-    
+    return()
 }
 
 args <- commandArgs(trailingOnly=TRUE)
@@ -313,12 +314,23 @@ if(length(args)==1){
 if(length(args)>1){
   selGrp <- paste(args[-1],collapse=" ")
   #message("\n\n\n",args[-1],": ",selGrp,"\n\n\n")
-  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
-  print(system.time({
-    scRNAseq_DE_one(readRDS("env.rds"),
-                    selGrp,
-                    args[1])
-    message("Successful!")
-  }))
+  suppressMessages(suppressWarnings(PKGloading()))
+  strAppPath <- dirname(gsub("--file=","",grep("file=",commandArgs(),value=T)))
+  source(file.path(strAppPath,"readH5ad.R"))
+  memUse <- peakRAM(Finfo <- scRNAseq_DE_one(readRDS("env.rds"),
+                                            selGrp,
+                                            args[1]))
+  print(memUse)
+  strLog <- file.path(dirname(strAppPath),"log","scDEG_memory.log")
+  if(!file.exists(strLog)){
+    dir.create(dirname(strLog),showWarnings=F)
+    cat("File_size_MB\tCell_number\tTime_s\tRam_MiB\tPeak_Ram_MiB\n",sep="",file=strLog)
+    Sys.chmod(strLog,"666",use_umask = F)
+  }
+  if(!is.null(Finfo)){
+    message("Finfo")
+    cat(paste(round(c(Finfo,unlist(memUse[2:4])),4),collapse="\t"),"\n",sep="",file=strLog,append=T)
+  }
+  message("Successful!")
 }
 
