@@ -16,7 +16,7 @@ dependencies:
   - r-ggplot2=3.3.5
   - r-patchwork=1.1.1
   - r-harmony=0.1
-  - r-matrix=1.4_0
+  - r-matrix=1.4_1 #required by DEG matrix subsetting
   - r-liger=0.5.0.9000
   - r-rjson=0.2.21
   - r-rcppcnpy=0.2.10
@@ -26,8 +26,8 @@ dependencies:
   - r-foreach=1.5.2
   - r-doparallel=1.0.17
   - r-tidyverse=1.3.1
-  - r-tmb=1.8.0
-  - r-glmmtmb=1.1.3
+  - r-tmb=1.9.0
+  - r-glmmtmb=1.1.4
   - r-slam=0.1-50
   - r-domc=1.3.8
   - r-emmeans=1.7.3
