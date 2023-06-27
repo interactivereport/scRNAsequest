@@ -4,7 +4,7 @@ PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
   require(peakRAM)
-  options(future.globals.maxSize=8000*1024^2,stringsAsFactors=F)
+  options(future.globals.maxSize=16*1024^3,stringsAsFactors=F)
 }
 #
 checkFileExist <- function(strF,msg="file"){
@@ -69,13 +69,14 @@ main <- function(strConfig){
   ## enumerate all comparisons
   message("\tcreating scDEG tasks ...")
   cmds <- apply(compInfo,1,function(x){
-    if(is.na(x["method"])){
+    if(is.na(x["method"]) || nchar(x["method"])<1){
       x["method"] <- "NEBULA"
       if(is.na(x["model"])) x["model"] <- "HL"
     }
     coV <- NULL
     if(!is.na(x["covars"]) && nchar(x["covars"])>2) coV <- unlist(strsplit(x["covars"],"\\+"),use.name=F)
     if("comparisonName"%in%names(x)){
+      message(x["comparisonName"])
       strOut <- file.path(scDEGpath,x["comparisonName"])
     }else{
       strD <- paste(c(gsub("_",".",c(paste(x[c("alt","ref")],collapse=".vs."),
@@ -219,7 +220,48 @@ checkInput <- function(env){
     }
     system(paste("mkdir -p",env$output))
 }
-
+checkCellMeta <- function(meta,env,cluster_interest){
+  sel <- meta[,env$column_cluster]==cluster_interest
+  # check total cells
+  if(sum(sel)<10){
+    message("\tSkip: Too few cells (",sum(sel),")")
+    return()
+  }
+  # check if any subject in both groups
+  subjGroup <- ftable(meta[sel,c(env$column_sample,env$column_group)])
+  print(subjGroup)
+  if(ncol(subjGroup)<2){
+    message("Skip: missing one group!")
+    return()
+  }
+  # check if at least 2 subjects in each group
+  message("Checking minimal ",env$R6_min.cells.per.subj," cells per subject")
+  subjGroupCell <- apply(subjGroup,2,function(x)return(sum(x>=env$R6_min.cells.per.subj)))
+  if(sum(subjGroupCell[c(env$grp_ref,env$grp_ref)]>1)<2){
+    message("Skip: One group contains less than 2 subjects!")
+    return()
+  }
+  # check if pseudo bulk test, the cell level cov is not supported
+  if(env$method %in% c("t_test","u_test","edgeR","limma","DESeq2")){
+    if(length(unique(meta[,env$column_sample])) != nrow(unique(meta[,c(env$column_sample,env$column_group,env$column_covars)]))){
+      message("Skip: cell level meta (e.g. pct_MT, library_size) is NOT supported in pseudo bulk comparison!")
+      return()
+    }
+  }
+  subjCell <- table(meta[sel,env$column_sample])
+  sel <- sel & (meta[,env$column_sample]%in%names(subjCell)[subjCell>=env$R6_min.cells.per.subj])
+  subjMeta <- meta[sel,c(env$column_sample,env$column_group,env$column_covars)]
+  for(one in colnames(subjMeta)){
+    if(sum(is.na(subjMeta[,one]))>0){
+      message("Skip: NA found in ",one)
+      return()
+    }
+  }
+  subjMeta <- subjMeta[!duplicated(subjMeta[,env$column_sample]),]
+  rownames(subjMeta) <- NULL
+  print(subjMeta)
+  return(as.vector(sel))
+}
 scRNAseq_DE_one <- function(
     env,
     cluster_interest,
@@ -253,6 +295,12 @@ scRNAseq_DE_one <- function(
     counts <- getUMI(env$strCount)
     allMeta <- getMeta(env$strMeta)[colnames(counts),]
     allMeta$cell <- rownames(allMeta)
+    ## subset only the interested cluster cells would be included
+    sel <- checkCellMeta(allMeta,env,cluster_interest)
+    if(is.null(sel)) return()
+    allMeta <- allMeta[sel,]
+    counts <- counts[,sel]
+    message("meta: ",nrow(allMeta),"; UMI:",ncol(counts))
     #strOut <- paste0(env$output,"/",env$method,"_",env$column_cluster,"/")
     #system(paste("mkdir -p",strOut))
     sce <- BiostatsSingleCell$new(count_data = counts,
@@ -295,7 +343,18 @@ scRNAseq_DE_one <- function(
                                   'ancova'= sce_qc$ancova_pipeline(covs = covars),
                                   'NEBULA'= sce_qc$nebula_pipeline(covs = covars,method=env$method_model)))
         saveRDS(de,file=paste0(strF,".rds"))
-        write.csv(de$res.tab, file=strF, row.names = FALSE)
+        selCol <- c("ID","log2FC","Pvalue","FDR")
+        if("res.tab" %in% names(de))
+          de <- de$res.tab
+        if(sum(selCol %in% names(de))==4)
+          write.csv(de[selCol], file=strF, row.names = FALSE)
+        else
+          message("\n\n*** MISSING required columns (",
+                  paste(selCol,collapse=","),
+                  ") in DE (",
+                  paste0(strF,".rds"),
+                  ")results ***\n")
+          
         p <- sce_qc$volcanoPlot(FDR_threshold = 0.05, FC_threshold = 2, title = env$method)
         ggsave(gsub("csv","png",strF))
         return(c(file.info(env$strCount)$size/(1024*1024),sum(allMeta[,env$column_cluster]==cluster_interest)))
@@ -328,7 +387,7 @@ if(length(args)>1){
     Sys.chmod(strLog,"666",use_umask = F)
   }
   if(!is.null(Finfo)){
-    message("Finfo")
+    message("Recording memory usage")
     cat(paste(round(c(Finfo,unlist(memUse[2:4])),4),collapse="\t"),"\n",sep="",file=strLog,append=T)
   }
   message("Successful!")
