@@ -18,12 +18,15 @@ def inputCheck(args):
   return config
 
 def splitBatch(strH5ad,strOut,batchCell=None,batchKey=None,hvgN=None):
+  os.makedirs(strOut,exist_ok=True)
   if batchCell is None:
     print("Batch process (batchCell) is not set in config, large amount of memory might be required")
-    h5adList=[strH5ad]
+    tmpH5ad=os.path.join(strOut,"tmp.h5ad")
+    os.remove(tmpH5ad) if os.path.isfile(tmpH5ad) else None
+    os.symlink(strH5ad,tmpH5ad)
+    h5adList=[tmpH5ad]
   else:
     print("Initialize batch process")
-    os.makedirs(strOut,exist_ok=True)
     h5adList= glob.glob(os.path.join(strOut,"tmp*.h5ad"))
     if len(h5adList)==0:
       print("Reading ...")
