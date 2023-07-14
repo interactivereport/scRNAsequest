@@ -91,7 +91,7 @@ main <- function(strConfig){
                 x["sample"],x["cluster"],
                 x["group"],x["ref"],x["alt"],
                 x["model"],coV,
-                
+                NA_str=config$NAstring,
                 min.cells.per.gene = config$min.cells.per.gene,
                 min.genes.per.cell = config$min.genes.per.cell,
                 min.perc.cells.per.gene = config$min.perc.cells.per.gene,
@@ -130,6 +130,7 @@ scRNAseq_DE <- function(
     grp_alt=NULL,
     method_model=NULL,
     column_covars=NULL,
+    NA_str=NULL,
     
     min.cells.per.gene = 3,
     min.genes.per.cell = 250,
@@ -221,7 +222,14 @@ checkInput <- function(env){
     system(paste("mkdir -p",env$output))
 }
 checkCellMeta <- function(meta,env,cluster_interest){
+  metaCol <- c(env$column_sample,env$column_group,env$column_covars)
   sel <- meta[,env$column_cluster]==cluster_interest
+  if(!is.null(env$NA_str) && length(env$NA_str)>0){
+    message(paste0("\tRemoving cell with '",paste(env$NA_str,collapse="' or '"),
+                   " in columns of '",paste(metaCol,collapse="','"),"'"))
+    sel <- sel & apply(meta[,metaCol],1,
+                       function(x)return(length(intersect(x,env$NA_str))==0))
+  }
   # check total cells
   if(sum(sel)<10){
     message("\tSkip: Too few cells (",sum(sel),")")
@@ -243,7 +251,7 @@ checkCellMeta <- function(meta,env,cluster_interest){
   }
   # check if pseudo bulk test, the cell level cov is not supported
   if(env$method %in% c("t_test","u_test","edgeR","limma","DESeq2")){
-    if(length(unique(meta[,env$column_sample])) != nrow(unique(meta[,c(env$column_sample,env$column_group,env$column_covars)]))){
+    if(length(unique(meta[,env$column_sample])) != nrow(unique(meta[,metaCol]))){
       message("Skip: cell level meta (e.g. pct_MT, library_size) is NOT supported in pseudo bulk comparison!")
       return()
     }

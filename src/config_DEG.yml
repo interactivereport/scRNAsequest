@@ -6,6 +6,7 @@ parallel: slurm # False or "sge" or "slurm"
 memory: 16G # the memory allocation for scDEG on each cluster
 newProcess: False #False use existing DEG results## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest/src/DEGinfo.csv #required for DEG analysis
+NAstring: [] #provide a list of strings which should be considered NA and associated cells to be removed
 # Please be causion of changing the following default filtering
 # More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/
 # Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment
