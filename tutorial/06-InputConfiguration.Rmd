@@ -89,6 +89,7 @@ major_cluster_rate: 0.7  #the proportion of cells of an integration cluster to b
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp:  ~/E-MTAB-11115/DEGinfo.csv         #required for DEG analysis, but you can leave this empty if not going to run DEG
+NAstring: [] #provide a list of strings which should be considered NA and associated cells to be removed
 # Please be causion of changing the following default filtering
 # More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/
 # Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment

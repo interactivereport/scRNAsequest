@@ -22,6 +22,15 @@ n_genes_by_counts, log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_coun
 
 You may consider **pct_MT** as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the **"covars"** column: **Age+Sex+pct_MT**.
 
+**Missing values:**
+
+It's important to know that if any cells don't have such DE condition information. For example, some samples don't have information such as 'treated' or 'control' labeled, and instead, the values were 'NA', 'NaN', etc. In such case, we can easily include such information in the main config.yml file by defining the NA values to be ignored. The pipeline will remove all these cells from the DE analysis.
+
+```
+#An example of the config.yml file:
+NAstring: [NA, NaN, NAN] #provide a list of strings which should be considered NA and associated cells to be removed
+```
+
 **DE software choices:**
 
 Based on the previous [benchmarking analysis](https://www.mdpi.com/2075-1729/12/6/850){target="_blank"}, NEBULA outperforms other software in single-cell RNA-seq DE analysis. Thus, our pipeline uses NEBULA by default to run DE. However, we also offer the following methods as well, and you can directly use them in the DEGinfo.csv file, see Example 3 later.

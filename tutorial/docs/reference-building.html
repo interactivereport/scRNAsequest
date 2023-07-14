@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 9 Reference building | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-04-26" />
+<meta name="date" content="2023-07-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -93,7 +93,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -106,7 +106,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -120,6 +120,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -249,35 +253,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 9</span> Reference building<a href="reference-building.html#reference-building" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Reference building is critical for label transfer. To add a reference dataset into the scRNASequest pipeline, the reference matrix needs to be SCT transformed.</p>
 <p>By running the following command, we can see the manual page of the reference generator, scRef:</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb68-1"><a href="reference-building.html#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
-<span id="cb68-2"><a href="reference-building.html#cb68-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-3"><a href="reference-building.html#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2023-01-26 15:29:54 <span class="pp">*****</span></span>
-<span id="cb68-4"><a href="reference-building.html#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb68-5"><a href="reference-building.html#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
-<span id="cb68-6"><a href="reference-building.html#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest</span></span>
-<span id="cb68-7"><a href="reference-building.html#cb68-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-01-13 17:41:49 -0500</span></span>
-<span id="cb68-8"><a href="reference-building.html#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e</span></span>
-<span id="cb68-9"><a href="reference-building.html#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb68-10"><a href="reference-building.html#cb68-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-11"><a href="reference-building.html#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
-<span id="cb68-12"><a href="reference-building.html#cb68-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-13"><a href="reference-building.html#cb68-13" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
-<span id="cb68-14"><a href="reference-building.html#cb68-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-15"><a href="reference-building.html#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
-<span id="cb68-16"><a href="reference-building.html#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
-<span id="cb68-17"><a href="reference-building.html#cb68-17" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
-<span id="cb68-18"><a href="reference-building.html#cb68-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
-<span id="cb68-19"><a href="reference-building.html#cb68-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
-<span id="cb68-20"><a href="reference-building.html#cb68-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-21"><a href="reference-building.html#cb68-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
-<span id="cb68-22"><a href="reference-building.html#cb68-22" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb69-1"><a href="reference-building.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
+<span id="cb69-2"><a href="reference-building.html#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="reference-building.html#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2023-01-26 15:29:54 <span class="pp">*****</span></span>
+<span id="cb69-4"><a href="reference-building.html#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb69-5"><a href="reference-building.html#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb69-6"><a href="reference-building.html#cb69-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest</span></span>
+<span id="cb69-7"><a href="reference-building.html#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-01-13 17:41:49 -0500</span></span>
+<span id="cb69-8"><a href="reference-building.html#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e</span></span>
+<span id="cb69-9"><a href="reference-building.html#cb69-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb69-10"><a href="reference-building.html#cb69-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-11"><a href="reference-building.html#cb69-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb69-12"><a href="reference-building.html#cb69-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-13"><a href="reference-building.html#cb69-13" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
+<span id="cb69-14"><a href="reference-building.html#cb69-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-15"><a href="reference-building.html#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
+<span id="cb69-16"><a href="reference-building.html#cb69-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
+<span id="cb69-17"><a href="reference-building.html#cb69-17" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
+<span id="cb69-18"><a href="reference-building.html#cb69-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
+<span id="cb69-19"><a href="reference-building.html#cb69-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
+<span id="cb69-20"><a href="reference-building.html#cb69-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-21"><a href="reference-building.html#cb69-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb69-22"><a href="reference-building.html#cb69-22" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <div id="initialize-scref" class="section level2 hasAnchor" number="9.1">
 <h2><span class="header-section-number">9.1</span> Initialize scRef<a href="reference-building.html#initialize-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This pipeline can be initialized using an empty directory. for example, we first create a directory called ‘Reference_data’, then initiate the pipeline pointing to this directory:</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb69-1"><a href="reference-building.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/the/directory</span>
-<span id="cb69-2"><a href="reference-building.html#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb69-3"><a href="reference-building.html#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb69-4"><a href="reference-building.html#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data</span></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb70-1"><a href="reference-building.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/the/directory</span>
+<span id="cb70-2"><a href="reference-building.html#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-3"><a href="reference-building.html#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb70-4"><a href="reference-building.html#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data</span></code></pre></div>
 <p>After the run, a config file, <strong>refConfig.yml</strong>, and a log file will be generated in the directory. The <strong>refConfig.yml</strong> is a template of the following scRef run, passing critical parameters to the pipeline. The <strong>refConfig.yml</strong> file will be same as this <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/ref.yml" target="_blank">template</a>, but the output directory will be yours. Here is an example after filling in the configuration file:</p>
 <pre><code>output: ~/Reference_data
 # the following is normally located in the same folder of celldepot hosting h5ad files
@@ -317,10 +321,10 @@ saveRDS(Data, file = &quot;Annotated.ForRuningscRef.rds&quot;)</code></pre>
 <div id="submit-scref" class="section level2 hasAnchor" number="9.2">
 <h2><span class="header-section-number">9.2</span> Submit scRef<a href="reference-building.html#submit-scref" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>After filling in the information in the <strong>refConfig.yml</strong> file, we are ready to submit the full pipeline and build the reference data for label transfer:</p>
-<div class="sourceCode" id="cb72"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb72-1"><a href="reference-building.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/Ref/config/file</span>
-<span id="cb72-2"><a href="reference-building.html#cb72-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-3"><a href="reference-building.html#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb72-4"><a href="reference-building.html#cb72-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data/refConfig.yml</span></code></pre></div>
+<div class="sourceCode" id="cb73"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb73-1"><a href="reference-building.html#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/Ref/config/file</span>
+<span id="cb73-2"><a href="reference-building.html#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="reference-building.html#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb73-4"><a href="reference-building.html#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> ~/Reference_data/refConfig.yml</span></code></pre></div>
 <p>Output files:</p>
 <pre><code>Reference_data
     ├── init_20220630.log
