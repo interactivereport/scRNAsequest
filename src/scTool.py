@@ -1,6 +1,8 @@
 import sys, argparse, time, os, warnings, yaml, gc, h5py
 import anndata as ad
 import pandas as pd
+import numpy as np
+from scipy.sparse import issparse, csc_matrix
 
 maxG=500 # maximun number of genes can be exported
 def MsgPower():
@@ -18,9 +20,13 @@ def main():
 
 def parseInput(strarg):
   parser = argparse.ArgumentParser(description='Additional sc tools. WARNING: The input h5ad files will be over-written!',formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('tool',type=str,choices=["rm","add","export"],help='Modify the h5ad by either "rm", "add" or "export" cell level annotations.')
-  parser.add_argument('h5ad',type=str,help='Path to a h5ad file to be modified')
-  parser.add_argument('changes',nargs="?",default="",help='Options:\n1. A list of annotaions to be removed (separated by ",") \n2. A path to a csv file contains cell level annotations (first column is the cell ID)\n3. A list of genes (separated by ",", empty or max %d) to be exported along with all annotations.'%maxG)
+  parser.add_argument('tool',type=str,choices=["rm","add","export","pseudo"],help='Modify the h5ad by either "rm", "add" or "export" cell level annotations. \nCreate pseudo bulk as RNAsequest analysis input by "pseudo"')
+  parser.add_argument('h5ad',type=str,help='Path to a h5ad file to be modified or extract from (raw UMI for pseudo)')
+  parser.add_argument('changes',nargs="?",default="",help='Options:\n \
+  1. (rm) A list of annotaions to be removed (separated by ",") \n \
+  2. (add) A path to a csv file contains cell level annotations (first column is the cell ID)\n \
+  3. (export) A list of genes (separated by ",", empty or max %d) to be exported along with all annotations.\n \
+  4. (pseudo) A list of obs to group cells into pseudo bulk, separated by ","'%maxG)
 
   if len(strarg)==0 or strarg=="-h" or strarg=="--help":
     parser.print_help()
@@ -41,7 +47,8 @@ def distributeTask(aTask):
   return {
     'rm':rmAnnotation,
     'add':addAnnotation,
-    'export':exportAnnotation
+    'export':exportAnnotation,
+    'pseudo':pseudoBulk
   }.get(aTask,errorTask)
   
 def rmAnnotation(args):
@@ -119,6 +126,73 @@ def exportAnnotation(args):
   X.to_csv(strCSV)
   print("Exporting to: %s"%strCSV)
 
+def pseudoBulk_init(args):
+  strOut = os.path.join(os.path.dirname(args.h5ad),'pseudoBulk')
+  if os.path.exists(strOut):
+    raise Exception("%s exists!\n\tPlease rename/remove the above path!"%strOut)
+  os.makedirs(strOut,exist_ok=True)
+  return strOut
+def pseudoBulk_check(D,col):
+  if D.X is None and (D.raw is None or D.raw.X is None):
+    raise AttributeError("Provided Matrix is None")
+  if not D.raw is None and not D.raw.X is None:
+    if D.raw.var is None or D.raw.obs is None:
+      raise AttributeError(".raw found in h5ad, but missing .raw.var or .raw.obs")
+    else:
+      print(".raw exists, extract from .raw.X")
+  if D.obs is None:
+    raise AttributeError("Provided Obs are None")
+  if D.var is None:
+    raise AttributeError("Provided Var are None")
+  if D.obs.columns.isin(col).sum() != len(col):
+    print(col)
+    raise AttributeError("At least one obs is not available in h5ad")
+pseudoBulk_col="pseudo_sel"
+def pseudoBulk_one(D,one):
+  print("\t",one)
+  # extract pseudo bulk sum
+  if not D.raw is None and not D.raw.X is None:
+    X = D.raw.X[D.raw.obs.index.isin(D.obs[D.obs[pseudoBulk_col]==one].index),]
+    gID = D.raw.var.index
+  else:
+    X = D.X[D.obs[pseudoBulk_col]==one,]
+    gID = D.var.index
+  if not issparse(X):
+    X = csc_matrix(X.copy())
+  exp = pd.DataFrame(X.sum(axis=0),columns=gID).iloc[0,:]
+  exp.name=one
+  # extract unique obs
+  obs = D.obs[D.obs[pseudoBulk_col]==one].copy()
+  obs = obs.loc[:,obs.nunique()==1].iloc[0,:]
+  obs['pseudo_cellN'] = X.shape[0]
+  obs.name=one
+  return exp,obs
+def pseudoBulk_save(X,meta,strOut):
+  print("Saving ...")
+  X.to_csv(os.path.join(strOut,"genes.UMI.tsv"),sep="\t",index_label="Gene")
+  meta.to_csv(os.path.join(strOut,"samplesheet.tsv"),sep="\t",index_label="Sample_Name")
+  X1 = X.apply(lambda x: x/x.sum()*1e6)
+  X1.to_csv(os.path.join(strOut,"genes.CPM.tsv"),sep="\t",index_label="Gene")
+  X1 = X/meta['pseudo_cellN']*1000
+  X1.to_csv(os.path.join(strOut,"genes.CPKcell.tsv"),sep="\t",index_label="Gene")
+def pseudoBulk(args):
+  strOut = pseudoBulk_init(args)
+  D = ad.read_h5ad(args.h5ad,backed="r")
+  metaCol = args.changes.split(",")
+  pseudoBulk_check(D,metaCol)
+  D.obs[pseudoBulk_col] = D.obs[metaCol].apply(lambda x: "_".join(x),axis=1)
+  X = []
+  meta = []
+  for one in D.obs[pseudoBulk_col].unique():
+    x,m = pseudoBulk_one(D,one)
+    X.append(x)
+    meta.append(m)
+  X = pd.DataFrame(X).transpose()
+  X1=X.astype(np.int32)
+  meta = pd.DataFrame(meta)
+  meta = meta.dropna(axis=1)
+  pseudoBulk_save(X,meta,strOut)
+  
 if __name__ == "__main__":
   global strPipePath
   strPipePath=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
