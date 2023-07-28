@@ -376,6 +376,7 @@ def runDEG(strConfig,prefix,config):
     print("Skip scDEG, db file exists: %s.db"%prefix)
     return
   if config['DEG_desp'] is None or not os.path.isfile(config['DEG_desp']):
+    print("Skip scDEG: Missing DEG description file!")
     return
   D = pd.read_csv(config['DEG_desp'],header=0)
   if D.shape[0]==0:
@@ -412,7 +413,7 @@ def formatDEG(prefix):
       tab.columns = ["gene","log2fc","pval","qval"]
       tags = f[:-4].split("__")
       tab["contrast"] = tags[0]
-      tab["tags"] = ";".join(tags[1:])
+      tab["tags"] = ";".join(tags[1:]+[os.path.basename(onePath)])
       csv += [tab]
   if len(csv)==0:
     return

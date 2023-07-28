@@ -238,14 +238,14 @@ checkCellMeta <- function(meta,env,cluster_interest){
   # check if any subject in both groups
   subjGroup <- ftable(meta[sel,c(env$column_sample,env$column_group)])
   print(subjGroup)
-  if(ncol(subjGroup)<2){
-    message("Skip: missing one group!")
+  if(sum(c(env$grp_ref,env$grp_alt)%in%data.frame(subjGroup)[[env$column_group]])!=2){
+    message("Skip: missing at least one group!")
     return()
   }
   # check if at least 2 subjects in each group
   message("Checking minimal ",env$R6_min.cells.per.subj," cells per subject")
   subjGroupCell <- apply(subjGroup,2,function(x)return(sum(x>=env$R6_min.cells.per.subj)))
-  if(sum(subjGroupCell[c(env$grp_ref,env$grp_ref)]>1)<2){
+  if(sum(subjGroupCell[c(env$grp_ref,env$grp_alt)]>1)<2){
     message("Skip: One group contains less than 2 subjects!")
     return()
   }
@@ -282,9 +282,13 @@ scRNAseq_DE_one <- function(
       strF <- file.path(strOut,paste0(gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref)),"__",
                                       gsub("__","_",paste(env$column_cluster,cluster_interest,sep=":")),"__",
                                       gsub("__","_",env$method),
+                                      #"__cov:",paste(env)
                                       ".csv"))
+      if(!is.null(env$column_covars)){
+        strF <- gsub("\\.csv$",paste0("__cov:",paste(gsub("__","_",env$column_covars),collapse="+"),".csv"),strF)
+      }
     }else{
-      strF <- file.path(strOut,paste0(cluster_interest,".vs.Rest","_",gsub("_",".",env$column_cluster),".csv"))
+      strF <- file.path(strOut,paste0(cluster_interest,".vs.Rest","__",gsub("_",".",env$column_cluster),".csv"))
       intrestGrp <- as.character(allMeta[,env$column_cluster])
       intrestGrp[intrestGrp!=cluster_interest] <- "Rest"
       allMeta <- cbind(allMeta,all="all",intrestGrp=intrestGrp)
@@ -316,6 +320,9 @@ scRNAseq_DE_one <- function(
                                   sampleId_col = env$column_sample,
                                   cluster_col = env$column_cluster,
                                   treatment_col = env$column_group)
+    interestedCellN <- sum(allMeta[,env$column_cluster]==cluster_interest)
+    rm(counts,allMeta)#save memory
+    gc()
     sce$set_group_mode(cluster_of_interest = cluster_interest, ref_group = env$grp_ref, alt_group =env$grp_alt)
     sce$make_QCplots(gsub("csv$","QC.pdf",strF))
     sce$apply_filter(min.cells.per.gene = env$min.cells.per.gene, min.genes.per.cell = env$min.genes.per.cell,
@@ -365,7 +372,7 @@ scRNAseq_DE_one <- function(
           
         p <- sce_qc$volcanoPlot(FDR_threshold = 0.05, FC_threshold = 2, title = env$method)
         ggsave(gsub("csv","png",strF))
-        return(c(file.info(env$strCount)$size/(1024*1024),sum(allMeta[,env$column_cluster]==cluster_interest)))
+        return(c(file.info(env$strCount)$size/(1024*1024),interestedCellN))
     }
     return()
 }
