@@ -1,4 +1,5 @@
 import scPipe, os, time, sys, re, shutil
+import cmdUtility as cU
 import pandas as pd
 import scanpy as sc
 import matplotlib.pyplot as plt
@@ -64,7 +65,7 @@ def cellbender(strMeta,nCore=0):
         meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i])
   if len(cmds)>0:
     print('\nrunning cellbeder for the following samples:\n%s'%'\n'.join([re.sub("^CB_","",i) for i in cmds.keys()]))
-    scPipe.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':useGPU},core=nCore,memG=mem)
+    cU.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':useGPU},core=nCore,memG=mem)
   cellbenderMergeLog(H5pair,strOut)
   cellbenderMergePdf(H5pair,strOut)
   cellbenderQC(H5pair,strOut)
@@ -102,19 +103,36 @@ def cellbenderQC(H5pair,strOut):
   rmR={}
   with PdfPages("%s/cellbender_QC.pdf"%strOut) as pdf:
     cellN=[]
+    geneRM={}
+    geneRMr={}
     for one in H5pair:
       print("\t"+one[sampleNameCol])
       old_adata = sc.read_10x_h5(one['old_path'])
+      old_adata.var_names_make_unique()
       new_adata = sc.read_10x_h5(one['new_path'])
+      new_adata.var_names_make_unique()
       cellN+=[{sampleNameCol:one[sampleNameCol],'cell_number':new_adata.shape[0]}]
       sc.pp.filter_cells(old_adata,min_counts=1)
       sc.pp.filter_cells(new_adata,min_counts=1)
+      sc.pp.filter_genes(old_adata, min_counts=1)
+      sc.pp.filter_genes(new_adata, min_counts=1)
+      # get cell removal information
       cInfo=pd.DataFrame({'CBrm':old_adata.obs.loc[new_adata.obs.index,'n_counts']-new_adata.obs['n_counts'],
         'CBkeepR':new_adata.obs['n_counts']/old_adata.obs.loc[new_adata.obs.index,'n_counts']})
       cInfo['CBrmR']=1-cInfo['CBkeepR']
       rmR[one[sampleNameCol]] = cInfo['CBrmR'].describe()
       one[ANNcol]=re.sub('.h5$','_qc.csv',one['new_path'])
       cInfo.to_csv(one[ANNcol])
+      # get gene removal information
+      gInfo=pd.DataFrame({'oriUMI':old_adata.var.loc[new_adata.var.index,'n_counts'],
+                          'newUMI':new_adata.var['n_counts'],
+                          'CBkeepR':new_adata.var['n_counts']/old_adata.var.loc[new_adata.var.index,'n_counts'],
+                          'CBrmUMI':old_adata.var.loc[new_adata.var.index,'n_counts']-new_adata.var['n_counts']})
+      gInfo['CBrmR']=1-gInfo['CBkeepR']
+      gInfo.to_csv(re.sub('.h5$','_geneQC.csv',one['new_path']))
+      geneRM[one[sampleNameCol]]=gInfo['CBrmUMI']
+      geneRMr[one[sampleNameCol]]=gInfo['CBrmR']
+      # plot
       plotDensity(cInfo['CBrm'],
         "%s: removed UMI"%one[sampleNameCol],
         pdf)
@@ -122,8 +140,10 @@ def cellbenderQC(H5pair,strOut):
         "%s: UMI kept ratio"%one[sampleNameCol],
         pdf,bw=0.05)
     cellN=pd.DataFrame(cellN)
-    plotBar(cellN,sampleNameCol,'cell_number',pdf,"CellBender filter cell number")
+    plotBar(cellN,sampleNameCol,'cell_number',pdf,"Cell number after CellBender")
+    gRM=plotGeneQC(geneRM,geneRMr,pdf)
   pd.DataFrame(rmR).rename(index={'count':"cell_number"}).T.astype({'cell_number':'int'}).to_csv("%s/cellbender_rmRate.csv"%strOut,float_format='%.4f')
+  gRM.to_csv("%s/cellbender_geneRM.csv"%strOut,float_format='%.4f')
 def plotDensity(dat,sTitle,pdf,bw='scott'):
   f, (ax_T, ax_B) = plt.subplots(2, sharex=True,figsize=(6,4),gridspec_kw={"height_ratios": (.8, .2)})
   sns.kdeplot(dat,bw_method=bw,ax=ax_T)
@@ -140,6 +160,31 @@ def plotBar(dat,x,y,pdf,sTitle=None):
     ax.set_title(sTitle)
   pdf.savefig(bbox_inches="tight")
   plt.close()
+def plotGeneQC(geneRM,geneRMr,pdf,topN=5):
+  geneRM=pd.DataFrame(geneRM)
+  geneRMr=pd.DataFrame(geneRMr)
+  topRMgene = []
+  for one in geneRM.apply(lambda x: x.nlargest(topN).index).values.tolist():
+    topRMgene += one
+  topRMgene = list(set(topRMgene))
+
+  A = geneRM.loc[topRMgene,:].melt(value_name="CBrmUMI",ignore_index=False).reset_index().merge(geneRMr.loc[topRMgene,:].melt(value_name="CBrmR",ignore_index=False).reset_index(),on=['index','variable'])
+  fig = plt.figure(figsize=(max(5,len(topRMgene)/2),9))
+  ax = plt.subplot(2,1,1)
+  A.boxplot(by='index',column=['CBrmUMI'],ax=ax,rot=90)
+  ax.set_yscale('log')
+  ax.set_xlabel('')
+  ax.set_ylabel('UMI removed')
+  ax = plt.subplot(2,1,2)
+  A.boxplot(by='index',column=['CBrmR'],ax=ax,rot=90)
+  ax.set_xlabel('')
+  ax.set_ylabel('UMI removed rate')
+  fig.tight_layout()
+  pdf.savefig(bbox_inches="tight")
+  plt.close()
+  return geneRM.add_suffix('_CBrmUMI').merge(geneRMr.add_suffix('_CBrmR'),left_index=True,right_index=True)
+  
+  
 def cellbenderInit(meta,H5pair,strOut):
   H5pair=pd.DataFrame(H5pair)
   H5pair.index=H5pair[sampleNameCol]
