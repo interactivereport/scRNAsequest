@@ -35,7 +35,7 @@ def getIntronExon(strF,cID):
   IE = IEcount.merge(IErate,left_index=True,right_index=True)
   return(IE)
 
-def getData_one(oneMeta,sID,strOut):
+def getData_one(oneMeta,sID,strOut,dblScore=True):
   print("\t%s"%oneMeta[sID])
   if os.path.isdir(oneMeta[UMIcol]):
     for one in glob.glob("%s/*mtx"%oneMeta[UMIcol])+glob.glob("%s/*tsv"%oneMeta[UMIcol]):
@@ -47,6 +47,8 @@ def getData_one(oneMeta,sID,strOut):
     adata = sc.read_10x_mtx(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.h5'):
     adata = sc.read_10x_h5(oneMeta[UMIcol])
+  elif oneMeta[UMIcol].endswith('.h5ad'):
+    adata = sc.read_h5ad(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.csv'):
     adata = sc.read_csv(oneMeta[UMIcol]).transpose()
   elif oneMeta[UMIcol].endswith('.tsv'):
@@ -72,10 +74,11 @@ def getData_one(oneMeta,sID,strOut):
     if not 'path' in one and not one==sID:
       adata.obs[one]=oneMeta[one]
   # add dbl detection
-  adata=dbl.singleDBL(strOut,oneMeta[UMIcol],oneMeta[sID],adata)
+  if dblScore:
+    adata=dbl.singleDBL(strOut,oneMeta[UMIcol],oneMeta[sID],adata)
   return adata
 
-def getData_batch(strMeta,sID,strOut):
+def getData_batch(strMeta,sID,strOut,dblScore=True):
   print("processing one sample batch UMI ...")
   strH5ad = re.sub("csv$","h5ad",strMeta)
   if os.path.isfile(strH5ad):
@@ -84,7 +87,7 @@ def getData_batch(strMeta,sID,strOut):
   meta = pd.read_csv(strMeta)
   adatals = []
   with multiprocessing.Pool(processes=min(5,meta.shape[0])) as pool:
-    adatals = pool.starmap(getData_one,[[row,sID,strOut] for idx, row in meta.iterrows()])
+    adatals = pool.starmap(getData_one,[[row,sID,strOut,dblScore] for idx, row in meta.iterrows()])
   print("\tmerging samples ...")
   if len(adatals)==1:
     adata = adatals[0]
@@ -153,6 +156,7 @@ def getData(meta,config,strH5ad):
       return
     #D = sc.read_h5ad(strH5ad,backed="r")
     #return D
+  dbl = True if config.get('dblscore') is None else config.get('dblscore')
   metaBatch = sorted(splitMeta(meta,strOut))
   sID =config["sample_name"]
   cmd=[]
@@ -161,7 +165,7 @@ def getData(meta,config,strH5ad):
     if os.path.isfile(oneH5ad):
       print("\tUsing previous batch reading result: %s\nPlease remove/rename above file if new batch reading is required!"%oneH5ad)
       continue
-    cmd.append("python -u %s/obtainData.py %s %s %s"%(strPipePath,one,sID,config["output"]))
+    cmd.append("python -u %s/obtainData.py %s %s %s %s"%(strPipePath,one,sID,config["output"],dbl))
   if len(cmd)>0:
     cU.submit_cmd({"ReadB%d"%i:cmd[i] for i in range(len(cmd))},config)
   print("merging reading batches")
@@ -177,7 +181,7 @@ def main():
     msgError("ERROR: sample meta files, project output path and sample name column header are required!")
   if len(sys.argv)==3:
     return mergeBatch(sys.argv[1],sys.argv[2])
-  getData_batch(sys.argv[1],sys.argv[2],sys.argv[3])
+  getData_batch(sys.argv[1],sys.argv[2],sys.argv[3],argv[4]=='True')
 
 if __name__ == "__main__":
   main()

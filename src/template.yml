@@ -23,6 +23,7 @@ min.features: 50 #filtering cells by minimal genes
 highCount.cutoff: 80000 # any cells with higher total counts to be removed
 highGene.cutoff: 6000 # any cells with higher number of detected genes to be removed
 intron.cutoff: 0.4 # any cells with less intron rate will be removed if it is available
+dblscore: True # perform scDbl to get the doublet score
 group: #if provided, a 10X QC box plot will be ploted in QC plot
 rasterizeFig: True # should image in pdf be rasterized
 
