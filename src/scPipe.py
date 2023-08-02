@@ -275,9 +275,9 @@ def getSampleMeta(strMeta):
   for oneH5 in meta[UMIcol]:
     if os.path.isdir(oneH5):
       continue
-    elif os.path.isfile(oneH5) and (oneH5.endswith(".h5") or oneH5.endswith(".csv") or oneH5.endswith(".tsv")):
+    elif os.path.isfile(oneH5) and (oneH5.endswith(".h5") or oneH5.endswith(".h5ad") or oneH5.endswith(".csv") or oneH5.endswith(".tsv")):
       continue
-    Exit("The UMI file %s is not supported (only supports .h5/csv/tsv matrix and mtx folder)"%oneH5)
+    Exit("The UMI file %s is not supported (only supports .h5/h5ad/csv/tsv matrix and mtx folder)"%oneH5)
   return(meta)
 
 def runMethods(strConfig):
