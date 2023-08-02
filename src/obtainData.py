@@ -1,6 +1,7 @@
 import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools
 from datetime import datetime
 import scanpy as sc
+import anndata as ad
 import pandas as pd
 from scipy.sparse import csc_matrix
 import cmdUtility as cU
@@ -35,16 +36,30 @@ def getIntronExon(strF,cID):
   IE = IEcount.merge(IErate,left_index=True,right_index=True)
   return(IE)
 
-def getData_one(oneMeta,sID,strOut,dblScore=True):
-  print("\t%s"%oneMeta[sID])
-  if os.path.isdir(oneMeta[UMIcol]):
-    for one in glob.glob("%s/*mtx"%oneMeta[UMIcol])+glob.glob("%s/*tsv"%oneMeta[UMIcol]):
+def getParse_mtx(strDir):
+  D = sc.read_mtx(os.path.join(strDir,"DGE.mtx"))
+  gInfo = pd.read_csv(os.path.join(strDir,"all_genes.csv"))
+  gInfo.index = ad.utils.make_index_unique(pd.Index(gInfo.gene_name.values))
+  D.var = gInfo
+  cInfo = pd.read_csv(os.path.join(strDir,"cell_metadata.csv"))
+  cInfo.index = cInfo['sample'] + "_" + cInfo['bc_wells']
+  D.obs=cInfo
+  return D
+def Check10Xmtx(strDir):
+  for one in glob.glob("%s/*mtx"%strDir)+glob.glob("%s/*tsv"%strDir):
       if not os.path.isfile("%s.gz"%one):
         print("\t\tsave %s as gz"%one)
         with open(one,"rb") as Fin:
           with gzip.open("%s.gz"%one,"wb") as Fout:
             shutil.copyfileobj(Fin, Fout)
-    adata = sc.read_10x_mtx(oneMeta[UMIcol])
+def getData_one(oneMeta,sID,strOut,dblScore=True):
+  print("\t%s"%oneMeta[sID])
+  if os.path.isdir(oneMeta[UMIcol]):
+    if os.path.isfile(os.path.join(oneMeta[UMIcol],"DGE.mtx")):#Parse biosciences
+      adata = getParse_mtx(oneMeta[UMIcol])
+    else:
+      Check10Xmtx(oneMeta[UMIcol])
+      adata = sc.read_10x_mtx(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.h5'):
     adata = sc.read_10x_h5(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.h5ad'):
@@ -181,7 +196,7 @@ def main():
     msgError("ERROR: sample meta files, project output path and sample name column header are required!")
   if len(sys.argv)==3:
     return mergeBatch(sys.argv[1],sys.argv[2])
-  getData_batch(sys.argv[1],sys.argv[2],sys.argv[3],argv[4]=='True')
+  getData_batch(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]=='True')
 
 if __name__ == "__main__":
   main()
