@@ -112,8 +112,8 @@ def obsCOR(obs,strH5ad):
           ax.set_xlabel(b)
           ax.set_ylabel(a)
           ax.grid(linestyle='dotted')
-            if obsT[a].max()>1000:
-                ax.set_yscale('log')
+          if obsT[a].max()>1000:
+            ax.set_yscale('log')
         elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
           sList = [v[1].values for v in obsT[[a,b]].groupby([a])[b]]
           s,pVal.loc[a,b] = ss.f_oneway(*sList)
@@ -121,8 +121,8 @@ def obsCOR(obs,strH5ad):
           ax.set_xlabel(b)
           ax.set_ylabel(a)
           ax.grid(linestyle='dotted')
-            if obsT[b].max()>1000:
-                ax.set_xscale('log')
+          if obsT[b].max()>1000:
+            ax.set_xscale('log')
         elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
           A = obsT[[a,b]]#.drop_duplicates()
           ct = pd.crosstab(A[a],A[b])
