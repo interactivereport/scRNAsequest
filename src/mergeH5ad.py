@@ -104,19 +104,27 @@ def obsCOR(obs,strH5ad):
           continue
         if pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
           s,pVal.loc[a,b]=ss.pearsonr(obsT[a].values,obsT[b].values)
-          ax = obsT.plot.scatter(x=a,y=b,s=1)
+          ax = obsT.plot.scatter(x=a,y=b,s=1,zorder=0)
         elif pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
           sList = [v[1].values for v in obsT[[a,b]].groupby([b])[a]]
           s,pVal.loc[a,b] = ss.f_oneway(*sList)
-          ax = obsT.boxplot(column=a,by=b,flierprops={'marker': '.','markersize':2})
+          ax = obsT.boxplot(column=a,by=b,flierprops={'marker': '.','markersize':2},zorder=0)
+          ax.set_xlabel(b)
+          ax.set_ylabel(a)
+          ax.grid(linestyle='dotted')
+            if obsT[a].max()>1000:
+                ax.set_yscale('log')
         elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
           sList = [v[1].values for v in obsT[[a,b]].groupby([a])[b]]
           s,pVal.loc[a,b] = ss.f_oneway(*sList)
-          ax = obsT.boxplot(column=b,by=a,vert=False,flierprops={'marker': '.','markersize':2})  
+          ax = obsT.boxplot(column=b,by=a,vert=False,flierprops={'marker': '.','markersize':2},zorder=0)  
           ax.set_xlabel(b)
           ax.set_ylabel(a)
+          ax.grid(linestyle='dotted')
+            if obsT[b].max()>1000:
+                ax.set_xscale('log')
         elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
-          A = obsT[[a,b]].drop_duplicates()
+          A = obsT[[a,b]]#.drop_duplicates()
           ct = pd.crosstab(A[a],A[b])
           if ct.nunique().nunique()==1:
             s,pVal.loc[a,b]=(0,1)
@@ -126,10 +134,11 @@ def obsCOR(obs,strH5ad):
           ax.legend(title=b, bbox_to_anchor=(1, 1.02), loc='upper left')
           for c in ax.containers:   
             ax.bar_label(c, label_type='center')
+          ax.set_ylabel("Cell Number")
         else:
           print("unknown type for %s or %s"%(a,b))
           continue
-        ax.set_rasterization_zorder(100)
+        ax.set_rasterization_zorder(1)
         ax.set_title(label="stat=%.3f pvalue: %.3f"%(s,pVal.loc[a,b]))
         res=plt.suptitle('')
         pdf.savefig(bbox_inches="tight")
