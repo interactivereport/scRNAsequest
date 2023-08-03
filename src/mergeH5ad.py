@@ -1,15 +1,20 @@
-import yaml,io,os,sys,subprocess,re,logging,warnings,glob,functools
+import yaml,io,os,sys,subprocess,re,logging,warnings,glob,functools,gc
 import pandas as pd
 import scanpy as sc
 import anndata as ad
 import numpy as np
 import cmdUtility as cU
+from matplotlib.backends.backend_pdf import PdfPages
+import matplotlib.pyplot as plt
+import scipy.stats as ss
+
 
 print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 tempDir="raw"
 strPipePath=os.path.dirname(os.path.realpath(__file__))
+rawSuffix = "_raw_obsAdd.h5ad"
 
 def msgError(msg):
   print("***** "+msg)
@@ -23,7 +28,7 @@ def combine(mIDs,prefix,config):
   refName = str(config.get("ref_name"))
   print("combining all methods results ...")
   strH5ad = prefix+".h5ad"
-  strRaw = prefix+"_raw_obsAdd.h5ad"
+  strRaw = prefix+rawSuffix
   cmds={}
   if not os.path.isfile(strH5ad):
     cmds["inNorm"] = "python -u %s/mergeH5ad.py %s %s %s %s %.2f %s"%(strPipePath,strH5ad,
@@ -63,6 +68,66 @@ def combine(mIDs,prefix,config):
     print("WARNING: evaluation encountered issues!")
 
   return ad.read_h5ad(strH5ad,backed="r").uns.get('scaleF')
+def obsCOR(obs,strH5ad):
+  if not strH5ad.endswith(rawSuffix):
+    return
+  print("Correlation among obs for scDEG consideration")
+  obs = obs.loc[:,obs.apply(lambda x: x.nunique()>1)]
+  dt = {}
+  for cName in obs.columns:
+    if not pd.api.types.is_categorical_dtype(obs[cName]) and obs[cName].nunique()<100:
+      dt[cName]='category'
+  obs = obs.astype(dt).copy()
+  pVal = pd.DataFrame(1,index=obs.columns,columns=obs.columns)
+  strPDF = os.path.join(os.path.dirname(strH5ad),"obsCor.pdf")
+  with PdfPages(strPDF) as pdf:
+    for a in obs.columns:
+      print(a,"\t",list(obs.columns).index(a),"/",obs.shape[1])
+      if obs[a].nunique()<2:
+        continue
+      obsT = obs.copy()
+      for b in obs.columns:
+        if obs[b].nunique()<2:
+          continue
+        if a==b:
+          pVal.loc[a,b]=0
+          continue
+        if pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
+          s,pVal.loc[a,b]=ss.pearsonr(obsT[a].values,obsT[b].values)
+          ax = obsT.plot.scatter(x=a,y=b,s=1)
+        elif pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
+          sList = [v[1].values for v in obsT[[a,b]].groupby([b])[a]]
+          s,pVal.loc[a,b] = ss.f_oneway(*sList)
+          ax = obsT.boxplot(column=a,by=b,flierprops={'marker': '.','markersize':2})
+        elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
+          sList = [v[1].values for v in obsT[[a,b]].groupby([a])[b]]
+          s,pVal.loc[a,b] = ss.f_oneway(*sList)
+          ax = obsT.boxplot(column=b,by=a,vert=False,flierprops={'marker': '.','markersize':2})  
+          ax.set_xlabel(b)
+          ax.set_ylabel(a)
+        elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
+          A = obsT[[a,b]].drop_duplicates()
+          ct = pd.crosstab(A[a],A[b])
+          if ct.nunique().nunique()==1:
+            s,pVal.loc[a,b]=(0,1)
+          else:
+            s,pVal.loc[a,b],d,expF = ss.chi2_contingency(ct)
+          ax = ct.plot(kind='bar', stacked=True, rot=0)
+          ax.legend(title=b, bbox_to_anchor=(1, 1.02), loc='upper left')
+          for c in ax.containers:   
+            ax.bar_label(c, label_type='center')
+        else:
+          print("unknown type for %s or %s"%(a,b))
+          continue
+        ax.set_rasterization_zorder(100)
+        ax.set_title(label="stat=%.3f pvalue: %.3f"%(s,pVal.loc[a,b]))
+        res=plt.suptitle('')
+        pdf.savefig(bbox_inches="tight")
+        res=plt.close()
+      del obsT
+      gc.collect()
+  pVal.to_csv(re.sub('pdf$','csv',strPDF))
+
 
 def integrateH5ad(strH5ad,methods,prefix,outH5ad,majorR=None,ref_name=None):
   print("reading h5ad for integration")
@@ -109,6 +174,7 @@ def integrateH5ad(strH5ad,methods,prefix,outH5ad,majorR=None,ref_name=None):
       if D.obs[one].dtype == 'category':
         D.obs[one] = list(D.obs[one])
         D.obs[one].fillna("NA")
+  obsCOR(D.obs,outH5ad)
   D.write(outH5ad)
 def findMajor(X,majorR):
   # first column is the cluster number, second column is the label
@@ -138,6 +204,7 @@ def main():
   prefix=sys.argv[4]
   clusterR=float(sys.argv[5])
   refName=None if sys.argv[6]=="None" else sys.argv[6]
+  print(refName)
   integrateH5ad(inH5ad,methods,prefix,outH5ad,clusterR,refName)
 
 if __name__ == "__main__":
