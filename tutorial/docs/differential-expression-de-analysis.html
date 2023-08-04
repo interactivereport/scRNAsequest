@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-07-14" />
+<meta name="date" content="2023-08-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -310,6 +310,12 @@ NAstring: [NA, NaN, NAN] #provide a list of strings which should be considered N
         ├── Female.vs.Male_predicted.celltype1:discarded_NEBULA.QC.pdf
         ...
         └── env.rds</code></pre>
+<p>Update on August 2023: Now the pipeline will also output two additional files for pair-wised correlation analysis of covariates in obs:
+- obsCor.csv: pair-wised p values
+- obsCor.pdf: all pair-wised plots
+If both are numeric, a scatter plot with correlation test
+If one is numeric while the other is categorical, a boxplot with one-way anova test
+If both are categorical, a barplot (cell number) with chi-square test</p>
 <p>An example of the DE csv table (Female.vs.Male_predicted.celltype1/astrocytes_NEBULA.csv, top 5 rows):</p>
 <p>In the table below, the most significant gene is <a href="https://www.ncbi.nlm.nih.gov/gene/213742" target="_blank">Xist</a>, a well-known X-chromosome gene highly expressed in female.</p>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
