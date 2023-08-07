@@ -4,6 +4,7 @@ import pandas as pd
 import scanpy as sc
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from functools import reduce
 #from PyPDF2 import PdfWriter,PdfReader
 #from PyPDF2.generic import AnnotationBuilder
 from pdf2image import convert_from_path
@@ -106,7 +107,7 @@ def cellbenderQC(H5pair,strOut):
     geneRM={}
     geneRMr={}
     for one in H5pair:
-      print("\t"+one[sampleNameCol])
+      print("\t"+one[sampleNameCol])#,": %s vs %s"%(os.path.basename(one['old_path']),os.path.basename(one['new_path']))
       old_adata = sc.read_10x_h5(one['old_path'])
       old_adata.var_names_make_unique()
       new_adata = sc.read_10x_h5(one['new_path'])
@@ -115,7 +116,7 @@ def cellbenderQC(H5pair,strOut):
       sc.pp.filter_cells(old_adata,min_counts=1)
       sc.pp.filter_cells(new_adata,min_counts=1)
       sc.pp.filter_genes(old_adata, min_counts=1)
-      sc.pp.filter_genes(new_adata, min_counts=1)
+      sc.pp.filter_genes(new_adata, min_counts=0)
       # get cell removal information
       cInfo=pd.DataFrame({'CBrm':old_adata.obs.loc[new_adata.obs.index,'n_counts']-new_adata.obs['n_counts'],
         'CBkeepR':new_adata.obs['n_counts']/old_adata.obs.loc[new_adata.obs.index,'n_counts']})
@@ -124,10 +125,10 @@ def cellbenderQC(H5pair,strOut):
       one[ANNcol]=re.sub('.h5$','_qc.csv',one['new_path'])
       cInfo.to_csv(one[ANNcol])
       # get gene removal information
-      gInfo=pd.DataFrame({'oriUMI':old_adata.var.loc[new_adata.var.index,'n_counts'],
-                          'newUMI':new_adata.var['n_counts'],
-                          'CBkeepR':new_adata.var['n_counts']/old_adata.var.loc[new_adata.var.index,'n_counts'],
-                          'CBrmUMI':old_adata.var.loc[new_adata.var.index,'n_counts']-new_adata.var['n_counts']})
+      gInfo=pd.DataFrame({'oriUMI':old_adata.var['n_counts'],
+                          'newUMI':new_adata.var.loc[old_adata.var.index,'n_counts'],
+                          'CBkeepR':new_adata.var.loc[old_adata.var.index,'n_counts']/old_adata.var['n_counts'],
+                          'CBrmUMI':old_adata.var['n_counts']-new_adata.var.loc[old_adata.var.index,'n_counts']})
       gInfo['CBrmR']=1-gInfo['CBkeepR']
       gInfo.to_csv(re.sub('.h5$','_geneQC.csv',one['new_path']))
       geneRM[one[sampleNameCol]]=gInfo['CBrmUMI']
@@ -161,27 +162,55 @@ def plotBar(dat,x,y,pdf,sTitle=None):
   pdf.savefig(bbox_inches="tight")
   plt.close()
 def plotGeneQC(geneRM,geneRMr,pdf,topN=5):
-  geneRM=pd.DataFrame(geneRM)
-  geneRMr=pd.DataFrame(geneRMr)
-  topRMgene = []
-  for one in geneRM.apply(lambda x: x.nlargest(topN).index).values.tolist():
-    topRMgene += one
-  topRMgene = list(set(topRMgene))
-
-  A = geneRM.loc[topRMgene,:].melt(value_name="CBrmUMI",ignore_index=False).reset_index().merge(geneRMr.loc[topRMgene,:].melt(value_name="CBrmR",ignore_index=False).reset_index(),on=['index','variable'])
-  fig = plt.figure(figsize=(max(5,len(topRMgene)/2),9))
-  ax = plt.subplot(2,1,1)
-  A.boxplot(by='index',column=['CBrmUMI'],ax=ax,rot=90)
-  ax.set_yscale('log')
-  ax.set_xlabel('')
-  ax.set_ylabel('UMI removed')
-  ax = plt.subplot(2,1,2)
-  A.boxplot(by='index',column=['CBrmR'],ax=ax,rot=90)
-  ax.set_xlabel('')
-  ax.set_ylabel('UMI removed rate')
-  fig.tight_layout()
+  geneRM=pd.DataFrame(geneRM).fillna(0)
+  geneRMr=pd.DataFrame(geneRMr).fillna(0)
+  rmUMI = geneRM.apply(lambda x: x.max(),axis=1)
+  rmUMIr = geneRMr.apply(lambda x: x.max(),axis=1)
+  
+  ## select the top removed genes
+  gList = {'top %d genes removed by UMI'%topN:list(set(reduce(lambda x, y: x + y, geneRM.apply(lambda x: x.nlargest(topN).index).values.tolist(), []))),
+    'top %d genes removed by rate'%topN:list(set(reduce(lambda x, y: x + y, geneRMr.loc[rmUMI.sort_values(ascending=False).index,].apply(lambda x: x.nlargest(topN).index).values.tolist(), [])))}
+  selG = list(set(reduce(lambda x,y: x+y,gList.values(),[])))
+  ## plot removed UMI against removed rate
+  plt.scatter(rmUMI[rmUMI>0],rmUMIr[rmUMI>0],s=5,linewidths=0.5,marker='.',rasterized=True)
+  plt.plot(rmUMI[selG],rmUMIr[selG],c='#ff7f0e',marker='*',ls='none',markersize=5)
+  plt.xscale('log')
+  plt.xlabel('Removed UMI')
+  plt.ylabel('Removed UMI rate')
+  plt.title('Largest removal across samples')
   pdf.savefig(bbox_inches="tight")
   plt.close()
+  #print('Gain UMI in %d genes'%rmUMI[rmUMI<0].shape[0])
+  if rmUMI[rmUMI<0].shape[0]>0:
+    negG = rmUMI[rmUMI<0].index
+    plt.scatter(rmUMI[negG],rmUMIr[negG],s=5,linewidths=0.5,marker='.',rasterized=True)
+    for one in set(rmUMI.nsmallest(topN).index.tolist() + rmUMIr.nsmallest(topN).index.tolist()):
+      plt.annotate(one, (rmUMI.abs()[one], rmUMIr.abs()[one]),xytext=(0,10),textcoords='offset pixels')
+    plt.xlabel('Gained UMI')
+    plt.ylabel('Gained UMI rate')
+    plt.title('Largest UMI gained %d genes across samples'%negG.shape[0])
+    pdf.savefig(bbox_inches="tight")
+    plt.close()
+  
+  # plot top genes across samples
+  for key in gList.keys():
+    topRMgene=gList[key]
+    A = geneRM.loc[topRMgene,:].melt(value_name="CBrmUMI",ignore_index=False).reset_index().merge(geneRMr.loc[topRMgene,:].melt(value_name="CBrmR",ignore_index=False).reset_index(),on=['index','variable'])
+    fig = plt.figure(figsize=(max(5,len(topRMgene)/2),9))
+    ax = plt.subplot(2,1,1)
+    A.boxplot(by='index',column=['CBrmUMI'],ax=ax,rot=90)
+    ax.set_yscale('log')
+    ax.set_xlabel('')
+    ax.set_ylabel('UMI removed')
+    ax = plt.subplot(2,1,2)
+    A.boxplot(by='index',column=['CBrmR'],ax=ax,rot=90)
+    ax.set_xlabel('')
+    ax.set_ylabel('UMI removed rate')
+    fig.tight_layout()
+    res=plt.suptitle(key)
+    pdf.savefig(bbox_inches="tight")
+    plt.close()
+  
   return geneRM.add_suffix('_CBrmUMI').merge(geneRMr.add_suffix('_CBrmR'),left_index=True,right_index=True)
   
   
