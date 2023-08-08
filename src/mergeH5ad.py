@@ -97,6 +97,7 @@ def obsCOR(obs,strH5ad):
         continue
       obsT = obs.copy()
       for b in obs.columns:
+        bbox_inches="tight"
         if obs[b].nunique()<2:
           continue
         if a==b:
@@ -108,7 +109,7 @@ def obsCOR(obs,strH5ad):
         elif pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
           sList = [v[1].values for v in obsT[[a,b]].groupby([b])[a]]
           s,pVal.loc[a,b] = ss.f_oneway(*sList)
-          ax = obsT.boxplot(column=a,by=b,flierprops={'marker': '.','markersize':2},zorder=0)
+          ax = obsT.boxplot(column=a,by=b,flierprops={'marker': '.','markersize':2},zorder=0,rot=90)
           ax.set_xlabel(b)
           ax.set_ylabel(a)
           ax.grid(linestyle='dotted')
@@ -130,18 +131,30 @@ def obsCOR(obs,strH5ad):
             s,pVal.loc[a,b]=(0,1)
           else:
             s,pVal.loc[a,b],d,expF = ss.chi2_contingency(ct)
-          ax = ct.plot(kind='bar', stacked=True, rot=0)
-          ax.legend(title=b, bbox_to_anchor=(1, 1.02), loc='upper left')
-          for c in ax.containers:   
-            ax.bar_label(c, label_type='center')
-          ax.set_ylabel("Cell Number")
+          plt.figure(figsize=(max(6,ct.shape[1]/2),max(3,ct.shape[0]/2)))#.set_figheight(max(2,ct.shape[0]/2))
+          the_table = plt.table(ct.values,rowLabels=ct.index,colLabels=ct.columns,rowLoc='right',cellLoc='center',loc='center',zorder=2)#
+          the_table.auto_set_font_size(False)
+          the_table.set_fontsize(10)
+          the_table.scale(1, 1.5)
+          for k,cell in the_table.get_celld().items():#_cells.keys():
+              if k[0]==0:
+                  cell.set_text_props(rotation=45,horizontalalignment='left',verticalalignment='baseline')#
+                  cell.set_linewidth(0)
+          plt.axis('off')
+          plt.figtext(0.5,0.93,b, horizontalalignment='center', size=10, weight='bold')
+          plt.figtext(0.04,0.1,a,size=10, weight='bold',rotation='vertical',verticalalignment='bottom')#,horizontalalignment='right', verticalalignment='bottom'#,rotation_mode='anchor'
+          plt.tight_layout(rect=(0.08,0,0.98,0.90),pad=0.1)
+          ax = plt.gca()
+          bbox_inches=None
         else:
           print("unknown type for %s or %s"%(a,b))
           continue
         ax.set_rasterization_zorder(1)
-        ax.set_title(label="stat=%.3f pvalue: %.3f"%(s,pVal.loc[a,b]))
+        #ax.set_title(label="stat=%.3f pvalue: %.3f"%(s,pVal.loc[a,b]),loc='left')
+        plt.figtext(0.02,0.93,"stat=%.3f pvalue: %.3f"%(s,pVal.loc[a,b]), horizontalalignment='left',verticalalignment='bottom',size=15, weight='bold')
+        res=plt.title('')
         res=plt.suptitle('')
-        pdf.savefig(bbox_inches="tight")
+        pdf.savefig(bbox_inches=bbox_inches)
         res=plt.close()
       del obsT
       gc.collect()
