@@ -189,23 +189,23 @@ By running the **scTool** without providing any parameters, we can see the manua
 ```{bash, eval=FALSE}
 $ scTool
 
-usage: scTool.py [-h] {rm,add,export} h5ad [changes]
+usage: scTool.py [-h] {rm,add,export,pseudo} h5ad [changes]
 
 Additional sc tools. WARNING: The input h5ad files will be over-written!
 
 positional arguments:
-  {rm,add,export}  Modify the h5ad by either "rm", "add" or "export" cell level annotations.
-  h5ad             Path to a h5ad file to be modified
-  changes          Options:
-                   1. A list of annotaions to be removed (separated by ",") 
-                   2. A path to a csv file contains cell level annotations (first column is the cell ID)
-                   3. A list of genes (separated by ",", empty or max 50) to be exported along with all annotations.
+  {rm,add,export,pseudo}
+                        Modify the h5ad by either "rm", "add" or "export" cell level annotations. 
+                        Create pseudo bulk as RNAsequest analysis input by "pseudo"
+  h5ad                  Path to a h5ad file to be modified or extract from (raw UMI for pseudo)
+  changes               Options:
+                           1. (rm) A list of annotaions to be removed (separated by ",") 
+                           2. (add) A path to a csv file contains cell level annotations (first column is the cell ID)
+                           3. (export) A list of genes (separated by ",", empty or max 500) to be exported along with all annotations.
+                           4. (pseudo) A list of obs to group cells into pseudo bulk, separated by ","
 
 optional arguments:
-  -h, --help       show this help message and exit
-
-Powered by the Research Data Sciences Group [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com]
-------------
+  -h, --help            show this help message and exit
 
 ```
 
@@ -247,6 +247,34 @@ scTool export ProjName_raw_added.h5ad App,Olig1,P2ry12
 The output result is a .csv file: ProjName_raw_added.h5ad.csv. Here is an example of the output file:
 
 [![](https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png)](https://interactivereport.github.io/scRNAsequest/tutorial/images/Expression.png)
+
+### Pseudo-bulk aggregation
+
+The “scTool pseudo …” will create a folder “pseudoBulk” where the h5ad is.
+
+```{bash, eval=FALSE}
+scTool pseudo ProjName_raw_added.h5ad orig.ident,cell_type
+```
+
+Output: Four files will be generated in the folder:
+
+  - genes.UMI.tsv: the UMI (raw counts) for pseudo bulk samples (columns)
+
+  - samplesheet.tsv: contains obs (if the unique value is only one for each of pseudo bulk)
+
+  - genes.CPM.tsv: contains normalized expression (count per million)
+
+  - genes.CPKcell.tsv: contains normalized express (count per 1k cells)
+
+The output can be used in our RNASequest pipeline: https://github.com/interactivereport/RNASequest
+
+In the RNASequest pipeline, EAinit will treat this as external project, and user will have to fill in:
+
+```{bash, eval=FALSE}
+      proj_name, prj_counts (genes.UMI.tsv), prj_TPM(genes.CPM.tsv or genes.CPKcell.tsv), sample_meta (samplesheet.tsv), species
+```
+
+Also, in RNASequest, `prj_effLength` is not required, but `covariates_adjust` will be disabled, and `gene_annotation` is not required. The first column in count matrix will be used as gene name.
 
 ### Demo scTool
 
