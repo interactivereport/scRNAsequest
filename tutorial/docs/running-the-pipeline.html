@@ -443,6 +443,15 @@ runAnalysis: False</code></pre>
 <p>Please review the <strong>ProjName.h5ad</strong> file for the harmonization result. If you have <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a> installed, the visualization will be easier.</p>
 <p>Here is an example of the ProjName.h5ad project visualized by <a href="https://github.com/interactivereport/cellxgene_VIP" target="_blank">Cellxgene VIP</a>:</p>
 <p><a href="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png"><img src="https://interactivereport.github.io/scRNAsequest/tutorial/images/UMAP.png" /></a></p>
+<p><strong>Update on August 2023: covariate checking</strong></p>
+<p>Now the pipeline will also output two additional files for pair-wised correlation analysis of covariates in obs:</p>
+<ul>
+<li><p>obsCor.csv: pair-wised p values</p></li>
+<li><p>obsCor.pdf: all pair-wised plots</p></li>
+</ul>
+<p>If both are numeric, a scatter plot with correlation test.</p>
+<p>If one is numeric while the other is categorical, a boxplot with one-way anova test.</p>
+<p>If both are categorical, a barplot (cell number) with chi-square test, and a contingency table will be plotted for these two categorical variables.</p>
 
 </div>
 </div>
