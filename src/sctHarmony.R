@@ -11,7 +11,7 @@ PKGloading <- function(){
 }
 
 # following the discussion @https://github.com/immunogenomics/harmony/issues/41
-processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
+processH5ad <- function(strH5ad,batch,strOut,bPrepSCT,clusterResolution){
   strtemp <- paste0(strOut,".rds")
   if(file.exists(strtemp)){
     message("pickup revious results: ",strtemp)
@@ -79,7 +79,7 @@ processH5ad <- function(strH5ad,batch,strOut,bPrepSCT){
                  dims = 1:dimN)
     D <- RunTSNE(D,reduction="harmony",
                  dims = 1:dimN)
-    D <- FindClusters(object = D)
+    D <- FindClusters(object = D,resolution=clusterResolution)
     
     X <- cbind(cID=row.names(D@meta.data),
                D@reductions$harmony@cell.embeddings,
@@ -161,7 +161,7 @@ processSCT <- function(strH5ad,batch,strOut,geneN){
   rm(Dlist)
   saveRDS(D,strOut)
 }
-processPCA <- function(strPCA,strOut,batch){
+processPCA <- function(strPCA,strOut,batch,clusterResolution,cluster_method){
   message("starting Harmony ...")
   PCA <- getobsm(strPCA,"X_pca")
   meta <- getobs(strPCA)
@@ -186,9 +186,12 @@ processPCA <- function(strPCA,strOut,batch){
   #           message()
   #         })
   #D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
-  message("Clustering ...")
-  D <- FindClusters(D,verbose = FALSE)
-  
+  message("Clustering ",cluster_method," (",clusterResolution,") ...")
+  if(grepl("Leiden",cluster_method,ignore.case=T)){
+    D <- FindClusters(D,verbose = FALSE,resolution=clusterResolution,algprithem=4)
+  }else{
+    D <- FindClusters(D,verbose = FALSE,resolution=clusterResolution)
+  }
   message("saving ...")
   X <- cbind(#cID=row.names(D@meta.data),
     D@reductions$harmony@cell.embeddings,
@@ -203,24 +206,36 @@ main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
   args = commandArgs(trailingOnly=TRUE)
-  if(length(args)<2) stop("Path to h5ad file, the output file and config file are required!")
+  
+  
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
-  strH5ad <- args[1]
-  if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
-  strOut <- args[2]
-  if(length(args)<3){
-    print(peakRAM(processPCA(strH5ad,strOut,batchKey)))
-    return()
-  }
-  strConfig <- args[3]
-  if(!file.exists(strConfig)){
-    stop(paste0("Config file (",strConfig,") does not exist!"))
+  if(length(args)<2) stop("Path to h5ad file, the output file and config file are required!")
+  
+  task <- args[1]
+  if(task=='SCT'){
+    strH5ad <- args[2]
+    if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
+    strOut <- args[3]
+    strConfig <- args[4]
+    if(!file.exists(strConfig)){
+      stop(paste0("Config file (",strConfig,") does not exist!"))
+    }else{
+      config <- yaml::read_yaml(strConfig)
+    }
+    if(length(args)>4) batchKey <- args[5]
+    print(peakRAM(processSCT(strH5ad,batchKey,strOut,config$harmonyBatchGene)))
+  }else if(task=="Harmony"){
+    strPCA <- args[2]
+    if(!file.exists(strPCA)) stop(paste0("PCA file (",strPCA,") does not exist!"))
+    strOut <- args[3]
+    clu_reso <- as.numeric(args[4])
+    clu_method <- args[5]
+    if(length(args)>5) batchKey <- args[6]
+    print(peakRAM(processPCA(strPCA,strOut,batchKey,clu_reso,clu_method)))
   }else{
-    config <- yaml::read_yaml(strConfig)
+    stop(paste("Unknown sctHarmony task:",task))
   }
-  if(length(args)>3) batchKey <- args[4]
   #print(system.time(processH5ad(strH5ad,batchKey,strOut,config$PrepSCTFindMarkers)))
-  print(peakRAM(processSCT(strH5ad,batchKey,strOut,config$harmonyBatchGene)))
 }
 
 main()

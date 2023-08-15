@@ -34,6 +34,8 @@ newProcess: False
 methods: initMethods #SCT method (including log1p) is required expression normalization
 expScaler: 10000 #integer value, 0: SCT (along with following option); 1-100: logNormal with scale.factor to be the specified quantile; >100: logNormal with scale.factor to be the specified value
 PrepSCTFindMarkers: True # should the "PrepSCTFindMarkers" applied on SCT to be exported for visualization expression
+clusterMethod: Louvain # the cluster methods: Louvain or Leiden
+clusterResolution: 0.8 #A parameter value controlling the coarseness of the clustering. Higher values lead to more clusters
 parallel: False #"sge" or "slurm"
 core: 32
 memory: 480G #if provided (e.g. 100G), it will be used to request cluster scheduler  

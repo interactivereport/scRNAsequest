@@ -232,13 +232,13 @@ def runPipe(strConfig):
   config = getConfig(strConfig,bSys=False)
   config = checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
-  postH5ad,rawH5ad = pQ.runQC(config,meta,strConfig)
+  rawCMD = pQ.runQC(config,meta,strConfig)
   if not config["runAnalysis"]:
     MsgPower()
     exit()
-  
+
   prefix = os.path.join(config["output"],config["prj_name"])
-  methods = runMethods(strConfig)
+  methods = runMethods(strConfig,rawCMD)
   scaleF = mH.combine(methods,prefix,config)
 
   runDEG(strConfig,prefix,config)
@@ -280,7 +280,7 @@ def getSampleMeta(strMeta):
     Exit("The UMI file %s does not exist/not supported (only supports .h5/h5ad/csv/tsv matrix and mtx folder)"%oneH5)
   return(meta)
 
-def runMethods(strConfig):
+def runMethods(strConfig,rawCMD):
   print("starting the process by each method ...")
   sysConfig = getConfig()
   config = getConfig(strConfig,bSys=False)
@@ -295,8 +295,8 @@ def runMethods(strConfig):
 
   prefix = os.path.join(config["output"],tempDir,config["prj_name"])
   cmds = {}
-  if not os.path.isfile(prefix+".h5ad"):
-    cmds = {'raw':"python -u %s/src/processQC.py %s %s"%(strPipePath,prefix+"_raw_postfilter.h5ad",prefix+".h5ad")}
+  if len(rawCMD)>5:
+    cmds = {'raw':rawCMD}
   for m in allM.keys():
     strH5ad = "%s.h5ad"%os.path.join(config["output"],m,config["prj_name"])
     if not config["newProcess"] and os.path.isfile(strH5ad):
@@ -334,10 +334,21 @@ def rmLock(config):
       os.remove(strLock)
   
 def description(strF,strDesc):
-  print(strF)
-  with open(strF,"w") as f:
-    f.write(strDesc+"\n")
-  os.chmod(strF,0o664)
+  #print(strF)
+  try:
+    with open(strF,"w") as f:
+      f.write(strDesc+"\n")
+  except:
+    print("Error: fail to write/create %s"%strF)
+    return
+  
+  fstat = os.stat(strF)
+  if fstat.st_uid==os.getuid():
+    os.chmod(strF,0o664)
+  else:
+    if bool(re.search('6.$',oct(os.stat(strF).st_mode))):
+      print("Warning: no group written permission for ",strF)
+
 def moveCellDepot(prefix,config,scaleF=None):
   sysConfig = getConfig()
   if sysConfig['celldepotDir'] is None:

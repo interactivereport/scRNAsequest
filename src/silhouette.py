@@ -27,11 +27,12 @@ def calc_sil_pca50(prefix,oneM):
     return oneM,sil_coeff
   cKey = [one for one in adata.obs.keys() if 'louvain' in one]
   if len(cKey)==0:
-    cKey = [one for one in adata.obs.keys() if 'cluster' in one]
+    cKey = [one for one in adata.obs.keys() if one.endswith('cluster')]
   if len(cKey)>1:
     tmp = [one for one in cKey if oneM in one]
     if len(tmp)==1:
       cKey = tmp
+    cKey = [tmp[0]]
   print("\t%s: %s"%(oneM,cKey[0]))
   sil_coeff = silhouette_samples(X=adata.obsm['X_pca'][:, :50], labels=np.array(adata.obs[cKey[0]].values))
   return oneM,sil_coeff

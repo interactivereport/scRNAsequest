@@ -22,6 +22,8 @@ main <- function(){
   args = commandArgs(trailingOnly=TRUE)
   if(length(args)<2) stop("Path to 2 files are required!")
   strH5ad <- args[1]
+  clusterResolution <- as.numeric(args[3])
+  cluster_method <- args[4]
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
   print(system.time({
     D <- CreateSeuratObject(counts=getX(strH5ad),
@@ -66,7 +68,13 @@ main <- function(){
     Dsct <- RunPCA(Dsct, verbose = FALSE)
     Dsct <- RunUMAP(Dsct, reduction = "pca", dims = 1:50)
     Dsct <- FindNeighbors(Dsct,dims = 1:50)
-    Dsct <- FindClusters(Dsct)#default Algorithm: 1 = original Louvain algorithm
+    
+    message("Clustering ",cluster_method," (",clusterResolution,") ...")
+    if(grepl("Leiden",cluster_method,ignore.case=T)){
+      Dsct <- FindClusters(Dsct,verbose = FALSE,resolution=clusterResolution,algprithem=4)
+    }else{
+      Dsct <- FindClusters(Dsct,verbose = FALSE,resolution=clusterResolution)#default Algorithm: 1 = original Louvain algorithm
+    }
     # prepare saving
     D <- cbind(Dsct[["seurat_clusters"]],
                Dsct[["pca"]]@cell.embeddings,

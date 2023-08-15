@@ -84,7 +84,15 @@ def batchNorm(strH5ad,strConfig,newH5ad,batchCell):
     clusterKey = "normalized_cluster"
     sc.tl.pca(Exp1, svd_solver='arpack', n_comps = npc)
     sc.pp.neighbors(Exp1, n_neighbors=10, n_pcs=npc)
-    sc.tl.leiden(Exp1,key_added=clusterKey)
+    with open(strConfig,"r") as f:
+      config = yaml.safe_load(f)
+    cluster_method = 'Louvain' if config.get('clusterMethod') is None else config.get('clusterMethod')
+    cluster_reso = 0.8 if config.get('clusterResolution') is None else config.get('clusterResolution')
+    print("\tclustering %s (%.2f)..."%(cluster_method,cluster_reso))
+    if bool(re.search('Leiden',cluster_method)):
+      sc.tl.leiden(Exp1,resolution=cluster_reso,key_added=clusterKey)
+    else:
+      sc.tl.louvain(Exp1,resolution=cluster_reso,key_added=clusterKey)
     print("\tUMAP ...")
     sTime=time.time()
     sc.tl.umap(Exp1)

@@ -118,22 +118,22 @@ main <- function(){
   if(length(args)==2){
     strRDS <- paste0(unlist(strsplit(args[1],",")),".rds")
     print(peakRAM(mergeAllbatches(strRDS,args[2],batchKey)))
-    return()
-  }
-  strH5ad <- args[1]
-  if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
-  strOut <- args[2]
-  strConfig <- args[3]
-  if(!file.exists(strConfig)){
-    stop(paste0("Config file (",strConfig,") does not exist!"))
   }else{
-    config <- yaml::read_yaml(strConfig)
+    strH5ad <- args[1]
+    if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
+    strOut <- args[2]
+    strConfig <- args[3]
+    if(!file.exists(strConfig)){
+      stop(paste0("Config file (",strConfig,") does not exist!"))
+    }else{
+      config <- yaml::read_yaml(strConfig)
+    }
+    scaleF=as.numeric(args[4])
+    if(length(args)>4) batchKey <- args[5]
+    
+    source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
+    print(peakRAM(processH5ad(strH5ad,batchKey,strOut,scaleF,config$PrepSCTFindMarkers)))
   }
-  scaleF=as.numeric(args[4])
-  if(length(args)>4) batchKey <- args[5]
-  
-  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
-  print(peakRAM(processH5ad(strH5ad,batchKey,strOut,scaleF,config$PrepSCTFindMarkers)))
 }
 
 main()

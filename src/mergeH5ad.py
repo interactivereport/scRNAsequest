@@ -190,7 +190,7 @@ def integrateH5ad(strH5ad,methods,prefix,outH5ad,majorR=None,ref_name=None):
       D.obsm[k] = obsm1.fillna(0).to_numpy()
   ## assign seurat labels to other integration clusters
   if majorR is not None and majorR<=1 and seuratRefLab is not None and ref_name is not None:
-    print("----- Reassign cluster/leiden to seurat label transfer")
+    print("----- Reassign cluster/leiden/louvain to seurat label transfer")
     for aCluster in [aCluster for aCluster in D.obs.columns if aCluster.endswith('louvain') or aCluster.endswith('cluster')]:
       if aCluster in seuratRefCluster:
         continue

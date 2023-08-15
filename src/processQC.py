@@ -264,7 +264,7 @@ def checkCells(adata):
   if cellN.shape[0]==0:
     return
   Exit("The following samples contains less than %d cells, please either relax the filtering or remove them:\n\t%s"%(sysConfig["minCell"],", ".join(list(cellN.index))))
-def obtainRAWobsm(D,reg=None):
+def obtainRAWobsm(D,cluster_reso,cluster_method,reg=None):
   # 95 percentile to normalize
   print("Finding the obs and obsm for the raw")
   #print("\tReading post-filtered h5ad ...")
@@ -296,8 +296,11 @@ def obtainRAWobsm(D,reg=None):
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     clusterKey="raw_cluster"
-    print("\tclustering ...")
-    sc.tl.leiden(D,key_added=clusterKey)
+    print("\tclustering %s (%.2f) ..."%(cluster_method,cluster_reso))
+    if bool(re.search('Leiden',cluster_method)):
+      sc.tl.leiden(D,resolution=cluster_reso,key_added=clusterKey)
+    else:
+      sc.tl.louvain(D,resolution=cluster_reso,key_added=clusterKey)
     ## umap embedding
     print("\tumap ...")
     sTime = time.time()
@@ -313,45 +316,49 @@ def obtainRAWobsm(D,reg=None):
       D.obsm[re.sub("^X_","X_raw_",one)] = D.obsm.pop(one)
   return D.obs,D.obsm #, D.var.highly_variable
 def main():
-  if len(sys.argv)==3:
-    if os.path.isfile(sys.argv[2]):
-      print("Using previous raw obsm & obs: %s\n\tPlease rename/remove above file to rerun!"%sys.argv[2])
+  task = sys.argv[1]
+  if task == 'QC':
+    preH5ad = sys.argv[2]
+    postH5ad = sys.argv[3]
+    strConfig = sys.argv[4]
+    with open(strConfig,"r") as f:
+      config=yaml.safe_load(f)
+    updateRmarkdown(config)
+    global beRaster
+    beRaster = beRaster if config.get("rasterizeFig") is None else config.get("rasterizeFig")
+    print("Reading pre-filtered h5ad ...")
+    sTime = timer()
+    adata = sc.read_h5ad(preH5ad)
+    print("\t%.2f seconds"%(timer()-sTime))
+    print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
+    filterRes=["Filter,cutoff,cell_number,gene_number\n"]
+    filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
+    preprocess(adata,config)
+    strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
+    if not os.path.isfile(strPrefilterQC):
+      plotQC(adata,strPrefilterQC,config["group"])
+    if config["filter_step"]:
+      #adata = dbl.filterDBL(adata,config,filterRes)
+      dbl.filterDBL(adata,config,filterRes)
+      #adata = filtering(adata,config,filterRes)
+      filtering(adata,config,filterRes)
+      plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
+    checkCells(adata)
+    adata.write(postH5ad)
+  elif task == 'rawOBSM':
+    strH5ad = sys.argv[2]
+    strOut = sys.argv[3]
+    cluster_reso = float(sys.argv[4])
+    cluster_method = sys.argv[5]
+    if os.path.isfile(strOut):
+      print("Using previous raw obsm & obs: %s\n\tPlease rename/remove above file to rerun!"%strOut)
       return
     print("Reading post-filtered h5ad ...")
-    adata = sc.read_h5ad(sys.argv[1])
-    adata.obs,adata.obsm=obtainRAWobsm(adata)
-    adata.write(sys.argv[2])
-    return 
-
-  if len(sys.argv)<4:
-    msgError("ERROR: Three file paths are required: prefilter and postfilter h5ad along with config!")
-  preH5ad = sys.argv[1]
-  postH5ad = sys.argv[2]
-  strConfig = sys.argv[3]
-  with open(strConfig,"r") as f:
-    config=yaml.safe_load(f)
-  updateRmarkdown(config)
-  global beRaster
-  beRaster = beRaster if config.get("rasterizeFig") is None else config.get("rasterizeFig")
-  print("Reading pre-filtered h5ad ...")
-  sTime = timer()
-  adata = sc.read_h5ad(preH5ad)
-  print("\t%.2f seconds"%(timer()-sTime))
-  print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
-  filterRes=["Filter,cutoff,cell_number,gene_number\n"]
-  filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
-  preprocess(adata,config)
-  strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
-  if not os.path.isfile(strPrefilterQC):
-    plotQC(adata,strPrefilterQC,config["group"])
-  if config["filter_step"]:
-    #adata = dbl.filterDBL(adata,config,filterRes)
-    dbl.filterDBL(adata,config,filterRes)
-    #adata = filtering(adata,config,filterRes)
-    filtering(adata,config,filterRes)
-    plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
-  checkCells(adata)
-  adata.write(postH5ad)
+    adata = sc.read_h5ad(strH5ad)
+    adata.obs,adata.obsm=obtainRAWobsm(adata,cluster_reso,cluster_method)
+    adata.write(strOut)
+  else:
+    msgError("Unknown task for processQC: ",task)
 
 def QC(preH5ad,postH5ad,config,strConfig):
   reRunQC = True if config.get('reRunQC') is None else config.get('reRunQC')
@@ -362,7 +369,7 @@ def QC(preH5ad,postH5ad,config,strConfig):
       print("\tPrevious QC result is used: %s\n\tPlease remove/rename the above file if a new QC step is desired!"%postH5ad)
       return
   print("process QC/Filtering ...")
-  cU.submit_cmd({"QC":"python -u %s/processQC.py %s %s %s"%(strPipePath,preH5ad,postH5ad,strConfig)},config)
+  cU.submit_cmd({"QC":"python -u %s/processQC.py QC %s %s %s"%(strPipePath,preH5ad,postH5ad,strConfig)},config)
   if not os.path.isfile(postH5ad):
     msgError("Failed in QC/filtering step!")
   runQCmsg(config)
@@ -375,7 +382,9 @@ def runQC(config,meta,strConfig):
   oD.getData(meta,config,strPrefilter)
   strPostfilter = "%s_raw_postfilter.h5ad"%prefix
   QC(strPrefilter,strPostfilter,config,strConfig)
-  return strPostfilter,"%s.h5ad"%prefix
+  #create cmd for rawOBSM
+  return rawOBSM(config,strPostfilter,"%s.h5ad"%prefix)
+
 def rawOBSM(config,postH5ad,strH5ad):
   if os.path.isfile(strH5ad):
     if config["newProcess"]:
@@ -384,11 +393,13 @@ def rawOBSM(config,postH5ad,strH5ad):
       os.rename(strH5ad,h5adTmp)
     else:
       print("\tPrevious QC result is used: %s\n\tPlease remove/rename the above file if a new QC step is desired!"%strH5ad)
-      return
-  print("process raw obsm ...")
-  cU.submit_cmd({"rawOBSM":"python -u %s/processQC.py %s %s"%(strPipePath,postH5ad,strH5ad)},config)
-  if not os.path.isfile(strH5ad):
-    msgError("Failed in obtaining the raw obsm step!")
+      return ""
+  cluster_reso = 0.8 if config.get('clusterResolution') is None else config.get('clusterResolution')
+  cluster_method = 'Louvain' if config.get('clusterMethod') is None else config.get('clusterMethod')
+  return "python -u %s/processQC.py rawOBSM %s %s %.2f %s"%(strPipePath,postH5ad,strH5ad,cluster_reso,cluster_method)
+  #cU.submit_cmd({"rawOBSM":"python -u %s/processQC.py rawOBSM %s %s %.2f %s"%(strPipePath,postH5ad,strH5ad,cluster_reso,cluster_method)},config)
+  #if not os.path.isfile(strH5ad):
+  #  msgError("Failed in obtaining the raw obsm step!")
 
 if __name__ == "__main__":
   main()

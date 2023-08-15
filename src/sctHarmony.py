@@ -22,7 +22,7 @@ def msgError(msg):
   exit()
 
 def runOneSCT(oneH5ad,strConfig,strSCT):
-  cmd = "Rscript %s %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
+  cmd = "Rscript %s SCT %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
                               oneH5ad,strSCT,strConfig,os.path.dirname(strSCT))
   subprocess.run(cmd,shell=True,check=True)
 
@@ -60,19 +60,21 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN):
   print("\tThe SCT step for all samples are completed!")
   return None
 
-def runRharmony(strPCA,strMeta):
-  cmd = "Rscript %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
-                              strPCA,strMeta,os.path.dirname(strMeta))
+def runRharmony(strPCA,strMeta,clusterResolution,clusterMethod):
+  clusterResolution=0.8 if clusterResolution is None else clusterResolution
+  clusterMethod='Louvain' if clusterMethod is None else clusterMethod
+  cmd = "Rscript %s Harmony %s %s %.2f %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
+                              strPCA,strMeta,clusterResolution,clusterMethod,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN):
+def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,clusterResolution,clusterMethod):
   if os.path.isfile(strMeta):
     print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
     return(meta)
   strPCA = re.sub("rds$","pca.h5ad",strMeta)
   sct(strH5ad,strConfig,strPCA,batchCell,hvgN)
-  runRharmony(strPCA,strMeta)
+  runRharmony(strPCA,strMeta,clusterResolution,clusterMethod)
   if not os.path.isfile(strMeta):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
   meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
@@ -88,7 +90,8 @@ def main():
   strConfig=sys.argv[2]
 
   strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
-  meta = sctHarmony(strH5ad,strConfig,strMeta,config.get('batchCell'),config.get('harmonyBatchGene'))
+  meta = sctHarmony(strH5ad,strConfig,strMeta,config.get('batchCell'),config.get('harmonyBatchGene'),
+    config.get('clusterResolution'),config.get('clusterMethod'))
 
   for one in meta.columns:
     if meta[one].nunique()<100:
