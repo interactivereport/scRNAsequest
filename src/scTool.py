@@ -136,10 +136,10 @@ def pseudoBulk_check(D,col):
   if D.X is None and (D.raw is None or D.raw.X is None):
     raise AttributeError("Provided Matrix is None")
   if not D.raw is None and not D.raw.X is None:
-    if D.raw.var is None or D.raw.obs is None:
-      raise AttributeError(".raw found in h5ad, but missing .raw.var or .raw.obs")
+    if D.raw.var is None:# or D.raw.obs is None
+      raise AttributeError(".raw found in h5ad, but missing .raw.var")
     else:
-      print(".raw exists, extract from .raw.X")
+      print(".raw exists, extract from .raw.X, .obs will be used instead of .raw.obs")
   if D.obs is None:
     raise AttributeError("Provided Obs are None")
   if D.var is None:
@@ -152,7 +152,7 @@ def pseudoBulk_one(D,one):
   print("\t",one)
   # extract pseudo bulk sum
   if not D.raw is None and not D.raw.X is None:
-    X = D.raw.X[D.raw.obs.index.isin(D.obs[D.obs[pseudoBulk_col]==one].index),]
+    X = D.raw.X[D.raw.obs_names.isin(D.obs[D.obs[pseudoBulk_col]==one].index),]
     gID = D.raw.var.index
   else:
     X = D.X[D.obs[pseudoBulk_col]==one,]
