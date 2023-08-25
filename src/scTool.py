@@ -164,16 +164,19 @@ def pseudoBulk_one(D,one):
   # extract unique obs
   obs = D.obs[D.obs[pseudoBulk_col]==one].copy()
   obs = obs.loc[:,obs.nunique()==1].iloc[0,:]
-  obs['pseudo_cellN'] = X.shape[0]
+  #obs['pseudo_cellN'] = X.shape[0]
   obs.name=one
-  return exp,obs
-def pseudoBulk_save(X,meta,strOut):
+  qc = pd.Series({'pseudo_cellN':int(X.shape[0]),
+                  'pseudo_UMI':int(exp.sum())},name=one)
+  return exp,obs,qc
+def pseudoBulk_save(X,meta,qc,strOut):
   print("Saving ...")
   X.to_csv(os.path.join(strOut,"genes.UMI.tsv"),sep="\t",index_label="Gene")
   meta.to_csv(os.path.join(strOut,"samplesheet.tsv"),sep="\t",index_label="Sample_Name")
+  qc.to_csv(os.path.join(strOut,"sampleQC.tsv"),sep="\t",index_label="Sample_Name")
   X1 = X.apply(lambda x: x/x.sum()*1e6)
   X1.to_csv(os.path.join(strOut,"genes.CPM.tsv"),sep="\t",index_label="Gene")
-  X1 = X/meta['pseudo_cellN']*1000
+  X1 = X/qc['pseudo_cellN']*1000
   X1.to_csv(os.path.join(strOut,"genes.CPKcell.tsv"),sep="\t",index_label="Gene")
 def pseudoBulk(args):
   strOut = pseudoBulk_init(args)
@@ -183,15 +186,18 @@ def pseudoBulk(args):
   D.obs[pseudoBulk_col] = D.obs[metaCol].apply(lambda x: "_".join(x),axis=1)
   X = []
   meta = []
+  qc=[]
   for one in D.obs[pseudoBulk_col].unique():
-    x,m = pseudoBulk_one(D,one)
+    x,m,q = pseudoBulk_one(D,one)
     X.append(x)
     meta.append(m)
+    qc.append(q)
   X = pd.DataFrame(X).transpose()
   X1=X.astype(np.int32)
   meta = pd.DataFrame(meta)
   meta = meta.dropna(axis=1)
-  pseudoBulk_save(X,meta,strOut)
+  qc = pd.DataFrame(qc)
+  pseudoBulk_save(X,meta,qc,strOut)
   
 if __name__ == "__main__":
   global strPipePath
