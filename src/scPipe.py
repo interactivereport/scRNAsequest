@@ -88,11 +88,17 @@ def initProject(strDNAnexus):
 def initMeta(strInput):
   print("Processing sample meta information ...")
   strMeta = "%s/samplesheet.tsv"%strInput
-  if not os.path.isfile(strMeta):
-    return None
-  meta = pd.read_csv(strMeta,sep="\t")
-  sysConfig = getConfig()
   config = getConfig("template.yml")
+  if not os.path.isfile(strMeta):
+    print("\tNo samplesheet.tsv! Scanning *filtered_feature_bc_matrix.h5")
+    sName = [re.sub(".filtered_feature_bc_matrix.h5","",os.path.basename(one)) for one in glob.glob(os.path.join(strInput,"*filtered_feature_bc_matrix.h5"))]
+    if len(sName)==0:
+      print("\tSkip meta information: No h5 files found!")
+      return None
+    meta = pd.DataFrame({config["sample_name"]:sName})
+  else:
+    meta = pd.read_csv(strMeta,sep="\t")
+  sysConfig = getConfig()
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     if not 'notMeta' in sysConfig.keys():
