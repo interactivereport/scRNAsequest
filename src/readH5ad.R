@@ -11,7 +11,7 @@ getobs <- function(strH5ad){
   meta <- do.call(cbind.data.frame, obs[sel])
   #meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
   #dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
-  rownames(meta) <- obs[[grep("index$",names(obs))]]
+  rownames(meta) <- obs[[grep("index$|^barcode$",names(obs))]]
   for(one in names(obs[["__categories"]])){
     if(min(meta[,one])<0){
       ann <- meta[,one]+1
@@ -37,6 +37,8 @@ getID <- function(strH5ad,keys,grp){
     return(h5read(strH5ad,paste0(grp,"/_index")))
   }else if("index" %in% keys$name[grepl(grp,keys$group)]){
     return(h5read(strH5ad,paste0(grp,"/index")))
+  }else if("barcode" %in% keys$name[grepl(grp,keys$group)]){
+    return(h5read(strH5ad,paste0(grp,"/barcode")))
   }else{
     stop(paste("unknown adata format: Neither index or _index exists in group",grp))
   }
