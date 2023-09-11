@@ -152,10 +152,14 @@ def pseudoBulk_one(D,one):
   print("\t",one)
   # extract pseudo bulk sum
   if not D.raw is None and not D.raw.X is None:
-    X = D.raw.X[D.raw.obs_names.isin(D.obs[D.obs[pseudoBulk_col]==one].index),]
+    selC = D.raw.obs_names.isin(D.obs[D.obs[pseudoBulk_col]==one].index)
+    ix = [i for i in range(len(selC)) if selC[i]]
+    X = D.raw.X[ix,]
     gID = D.raw.var.index
   else:
-    X = D.X[D.obs[pseudoBulk_col]==one,]
+    selC = D.obs[pseudoBulk_col]==one
+    ix = [i for i in range(len(selC)) if selC[i]]
+    X = D.X[ix,]
     gID = D.var.index
   if not issparse(X):
     X = csc_matrix(X.copy())
