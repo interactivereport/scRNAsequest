@@ -41,7 +41,7 @@ getID <- function(strH5ad,keys,grp){
     return(h5read(strH5ad,paste0(grp,"/barcode")))
   }else if("feature_name" %in% keys$name[grepl(grp,keys$group)]){
     gName <- h5read(strH5ad,paste0(grp,"/feature_name"))
-    if(sum(c("categories","codes")%in%names(obs[[one]]))!=2){
+    if(sum(c("categories","codes")%in%names(gName))==2){
       gName <- gName$categories[1+gName$codes]
     }
     return(gName)
