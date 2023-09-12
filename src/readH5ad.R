@@ -40,7 +40,11 @@ getID <- function(strH5ad,keys,grp){
   }else if("barcode" %in% keys$name[grepl(grp,keys$group)]){
     return(h5read(strH5ad,paste0(grp,"/barcode")))
   }else if("feature_name" %in% keys$name[grepl(grp,keys$group)]){
-    return(h5read(strH5ad,paste0(grp,"/feature_name")))
+    gName <- h5read(strH5ad,paste0(grp,"/feature_name"))
+    if(sum(c("categories","codes")%in%names(obs[[one]]))!=2){
+      gName <- gName$categories[1+gName$codes]
+    }
+    return(gName)
   }else{
     stop(paste("unknown adata format: Neither index or _index exists in group",grp))
   }
