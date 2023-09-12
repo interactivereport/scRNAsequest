@@ -39,6 +39,8 @@ getID <- function(strH5ad,keys,grp){
     return(h5read(strH5ad,paste0(grp,"/index")))
   }else if("barcode" %in% keys$name[grepl(grp,keys$group)]){
     return(h5read(strH5ad,paste0(grp,"/barcode")))
+  }else if("feature_name" %in% keys$name[grepl(grp,keys$group)]){
+    return(h5read(strH5ad,paste0(grp,"/feature_name")))
   }else{
     stop(paste("unknown adata format: Neither index or _index exists in group",grp))
   }
