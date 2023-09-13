@@ -48,6 +48,7 @@ harmonyBatchGene: 5000 # the number of high variable genes for each batch during
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp: initDEG #required for DEG analysis
 NAstring: [] #provide a list of strings which should be considered NA and associated cells to be removed
+DEG_pipeline_version: v1 #v1: implemented Sept, 2023, v0: original implemented by bioStats team linked to the publication below
 # Please be causion of changing the following default filtering
 # More details can be found: section 2.4 in https://pubmed.ncbi.nlm.nih.gov/35743881/
 # Applies the 1st round of biostats filtering pipeline. Note that this filter is applied to all cells of the experiment

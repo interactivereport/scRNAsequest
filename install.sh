@@ -24,6 +24,7 @@ mamba env update -f install/install.yml
 
 echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $appEnvName'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
+echo "export PYTHONNOUSERSITE=1" >> $src/.env
 echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
 echo "export MKL_NUM_THREADS=1" >> $src/.env
 echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env

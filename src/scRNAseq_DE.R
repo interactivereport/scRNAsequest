@@ -86,6 +86,7 @@ main <- function(strConfig){
       else strOut <- file.path(scDEGpath,strD)
     }
     if(dir.exists(strOut)) message("\tUsing existing: ",strOut)
+    pipelineV <- ifelse(is.null(config$DEG_pipeline_version),'v0',config$DEG_pipeline_version)
     #system(paste("rm -rf",strOut))
     return(scRNAseq_DE(strH5adraw,strH5ad,strOut,x["method"],
                 x["sample"],x["cluster"],
@@ -107,7 +108,8 @@ main <- function(strConfig){
                 R6_perc_threshold = config$R6_perc_threshold,
                 R6_min.ave.pseudo.bulk.cpm = config$R6_min.ave.pseudo.bulk.cpm,
                 R6_pseudo.bulk.cpm.filter = config$R6_pseudo.bulk.cpm.filter,
-                R6_min.cells.per.subj = config$R6_min.cells.per.subj))
+                R6_min.cells.per.subj = config$R6_min.cells.per.subj,
+                ver=pipelineV))
   })
   cmds <- unlist(cmds)#,use.names=F
   #message(paste(paste(names(cmds),cmds,sep=": "),collapse="\n"))
@@ -149,6 +151,7 @@ scRNAseq_DE <- function(
     R6_pseudo.bulk.cpm.filter = FALSE,
     R6_min.cells.per.subj = 3,
     
+    ver='v0',
     core=1,
     parallel=FALSE,
     addSRC=NULL
@@ -376,6 +379,71 @@ scRNAseq_DE_one <- function(
     }
     return()
 }
+scRNAseq_DE_one_v1 <- function(env,cluster_interest,strSrc=NULL){
+  if(!is.null(strSrc)) source(paste0(strSrc,"/scDEG.R"))
+  message("===== ",env$method,":",cluster_interest," =====")
+  strOut <- env$output
+  if(!is.null(env$column_group)){
+    strF <- file.path(strOut,paste0(gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref)),"__",
+                                    gsub("__","_",paste(env$column_cluster,cluster_interest,sep=":")),"__",
+                                    gsub("__","_",env$method),
+                                    #"__cov:",paste(env)
+                                    ".csv"))
+    if(!is.null(env$column_covars)){
+      strF <- gsub("\\.csv$",paste0("__cov:",paste(gsub("__","_",env$column_covars),collapse="+"),".csv"),strF)
+    }
+  }else{
+    strF <- file.path(strOut,paste0(cluster_interest,".vs.Rest","__",gsub("_",".",env$column_cluster),".csv"))
+    intrestGrp <- as.character(allMeta[,env$column_cluster])
+    intrestGrp[intrestGrp!=cluster_interest] <- "Rest"
+    allMeta <- cbind(allMeta,all="all",intrestGrp=intrestGrp)
+    env$column_cluster <- "all"
+    env$column_group <- "intrestGrp"
+    env$grp_ref <- "Rest"
+    env$grp_alt <- cluster_interest
+    cluster_interest <- "all"
+  }
+  if(file.exists(strF)){
+    message("\tSkip: ",strF," exists!")
+    return()
+  }
+  ## fitting the legancy filter status
+  if(!env$R6_cells.per.gene.filter) env$R6_min.cells.per.gene <- 0
+  if(!env$R6_perc.cells.filter) env$R6_min.perc.cells.per.gene <- 0
+  if(!env$R6_perc.filter) env$R6_perc_threshold <- 1
+  if(!env$R6_pseudo.bulk.cpm.filte) env$R6_min.ave.pseudo.bulk.cpm <- 0
+  ##
+  
+  sce <- scDEG$new(id_col=env$column_sample,
+                   cluster_col=env$column_cluster,
+                   grp_col=env$column_group,ctrl_value=env$grp_ref,alt_value=env$grp_alt,
+                   strX=env$strCount,strMeta=env$strMeta,
+                   pipelinePath=strSrc)
+  #alg,fliter_list,clusters=NULL,covar=NULL,prefix=NULL,...
+  filters <- list(rmGene=c("Mt-","MT-","mt-"),
+                  min.cells.per.gene = env$R6_min.cells.per.gene,min.perc.cells.per.gene = env$R6_min.perc.cells.per.gene,
+                  min.cells.per.gene.type = env$R6_min.cells.per.gene.type,
+                  perc_threshold = env$R6_perc_threshold, perc.filter.type = env$R6_perc.filter.type,
+                  lib_size_low = 200, lib_size_high = 20*10^6,
+                  min.genes.per.cell = env$min.genes.per.cell, min.cells.per.subj = env$R6_min.cells.per.subj,
+                  min.ave.pseudo.bulk.cpm=env$R6_min.ave.pseudo.bulk.cpm)
+  de <- sce$run(alg=env$method,fliter_list=filters,clusters=cluster_interest,
+                covar=env$column_covars,method=env$method_model)
+  write.csv(de,file=strF,row.names = FALSE)
+  return()
+}
+
+scRNAseq_DE_dist <- function(env,cluster_interest,strSrc=NULL){
+  if(env$ver=='v0'){
+    message("=== scDEG pipeline v0 ===")
+    return(scRNAseq_DE_one(env,cluster_interest,strSrc))
+  }else if(env$ver=='v1'){
+    message("=== scDEG pipeline v1 ===")
+    return(scRNAseq_DE_one_v1(env,cluster_interest,strSrc))
+  }else{
+    stop("Unknown scDEG pipeline version: ",env$ver)
+  }
+}
 
 args <- commandArgs(trailingOnly=TRUE)
 if(length(args)==1){
@@ -391,10 +459,12 @@ if(length(args)>1){
   suppressMessages(suppressWarnings(PKGloading()))
   strAppPath <- dirname(gsub("--file=","",grep("file=",commandArgs(),value=T)))
   source(file.path(strAppPath,"readH5ad.R"))
-  memUse <- peakRAM(Finfo <- scRNAseq_DE_one(readRDS("env.rds"),
+  memUse <- peakRAM(Finfo <- scRNAseq_DE_dist(readRDS("env.rds"),
                                             selGrp,
                                             args[1]))
+  memUse[1] <- selGrp
   print(memUse)
+  data.table::fwrite(memUse,file="timeMem.csv",append=T)
   strLog <- file.path(dirname(strAppPath),"log","scDEG_memory.log")
   if(!file.exists(strLog)){
     dir.create(dirname(strLog),showWarnings=F)

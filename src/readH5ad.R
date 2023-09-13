@@ -7,7 +7,7 @@ suppressMessages(suppressWarnings(PKGloading()))
 getobs <- function(strH5ad){
   message("\tobtainning obs ...")
   obs <- h5read(strH5ad,"obs")
-  sel <- names(obs)[sapply(obs,function(x)return(is.null(names(x))))&!grepl("^_|index$",names(obs))]
+  sel <- names(obs)[sapply(obs,function(x)return(is.null(names(x))))&!grepl("^_|index$|^barcode$",names(obs))]
   meta <- do.call(cbind.data.frame, obs[sel])
   #meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
   #dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
@@ -20,7 +20,7 @@ getobs <- function(strH5ad){
       annLable <- c(annLable,"NAN")
       meta[,one] <- annLable[ann]
     }else{
-      meta[,one] <- obs[["__categories"]][[one]][1+meta[,one]]
+      meta[,one] <- as.vector(obs[["__categories"]][[one]])[1+meta[,one]]
     }
   }
   # for anndata v 0.8
