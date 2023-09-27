@@ -50,10 +50,19 @@ dbl_single <- function(strUMI,strOut,strBarcode="library_id"){
     X <- X[,barcodes]
   }
   message(ncol(X),"\tcells for scDblFinder")
-  Xdbl <- scDblFinder(X,BPPARAM=MulticoreParam(max(1,parallelly::availableCores()-2)))
-  DBL <- cbind(data.frame(Xdbl@colData),
-               nCount_RNA=colSums(X),
-               nFeature_RNA=diff(X@p))
+  DBL <- tryCatch(
+    {
+      Xdbl <- scDblFinder(X,BPPARAM=MulticoreParam(max(1,parallelly::availableCores()-2)))
+      data.frame(Xdbl@colData)
+    },
+    error=function(cond){
+      message("*** Error in scDblFinder for ",strUMI," ***")
+      return(data.frame(row.names=barcodes,
+                        scDblFinder.class=rep('Failed',length(barcodes)),
+                        scDblFinder.score=rep(0,length(barcodes))))
+    }
+  )
+  DBL <- cbind(DBL,nCount_RNA=colSums(X),nFeature_RNA=diff(X@p))
   saveRDS(DBL,paste0(strOut,".rds"))
   dbl_plot(DBL,strOut)
   write.csv(DBL[,c("scDblFinder.class","scDblFinder.score")],file=strOut)
