@@ -119,7 +119,7 @@ def preprocess(adata,config):
   elif "gene_group" in config.keys():
     for k in config['gene_group']:
       if type(config['gene_group'][k]['startwith']) is not list:
-        Exit("config error with %s, 'startwith' has to be a list"%k)
+        msgError("config error with %s, 'startwith' has to be a list"%k)
       gList = np.full(adata.shape[1],False)
       for one in config['gene_group'][k]['startwith']:
         if len(one)>1:
@@ -134,7 +134,7 @@ def preprocess(adata,config):
         print("\t%s genes will be removed"%k)
         rmGene |= gList
   else:
-    Exit("Unknown config format! Either 'MTstring' or 'gene_group' is required")
+    msgError("Unknown config format! Either 'MTstring' or 'gene_group' is required")
   if len(varKey)>0:
     sc.pp.calculate_qc_metrics(adata,qc_vars=varKey,inplace=True)
     for k in varKey:
@@ -172,7 +172,7 @@ def filtering(adata,config,filterRes):
       filterRes.append("%s,%f,%d,%d\n"%(k,config['gene_group'][k]["cutoff"],np.sum(selObs),np.sum(selVar)))
       print("\t\tfiltered cells with %s<%d%% left %d cells"%(k,config['gene_group'][k]["cutoff"],np.sum(selObs)))
   else:
-    Exit("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
+    msgError("Unknown config format! Either 'mt.cutoff' or 'gene_group' is required")
     
   ## filtering low content cells and low genes
   selVar=np.logical_and(selVar,adata.var['n_cells_by_counts']>=min_cells)
@@ -199,7 +199,7 @@ def filtering(adata,config,filterRes):
     f.writelines(filterRes)
 
   if np.sum(selObs)<10:
-    Exit("Few cells (%d<10) left after filtering, please check the filtering setting in config to contitue!"%np.sum(selObs))
+    msgError("Few cells (%d<10) left after filtering, please check the filtering setting in config to contitue!"%np.sum(selObs))
   print("\tSubsetting")
   sTime=timer()
   adata._inplace_subset_var(selVar)
@@ -263,7 +263,7 @@ def checkCells(adata):
   cellN = cellN[cellN<sysConfig["minCell"]]
   if cellN.shape[0]==0:
     return
-  Exit("The following samples contains less than %d cells, please either relax the filtering or remove them:\n\t%s"%(sysConfig["minCell"],", ".join(list(cellN.index))))
+  msgError("The following samples contains less than %d cells, please either relax the filtering or remove them:\n\t%s"%(sysConfig["minCell"],", ".join(list(cellN.index))))
 def obtainRAWobsm(D,cluster_reso,cluster_method,reg=None):
   # 95 percentile to normalize
   print("Finding the obs and obsm for the raw")
