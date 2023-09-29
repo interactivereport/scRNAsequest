@@ -63,13 +63,24 @@ processSCTrefOne <- function(strH5ad,batch,config){
     #after checking/testing, the below would return proper SCT nomralized data
     #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
     #https://github.com/satijalab/sctransform/issues/128
-    oneD <- suppressMessages(suppressWarnings(
-      SCTransform(Dlist[[i]],method = 'glmGamPoi',
-                  new.assay.name="SCT",
-                  return.only.var.genes = FALSE,
-                  #scale_factor=medianUMI,
-                  verbose = FALSE)
-    ))
+    oneD <- tryCatch({
+      suppressMessages(suppressWarnings(
+        SCTransform(Dlist[[i]],method = 'glmGamPoi',
+                    new.assay.name="SCT",
+                    return.only.var.genes = FALSE,
+                    #scale_factor=medianUMI,
+                    verbose = FALSE)
+      ))
+    },error=function(cond){
+      message("\t\twithout glmGamPoi for ",bID)
+      return(suppressMessages(suppressWarnings(
+        SCTransform(Dlist[[i]],
+                    new.assay.name="SCT",
+                    return.only.var.genes = FALSE,
+                    #scale_factor=medianUMI,
+                    verbose = FALSE)
+      )))
+    })
     anchors <- suppressMessages(suppressWarnings(
       FindTransferAnchors(
         reference = reference,
@@ -86,17 +97,32 @@ processSCTrefOne <- function(strH5ad,batch,config){
         verbose=F
       )
     ))
-    oneD <- suppressMessages(suppressWarnings(
-      MapQuery(
-        anchorset = anchors,
-        query = oneD,
-        reference = reference,
-        refdata = setNames(as.list(config$ref_label),config$ref_label),
-        reference.reduction = config$ref_reduction, 
-        reduction.model = config$ref_reduction.model,
-        verbose=F
-      )
-    ))
+    oneD <- tryCatch({
+      suppressMessages(suppressWarnings(
+        MapQuery(
+          anchorset = anchors,
+          query = oneD,
+          reference = reference,
+          refdata = setNames(as.list(config$ref_label),config$ref_label),
+          reference.reduction = config$ref_reduction, 
+          reduction.model = config$ref_reduction.model,
+          verbose=F
+        )
+      ))
+    },error=function(cond){
+      message("\t\tERROR MapQuery for ",bID,". Mostly due to limited ",nrow(anchors@anchors)," anchors")
+      for(one in config$ref_label){
+        oneD@meta.data[paste0("predicted.",one,".score")] <- 0
+        oneD@meta.data[paste0("predicted.",one)] <- "Failed"
+      }
+      for(one in c(config$ref_reduction,config$ref_reduction.model)){
+        oneD[[paste0('ref.',one)]] <- CreateDimReducObject(embeddings=matrix(0,nrow=nrow(oneD@meta.data),ncol=2,
+                                                                             dimnames=list(rownames(oneD@meta.data),paste("ref",one,1:2,sep="_"))),
+                                                           key=paste0("ref",one,"_"),
+                                                           assay="SCT")
+      }
+      return(oneD)
+    })
     return(oneD)
   },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
                              tasks=length(Dlist)))
