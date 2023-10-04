@@ -131,7 +131,7 @@ if (file.exists("images/postfilter.QC_pct_counts_in_top_500_genes.png")){
 if (file.exists("images/postfilter.QC_pct_MT.png")){
   cat("This plot shows % of Mitochondria, after filtering.\n\n")
   cat("Each dot represents the mitochondria reads percentage within the total reads of that cell.\n\n")
-  knitr::include_graphics("images/postfilter.QC_pct_MT.png")
+  knitr::include_graphics("images/postfilter.QC_pct_counts_MT.png")
 }else{
   cat("No filtering was performed.")
 }
