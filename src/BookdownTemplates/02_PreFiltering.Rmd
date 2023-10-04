@@ -89,6 +89,6 @@ if (file.exists("images/prefilter.QC_pct_MT.png")){
    cat("Each dot represents the mitochondria reads percentage within the total reads of that cell.\n\n")
    knitr::include_graphics("images/prefilter.QC_pct_MT.png")
 }else{
-  cat("Missing figure: prefilter.QC_pct_MT.png")
+  cat("Missing figure: prefilter.QC_pct_counts_MT.png")
 }
 ```
