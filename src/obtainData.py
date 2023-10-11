@@ -13,7 +13,8 @@ logging.disable(level=logging.INFO)
 
 strPipePath=os.path.dirname(os.path.realpath(__file__))
 UMIcol="h5path"
-ANNcol="metapath"
+ANNcol="metapath" #first column is the cell name/id 
+GENEcol='genepath' # first column with 'name' in the header is gene name otherwise the first column will be used
 IntronExon="intron_exon_count_path"
 batchKey="library_id"
 #meta = pd.read_csv("/mnt/depts/dept04/compbio/users/zouyang/projects/AD_sc_atlas/data/cellbender_final.csv")
@@ -68,8 +69,22 @@ def getData_one(oneMeta,sID,strOut,dblScore=True):
     adata = sc.read_csv(oneMeta[UMIcol]).transpose()
   elif oneMeta[UMIcol].endswith('.tsv'):
     adata = sc.read_csv(oneMeta[UMIcol],'\t').transpose()
+  elif oneMeta[UMIcol].endswith('.mtx') or oneMeta[UMIcol].endswith('.mtx.gz'):
+    if GENEcol in oneMeta.keys() and ANNcol in oneMeta.keys():
+      adata = sc.read_mtx(oneMeta[UMIcol])
+      gInfo = pd.read_csv(oneMeta[GENEcol])
+      gName = [s for s in gInfo.columns if re.search('name',s,re.IGNORECASE)]
+      gName = list(gInfo.columns)[0] if len(gName)==0 else gName[0]
+      gInfo.index = list(gInfo[gName])
+      if gInfo.shape[0] == adata.shape[0]:
+        adata = adata.T
+      adata.var = gInfo
+      cInfo = pd.read_csv(oneMeta[ANNcol])
+      adata.obs_names= cInfo.iloc[:,0]
+    else:
+      msgError("%s and %s columns are required for mtx file provided in % column in sample meta information!"%(GENEcol,ANNcol,UMIcol))
   else:
-    Exit("Unsupported UMI format: %s"%oneMeta[UMIcol])
+    msgError("Unsupported UMI format: %s"%oneMeta[UMIcol])
   adata.var_names_make_unique()
   sc.pp.filter_cells(adata,min_counts=1)
   adata.X = csc_matrix(adata.X)
