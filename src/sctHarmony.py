@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random
+import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random, time
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
@@ -112,4 +112,6 @@ def main():
   print("sctHarmony process completed!")
 
 if __name__ == "__main__":
+  start_time = time.time()
   main()
+  print("---sctHarmony: total time %s seconds ---" % (time.time() - start_time))
