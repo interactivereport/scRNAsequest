@@ -308,7 +308,7 @@ scDEG <- R6Class("scDEG",
                      colnames(private$sInfo) <- gsub("_mean$","",colnames(private$sInfo))
                      rownames(private$sInfo) <- private$sInfo[,private$id_col]
                      private$sInfo <- private$sInfo[,c(private$grp_col,covar),drop=F]
-                     private$sInfo <- private$sInfo[,sapply(private$sInfo,function(x)return(sum(grepl("^Skip$",x)|(grepl(":",x)&grepl(";",x)))==0))]
+                     private$sInfo <- private$sInfo[,sapply(private$sInfo,function(x)return(sum(grepl("^Skip$",x)|(grepl(":",x)&grepl(";",x)))==0)),drop=F]
 
                      return(meta)
                    },
@@ -321,7 +321,7 @@ scDEG <- R6Class("scDEG",
                    },
                    # DEG by NEBULA pipeline -------
                    scDEG_Nebula=function(covar,...){
-                     meta <-  private$meta[private$c_index,c(private$grp_col,covar)]
+                     meta <-  private$meta[private$c_index,c(private$grp_col,covar),drop=F]
                      meta[,private$grp_col] <- factor(meta[,private$grp_col],levels=c(private$ctrl_value,private$alt_value))
                      df = model.matrix(as.formula(paste0("~",paste(colnames(meta),collapse="+"))),data=meta)
                      re = nebula(private$X[private$g_index,private$c_index],

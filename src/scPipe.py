@@ -239,16 +239,13 @@ def runPipe(strConfig):
   config = checkConfig(config)
   meta = getSampleMeta(config["sample_meta"])
   rawCMD = pQ.runQC(config,meta,strConfig)
-  if not config["runAnalysis"]:
-    MsgPower()
-    exit()
-
-  prefix = os.path.join(config["output"],config["prj_name"])
-  methods = runMethods(strConfig,rawCMD)
-  scaleF = mH.combine(methods,prefix,config)
-
-  runDEG(strConfig,prefix,config)
-  moveCellDepot(prefix,config,scaleF)
+  if config["runAnalysis"]:
+    prefix = os.path.join(config["output"],config["prj_name"])
+    methods = runMethods(strConfig,rawCMD)
+    scaleF = mH.combine(methods,prefix,config)
+    runDEG(strConfig,prefix,config)
+    moveCellDepot(prefix,config,scaleF)
+  
   MsgPower()
 def setupDir(strOut):
   try:
