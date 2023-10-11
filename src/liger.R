@@ -42,10 +42,10 @@ runLiger <- function(strH5ad,strHVG,batchKey,strOut){
   layout <- cbind(layout,
                   setNames(as.data.frame(UMAP),paste0("umap_",1:ncol(UMAP))))
 
-  message("\trunning tSNE ...")
-  adatalg <- runTSNE(adatalg)
-  layout <- cbind(layout,
-                  setNames(as.data.frame(adatalg@tsne.coords),paste0("tsne_",1:ncol(adatalg@tsne.coords))))
+  #message("\trunning tSNE ...")
+  #adatalg <- runTSNE(adatalg)
+  #layout <- cbind(layout,
+  #                setNames(as.data.frame(adatalg@tsne.coords),paste0("tsne_",1:ncol(adatalg@tsne.coords))))
   
   layout <- cbind(layout,Liger_cluster=adatalg@clusters)
   #layout <- cbind(cID=rownames(layout),layout)

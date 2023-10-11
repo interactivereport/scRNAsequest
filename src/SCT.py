@@ -97,12 +97,12 @@ def batchNorm(strH5ad,strConfig,newH5ad,batchCell):
     sTime=time.time()
     sc.tl.umap(Exp1)
     sc.tl.rank_genes_groups(Exp1,clusterKey)
-    print("\ttSNE ...")
-    try:
-      with tF.time_limit(max(3600*10,5*int(time.time()-sTime))):
-        sc.tl.tsne(Exp1, n_pcs=npc)
-    except tF.TimeoutException as e:
-      print("\t\tTime out! NO tSNE!")
+    #print("\ttSNE ...")
+    #try:
+    #  with tF.time_limit(max(3600*10,5*int(time.time()-sTime))):
+    #    sc.tl.tsne(Exp1, n_pcs=npc)
+    #except tF.TimeoutException as e:
+    #  print("\t\tTime out! NO tSNE!")
     print("\tsaving ...")
     Exp1 = Exp1[Exp.obs_names]
     Exp.obs[clusterKey]=Exp1.obs[clusterKey]

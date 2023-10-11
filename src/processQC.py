@@ -306,12 +306,12 @@ def obtainRAWobsm(D,cluster_reso,cluster_method,reg=None):
     sTime = time.time()
     sc.tl.umap(D, init_pos='spectral')
     sc.tl.rank_genes_groups(D,clusterKey)
-    print("\ttSNE ...")
-    try:
-      with tF.time_limit(max(3600*10,5*int(time.time()-sTime))):
-        sc.tl.tsne(D, n_pcs=npcs)
-    except tF.TimeoutException as e:
-      print("\t\tTime out! NO tSNE!")
+    #print("\ttSNE ...")
+    #try:
+    #  with tF.time_limit(max(3600*10,5*int(time.time()-sTime))):
+    #    sc.tl.tsne(D, n_pcs=npcs)
+    #except tF.TimeoutException as e:
+    #  print("\t\tTime out! NO tSNE!")
     for one in D.obsm_keys():
       D.obsm[re.sub("^X_","X_raw_",one)] = D.obsm.pop(one)
   return D.obs,D.obsm #, D.var.highly_variable
