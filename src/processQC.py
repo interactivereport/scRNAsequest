@@ -187,14 +187,18 @@ def filtering(adata,config,filterRes):
   selObs = np.logical_and(selObs,adata.obs.total_counts<highCount_cutoff)
   filterRes.append("max UMI,%d,%d,%d\n"%(highCount_cutoff,np.sum(selObs),np.sum(selVar)))
   print("\t\tfiltered cells with highCount.cutoff %d left %d cells"%(highCount_cutoff,np.sum(selObs)))
-  if "intron.cutoff" in config.keys():
-    sel = [item for item in adata.obs.columns if re.search('intron.*rate$', item,re.IGNORECASE)]
-    if len(sel)==1:
-      sel = sel[0]
-      selObs = np.logical_and(selObs,adata.obs[sel]<config["intron.cutoff"])
-      filterRes.append("intron rate,%f,%d,%d\n"%(config["intron.cutoff"],np.sum(selObs),np.sum(selVar)))
-      print("\t\tfiltered cells with intron.cutoff %f left %d cells"%(config["intron.cutoff"],np.sum(selObs)))
-    
+  introSel = [item for item in adata.obs.columns if re.search('intron.*rate$', item,re.IGNORECASE)]
+  if len(introSel)==1:
+    sel = sel[0]
+    if config.get('intron.cutoff.min') is not None and config['intron.cutoff.min']>0:
+      selObs = np.logical_and(selObs,adata.obs[sel]>config["intron.cutoff.min"])
+      filterRes.append("intron rate min,%f,%d,%d\n"%(config["intron.cutoff.min"],np.sum(selObs),np.sum(selVar)))
+      print("\t\tfiltered cells with intron.cutoff.min %f left %d cells"%(config["intron.cutoff.min"],np.sum(selObs)))
+    if config.get('intron.cutoff.max') is not None and config['intron.cutoff.max']<1:
+      selObs = np.logical_and(selObs,adata.obs[sel]<config["intron.cutoff.max"])
+      filterRes.append("intron rate max,%f,%d,%d\n"%(config["intron.cutoff.max"],np.sum(selObs),np.sum(selVar)))
+      print("\t\tfiltered cells with intron.cutoff.max %f left %d cells"%(config["intron.cutoff.max"],np.sum(selObs)))
+
   with open(os.path.join(Rmarkdown,"filter.csv"),"w") as f:
     f.writelines(filterRes)
 

@@ -17,13 +17,14 @@ gene_group:
     cutoff: 50
     rm: False
 filter_step: True # if False, the above 'gene_group' filtering will be skipped as well
+dblscore: True # perform scDbl to get the doublet score
 dbl_filter: False # if True, the dbl finding class will be used to remove the predicted doublets, if a numeric (0~1), cells with larger predicted doublet scores will be removed
 min.cells: 5 #filtering genes by minimal cell, please increase this when there is a large number of cells
 min.features: 50 #filtering cells by minimal genes
 highCount.cutoff: 80000 # any cells with higher total counts to be removed
 highGene.cutoff: 6000 # any cells with higher number of detected genes to be removed
-intron.cutoff: 0.4 # any cells with less intron rate will be removed if it is available
-dblscore: True # perform scDbl to get the doublet score
+intron.cutoff.min: 0 # any cells with less intron rate will be removed if it is available
+intron.cutoff.max: 1 # any cells with more intron rate will be removed if it is available
 group: #if provided, a 10X QC box plot will be ploted in QC plot
 rasterizeFig: True # should image in pdf be rasterized
 
