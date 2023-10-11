@@ -5,7 +5,7 @@ PKGloading <- function(){
   require(peakRAM)
   require(BiocParallel)#parallelly::availableCores()-2
   #register(MulticoreParam())#parallelly::availableCores()-2
-  options(stringsAsFactors = FALSE,future.globals.maxSize=8000*1024^2)
+  options(stringsAsFactors = FALSE,future.globals.maxSize=12*1024^3)
   require(future)
   plan("multicore")
 }
@@ -104,9 +104,11 @@ processSCT <- function(strH5ad,batch,strOut,geneN){
                           meta.data=getobs(strH5ad))
   cellN <- dim(D)[2]
   rm(X)
+  gc()
   Dlist <- SplitObject(D,split.by=batch)
   #message("memory usage before SCT: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(D)
+  gc()
   message("\tSCT ",length(Dlist)," samples ...")
   if(is.null(geneN)) geneN <- 3000
   if(F){
@@ -126,14 +128,24 @@ processSCT <- function(strH5ad,batch,strOut,geneN){
     Dlist <- bplapply(1:length(Dlist),function(i){
       bID <- Dlist[[i]]@meta.data[1,batch]
       message("\t\t",bID)
-      one <- suppressMessages(suppressWarnings(
-        SCTransform(Dlist[[i]],vst.flavor="v2",#method = 'glmGamPoi',
-                    new.assay.name=assayName,
-                    return.only.var.genes = FALSE,
-                    verbose = FALSE)
-      ))
-      one <- FindVariableFeatures(one, selection.method = "vst", nfeatures = geneN,verbose=F)
-      return(one)
+      oneD <- tryCatch({
+        suppressMessages(suppressWarnings(
+          SCTransform(Dlist[[i]],method = 'glmGamPoi',
+                      new.assay.name=assayName,
+                      return.only.var.genes = FALSE,
+                      verbose = FALSE)
+        ))
+      },error=function(cond){
+        message("\t\twithout glmGamPoi for ",bID)
+        return(suppressMessages(suppressWarnings(
+          SCTransform(Dlist[[i]],
+                      new.assay.name=assayName,
+                      return.only.var.genes = FALSE,
+                      verbose = FALSE)
+        )))
+      })
+      oneD <- FindVariableFeatures(oneD, selection.method = "vst", nfeatures = geneN,verbose=F)
+      return(oneD)
     },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
                                tasks=length(Dlist)))#min(length(Dlist),parallelly::availableCores()-2)
   }
@@ -177,7 +189,9 @@ processPCA <- function(strPCA,strOut,batch,clusterResolution,cluster_method){
   message("Find Neighbor ...")
   D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
   message("UMAP ...")
-  D <- RunUMAP(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)
+  D <- RunUMAP(D,reduction="harmony",dims = 1:dimN,
+               umap.method ="umap-learn",metric = "correlation",
+               verbose = FALSE)
   #message("tSNE ...")
   #tryCatch({D <- RunTSNE(D,reduction="harmony",dims = 1:dimN,verbose = FALSE)},
   #         error=function(cond){
