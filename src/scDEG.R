@@ -333,6 +333,8 @@ scDEG <- R6Class("scDEG",
                      final_table$FDR <- p.adjust(final_table[,"Pvalue"],method="fdr")
                      final_table$method <- "NEBULA"
                      final_table$algorithm <- re$algorithm
+                     first4 <- c("ID","log2FC","Pvalue","FDR")
+                     final_table <- final_table[,c(first4,colnames(final_table)[!colnames(final_table)%in%first4])]
                      return(final_table)
                    },
                    # DEG by DESeq2 ---------
@@ -353,9 +355,9 @@ scDEG <- R6Class("scDEG",
                      final_table <- data.frame(row.names=NULL,
                                                ID=rownames(res),
                                                log2FC=res$log2FoldChange,
-                                               se=res$lfcSE,
                                                Pvalue=res$pvalue,
                                                FDR=res$padj,
+                                               se=res$lfcSE,
                                                method="DESeq2",
                                                algorithm='lfcShrink')
                      return(final_table)
