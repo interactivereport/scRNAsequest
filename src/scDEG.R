@@ -206,8 +206,8 @@ scDEG <- R6Class("scDEG",
                      private$g_index <- private$g_index & sparse_batch_apply(private$X,1,function(x)return(sum(x>0)),shortLab="CellN per gene")>min.cells.per.gene
                      message("--- Total of ",sum(private$g_index)," genes")
                      # remove low sequence depth cells
-                     libSize <- colSums(private$X[private$g_index,])
-                     nGene <- sparse_batch_apply(private$X[private$g_index,],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cell")
+                     libSize <- colSums(private$X[as.vector(private$g_index),])
+                     nGene <- sparse_batch_apply(private$X[as.vector(private$g_index),],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cell")
                      private$cellFiltering(libSize>lib_size_low & libSize<lib_size_high,
                                            paste0("Filtering cells by sequence depth: ",lib_size_low," ~ ",lib_size_high))
                      private$cellFiltering(nGene>min.genes.per.cell,
@@ -227,8 +227,8 @@ scDEG <- R6Class("scDEG",
                      ctrl <- private$c_index & private$meta[,private$grp_col]==private$ctrl_value
                      alter <- private$c_index & private$meta[,private$grp_col]==private$alt_value
                      
-                     ctrlG <- sparse_batch_apply(private$X[,ctrl],1,function(x)return(sum(x>0,na.rm=T)),shortLab="Ctrl cellN per gene")
-                     alterG <- sparse_batch_apply(private$X[,alter],1,function(x)return(sum(x>0)),shortLab="Alt cellN per gene")
+                     ctrlG <- sparse_batch_apply(private$X[,as.vector(ctrl)],1,function(x)return(sum(x>0,na.rm=T)),shortLab="Ctrl cellN per gene")
+                     alterG <- sparse_batch_apply(private$X[,as.vector(alter)],1,function(x)return(sum(x>0)),shortLab="Alt cellN per gene")
                      if(min.cells.per.gene>0){
                        message("Filtering genes by minimal cell number: ",min.cells.per.gene)
                        if(min.perc.cells.per.gene>0 && min.perc.cells.per.gene<1){
@@ -259,8 +259,8 @@ scDEG <- R6Class("scDEG",
                      # remove low sequence depth cells
                      message("remove low sequence depth cells")
                      libSize <- nGene <- rep(0,length(private$c_index))
-                     libSize[ctrl|alter] <- colSums(private$X[private$g_index,ctrl|alter])
-                     nGene[ctrl|alter] <- sparse_batch_apply(private$X[private$g_index,ctrl|alter],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cells")
+                     libSize[ctrl|alter] <- colSums(private$X[as.vector(private$g_index),as.vector(ctrl|alter]))
+                     nGene[ctrl|alter] <- sparse_batch_apply(private$X[as.vector(private$g_index),as.vector(ctrl|alter)],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cells")
                      private$cellFiltering(libSize>lib_size_low & libSize<lib_size_high,
                                    paste0("Filtering cells by sequence depth: ",lib_size_low," ~ ",lib_size_high))
                      private$cellFiltering(nGene>min.genes.per.cell,
@@ -324,9 +324,9 @@ scDEG <- R6Class("scDEG",
                      meta <-  private$meta[private$c_index,c(private$grp_col,covar),drop=F]
                      meta[,private$grp_col] <- factor(meta[,private$grp_col],levels=c(private$ctrl_value,private$alt_value))
                      df = model.matrix(as.formula(paste0("~",paste(colnames(meta),collapse="+"))),data=meta)
-                     re = nebula(private$X[private$g_index,private$c_index],
+                     re = nebula(private$X[as.vector(private$g_index),as.vector(private$c_index)],
                                  private$meta[private$c_index,private$id_col],
-                                 pred=df,offset=colSums(private$X[private$g_index,private$c_index]),...)
+                                 pred=df,offset=colSums(private$X[as.vector(private$g_index),as.vector(private$c_index)]),...)
                      final_table <- data.frame(ID=re$summary[,"gene"],re$summary[,grep(private$grp_col,colnames(re$summary))])
                      colnames(final_table) <- c("ID","logFC","se","Pvalue")
                      final_table$log2FC <- log2(exp(final_table$logFC))
@@ -367,7 +367,7 @@ scDEG <- R6Class("scDEG",
                      #private$pseudoX <- NULL
                      message("Creating pseudo bulk")
                      private$pseudoX <- bplapply(rownames(private$sInfo),function(one){
-                       return(setNames(data.frame(rowSums(private$X[private$g_index,private$c_index&private$meta[,private$id_col]==one])),
+                       return(setNames(data.frame(rowSums(private$X[as.vector(private$g_index),as.vector(private$c_index&private$meta[,private$id_col]==one)])),
                                        one))
                      },BPPARAM = MulticoreParam(workers=min(30,nrow(private$sInfo),max(1,parallelly::availableCores()-1)),
                                               tasks=nrow(private$sInfo),progressbar=T))
