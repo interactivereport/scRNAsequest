@@ -259,7 +259,7 @@ scDEG <- R6Class("scDEG",
                      # remove low sequence depth cells
                      message("remove low sequence depth cells")
                      libSize <- nGene <- rep(0,length(private$c_index))
-                     libSize[ctrl|alter] <- colSums(private$X[as.vector(private$g_index),as.vector(ctrl|alter]))
+                     libSize[ctrl|alter] <- colSums(private$X[as.vector(private$g_index),as.vector(ctrl|alter)])
                      nGene[ctrl|alter] <- sparse_batch_apply(private$X[as.vector(private$g_index),as.vector(ctrl|alter)],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cells")
                      private$cellFiltering(libSize>lib_size_low & libSize<lib_size_high,
                                    paste0("Filtering cells by sequence depth: ",lib_size_low," ~ ",lib_size_high))
