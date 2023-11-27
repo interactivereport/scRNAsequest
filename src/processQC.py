@@ -189,7 +189,7 @@ def filtering(adata,config,filterRes):
   print("\t\tfiltered cells with highCount.cutoff %d left %d cells"%(highCount_cutoff,np.sum(selObs)))
   introSel = [item for item in adata.obs.columns if re.search('intron.*rate$', item,re.IGNORECASE)]
   if len(introSel)==1:
-    sel = sel[0]
+    sel = introSel[0]
     if config.get('intron.cutoff.min') is not None and config['intron.cutoff.min']>0:
       selObs = np.logical_and(selObs,adata.obs[sel]>config["intron.cutoff.min"])
       filterRes.append("intron rate min,%f,%d,%d\n"%(config["intron.cutoff.min"],np.sum(selObs),np.sum(selVar)))
