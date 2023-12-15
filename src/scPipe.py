@@ -52,10 +52,10 @@ def MsgPower():
   print("\nPowered by %s"%sysConfig['powerby'])
   print("------------")
 def MsgHelp():
-  print("\nscAnalyzer /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file\n")
-  print("The config file will be generated automatically when a DNAnexus download folder is provided")
-  print("Available reference data:")
   sysConfig = getConfig()
+  print(sysConfig["prehelp"])
+  #print("The config file will be generated automatically when a DNAnexus download folder is provided")
+  print("Available reference data:")
   for i in sysConfig['ref']:
     print("\t%s: more information @ %s"%(i,sysConfig[i]["ref_link"]))
   print("If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.\n")

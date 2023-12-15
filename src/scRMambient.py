@@ -27,7 +27,7 @@ def EXIT(msg):
   print(msg)
   exit()
 
-def cellbender(strMeta,nCore=0):
+def cellbender(strMeta,nCore=0,useParallel=True):
   meta = pd.read_csv(strMeta)
   if not UMIcol in meta.columns or not CB_expCellNcol in meta.columns or not CB_dropletNcol in meta.columns:
     EXIT("Please make sure the following columns exist in %s\n:%s, %s, %s"%(strMeta,UMIcol,CB_expCellNcol,CB_dropletNcol))
@@ -39,6 +39,7 @@ def cellbender(strMeta,nCore=0):
   
   H5pair=[]
   cmds = {}
+  cupCMD=""
   print("CellBender process starts ...\n\tFor more information, please visit https://cellbender.readthedocs.io/en/latest/usage/index.html")
   if nCore==0:
     useGPU=True
@@ -49,6 +50,7 @@ def cellbender(strMeta,nCore=0):
     useGPU=False
     useCuda=""
     mem=16*int(nCore)
+    cpuCMD=" --cpu-threads %d --estimator-multiple-cpu"%nCore
   for i in range(meta.shape[0]):
     oneName=meta[sampleNameCol][i]
     if meta[CB_dropletNcol][i] < meta[CB_expCellNcol][i]:
@@ -62,11 +64,11 @@ def cellbender(strMeta,nCore=0):
     if os.path.exists(oneH5):
       print("\t%s SKIP! CellBender H5 exists: \n\t\t%s"%(oneName,oneH5))
     else:
-      cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s %s--expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f"%(
-        meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i])
+      cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s %s--expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f%s"%(
+        meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i],cpuCMD)
   if len(cmds)>0:
     print('\nrunning cellbeder for the following samples:\n%s'%'\n'.join([re.sub("^CB_","",i) for i in cmds.keys()]))
-    cU.submit_cmd(cmds,{'parallel':'slurm','output':strOut,'gpu':useGPU},core=nCore,memG=mem)
+    cU.submit_cmd(cmds,{'parallel':'slurm' if useParallel else False,'output':strOut,'gpu':useGPU},core=nCore,memG=mem)
   cellbenderMergeLog(H5pair,strOut)
   cellbenderMergePdf(H5pair,strOut)
   cellbenderQC(H5pair,strOut)
@@ -230,8 +232,9 @@ def main():
   
   strMeta = sys.argv[1]
   nCore = int(sys.argv[2])
+  useParallel= sys.argv[3]=="T"
   if os.path.isfile(strMeta):
-    cellbender(os.path.realpath(strMeta),nCore)
+    cellbender(os.path.realpath(strMeta),nCore,useParallel)
   else:
     EXIT("The sample meta file is required, and %s doesn't exist!"%strPath)
 
