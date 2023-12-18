@@ -41,7 +41,7 @@ else
   echo "scRMambient: Remove background RNA"
   echo "https://cellbender.readthedocs.io/en/latest/usage/index.html"
   echo "Please provide the sample sheet contains raw expression h5 file path, expected cell number and droplet number (includes some empty ones)"
-  echo "Usage: scRMambient <sample meta csv> [-t 4] [-l]"
+  echo "Usage: scRMambient <sample meta csv> [-t 4] [-n]"
   echo "-t: (option) the number of CPU threats cores [default GPU]"
-  echo "-l: (option) if set No SGE/Slurm set up, using local CPUs [default Not set]"
+  echo "-n: (option) if set No SGE/Slurm set up, will use local CPUs [default Not set]"
 fi
