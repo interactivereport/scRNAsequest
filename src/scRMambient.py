@@ -37,7 +37,7 @@ def cellbender(strMeta,nCore=0,useParallel=True):
   strH5out = os.path.join(strOut,"h5")
   os.makedirs(strH5out,exist_ok=True)
   
-  H5pair=[]
+  H5pair={}
   cmds = {}
   cupCMD=""
   print("CellBender process starts ...\n\tFor more information, please visit https://cellbender.readthedocs.io/en/latest/usage/index.html")
@@ -58,14 +58,16 @@ def cellbender(strMeta,nCore=0,useParallel=True):
         https://cellbender.readthedocs.io/en/latest/usage/index.html"%
         (CB_dropletNcol,CB_expCellNcol,oneName))
     oneH5 = os.path.join(strH5out,oneName+".cellbender.h5")
-    H5pair += [{'old_path':meta[UMIcol][i],
+    H5pair[oneName] = {'old_path':meta[UMIcol][i],
       'new_path':re.sub(".h5$","_filtered.h5",oneH5),
-      sampleNameCol:oneName}]
+      'seurat_path':re.sub('cellbender.h5$','seurat_filtered.h5',oneH5)}
     if os.path.exists(oneH5):
       print("\t%s SKIP! CellBender H5 exists: \n\t\t%s"%(oneName,oneH5))
     else:
       cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s %s--expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f%s"%(
         meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i],cpuCMD)
+        # at lease seurat4 don't support cellbender output directly 
+      cmds["CB_"+oneName] += ";ptrepack --complevel 5 %s:/matrix %s:/matrix"%(H5pair[oneName]['new_path'],H5pair[oneName]['seurat_path'])
   if len(cmds)>0:
     print('\nrunning cellbeder for the following samples:\n%s'%'\n'.join([re.sub("^CB_","",i) for i in cmds.keys()]))
     cU.submit_cmd(cmds,{'parallel':'slurm' if useParallel else False,'output':strOut,'gpu':useGPU},core=nCore,memG=mem)
@@ -79,24 +81,24 @@ def cellbenderMergeLog(H5pair,strOut):
   print("\tmergeing log ...")
   with open(os.path.join(strOut,"all.log"),'wb') as outf:
     for one in H5pair:
-      strF = re.sub("_filtered.h5$",".log",one['new_path'])
+      strF = re.sub("_filtered.h5$",".log",H5pair[one]['new_path'])
       if os.path.isfile(strF):
-        outf.write(("\n\n***** %s *****\n"%one[sampleNameCol]).encode('utf-8'))
+        outf.write(("\n\n***** %s *****\n"%one).encode('utf-8'))
         with open(strF,'rb') as f:
           shutil.copyfileobj(f,outf)
 def cellbenderMergePdf(H5pair,strOut):
   print("\tmergeing pdf ...")
-  myFont = ImageFont.truetype('FreeSerifBold.ttf', 36)
+  myFont = ImageFont.truetype('%s/src/FreeSerifBold.ttf'%scPipe.strPipePath, 36)
   images=[]
   n=0
   for one in H5pair:
     n+=1
-    strF = re.sub("_filtered.h5$",".pdf",one['new_path'])
-    print("\t\t%d/%d: %s"%(n,len(H5pair),os.path.basename(strF)))
+    strF = re.sub("_filtered.h5$",".pdf",H5pair[one]['new_path'])
+    print("\t\t%d/%d: %s"%(n,len(H5pair),one))
     if os.path.isfile(strF):
       img=convert_from_path(strF)[0]
       oneI = ImageDraw.Draw(img)
-      oneI.text((400, 800),one[sampleNameCol],fill=(255, 0, 0),font=myFont)
+      oneI.text((400, 800),one,fill=(255, 0, 0),font=myFont)
       images = images+[img]
     else:
       print("\t\t\tmissing%s")
@@ -109,38 +111,39 @@ def cellbenderQC(H5pair,strOut):
     geneRM={}
     geneRMr={}
     for one in H5pair:
-      print("\t"+one[sampleNameCol])#,": %s vs %s"%(os.path.basename(one['old_path']),os.path.basename(one['new_path']))
-      old_adata = sc.read_10x_h5(one['old_path'])
+      print("\t"+one)#,": %s vs %s"%(os.path.basename(one['old_path']),os.path.basename(one['new_path']))
+      old_adata = sc.read_10x_h5(H5pair[one]['old_path'])
       old_adata.var_names_make_unique()
-      new_adata = sc.read_10x_h5(one['new_path'])
+      new_adata = sc.read_10x_h5(H5pair[one]['new_path'])
       new_adata.var_names_make_unique()
-      cellN+=[{sampleNameCol:one[sampleNameCol],'cell_number':new_adata.shape[0]}]
+      cellN+=[{sampleNameCol:one,'cell_number':new_adata.shape[0]}]
       sc.pp.filter_cells(old_adata,min_counts=1)
       sc.pp.filter_cells(new_adata,min_counts=1)
       sc.pp.filter_genes(old_adata, min_counts=1)
-      sc.pp.filter_genes(new_adata, min_counts=0)
+      #sc.pp.filter_genes(new_adata, min_counts=0)
+      new_adata.var['n_counts'] = new_adata.X.sum(axis=0).A1
       # get cell removal information
       cInfo=pd.DataFrame({'CBrm':old_adata.obs.loc[new_adata.obs.index,'n_counts']-new_adata.obs['n_counts'],
         'CBkeepR':new_adata.obs['n_counts']/old_adata.obs.loc[new_adata.obs.index,'n_counts']})
       cInfo['CBrmR']=1-cInfo['CBkeepR']
-      rmR[one[sampleNameCol]] = cInfo['CBrmR'].describe()
-      one[ANNcol]=re.sub('.h5$','_qc.csv',one['new_path'])
-      cInfo.to_csv(one[ANNcol])
+      rmR[one] = cInfo['CBrmR'].describe()
+      H5pair[one][ANNcol]=re.sub('.h5$','_qc.csv',H5pair[one]['new_path'])
+      cInfo.to_csv(H5pair[one][ANNcol])
       # get gene removal information
       gInfo=pd.DataFrame({'oriUMI':old_adata.var['n_counts'],
                           'newUMI':new_adata.var.loc[old_adata.var.index,'n_counts'],
                           'CBkeepR':new_adata.var.loc[old_adata.var.index,'n_counts']/old_adata.var['n_counts'],
                           'CBrmUMI':old_adata.var['n_counts']-new_adata.var.loc[old_adata.var.index,'n_counts']})
       gInfo['CBrmR']=1-gInfo['CBkeepR']
-      gInfo.to_csv(re.sub('.h5$','_geneQC.csv',one['new_path']))
-      geneRM[one[sampleNameCol]]=gInfo['CBrmUMI']
-      geneRMr[one[sampleNameCol]]=gInfo['CBrmR']
+      gInfo.to_csv(re.sub('.h5$','_geneQC.csv',H5pair[one]['new_path']))
+      geneRM[one]=gInfo['CBrmUMI']
+      geneRMr[one]=gInfo['CBrmR']
       # plot
       plotDensity(cInfo['CBrm'],
-        "%s: removed UMI"%one[sampleNameCol],
+        "%s: removed UMI"%one,
         pdf)
       plotDensity(cInfo['CBkeepR'],
-        "%s: UMI kept ratio"%one[sampleNameCol],
+        "%s: UMI kept ratio"%one,
         pdf,bw=0.05)
     cellN=pd.DataFrame(cellN)
     plotBar(cellN,sampleNameCol,'cell_number',pdf,"Cell number after CellBender")
@@ -217,12 +220,13 @@ def plotGeneQC(geneRM,geneRMr,pdf,topN=5):
   
   
 def cellbenderInit(meta,H5pair,strOut):
-  H5pair=pd.DataFrame(H5pair)
-  H5pair.index=H5pair[sampleNameCol]
-  meta[UMIcol]=list(H5pair.loc[meta[sampleNameCol],'new_path'])
+  H5pair=pd.DataFrame(H5pair).T
+  print(H5pair)
+  #H5pair.index=H5pair[sampleNameCol]
+  meta[UMIcol]=list(H5pair.loc[meta[sampleNameCol],'seurat_path'])
   meta[ANNcol]=list(H5pair.loc[meta[sampleNameCol],ANNcol])
   meta.drop([CB_expCellNcol,CB_dropletNcol,CB_count,CB_learningR],axis=1,inplace=True,errors='ignore')
-  scPipe.initSave(meta,strOut,False)
+  scPipe.initSave(meta,strOut,saveRaw=False)
 
 def main():
   #global strPipePath
