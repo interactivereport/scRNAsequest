@@ -31,7 +31,7 @@ echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
 echo "export SGE_QMASTER_PORT=$SGE_QMASTER_PORT" >> $src/.env
 echo "export SGE_ROOT=$SGE_ROOT" >> $src/.env
 echo "export SLURM_CONF=$SLURM_CONF" >> $src/.env
-echo "export LD_LIBRARY_PATH=$appEnvPath/lib:$LD_LIBRARY_PATH" >> $src/.env
+#echo "export LD_LIBRARY_PATH=$appEnvPath/lib:$LD_LIBRARY_PATH" >> $src/.env
 conda deactivate
 
 ## additional packages which are not available on anaconda
