@@ -22,6 +22,9 @@ source $condaPath/etc/profile.d/conda.sh
 conda activate $appEnvName
 mamba env update -f install/install.yml
 
+#avoid user local python env for reticulate
+echo "RETICULATE_PYTHON=$condaPath/bin/python" >> $condaPath/lib/R/etc/Renviron
+
 echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $appEnvName'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
 echo "export PYTHONNOUSERSITE=1" >> $src/.env
