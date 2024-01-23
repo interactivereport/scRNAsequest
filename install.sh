@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-appEnvName="scRNAsequest"
+appEnvPath="~/.conda/envs/scRNAsequest"
 
 set -e
 condaPath=$(which conda)
@@ -12,20 +12,20 @@ else
 fi
 
 src="$(dirname $0)/src"
-if { conda env list | grep "^$appEnvName"; } >/dev/null 2>/dev/null; then conda env remove -n $appEnvName; fi
+conda env remove -p $appEnvPath; fi
 # mamba is not in the base conda=h582c2e5_0_cpython
-conda create -y -n $appEnvName "python=3.8.13" "mamba=1.1.0" -c conda-forge
+conda create -y -p $appEnvPath "python=3.8.13" "mamba=1.1.0" -c conda-forge
 #conda env create -f install.yml
 condaPath=$(dirname $(dirname $condaPath))
 # setup needed env variables
 source $condaPath/etc/profile.d/conda.sh
-conda activate $appEnvName
+conda activate $appEnvPath
 mamba env update -f install/install.yml
 
 #avoid user local python env for reticulate
-echo "RETICULATE_PYTHON=$condaPath/bin/python" >> $condaPath/lib/R/etc/Renviron
+echo "RETICULATE_PYTHON=$appEnvPath/bin/python" >> $appEnvPath/lib/R/etc/Renviron
 
-echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $appEnvName'" > $src/.env
+echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $appEnvPath'" > $src/.env
 echo "export PATH=$PATH" >> $src/.env
 echo "export PYTHONNOUSERSITE=1" >> $src/.env
 echo "export OPENBLAS_NUM_THREADS=1" >> $src/.env
@@ -34,7 +34,7 @@ echo "export SGE_EXECD_PORT=$SGE_EXECD_PORT" >> $src/.env
 echo "export SGE_QMASTER_PORT=$SGE_QMASTER_PORT" >> $src/.env
 echo "export SGE_ROOT=$SGE_ROOT" >> $src/.env
 echo "export SLURM_CONF=$SLURM_CONF" >> $src/.env
-echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> $src/.env
+#echo "export LD_LIBRARY_PATH=$appEnvPath/lib:$LD_LIBRARY_PATH" >> $src/.env
 conda deactivate
 
 ## additional packages which are not available on anaconda
