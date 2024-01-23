@@ -40,7 +40,7 @@ clusterResolution: 0.8 #A parameter value controlling the coarseness of the clus
 parallel: False #"sge" or "slurm"
 core: 32
 memory: 480G #if provided (e.g. 100G), it will be used to request cluster scheduler  
-jobID: initJob # please make sure this job id is different with your other projects which would be run at the same time
+jobID: initJob # maximun 8 characters. please make sure this job id is different with your other projects which would be run at the same time
 
 major_cluster_rate: 0.7 # the proportion of cells of an integration cluster to be assigned to a seurat reference label
 batchCell: 200000 # the number of cells to be put into one batch to limit memory usage (please remove/rename the 'tmp' folder in sctHarmony/SeuratRef, if rerun is needed)
