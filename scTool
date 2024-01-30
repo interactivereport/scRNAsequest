@@ -7,8 +7,14 @@ if [[ ! -f "$src/.env" ]]; then
   exit
 fi
 
-echo -n "$@" > .scTool
-env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scTool.py .scTool'
-rm .scTool
+if [[ -w ./ ]]; then
+  echo -n "$@" > .scTool
+  env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scTool.py .scTool'
+  rm .scTool
+else
+  echo "Error: No written permission in $(readlink -e .)"
+fi
+
+
 
 
