@@ -14,6 +14,11 @@ checkFileExist <- function(strF,msg="file"){
   }
   return(strF)
 }
+checkEmptyAltRef <- function(x){
+  v <- x[c("alt","ref")]
+  return((sum(is.na(v))==2||sum(nchar(v)<1)==2) && 
+           (is.na(x["method"]) || nchar(x["method"])<1 || grepl("nebula",x['method'],ignore.case=T)))
+}
 main <- function(strConfig){
   suppressMessages(suppressWarnings(PKGloading()))
   message("scDEG starting ...")
@@ -28,15 +33,13 @@ main <- function(strConfig){
     strH5adraw <- checkFileExist(config$UMI,"raw count h5ad file")
     strH5ad <- checkFileExist(config$meta,"cell annotation file")
   }
-  
-  
   #sample,cluster,group,alt,ref,covars[comma separated],method[default NEBULA]
   compInfo <- as.data.frame(data.table::fread(strDEG))
   if(nrow(compInfo)==0){
     message("Empty comparison description file!\nDONE")
     q()
   }
-  colnames(compInfo) <- sapply(strsplit(colnames(compInfo),"[[:punct:]]"),head,1)
+  colnames(compInfo) <- sapply(strsplit(colnames(compInfo),"[ [:punct:]]"),head,1)
   meta <- getMeta(strH5ad)
   ## check compInfo against meta
   message("\tComparison description file checking ...")
@@ -53,10 +56,15 @@ main <- function(strConfig){
       message(paste(hh[!hh%in%colnames(meta)],collapse=", "))
       stop("The above header defined in DEG description file are NOT in the obs of h5ad file")
     }
-    v <- x[c("alt","ref")]
-    if(sum(!v%in%unique(meta[,x["group"]]))>0){
-      message(paste(v[!v%in%unique(meta[,x["group"]])],collapse=", "))
-      stop("The above entris defined in DEG description file are NOT in the obs column")
+    # if both alt and ref are empty with method NEBULA
+    if(checkEmptyAltRef(x)){
+      message("*** Empty alt & ref for ",x["comparisonName"],": as.numeric for ",x['group'])
+    }else{
+      v <- x[c("alt","ref")]
+      if(sum(!v%in%unique(meta[,x["group"]]))>0){
+        message(paste(v[!v%in%unique(meta[,x["group"]])],collapse=", "))
+        stop("The above entris defined in DEG description file are NOT in the obs column")
+      }
     }
     return(hh)
   })
@@ -79,7 +87,8 @@ main <- function(strConfig){
       message(x["comparisonName"])
       strOut <- file.path(scDEGpath,x["comparisonName"])
     }else{
-      strD <- paste(c(gsub("_",".",c(paste(x[c("alt","ref")],collapse=".vs."),
+      strD <- paste(c(gsub("_",".",c(ifelse(checkEmptyAltRef(x),
+                                            "numeric",paste(x[c("alt","ref")],collapse=".vs.")),
                                      x[c("cluster","group","method","model")]))),collapse="_")
       strOut <- list.files(scDEGpath,strD)
       if(length(strOut)>0) strOut <- file.path(scDEGpath,strOut[1])
@@ -167,7 +176,7 @@ scRNAseq_DE <- function(
       cmd <- c(cmd,paste0("cd ",output,"; Rscript ",scRNAseq_DE_path,"/scRNAseq_DE.R ",
                          scRNAseq_DE_path,' "',one,'"'))
     }
-    names(cmd) <- gsub(" ",".",paste(basename(output),unique(meta[,column_cluster]),grp_alt,grp_ref,sep="_"))
+    names(cmd) <- gsub(" ",".",paste(basename(output),unique(meta[,column_cluster]),column_group,grp_alt,grp_ref,sep="_"))
     
     return(list(cmd))
 }
@@ -203,13 +212,16 @@ checkInput <- function(env){
             stop(paste(one,"is not in the sample meta table!"))
     }
     if(!is.null(env$column_group)){
+      if(!checkEmptyAltRef(setNames(c(env$grp_ref,env$grp_alt,env$method),
+                                   c("ref","alt","method")))){
         if(is.null(env$grp_ref) || is.null(env$grp_alt))stop(paste("grp_ref and grp_alt are required for",env$column_group))
         for(one in c(env$grp_ref,env$grp_alt)){
-            if(!one%in%unique(meta[,env$column_group]))
-                stop(paste(one,"is not in the column",env$column_group,"from sample meta table!"))
+          if(!one%in%unique(meta[,env$column_group]))
+            stop(paste(one,"is not in the column",env$column_group,"from sample meta table!"))
         }
+      }
     }
-    allMethods <- c("t_test", "u_test","edgeR","limma","DESeq2","MAST","limma_cell_level","glmmTMB","NEBULA","ancova")
+    allMethods <- c("DESeq2","NEBULA","t_test", "u_test","edgeR","limma","MAST","limma_cell_level","glmmTMB","ancova")#
     if(!env$method%in%allMethods)
         stop(paste0("method (",env$method,")is not supported!\nSelect from ",
                     paste(allMethods,collapse=", ")))
@@ -238,19 +250,22 @@ checkCellMeta <- function(meta,env,cluster_interest){
     message("\tSkip: Too few cells (",sum(sel),")")
     return()
   }
-  # check if any subject in both groups
-  subjGroup <- ftable(meta[sel,c(env$column_sample,env$column_group)])
-  print(subjGroup)
-  if(sum(c(env$grp_ref,env$grp_alt)%in%data.frame(subjGroup)[[env$column_group]])!=2){
-    message("Skip: missing at least one group!")
-    return()
-  }
-  # check if at least 2 subjects in each group
-  message("Checking minimal ",env$R6_min.cells.per.subj," cells per subject")
-  subjGroupCell <- apply(subjGroup,2,function(x)return(sum(x>=env$R6_min.cells.per.subj)))
-  if(sum(subjGroupCell[c(env$grp_ref,env$grp_alt)]>1)<2){
-    message("Skip: One group contains less than 2 subjects!")
-    return()
+  if(!checkEmptyAltRef(setNames(c(env$grp_ref,env$grp_alt,env$method),
+                                c("ref","alt","method")))){
+    # check if any subject in both groups
+    subjGroup <- ftable(meta[sel,c(env$column_sample,env$column_group)])
+    print(subjGroup)
+    if(sum(c(env$grp_ref,env$grp_alt)%in%data.frame(subjGroup)[[env$column_group]])!=2){
+      message("Skip: missing at least one group!")
+      return()
+    }
+    # check if at least 2 subjects in each group
+    message("Checking minimal ",env$R6_min.cells.per.subj," cells per subject")
+    subjGroupCell <- apply(subjGroup,2,function(x)return(sum(x>=env$R6_min.cells.per.subj)))
+    if(sum(subjGroupCell[c(env$grp_ref,env$grp_alt)]>1)<2){
+      message("Skip: One group contains less than 2 subjects!")
+      return()
+    }
   }
   # check if pseudo bulk test, the cell level cov is not supported
   if(env$method %in% c("t_test","u_test","edgeR","limma","DESeq2")){
@@ -282,7 +297,9 @@ scRNAseq_DE_one <- function(
     message("===== ",env$method,":",cluster_interest," =====")
     strOut <- env$output
     if(!is.null(env$column_group)){
-      strF <- file.path(strOut,paste0(gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref)),"__",
+      strF <- file.path(strOut,paste0(ifelse(checkEmptyAltRef(setNames(c(env$grp_ref,env$grp_alt,env$method),
+                                                                       c("ref","alt","method"))),
+                                             "numeric",gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref))),"__",
                                       gsub("__","_",paste(env$column_cluster,cluster_interest,sep=":")),"__",
                                       gsub("__","_",env$method),
                                       #"__cov:",paste(env)
@@ -384,7 +401,9 @@ scRNAseq_DE_one_v1 <- function(env,cluster_interest,strSrc=NULL){
   message("===== ",env$method,":",cluster_interest," =====")
   strOut <- env$output
   if(!is.null(env$column_group)){
-    strF <- file.path(strOut,paste0(gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref)),"__",
+    strF <- file.path(strOut,paste0(ifelse(checkEmptyAltRef(setNames(c(env$grp_ref,env$grp_alt,env$method),
+                                                                     c("ref","alt","method"))),
+                                           "numeric",gsub("__","_",paste0(env$grp_alt,".vs.",env$grp_ref))),"__",
                                     gsub("__","_",paste(env$column_cluster,cluster_interest,sep=":")),"__",
                                     gsub("__","_",env$method),
                                     #"__cov:",paste(env)
@@ -428,7 +447,8 @@ scRNAseq_DE_one_v1 <- function(env,cluster_interest,strSrc=NULL){
                   min.genes.per.cell = env$min.genes.per.cell, min.cells.per.subj = env$R6_min.cells.per.subj,
                   min.ave.pseudo.bulk.cpm=env$R6_min.ave.pseudo.bulk.cpm)
   de <- sce$run(alg=env$method,fliter_list=filters,clusters=cluster_interest,
-                covar=env$column_covars,method=env$method_model)
+                covar=env$column_covars,method=env$method_model,
+                saveRaw=gsub("csv$","rds",strF))
   write.csv(de,file=strF,row.names = FALSE)
   return()
 }

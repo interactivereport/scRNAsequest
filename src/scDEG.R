@@ -23,7 +23,7 @@ sparse_batch_apply <- function(X,MARGIN,FUN,shortLab="",...){
         return(A)
       },marg=MARGIN,oneFun=FUN,#...,
       BPPARAM = MulticoreParam(workers=min(30,length(stepPair),max(1,parallelly::availableCores()-1)),
-                               tasks=length(stepPair),progressbar=T))
+                               tasks=length(stepPair)))#,progressbar=T
       if(sum(!is.null(unlist(sapply(Xres,ncol))))==0){
         Xres <- unlist(Xres)
         #if(MARGIN==1) Xres <- Xres[rownames(X)]
@@ -66,8 +66,8 @@ scDEG <- R6Class("scDEG",
                      private$id_col <- id_col
                      private$cluster_col <- cluster_col
                      private$grp_col <- grp_col
-                     private$ctrl_value <- ctrl_value
-                     private$alt_value <- alt_value
+                     private$ctrl_value <- ifelse(is.na(ctrl_value)||nchar(ctrl_value)<2,NA,ctrl_value)
+                     private$alt_value <- ifelse(is.na(alt_value)||nchar(alt_value)<2,NA,alt_value)
                      if(is.null(meta)) private$getMeta(strMeta)
                      else private$meta <- meta
                      private$check_meta()
@@ -186,8 +186,8 @@ scDEG <- R6Class("scDEG",
                      if(!private$id_col %in% colnames(private$meta)) stop(paste(private$id_col,"NOT in meta"))
                      if(!private$cluster_col %in% colnames(private$meta)) stop(paste(private$cluster_col,"NOT in meta"))
                      if(!private$grp_col %in% colnames(private$meta)) stop(paste(private$grp_col,"NOT in meta"))
-                     if(!private$ctrl_value %in% private$meta[,private$grp_col]) stop(paste(private$ctrl_value,"NOT in",private$grp_col))
-                     if(!private$alt_value %in% private$meta[,private$grp_col]) stop(paste(private$alt_value,"NOT in",private$grp_col))
+                     if(!is.na(private$ctrl_value) && !private$ctrl_value %in% private$meta[,private$grp_col]) stop(paste(private$ctrl_value,"NOT in",private$grp_col))
+                     if(!is.na(private$alt_value) && !private$alt_value %in% private$meta[,private$grp_col]) stop(paste(private$alt_value,"NOT in",private$grp_col))
                      private$meta <- private$meta[order(private$meta[,private$id_col]),]
                    },
                    scDEG_apply_filter=function(rmGene=c("Mt-","MT-","mt-"), lib_size_low = 200, lib_size_high = 20*10^6,
@@ -224,33 +224,51 @@ scDEG <- R6Class("scDEG",
                        message("Filtering genes which start with ",paste(rmGene,collapse=", "))
                        private$g_index <- private$g_index & !grepl(paste(paste0("^",rmGene),collapse="|"),rownames(private$X))
                      }
-                     ctrl <- private$c_index & private$meta[,private$grp_col]==private$ctrl_value
-                     alter <- private$c_index & private$meta[,private$grp_col]==private$alt_value
-                     
-                     ctrlG <- sparse_batch_apply(private$X[,as.vector(ctrl)],1,function(x)return(sum(x>0,na.rm=T)),shortLab="Ctrl cellN per gene")
-                     alterG <- sparse_batch_apply(private$X[,as.vector(alter)],1,function(x)return(sum(x>0)),shortLab="Alt cellN per gene")
-                     if(min.cells.per.gene>0){
-                       message("Filtering genes by minimal cell number: ",min.cells.per.gene)
-                       if(min.perc.cells.per.gene>0 && min.perc.cells.per.gene<1){
-                         message("\tCalculating minimal cell number of a gene based on min.perc.cells.per.gene: ",min.perc.cells.per.gene)
-                         min.cells.per.gene <- max(min.cells.per.gene,ceiling(min.perc.cells.per.gene*min(sum(ctrl),sum(alter))))
+                     if(!is.na(private$ctrl_value) && !is.na(private$alt_value)){
+                       ctrl <- private$c_index & private$meta[,private$grp_col]==private$ctrl_value
+                       alter <- private$c_index & private$meta[,private$grp_col]==private$alt_value
+                       allIndex <- ctrl|alter
+                       ctrlG <- sparse_batch_apply(private$X[,as.vector(ctrl)],1,function(x)return(sum(x>0,na.rm=T)),shortLab="Ctrl cellN per gene")
+                       alterG <- sparse_batch_apply(private$X[,as.vector(alter)],1,function(x)return(sum(x>0)),shortLab="Alt cellN per gene")
+                       if(min.cells.per.gene>0){
+                         message("Filtering genes by minimal cell number: ",min.cells.per.gene)
+                         if(min.perc.cells.per.gene>0 && min.perc.cells.per.gene<1){
+                           message("\tCalculating minimal cell number of a gene based on min.perc.cells.per.gene: ",min.perc.cells.per.gene)
+                           min.cells.per.gene <- max(min.cells.per.gene,ceiling(min.perc.cells.per.gene*min(sum(ctrl),sum(alter))))
+                         }
+                         if(grepl('and',min.cells.per.gene.type,ignore.case=T)){
+                           private$g_index <- private$g_index & (ctrlG>min.cells.per.gene & alterG>min.cells.per.gene)
+                         }else{
+                           private$g_index <- private$g_index & (ctrlG>min.cells.per.gene | alterG>min.cells.per.gene)
+                         }
+                         message("\t",sum(private$g_index)," genes")
                        }
-                       if(grepl('and',min.cells.per.gene.type,ignore.case=T)){
-                         private$g_index <- private$g_index & (ctrlG>min.cells.per.gene & alterG>min.cells.per.gene)
-                       }else{
-                         private$g_index <- private$g_index & (ctrlG>min.cells.per.gene | alterG>min.cells.per.gene)
+                       
+                       if(perc_threshold<1){
+                         message("Filtering genes by maximal zero-expression percentile within a group: ",perc_threshold)
+                         if(grepl('and',perc.filter.type,ignore.case=T)){
+                           private$g_index <- private$g_index & (ctrlG/sum(ctrl) > (1-perc_threshold) & 
+                                                                   alterG/sum(alter) > (1-perc_threshold))
+                         }else{
+                           private$g_index <- private$g_index & (ctrlG/sum(ctrl) > (1-perc_threshold) | 
+                                                                   alterG/sum(alter) > (1-perc_threshold))
+                         }
                        }
-                       message("\t",sum(private$g_index)," genes")
-                     }
-                     
-                     if(perc_threshold<1){
-                       message("Filtering genes by maximal zero-expression percentile within a group: ",perc_threshold)
-                       if(grepl('and',perc.filter.type,ignore.case=T)){
-                         private$g_index <- private$g_index & (ctrlG/sum(ctrl) > (1-perc_threshold) & 
-                                                                 alterG/sum(alter) > (1-perc_threshold))
-                       }else{
-                         private$g_index <- private$g_index & (ctrlG/sum(ctrl) > (1-perc_threshold) | 
-                                                                 alterG/sum(alter) > (1-perc_threshold))
+                     }else{
+                       allIndex <- private$c_index
+                       allG <- sparse_batch_apply(private$X[,as.vector(allIndex)],1,function(x)return(sum(x>0,na.rm=T)),shortLab="All cellN per gene")
+                       if(min.cells.per.gene>0){
+                         message("Filtering genes by minimal cell number: ",min.cells.per.gene)
+                         if(min.perc.cells.per.gene>0 && min.perc.cells.per.gene<1){
+                           message("\tCalculating minimal cell number of a gene based on min.perc.cells.per.gene: ",min.perc.cells.per.gene)
+                           min.cells.per.gene <- max(min.cells.per.gene,ceiling(min.perc.cells.per.gene*sum(allIndex)))
+                         }
+                         private$g_index <- private$g_index & allG>min.cells.per.gene
+                         message("\t",sum(private$g_index)," genes")
+                       }
+                       if(perc_threshold<1){
+                         message("Filtering genes by maximal zero-expression percentile within a group: ",perc_threshold)
+                         private$g_index <- private$g_index & (allG/sum(allIndex) > (1-perc_threshold))
                        }
                      }
                      message("--- Total of ",sum(private$g_index)," genes")
@@ -259,8 +277,8 @@ scDEG <- R6Class("scDEG",
                      # remove low sequence depth cells
                      message("remove low sequence depth cells")
                      libSize <- nGene <- rep(0,length(private$c_index))
-                     libSize[ctrl|alter] <- colSums(private$X[as.vector(private$g_index),as.vector(ctrl|alter)])
-                     nGene[ctrl|alter] <- sparse_batch_apply(private$X[as.vector(private$g_index),as.vector(ctrl|alter)],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cells")
+                     libSize[allIndex] <- colSums(private$X[as.vector(private$g_index),as.vector(allIndex)])
+                     nGene[allIndex] <- sparse_batch_apply(private$X[as.vector(private$g_index),as.vector(allIndex)],2,function(x)return(sum(x>0,na.rm=T)),shortLab="GeneN per cells")
                      private$cellFiltering(libSize>lib_size_low & libSize<lib_size_high,
                                    paste0("Filtering cells by sequence depth: ",lib_size_low," ~ ",lib_size_high))
                      private$cellFiltering(nGene>min.genes.per.cell,
@@ -320,13 +338,23 @@ scDEG <- R6Class("scDEG",
                      message("--- Total of ",nrow(private$pseudoX)," genes")
                    },
                    # DEG by NEBULA pipeline -------
-                   scDEG_Nebula=function(covar,...){
+                   scDEG_Nebula=function(covar,saveRaw=NULL,...){
                      meta <-  private$meta[private$c_index,c(private$grp_col,covar),drop=F]
-                     meta[,private$grp_col] <- factor(meta[,private$grp_col],levels=c(private$ctrl_value,private$alt_value))
+                     if(is.na(private$ctrl_value) && is.na(private$alt_value)){
+                       message("\t\tas.numeric for ",private$grp_col)
+                       meta[,private$grp_col] <- as.numeric(meta[,private$grp_col])
+                     }else{
+                       meta[,private$grp_col] <- factor(meta[,private$grp_col],levels=c(private$ctrl_value,private$alt_value))
+                     }
                      df = model.matrix(as.formula(paste0("~",paste(colnames(meta),collapse="+"))),data=meta)
+                     #print(dim(meta))
+                     #print(dim(df))
+                     #message('sample size:',sum(private$c_index))
                      re = nebula(private$X[as.vector(private$g_index),as.vector(private$c_index)],
                                  private$meta[private$c_index,private$id_col],
                                  pred=df,offset=colSums(private$X[as.vector(private$g_index),as.vector(private$c_index)]),...)
+                     #message("***** ",saveRaw," *****")
+                     if(!is.null(saveRaw)) saveRDS(re,saveRaw)
                      final_table <- data.frame(ID=re$summary[,"gene"],re$summary[,grep(private$grp_col,colnames(re$summary))])
                      colnames(final_table) <- c("ID","logFC","se","Pvalue")
                      final_table$log2FC <- log2(exp(final_table$logFC))
