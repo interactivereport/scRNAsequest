@@ -14,8 +14,9 @@ if [[ -n "$1" ]]; then
     #source $src/.env
     #eval $condaEnv
 
-    workingdir=$(dirname $1)
+    #workingdir=$(dirname $1)
     configdir=$1
+    workingdir=`awk '{if ($1=="output:") print $2}' $configdir`
 
     if [[ $workingdir = ..* ]];then 
         CurrentPath=`pwd`"/"
