@@ -14,31 +14,16 @@ if [[ -n "$1" ]]; then
     #source $src/.env
     #eval $condaEnv
 
-    #workingdir=$(dirname $1)
     configdir=$1
     workingdir=`awk '{if ($1=="output:") print $2}' $configdir`
-
-    if [[ $workingdir = ..* ]];then 
-        CurrentPath=`pwd`"/"
-        workingdir=$CurrentPath$workingdir
-        configdir=$CurrentPath$configdir
-    fi
-
-    if [[ $workingdir = .* ]];then 
-        CurrentPath=`pwd`
-        RestPath=`echo $workingdir|sed 's/^\.//'`
-        RestConfigPath=`echo $1|sed 's/^\.//'`
-        workingdir=$CurrentPath$RestPath
-        if [[ ! $RestConfigPath = /* ]];then
-            configdir=$CurrentPath"/"$RestConfigPath
-        else
-            configdir=$CurrentPath$RestConfigPath
-        fi
-    fi
 
     if [[ ! $workingdir = /* ]];then
         CurrentPath=`pwd`
         workingdir=$CurrentPath"/"$workingdir
+    fi
+
+    if [[ ! $configdir = /* ]];then
+        CurrentPath=`pwd`
         configdir=$CurrentPath"/"$configdir
     fi
 
