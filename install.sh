@@ -15,7 +15,7 @@ else
 fi
 
 src="$(dirname $0)/src"
-conda env remove -p $appEnvPath; fi
+conda env remove -p $appEnvPath
 # mamba is not in the base conda=h582c2e5_0_cpython
 conda create -y -p $appEnvPath "python=3.8.13" "mamba=1.1.0" -c conda-forge
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
