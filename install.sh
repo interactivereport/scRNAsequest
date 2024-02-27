@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Please update the "appEnvPath" below for the location of the conda env
 # if SSL certificate (../...crt) needs to be added into this conda env,
-# please specify environment variabble "CONDA_SSL" with the path to the certificate file
+# please export environment variabble "CONDA_SSL" with the path to the certificate file
 appEnvPath="~/.conda/envs/scRNAsequest"
 
 set -e
@@ -15,11 +15,12 @@ else
 fi
 
 src="$(dirname $0)/src"
+appEnvPath=$(realpath ${appEnvPath/#\~/$HOME})
 conda env remove -p $appEnvPath
 # mamba is not in the base conda=h582c2e5_0_cpython
 conda create -y -p $appEnvPath "python=3.8.13" "mamba=1.1.0" -c conda-forge
 if [[ -n "$CONDA_SSL" ]] &&  [[ -f "$CONDA_SSL" ]]; then
-    cat $CONDA_SSL >> $appPATH/ssl/cacert.pem
+    cat $CONDA_SSL >> $appEnvPath/ssl/cacert.pem
 fi
 
 #conda env create -f install.yml

@@ -1,4 +1,4 @@
-import scPipe, os, time, sys
+import scPipe, os, time, sys, random, string
 
 def MsgHelp():
   print("\nscDEG /path/to/a/folder === or === scDEG /path/to/a/config/file\n")
@@ -24,7 +24,8 @@ def initProject(strInput):
       "output: "+strInput+"\n",
       "DBname: cellxgeneVIP\n",
       'parallel: slurm # False or "sge" or "slurm"\n',
-      'memory: 16G\n',
+      'memory: 128G\n',
+      'jobID: %s # maximun 8 characters. please make sure this job id is different with your other projects which would be run at the same time\n'%''.join(random.sample(list(string.ascii_uppercase),8)),
       'newProcess: False #False use existing DEG results']+DEGconfig
 
   strConfig = os.path.join(strInput,"config.yml")
