@@ -1,4 +1,4 @@
-import sys, argparse, time, os, warnings, yaml, gc, h5py
+import sys, argparse, time, os, warnings, yaml, gc, h5py, re
 import anndata as ad
 import pandas as pd
 import numpy as np
@@ -27,11 +27,10 @@ def parseInput(strarg):
   2. (add) A path to a csv file contains cell level annotations (first column is the cell ID)\n \
   3. (export) A list of genes (separated by ",", empty or max %d) to be exported along with all annotations.\n \
   4. (pseudo) A list of obs to group cells into pseudo bulk, separated by ","'%maxG)
-
   if len(strarg)==0 or strarg=="-h" or strarg=="--help":
     parser.print_help()
     MsgPower()
-  args = parser.parse_args(strarg.split())
+  args = parser.parse_args([re.sub(":=:"," ",one) for one in re.sub("\\\ ",":=:",strarg).split()])
   if args.tool in ["rm","add"] and len(args.changes)<3:
     print('"changes" are required for "rm" and "add" tool.')
     MsgPower()

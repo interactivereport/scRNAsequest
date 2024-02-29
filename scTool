@@ -8,7 +8,8 @@ if [[ ! -f "$src/.env" ]]; then
 fi
 
 if [[ -w ./ ]]; then
-  echo -n "$@" > .scTool
+  #echo -n "$@" > .scTool
+  printf " %q" "$@" > .scTool
   env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scTool.py .scTool'
   rm .scTool
 else
