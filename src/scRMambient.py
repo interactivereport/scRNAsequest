@@ -39,7 +39,7 @@ def cellbender(strMeta,nCore=0,useParallel=True):
   
   H5pair={}
   cmds = {}
-  cupCMD=""
+  cpuCMD=""
   print("CellBender process starts ...\n\tFor more information, please visit https://cellbender.readthedocs.io/en/latest/usage/index.html")
   if nCore==0:
     useGPU=True
