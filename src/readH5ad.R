@@ -1,6 +1,7 @@
 PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
+  require(dplyr)
 }
 suppressMessages(suppressWarnings(PKGloading()))
 
@@ -8,7 +9,7 @@ getobs <- function(strH5ad){
   message("\tobtainning obs ...")
   obs <- h5read(strH5ad,"obs")
   sel <- names(obs)[sapply(obs,function(x)return(is.null(names(x))))&!grepl("^_|index$|^barcode$",names(obs))]
-  meta <- do.call(cbind.data.frame, obs[sel])
+  meta <- do.call(cbind.data.frame, obs[sel]) %>% mutate_all(~ifelse(is.nan(.),NA,.))
   #meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
   #dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
   rownames(meta) <- obs[[grep("index$|^barcode$",names(obs))]]
@@ -26,9 +27,12 @@ getobs <- function(strH5ad){
   # for anndata v 0.8
   for(one in names(obs)[sapply(obs,function(x)return(!is.null(names(x))))&!grepl("^_|index$",names(obs))]){
     if(sum(c("categories","codes")%in%names(obs[[one]]))!=2) next
-    if(sum(obs[[one]]$codes<0)>0)
-      stop(paste0("NaN or NA found in ",one,", please use a string such as 'unknown' or 'undetermined' instead!"))
-    meta[[one]] <- obs[[one]]$categories[1+obs[[one]]$codes]
+    meta[[one]]<- rep(NA,length(obs[[one]]$codes))
+    selNA <- obs[[one]]$codes<0
+    meta[[one]][!selNA] <- obs[[one]]$categories[1+obs[[one]]$codes[!selNA]]
+    #if(sum(obs[[one]]$codes<0)>0)
+    #  stop(paste0("NaN or NA found in ",one,", please use a string such as 'unknown' or 'undetermined' instead!"))
+    #meta[[one]] <- obs[[one]]$categories[1+obs[[one]]$codes]
   }
   return(meta)
 }
