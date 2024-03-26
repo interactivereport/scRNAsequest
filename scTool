@@ -7,11 +7,12 @@ if [[ ! -f "$src/.env" ]]; then
   exit
 fi
 
+tool="${1:- -h}"
+strH5ad="${2:-''}"
+addi="${3:-''}"
+
 if [[ -w ./ ]]; then
-  #echo -n "$@" > .scTool
-  printf " %q" "$@" > .scTool
-  env -i src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scTool.py .scTool'
-  rm .scTool
+  env -i src="$src" tool="$tool" strH5ad="$strH5ad" addi="$addi" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scTool.py $tool "$strH5ad" "$addi"'
 else
   echo "Error: No written permission in $(readlink -e .)"
 fi

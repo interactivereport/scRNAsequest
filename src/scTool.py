@@ -14,11 +14,10 @@ def MsgPower():
   exit()
   
 def main():
-  with open(sys.argv[1],"r") as f:
-    args=parseInput(f.read())
+  args = parseInput()
   distributeTask(args.tool)(args)
 
-def parseInput(strarg):
+def parseInput():
   parser = argparse.ArgumentParser(description='Additional sc tools. WARNING: The input h5ad files will be over-written!',formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('tool',type=str,choices=["rm","add","export","pseudo"],help='Modify the h5ad by either "rm", "add" or "export" cell level annotations. \nCreate pseudo bulk as RNAsequest analysis input by "pseudo"')
   parser.add_argument('h5ad',type=str,help='Path to a h5ad file to be modified or extract from (raw UMI for pseudo)')
@@ -27,12 +26,10 @@ def parseInput(strarg):
   2. (add) A path to a csv file contains cell level annotations (first column is the cell ID)\n \
   3. (export) A list of genes (separated by ",", empty or max %d) to be exported along with all annotations.\n \
   4. (pseudo) A list of obs to group cells into pseudo bulk, separated by ","'%maxG)
-  if len(strarg)==0 or strarg=="-h" or strarg=="--help":
-    parser.print_help()
-    MsgPower()
-  args = parser.parse_args([re.sub(":=:"," ",one) for one in re.sub("\\\ ",":=:",strarg).split()])
-  if args.tool in ["rm","add"] and len(args.changes)<3:
-    print('"changes" are required for "rm" and "add" tool.')
+  args = parser.parse_args()
+  print(args)
+  if args.tool in ["rm","add",'pseudo'] and len(args.changes)<3:
+    print('"changes" are required for "rm", "add" and "pseudo" tool.')
     MsgPower()
   if not os.path.isfile(args.h5ad):
     print("%s does NOT exist!"%args.h5ad)
