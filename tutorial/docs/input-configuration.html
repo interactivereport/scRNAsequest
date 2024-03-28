@@ -6,10 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 Input configuration | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
+  
   
   
   
@@ -31,6 +32,7 @@
   
 <link rel="prev" href="data-preparation.html"/>
 <link rel="next" href="running-the-pipeline.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -48,9 +50,8 @@
 
 
 
-<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
-<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
@@ -120,10 +121,6 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<style type="text/css">
-  
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -141,95 +138,95 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">scRNASequest</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
-<li class="chapter" data-level="2" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
-<li class="chapter" data-level="3" data-path="installation.html"><a href="installation.html"><i class="fa fa-check"></i><b>3</b> Installation</a>
+<li><a href="index.html#preface" id="toc-preface"><span class="toc-section-number">1</span> Preface</a></li>
+<li><a href="introduction.html#introduction" id="toc-introduction"><span class="toc-section-number">2</span> Introduction</a></li>
+<li><a href="installation.html#installation" id="toc-installation"><span class="toc-section-number">3</span> Installation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="installation.html"><a href="installation.html#install-scrnasequest"><i class="fa fa-check"></i><b>3.1</b> Install scRNASequest</a>
+<li><a href="installation.html#install-scrnasequest" id="toc-install-scrnasequest"><span class="toc-section-number">3.1</span> Install scRNASequest</a>
 <ul>
-<li class="chapter" data-level="3.1.1" data-path="installation.html"><a href="installation.html#installation-using-conda"><i class="fa fa-check"></i><b>3.1.1</b> Installation using Conda</a></li>
-<li class="chapter" data-level="3.1.2" data-path="installation.html"><a href="installation.html#installation-through-docker"><i class="fa fa-check"></i><b>3.1.2</b> Installation through Docker</a></li>
+<li><a href="installation.html#installation-using-conda" id="toc-installation-using-conda"><span class="toc-section-number">3.1.1</span> Installation using Conda</a></li>
+<li><a href="installation.html#installation-through-docker" id="toc-installation-through-docker"><span class="toc-section-number">3.1.2</span> Installation through Docker</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="installation.html"><a href="installation.html#configure-sys.yml-file"><i class="fa fa-check"></i><b>3.2</b> Configure sys.yml file</a></li>
-<li class="chapter" data-level="3.3" data-path="installation.html"><a href="installation.html#install-cellxgene-vip"><i class="fa fa-check"></i><b>3.3</b> Install cellxgene VIP</a></li>
-<li class="chapter" data-level="3.4" data-path="installation.html"><a href="installation.html#install-celldepot"><i class="fa fa-check"></i><b>3.4</b> Install CellDepot</a></li>
+<li><a href="installation.html#configure-sys.yml-file" id="toc-configure-sys.yml-file"><span class="toc-section-number">3.2</span> Configure sys.yml file</a></li>
+<li><a href="installation.html#install-cellxgene-vip" id="toc-install-cellxgene-vip"><span class="toc-section-number">3.3</span> Install cellxgene VIP</a></li>
+<li><a href="installation.html#install-celldepot" id="toc-install-celldepot"><span class="toc-section-number">3.4</span> Install CellDepot</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="demo-run.html"><a href="demo-run.html"><i class="fa fa-check"></i><b>4</b> Demo run</a>
+<li><a href="demo-run.html#demo-run" id="toc-demo-run"><span class="toc-section-number">4</span> Demo run</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="demo-run.html"><a href="demo-run.html#demo-run-with-conda"><i class="fa fa-check"></i><b>4.1</b> Demo run with Conda</a></li>
-<li class="chapter" data-level="4.2" data-path="demo-run.html"><a href="demo-run.html#demo-run-with-docker"><i class="fa fa-check"></i><b>4.2</b> Demo run with Docker</a></li>
+<li><a href="demo-run.html#demo-run-with-conda" id="toc-demo-run-with-conda"><span class="toc-section-number">4.1</span> Demo run with Conda</a></li>
+<li><a href="demo-run.html#demo-run-with-docker" id="toc-demo-run-with-docker"><span class="toc-section-number">4.2</span> Demo run with Docker</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="data-preparation.html"><a href="data-preparation.html"><i class="fa fa-check"></i><b>5</b> Data preparation</a>
+<li><a href="data-preparation.html#data-preparation" id="toc-data-preparation"><span class="toc-section-number">5</span> Data preparation</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-h5-format"><i class="fa fa-check"></i><b>5.1</b> Public data in h5 format</a></li>
-<li class="chapter" data-level="5.2" data-path="data-preparation.html"><a href="data-preparation.html#public-data-in-10x-mex-format"><i class="fa fa-check"></i><b>5.2</b> Public data in 10X MEX format</a></li>
-<li class="chapter" data-level="5.3" data-path="data-preparation.html"><a href="data-preparation.html#self-prepared-files"><i class="fa fa-check"></i><b>5.3</b> Self-prepared files</a></li>
+<li><a href="data-preparation.html#public-data-in-h5-format" id="toc-public-data-in-h5-format"><span class="toc-section-number">5.1</span> Public data in h5 format</a></li>
+<li><a href="data-preparation.html#public-data-in-10x-mex-format" id="toc-public-data-in-10x-mex-format"><span class="toc-section-number">5.2</span> Public data in 10X MEX format</a></li>
+<li><a href="data-preparation.html#self-prepared-files" id="toc-self-prepared-files"><span class="toc-section-number">5.3</span> Self-prepared files</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="input-configuration.html"><a href="input-configuration.html"><i class="fa fa-check"></i><b>6</b> Input configuration</a>
+<li><a href="input-configuration.html#input-configuration" id="toc-input-configuration"><span class="toc-section-number">6</span> Input configuration</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="input-configuration.html"><a href="input-configuration.html#generate-template-files"><i class="fa fa-check"></i><b>6.1</b> Generate template files</a></li>
-<li class="chapter" data-level="6.2" data-path="input-configuration.html"><a href="input-configuration.html#prepare-the-config.yml-file"><i class="fa fa-check"></i><b>6.2</b> Prepare the config.yml file</a></li>
-<li class="chapter" data-level="6.3" data-path="input-configuration.html"><a href="input-configuration.html#section52"><i class="fa fa-check"></i><b>6.3</b> Prepare the sample meta file</a>
+<li><a href="input-configuration.html#generate-template-files" id="toc-generate-template-files"><span class="toc-section-number">6.1</span> Generate template files</a></li>
+<li><a href="input-configuration.html#prepare-the-config.yml-file" id="toc-prepare-the-config.yml-file"><span class="toc-section-number">6.2</span> Prepare the config.yml file</a></li>
+<li><a href="input-configuration.html#section52" id="toc-section52"><span class="toc-section-number">6.3</span> Prepare the sample meta file</a>
 <ul>
-<li class="chapter" data-level="6.3.1" data-path="input-configuration.html"><a href="input-configuration.html#h5-input"><i class="fa fa-check"></i><b>6.3.1</b> h5 input</a></li>
-<li class="chapter" data-level="6.3.2" data-path="input-configuration.html"><a href="input-configuration.html#mex-input"><i class="fa fa-check"></i><b>6.3.2</b> MEX input</a></li>
+<li><a href="input-configuration.html#h5-input" id="toc-h5-input"><span class="toc-section-number">6.3.1</span> h5 input</a></li>
+<li><a href="input-configuration.html#mex-input" id="toc-mex-input"><span class="toc-section-number">6.3.2</span> MEX input</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="input-configuration.html"><a href="input-configuration.html#file-hierarchy"><i class="fa fa-check"></i><b>6.4</b> File hierarchy</a></li>
+<li><a href="input-configuration.html#file-hierarchy" id="toc-file-hierarchy"><span class="toc-section-number">6.4</span> File hierarchy</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html"><i class="fa fa-check"></i><b>7</b> Running the pipeline</a>
+<li><a href="running-the-pipeline.html#running-the-pipeline" id="toc-running-the-pipeline"><span class="toc-section-number">7</span> Running the pipeline</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#initial-scanalyzer-run"><i class="fa fa-check"></i><b>7.1</b> Initial scAnalyzer run</a></li>
-<li class="chapter" data-level="7.2" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#review-the-bookdown-report"><i class="fa fa-check"></i><b>7.2</b> Review the bookdown report</a></li>
-<li class="chapter" data-level="7.3" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#generate-a-slide-deck"><i class="fa fa-check"></i><b>7.3</b> Generate a slide deck</a></li>
-<li class="chapter" data-level="7.4" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#doublet-detection"><i class="fa fa-check"></i><b>7.4</b> Doublet detection</a></li>
-<li class="chapter" data-level="7.5" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#cell-type-label-transfer"><i class="fa fa-check"></i><b>7.5</b> Cell type label transfer</a></li>
-<li class="chapter" data-level="7.6" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#adjust-major_cluster_rate"><i class="fa fa-check"></i><b>7.6</b> Adjust major_cluster_rate</a></li>
-<li class="chapter" data-level="7.7" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-pipeline-in-parallel"><i class="fa fa-check"></i><b>7.7</b> Run the pipeline in parallel</a></li>
-<li class="chapter" data-level="7.8" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#run-the-full-analysis"><i class="fa fa-check"></i><b>7.8</b> Run the full analysis</a></li>
-<li class="chapter" data-level="7.9" data-path="running-the-pipeline.html"><a href="running-the-pipeline.html#visualize-the-harmonized-results"><i class="fa fa-check"></i><b>7.9</b> Visualize the harmonized results</a></li>
+<li><a href="running-the-pipeline.html#initial-scanalyzer-run" id="toc-initial-scanalyzer-run"><span class="toc-section-number">7.1</span> Initial scAnalyzer run</a></li>
+<li><a href="running-the-pipeline.html#review-the-bookdown-report" id="toc-review-the-bookdown-report"><span class="toc-section-number">7.2</span> Review the bookdown report</a></li>
+<li><a href="running-the-pipeline.html#generate-a-slide-deck" id="toc-generate-a-slide-deck"><span class="toc-section-number">7.3</span> Generate a slide deck</a></li>
+<li><a href="running-the-pipeline.html#doublet-detection" id="toc-doublet-detection"><span class="toc-section-number">7.4</span> Doublet detection</a></li>
+<li><a href="running-the-pipeline.html#cell-type-label-transfer" id="toc-cell-type-label-transfer"><span class="toc-section-number">7.5</span> Cell type label transfer</a></li>
+<li><a href="running-the-pipeline.html#adjust-major_cluster_rate" id="toc-adjust-major_cluster_rate"><span class="toc-section-number">7.6</span> Adjust major_cluster_rate</a></li>
+<li><a href="running-the-pipeline.html#run-the-pipeline-in-parallel" id="toc-run-the-pipeline-in-parallel"><span class="toc-section-number">7.7</span> Run the pipeline in parallel</a></li>
+<li><a href="running-the-pipeline.html#run-the-full-analysis" id="toc-run-the-full-analysis"><span class="toc-section-number">7.8</span> Run the full analysis</a></li>
+<li><a href="running-the-pipeline.html#visualize-the-harmonized-results" id="toc-visualize-the-harmonized-results"><span class="toc-section-number">7.9</span> Visualize the harmonized results</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html"><i class="fa fa-check"></i><b>8</b> Differential expression (DE) analysis</a>
+<li><a href="differential-expression-de-analysis.html#differential-expression-de-analysis" id="toc-differential-expression-de-analysis"><span class="toc-section-number">8</span> Differential expression (DE) analysis</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-1"><i class="fa fa-check"></i><b>8.1</b> Example 1</a></li>
-<li class="chapter" data-level="8.2" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-2"><i class="fa fa-check"></i><b>8.2</b> Example 2</a></li>
-<li class="chapter" data-level="8.3" data-path="differential-expression-de-analysis.html"><a href="differential-expression-de-analysis.html#example-3"><i class="fa fa-check"></i><b>8.3</b> Example 3</a></li>
+<li><a href="differential-expression-de-analysis.html#example-1" id="toc-example-1"><span class="toc-section-number">8.1</span> Example 1</a></li>
+<li><a href="differential-expression-de-analysis.html#example-2" id="toc-example-2"><span class="toc-section-number">8.2</span> Example 2</a></li>
+<li><a href="differential-expression-de-analysis.html#example-3" id="toc-example-3"><span class="toc-section-number">8.3</span> Example 3</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="reference-building.html"><a href="reference-building.html"><i class="fa fa-check"></i><b>9</b> Reference building</a>
+<li><a href="reference-building.html#reference-building" id="toc-reference-building"><span class="toc-section-number">9</span> Reference building</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="reference-building.html"><a href="reference-building.html#initialize-scref"><i class="fa fa-check"></i><b>9.1</b> Initialize scRef</a></li>
-<li class="chapter" data-level="9.2" data-path="reference-building.html"><a href="reference-building.html#submit-scref"><i class="fa fa-check"></i><b>9.2</b> Submit scRef</a></li>
-<li class="chapter" data-level="9.3" data-path="reference-building.html"><a href="reference-building.html#demo-scref"><i class="fa fa-check"></i><b>9.3</b> Demo scRef</a></li>
+<li><a href="reference-building.html#initialize-scref" id="toc-initialize-scref"><span class="toc-section-number">9.1</span> Initialize scRef</a></li>
+<li><a href="reference-building.html#submit-scref" id="toc-submit-scref"><span class="toc-section-number">9.2</span> Submit scRef</a></li>
+<li><a href="reference-building.html#demo-scref" id="toc-demo-scref"><span class="toc-section-number">9.3</span> Demo scRef</a></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html"><i class="fa fa-check"></i><b>10</b> CellDepot publishing</a>
+<li><a href="celldepot-publishing.html#celldepot-publishing" id="toc-celldepot-publishing"><span class="toc-section-number">10</span> CellDepot publishing</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#initialize-sc2celldepot"><i class="fa fa-check"></i><b>10.1</b> Initialize sc2celldepot</a></li>
-<li class="chapter" data-level="10.2" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#run-sc2celldepot"><i class="fa fa-check"></i><b>10.2</b> Run sc2celldepot</a></li>
-<li class="chapter" data-level="10.3" data-path="celldepot-publishing.html"><a href="celldepot-publishing.html#demo-sc2celldepot"><i class="fa fa-check"></i><b>10.3</b> Demo sc2celldepot</a></li>
+<li><a href="celldepot-publishing.html#initialize-sc2celldepot" id="toc-initialize-sc2celldepot"><span class="toc-section-number">10.1</span> Initialize sc2celldepot</a></li>
+<li><a href="celldepot-publishing.html#run-sc2celldepot" id="toc-run-sc2celldepot"><span class="toc-section-number">10.2</span> Run sc2celldepot</a></li>
+<li><a href="celldepot-publishing.html#demo-sc2celldepot" id="toc-demo-sc2celldepot"><span class="toc-section-number">10.3</span> Demo sc2celldepot</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="additional-tools.html"><a href="additional-tools.html"><i class="fa fa-check"></i><b>11</b> Additional tools</a>
+<li><a href="additional-tools.html#additional-tools" id="toc-additional-tools"><span class="toc-section-number">11</span> Additional tools</a>
 <ul>
-<li class="chapter" data-level="11.1" data-path="additional-tools.html"><a href="additional-tools.html#scrmambient"><i class="fa fa-check"></i><b>11.1</b> scRMambient</a>
+<li><a href="additional-tools.html#scrmambient" id="toc-scrmambient"><span class="toc-section-number">11.1</span> scRMambient</a>
 <ul>
-<li class="chapter" data-level="11.1.1" data-path="additional-tools.html"><a href="additional-tools.html#set-up-the-inputs"><i class="fa fa-check"></i><b>11.1.1</b> Set up the inputs</a></li>
-<li class="chapter" data-level="11.1.2" data-path="additional-tools.html"><a href="additional-tools.html#run-scrmambient"><i class="fa fa-check"></i><b>11.1.2</b> Run scRMambient</a></li>
+<li><a href="additional-tools.html#set-up-the-inputs" id="toc-set-up-the-inputs"><span class="toc-section-number">11.1.1</span> Set up the inputs</a></li>
+<li><a href="additional-tools.html#run-scrmambient" id="toc-run-scrmambient"><span class="toc-section-number">11.1.2</span> Run scRMambient</a></li>
 </ul></li>
-<li class="chapter" data-level="11.2" data-path="additional-tools.html"><a href="additional-tools.html#scdeg"><i class="fa fa-check"></i><b>11.2</b> scDEG</a>
+<li><a href="additional-tools.html#scdeg" id="toc-scdeg"><span class="toc-section-number">11.2</span> scDEG</a>
 <ul>
-<li class="chapter" data-level="11.2.1" data-path="additional-tools.html"><a href="additional-tools.html#initialize-scdeg"><i class="fa fa-check"></i><b>11.2.1</b> Initialize scDEG</a></li>
-<li class="chapter" data-level="11.2.2" data-path="additional-tools.html"><a href="additional-tools.html#run-de-analysis"><i class="fa fa-check"></i><b>11.2.2</b> Run DE analysis</a></li>
+<li><a href="additional-tools.html#initialize-scdeg" id="toc-initialize-scdeg"><span class="toc-section-number">11.2.1</span> Initialize scDEG</a></li>
+<li><a href="additional-tools.html#run-de-analysis" id="toc-run-de-analysis"><span class="toc-section-number">11.2.2</span> Run DE analysis</a></li>
 </ul></li>
-<li class="chapter" data-level="11.3" data-path="additional-tools.html"><a href="additional-tools.html#sctool"><i class="fa fa-check"></i><b>11.3</b> scTool</a>
+<li><a href="additional-tools.html#sctool" id="toc-sctool"><span class="toc-section-number">11.3</span> scTool</a>
 <ul>
-<li class="chapter" data-level="11.3.1" data-path="additional-tools.html"><a href="additional-tools.html#remove-annotations"><i class="fa fa-check"></i><b>11.3.1</b> Remove annotations</a></li>
-<li class="chapter" data-level="11.3.2" data-path="additional-tools.html"><a href="additional-tools.html#add-annotations"><i class="fa fa-check"></i><b>11.3.2</b> Add annotations</a></li>
-<li class="chapter" data-level="11.3.3" data-path="additional-tools.html"><a href="additional-tools.html#export-gene-expressions"><i class="fa fa-check"></i><b>11.3.3</b> Export gene expressions</a></li>
-<li class="chapter" data-level="11.3.4" data-path="additional-tools.html"><a href="additional-tools.html#pseudo-bulk-aggregation"><i class="fa fa-check"></i><b>11.3.4</b> Pseudo-bulk aggregation</a></li>
-<li class="chapter" data-level="11.3.5" data-path="additional-tools.html"><a href="additional-tools.html#demo-sctool"><i class="fa fa-check"></i><b>11.3.5</b> Demo scTool</a></li>
+<li><a href="additional-tools.html#remove-annotations" id="toc-remove-annotations"><span class="toc-section-number">11.3.1</span> Remove annotations</a></li>
+<li><a href="additional-tools.html#add-annotations" id="toc-add-annotations"><span class="toc-section-number">11.3.2</span> Add annotations</a></li>
+<li><a href="additional-tools.html#export-gene-expressions" id="toc-export-gene-expressions"><span class="toc-section-number">11.3.3</span> Export gene expressions</a></li>
+<li><a href="additional-tools.html#pseudo-bulk-aggregation" id="toc-pseudo-bulk-aggregation"><span class="toc-section-number">11.3.4</span> Pseudo-bulk aggregation</a></li>
+<li><a href="additional-tools.html#demo-sctool" id="toc-demo-sctool"><span class="toc-section-number">11.3.5</span> Demo scTool</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="12" data-path="miscellaneous.html"><a href="miscellaneous.html"><i class="fa fa-check"></i><b>12</b> Miscellaneous</a>
+<li><a href="miscellaneous.html#miscellaneous" id="toc-miscellaneous"><span class="toc-section-number">12</span> Miscellaneous</a>
 <ul>
-<li class="chapter" data-level="12.1" data-path="miscellaneous.html"><a href="miscellaneous.html#cell-subsetting"><i class="fa fa-check"></i><b>12.1</b> Cell subsetting</a></li>
+<li><a href="miscellaneous.html#cell-subsetting" id="toc-cell-subsetting"><span class="toc-section-number">12.1</span> Cell subsetting</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -250,12 +247,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="input-configuration" class="section level1 hasAnchor" number="6">
-<h1><span class="header-section-number">Chapter 6</span> Input configuration<a href="input-configuration.html#input-configuration" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="input-configuration" class="section level1" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Input configuration</h1>
 <p>First, make sure the .env has been created in the src folder under the pipeline directory:</p>
 <pre><code>ls ~/scRNAsequest/src/.env</code></pre>
-<div id="generate-template-files" class="section level2 hasAnchor" number="6.1">
-<h2><span class="header-section-number">6.1</span> Generate template files<a href="input-configuration.html#generate-template-files" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="generate-template-files" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Generate template files</h2>
 <p>Now we are ready to run the pipeline. Since the main pipeline script <code>scAnalyzer</code> requires a <strong>config.yml</strong> file, a sample metadata file <strong>sampleMeta.csv</strong>, and a <strong>DEGinfo.csv</strong> file for DE analysis (can be filled in later), we can first generate templates for these files.</p>
 <p>We run <code>scAnalyzer</code> by providing a path to our working directory. This can be any directory on you system:</p>
 <pre><code>scAnalyzer /path/to/working/dir</code></pre>
@@ -274,8 +271,8 @@ Option column &#39;metapath&#39; can be provided for cell level annotation first
 *****</code></pre>
 <p>Please following the instructions below to set up these files.</p>
 </div>
-<div id="prepare-the-config.yml-file" class="section level2 hasAnchor" number="6.2">
-<h2><span class="header-section-number">6.2</span> Prepare the config.yml file<a href="input-configuration.html#prepare-the-config.yml-file" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="prepare-the-config.yml-file" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Prepare the config.yml file</h2>
 <p>To run the scRNAsequest pipeline, a config.yml file is required to be filled in. Please use the following template as an example to prepare this file:</p>
 <p><a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/template.yml" target="_blank">config.yml</a></p>
 <pre><code>## Project info and filtering parameters
@@ -351,12 +348,12 @@ publish: False</code></pre>
 <pre><code>runAnalysis: True
 overwrite: True</code></pre>
 </div>
-<div id="section52" class="section level2 hasAnchor" number="6.3">
-<h2><span class="header-section-number">6.3</span> Prepare the sample meta file<a href="input-configuration.html#section52" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="section52" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Prepare the sample meta file</h2>
 <p>The sample meta file, usually named as <strong>sampleMeta.csv</strong>, is a csv file storing data information. The minimal columns for this file are <strong>Sample_Name</strong> (This name can be changed, but it must be consistent with the sample_name in the config.yml file) and <strong>h5path</strong>. If you have the cell type annotation information, you can provide is by adding a column called <strong>metapath</strong>, which is an optional column. For other information, you can add as many columns in this csv file and the column names can be defined by yourself.</p>
 <p>Another usage of the <strong>metapath</strong> column in <strong>sampleMeta.csv</strong> is to subset the cells. The pipeline will only use the cells included in the <strong>metapath</strong> file to run analysis. Thus, you can adjust this information by selecting only a subset of barcodes.</p>
-<div id="h5-input" class="section level3 hasAnchor" number="6.3.1">
-<h3><span class="header-section-number">6.3.1</span> h5 input<a href="input-configuration.html#h5-input" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="h5-input" class="section level3" number="6.3.1">
+<h3><span class="header-section-number">6.3.1</span> h5 input</h3>
 <p>Here is an example with minimal information for the public dataset <a href="https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-11115/" target="_blank">E-MTAB-11115</a> (10X h5 format):</p>
 <pre><code>Sample_Name,h5path
 5705STDY8058280,~/E-MTAB-11115/data/5705STDY8058280.filtered_feature_bc_matrix.h5
@@ -380,8 +377,8 @@ Cell.ID,sample,annotation_1,annotation_1_print
 AAACCCAAGGAAGTAG-1,5705STDY8058280,Ext_L25,23_Ext_L25
 AAACCCAAGGGCAGTT-1,5705STDY8058280,Ext_L56,24_Ext_L56</code></pre>
 </div>
-<div id="mex-input" class="section level3 hasAnchor" number="6.3.2">
-<h3><span class="header-section-number">6.3.2</span> MEX input<a href="input-configuration.html#mex-input" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="mex-input" class="section level3" number="6.3.2">
+<h3><span class="header-section-number">6.3.2</span> MEX input</h3>
 <p>Since each data has three MEX files (barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz), here we provide the <strong>path to each MEX result directory</strong>. The minimal information in the sample meta file:</p>
 <pre><code>Sample_Name,h5path
 FCtr,~/10XGenomicsData/GSM5617891_snRNA_FCtr
@@ -396,8 +393,8 @@ MCtr,~/10XGenomicsData/GSM5617893_snRNA_MCtr,Control,Male
 MEcig,~/10XGenomicsData/GSM5617894_snRNA_MEcig,EcTreated,Male</code></pre>
 </div>
 </div>
-<div id="file-hierarchy" class="section level2 hasAnchor" number="6.4">
-<h2><span class="header-section-number">6.4</span> File hierarchy<a href="input-configuration.html#file-hierarchy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="file-hierarchy" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> File hierarchy</h2>
 <p>Before running the pipeline, please check the file hierarchy. Here are examples for h5 and MEX inputs, and we suggest creating a separate folder (such as <em>processing</em>) to store the config.yml and sampleMeta.csv files. The output files will be generated in the directory specified in config.yml.</p>
 <p>For data downloaded in 10X h5 format:</p>
 <pre><code>E-MTAB-11115/

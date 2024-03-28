@@ -24,7 +24,7 @@ You may consider **pct_MT** as a covariate to adjust, but be careful to adjust o
 
 **Continuous/Numeric variable as the comparison group:**
 
-If user is interested in using a numeric variable (such as Age) as the comparison group in the comparison. Please provide the column header of the numeric column in the cell/sample meta table in the **"group"** column of the above DEGinfo.csv table, and leave **"alt"** and **"ref"** columns of that row empty. This is currently only supported in the NEBULA method.
+If the user is interested in using a numeric variable (such as Age) as the comparison group in the comparison, please provide the column header of the numeric column in the cell/sample meta table in the **"group"** column of the above DEGinfo.csv table, and leave **"alt"** and **"ref"** columns of that row empty. Currently this function is only supported if DE analysis is run using the NEBULA method.
 
 **Missing values:**
 
