@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Introduction | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-08-10" />
+<meta name="date" content="2024-03-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -279,109 +279,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p><strong>A detailed comparison of the above scripts can be found below:</strong></p>
 <table>
-<caption>
-<span id="tab:unnamed-chunk-1">Table 2.1: </span>Pipeline scripts and their function
-</caption>
+<caption><span id="tab:unnamed-chunk-1">Table 2.1: </span>Pipeline scripts and their function</caption>
+<colgroup>
+<col width="4%" />
+<col width="36%" />
+<col width="36%" />
+<col width="23%" />
+</colgroup>
 <thead>
-<tr>
-<th style="text-align:center;">
-Command
-</th>
-<th style="text-align:center;">
-Description
-</th>
-<th style="text-align:center;">
-Input
-</th>
-<th style="text-align:center;">
-Output
-</th>
+<tr class="header">
+<th align="center">Command</th>
+<th align="center">Description</th>
+<th align="center">Input</th>
+<th align="center">Output</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:center;">
-scAnalyzer
-</td>
-<td style="text-align:center;">
-Main program to perform full scRNA-seq data anal-ysis with QC and data harmonization
-</td>
-<td style="text-align:center;">
-A path to analysis config file (config.yml)
-</td>
-<td style="text-align:center;">
-Final analysis results in h5ad and h5seurat format
-</td>
+<tr class="odd">
+<td align="center">scAnalyzer</td>
+<td align="center">Main program to perform full scRNA-seq data anal-ysis with QC and data harmonization</td>
+<td align="center">A path to analysis config file (config.yml)</td>
+<td align="center">Final analysis results in h5ad and h5seurat format</td>
 </tr>
-<tr>
-<td style="text-align:center;">
-scDEG
-</td>
-<td style="text-align:center;">
-Program to perform DEG analysis between two phenotypes within each cluster of an annotation (such as cell types)
-</td>
-<td style="text-align:center;">
-A path to a DEG config file (config_DEG.yml)
-</td>
-<td style="text-align:center;">
-One DEG table for each cluster and an SQLite db file of all comparisons
-</td>
+<tr class="even">
+<td align="center">scDEG</td>
+<td align="center">Program to perform DEG analysis between two phenotypes within each cluster of an annotation (such as cell types)</td>
+<td align="center">A path to a DEG config file (config_DEG.yml)</td>
+<td align="center">One DEG table for each cluster and an SQLite db file of all comparisons</td>
 </tr>
-<tr>
-<td style="text-align:center;">
-scRef
-</td>
-<td style="text-align:center;">
-Program to create Seurat ‘Azimuth’ references
-</td>
-<td style="text-align:center;">
-A path to a reference con-fig file (config_ref.yml)
-</td>
-<td style="text-align:center;">
-An RDS object with ‘Azi-muth’ reference for scAnalyzer
-</td>
+<tr class="odd">
+<td align="center">scRef</td>
+<td align="center">Program to create Seurat ‘Azimuth’ references</td>
+<td align="center">A path to a reference con-fig file (config_ref.yml)</td>
+<td align="center">An RDS object with ‘Azi-muth’ reference for scAnalyzer</td>
 </tr>
-<tr>
-<td style="text-align:center;">
-sc2celldepot
-</td>
-<td style="text-align:center;">
-Program to transfer ana-lyzed data into h5ad for the cellxgene VIP (CellDepot) loading
-</td>
-<td style="text-align:center;">
-A path to a data config file (config_convert.yml)
-</td>
-<td style="text-align:center;">
-An h5ad file
-</td>
+<tr class="even">
+<td align="center">sc2celldepot</td>
+<td align="center">Program to transfer ana-lyzed data into h5ad for the cellxgene VIP (CellDepot) loading</td>
+<td align="center">A path to a data config file (config_convert.yml)</td>
+<td align="center">An h5ad file</td>
 </tr>
-<tr>
-<td style="text-align:center;">
-scTool
-</td>
-<td style="text-align:center;">
-Tool to add, remove or export express/annotation from an h5ad
-</td>
-<td style="text-align:center;">
-A path to an h5ad file
-</td>
-<td style="text-align:center;">
-A modified h5ad file or a csv file
-</td>
+<tr class="odd">
+<td align="center">scTool</td>
+<td align="center">Tool to add, remove or export express/annotation from an h5ad</td>
+<td align="center">A path to an h5ad file</td>
+<td align="center">A modified h5ad file or a csv file</td>
 </tr>
-<tr>
-<td style="text-align:center;">
-scRMambient
-</td>
-<td style="text-align:center;">
-Remove ambient RNA by the CellBender
-</td>
-<td style="text-align:center;">
-A path to a sample metadata file containing paths to raw (unfiltered) UMI along with a few Cell-Bender parameters
-</td>
-<td style="text-align:center;">
-CellBender filtered UMI counts in h5 format
-</td>
+<tr class="even">
+<td align="center">scRMambient</td>
+<td align="center">Remove ambient RNA by the CellBender</td>
+<td align="center">A path to a sample metadata file containing paths to raw (unfiltered) UMI along with a few Cell-Bender parameters</td>
+<td align="center">CellBender filtered UMI counts in h5 format</td>
 </tr>
 </tbody>
 </table>

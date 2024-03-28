@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 Installation | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-08-10" />
+<meta name="date" content="2024-03-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -258,95 +258,95 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="installation-using-conda" class="section level3 hasAnchor" number="3.1.1">
 <h3><span class="header-section-number">3.1.1</span> Installation using Conda<a href="installation.html#installation-using-conda" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>First, please make sure you have <a href="https://docs.conda.io/en/latest/">Conda</a> installed, or, <a href="https://docs.anaconda.com/anaconda/install/index.html">Anaconda</a>/<a href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a> installed:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="installation.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> conda</span>
-<span id="cb1-2"><a href="installation.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Your conda path will be returned</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="installation.html#cb1-1" tabindex="-1"></a><span class="fu">which</span> conda</span>
+<span id="cb1-2"><a href="installation.html#cb1-2" tabindex="-1"></a><span class="co"># Your conda path will be returned</span></span></code></pre></div>
 <p>Then, we choose a directory and install scRNASequest by downloading the source code from GitHub.</p>
 <p>The directory you choose here will be the future directory of this pipeline.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="installation.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:</span></span>
-<span id="cb2-2"><a href="installation.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~</span>
-<span id="cb2-3"><a href="installation.html#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/interactivereport/scRNASequest.git</span>
-<span id="cb2-4"><a href="installation.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> scRNASequest</span>
-<span id="cb2-5"><a href="installation.html#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="installation.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Install scRNASequest conda environment</span></span>
-<span id="cb2-7"><a href="installation.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Before running this, please make sure you have conda installed before</span></span>
-<span id="cb2-8"><a href="installation.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># This step will take a while, usually between 30min to 1h depending on the internet speed</span></span>
-<span id="cb2-9"><a href="installation.html#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Thank you for your patience</span></span>
-<span id="cb2-10"><a href="installation.html#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> install.sh</span>
-<span id="cb2-11"><a href="installation.html#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="installation.html#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The .env will be created under the src directory</span></span>
-<span id="cb2-13"><a href="installation.html#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/scRNASequest/src/.env</span>
-<span id="cb2-14"><a href="installation.html#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="installation.html#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Now the pipeline scripts under the scRNASequest folder can be used</span></span>
-<span id="cb2-16"><a href="installation.html#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Users can add the scRNASequest directory to the environment permanently</span></span>
-<span id="cb2-17"><a href="installation.html#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># by editing ~/.bash_profile or ~/.bashrc</span></span>
-<span id="cb2-18"><a href="installation.html#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ex">vim</span> ~/.bash_profile</span>
-<span id="cb2-19"><a href="installation.html#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Add the full path of the scRNASequest directory to $PATH.</span></span>
-<span id="cb2-20"><a href="installation.html#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># In our example, this will be: ~/scRNASequest</span></span>
-<span id="cb2-21"><a href="installation.html#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/scRNASequest</span>
-<span id="cb2-22"><a href="installation.html#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Close the vim text editor and source the file</span></span>
-<span id="cb2-23"><a href="installation.html#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.bash_profile</span>
-<span id="cb2-24"><a href="installation.html#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="installation.html#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#To verify the installation, type the main program name, and the following message will show up:</span></span>
-<span id="cb2-26"><a href="installation.html#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span></span>
-<span id="cb2-27"><a href="installation.html#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-28"><a href="installation.html#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#Output:</span></span>
-<span id="cb2-29"><a href="installation.html#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span></span>
-<span id="cb2-30"><a href="installation.html#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="ex">Please</span> set the sys.yml in ~/scRNASequest.</span>
-<span id="cb2-31"><a href="installation.html#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ex">An</span> example is <span class="st">&#39;~/scRNASequest/src/sys_example.yml&#39;</span>.</span>
-<span id="cb2-32"><a href="installation.html#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="installation.html#cb2-1" tabindex="-1"></a><span class="co"># Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:</span></span>
+<span id="cb2-2"><a href="installation.html#cb2-2" tabindex="-1"></a><span class="bu">cd</span> ~</span>
+<span id="cb2-3"><a href="installation.html#cb2-3" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/interactivereport/scRNASequest.git</span>
+<span id="cb2-4"><a href="installation.html#cb2-4" tabindex="-1"></a><span class="bu">cd</span> scRNASequest</span>
+<span id="cb2-5"><a href="installation.html#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="installation.html#cb2-6" tabindex="-1"></a><span class="co"># Install scRNASequest conda environment</span></span>
+<span id="cb2-7"><a href="installation.html#cb2-7" tabindex="-1"></a><span class="co"># Before running this, please make sure you have conda installed before</span></span>
+<span id="cb2-8"><a href="installation.html#cb2-8" tabindex="-1"></a><span class="co"># This step will take a while, usually between 30min to 1h depending on the internet speed</span></span>
+<span id="cb2-9"><a href="installation.html#cb2-9" tabindex="-1"></a><span class="co"># Thank you for your patience</span></span>
+<span id="cb2-10"><a href="installation.html#cb2-10" tabindex="-1"></a><span class="fu">bash</span> install.sh</span>
+<span id="cb2-11"><a href="installation.html#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="installation.html#cb2-12" tabindex="-1"></a><span class="co"># The .env will be created under the src directory</span></span>
+<span id="cb2-13"><a href="installation.html#cb2-13" tabindex="-1"></a><span class="fu">ls</span> ~/scRNASequest/src/.env</span>
+<span id="cb2-14"><a href="installation.html#cb2-14" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="installation.html#cb2-15" tabindex="-1"></a><span class="co"># Now the pipeline scripts under the scRNASequest folder can be used</span></span>
+<span id="cb2-16"><a href="installation.html#cb2-16" tabindex="-1"></a><span class="co"># Users can add the scRNASequest directory to the environment permanently</span></span>
+<span id="cb2-17"><a href="installation.html#cb2-17" tabindex="-1"></a><span class="co"># by editing ~/.bash_profile or ~/.bashrc</span></span>
+<span id="cb2-18"><a href="installation.html#cb2-18" tabindex="-1"></a><span class="ex">vim</span> ~/.bash_profile</span>
+<span id="cb2-19"><a href="installation.html#cb2-19" tabindex="-1"></a><span class="co"># Add the full path of the scRNASequest directory to $PATH.</span></span>
+<span id="cb2-20"><a href="installation.html#cb2-20" tabindex="-1"></a><span class="co"># In our example, this will be: ~/scRNASequest</span></span>
+<span id="cb2-21"><a href="installation.html#cb2-21" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:~/scRNASequest</span>
+<span id="cb2-22"><a href="installation.html#cb2-22" tabindex="-1"></a><span class="co"># Close the vim text editor and source the file</span></span>
+<span id="cb2-23"><a href="installation.html#cb2-23" tabindex="-1"></a><span class="bu">source</span> ~/.bash_profile</span>
+<span id="cb2-24"><a href="installation.html#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="installation.html#cb2-25" tabindex="-1"></a><span class="co">#To verify the installation, type the main program name, and the following message will show up:</span></span>
+<span id="cb2-26"><a href="installation.html#cb2-26" tabindex="-1"></a><span class="ex">scAnalyzer</span></span>
+<span id="cb2-27"><a href="installation.html#cb2-27" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="installation.html#cb2-28" tabindex="-1"></a><span class="co">#Output:</span></span>
+<span id="cb2-29"><a href="installation.html#cb2-29" tabindex="-1"></a><span class="ex">=====</span></span>
+<span id="cb2-30"><a href="installation.html#cb2-30" tabindex="-1"></a><span class="ex">Please</span> set the sys.yml in ~/scRNASequest.</span>
+<span id="cb2-31"><a href="installation.html#cb2-31" tabindex="-1"></a><span class="ex">An</span> example is <span class="st">&#39;~/scRNASequest/src/sys_example.yml&#39;</span>.</span>
+<span id="cb2-32"><a href="installation.html#cb2-32" tabindex="-1"></a><span class="ex">=====</span></span></code></pre></div>
 <p>You got the above message because the <code>sys.yml</code> file is missing under the pipeline <code>src</code> directory (in our case, ~/scRNASequest/src/).</p>
 <p>Please copy the <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/sys_example.yml">sys_example.yml</a> template there first:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="installation.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="installation.html#cb3-1" tabindex="-1"></a><span class="fu">cp</span> ~/scRNASequest/src/sys_example.yml ~/scRNASequest/src/sys.yml</span></code></pre></div>
 <p>Then, fill in the following required items. These directories will be used to host final results (.h5ad files) of the pipeline as well as the reference files for cell type label transfer.</p>
 <p>Since we have <code>cellxgenedir</code> and <code>ref</code> directories created under the <code>demo</code> directory, we use them here:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="installation.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">celldepotDir:</span> ~/scRNASequest/demo/cellxgenedir.  <span class="co"># the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP</span></span>
-<span id="cb4-2"><a href="installation.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">refDir:</span> ~/scRNASequest/demo/ref   <span class="co"># the absolute path to the Seurat reference folder if building reference is desired</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="installation.html#cb4-1" tabindex="-1"></a><span class="ex">celldepotDir:</span> ~/scRNASequest/demo/cellxgenedir.  <span class="co"># the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP</span></span>
+<span id="cb4-2"><a href="installation.html#cb4-2" tabindex="-1"></a><span class="ex">refDir:</span> ~/scRNASequest/demo/ref   <span class="co"># the absolute path to the Seurat reference folder if building reference is desired</span></span></code></pre></div>
 <p>You may fill in the cellxgene VIP server path after installing cellxgene VIP later, but this is not required for running the pipeline. We leave this empty here.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="installation.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">celldepotHttp:</span> <span class="co"># the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="installation.html#cb5-1" tabindex="-1"></a><span class="ex">celldepotHttp:</span> <span class="co"># the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/</span></span></code></pre></div>
 <p>You may change the information in the sys.yml file later, following the <a href="https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file">full tutorial here</a>.</p>
 <p>Then type the name of the main program, <code>scAnalyzer</code> again:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="installation.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2023-03-14 14:48:13 <span class="pp">*****</span></span>
-<span id="cb6-2"><a href="installation.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb6-3"><a href="installation.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
-<span id="cb6-4"><a href="installation.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest</span></span>
-<span id="cb6-5"><a href="installation.html#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-03-01 10:10:55 -0500</span></span>
-<span id="cb6-6"><a href="installation.html#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: d067bfd6dc056597d046a45f3b3b927dd122dd82</span></span>
-<span id="cb6-7"><a href="installation.html#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb6-8"><a href="installation.html#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="installation.html#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file</span>
-<span id="cb6-10"><a href="installation.html#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="installation.html#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> config file will be generated automatically when a DNAnexus download folder is provided</span>
-<span id="cb6-12"><a href="installation.html#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Available</span> reference data:</span>
-<span id="cb6-13"><a href="installation.html#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">human_cortex:</span> more information @ https://azimuth.hubmapconsortium.org/references/</span>
-<span id="cb6-14"><a href="installation.html#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="ex">If</span> one of the above can be used as a reference for your datasets, please update the config file with the name in <span class="st">&#39;ref_name&#39;</span>.</span>
-<span id="cb6-15"><a href="installation.html#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="installation.html#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by None</span>
-<span id="cb6-17"><a href="installation.html#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="installation.html#cb6-1" tabindex="-1"></a><span class="ex">*****</span> 2023-03-14 14:48:13 <span class="pp">*****</span></span>
+<span id="cb6-2"><a href="installation.html#cb6-2" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb6-3"><a href="installation.html#cb6-3" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb6-4"><a href="installation.html#cb6-4" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/projects/ndru_projects/Software/scRNAsequest</span></span>
+<span id="cb6-5"><a href="installation.html#cb6-5" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-03-01 10:10:55 -0500</span></span>
+<span id="cb6-6"><a href="installation.html#cb6-6" tabindex="-1"></a><span class="co">## git HEAD: d067bfd6dc056597d046a45f3b3b927dd122dd82</span></span>
+<span id="cb6-7"><a href="installation.html#cb6-7" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb6-8"><a href="installation.html#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="installation.html#cb6-9" tabindex="-1"></a><span class="ex">scAnalyzer</span> /path/to/a/DNAnexus/download/folder === or === scAnalyzer /path/to/a/config/file</span>
+<span id="cb6-10"><a href="installation.html#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="installation.html#cb6-11" tabindex="-1"></a><span class="ex">The</span> config file will be generated automatically when a DNAnexus download folder is provided</span>
+<span id="cb6-12"><a href="installation.html#cb6-12" tabindex="-1"></a><span class="ex">Available</span> reference data:</span>
+<span id="cb6-13"><a href="installation.html#cb6-13" tabindex="-1"></a>    <span class="ex">human_cortex:</span> more information @ https://azimuth.hubmapconsortium.org/references/</span>
+<span id="cb6-14"><a href="installation.html#cb6-14" tabindex="-1"></a><span class="ex">If</span> one of the above can be used as a reference for your datasets, please update the config file with the name in <span class="st">&#39;ref_name&#39;</span>.</span>
+<span id="cb6-15"><a href="installation.html#cb6-15" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="installation.html#cb6-16" tabindex="-1"></a><span class="ex">Powered</span> by None</span>
+<span id="cb6-17"><a href="installation.html#cb6-17" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <p>The installation was successful if you see the above message.</p>
 <p>Typing other scripts’ name, such as scRef, directly without any parameters will activate the user manual page:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="installation.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> scRef</span>
-<span id="cb7-2"><a href="installation.html#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="installation.html#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*****</span> 2023-01-26 15:29:54 <span class="pp">*****</span></span>
-<span id="cb7-4"><a href="installation.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb7-5"><a href="installation.html#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
-<span id="cb7-6"><a href="installation.html#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest</span></span>
-<span id="cb7-7"><a href="installation.html#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-01-13 17:41:49 -0500</span></span>
-<span id="cb7-8"><a href="installation.html#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e</span></span>
-<span id="cb7-9"><a href="installation.html#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">###########</span></span>
-<span id="cb7-10"><a href="installation.html#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="installation.html#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="installation.html#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
-<span id="cb7-13"><a href="installation.html#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="installation.html#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
-<span id="cb7-15"><a href="installation.html#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="installation.html#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
-<span id="cb7-17"><a href="installation.html#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
-<span id="cb7-18"><a href="installation.html#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
-<span id="cb7-19"><a href="installation.html#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
-<span id="cb7-20"><a href="installation.html#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
-<span id="cb7-21"><a href="installation.html#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="installation.html#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
-<span id="cb7-23"><a href="installation.html#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="installation.html#cb7-1" tabindex="-1"></a><span class="ex">$</span> scRef</span>
+<span id="cb7-2"><a href="installation.html#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="installation.html#cb7-3" tabindex="-1"></a><span class="ex">*****</span> 2023-01-26 15:29:54 <span class="pp">*****</span></span>
+<span id="cb7-4"><a href="installation.html#cb7-4" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb7-5"><a href="installation.html#cb7-5" tabindex="-1"></a><span class="co">## scRNAsequest: https://github.com/interactivereport/scRNAsequest.git</span></span>
+<span id="cb7-6"><a href="installation.html#cb7-6" tabindex="-1"></a><span class="co">## Pipeline Path: /mnt/depts/dept04/compbio/edge_tools/scRNAsequest</span></span>
+<span id="cb7-7"><a href="installation.html#cb7-7" tabindex="-1"></a><span class="co">## Pipeline Date: 2023-01-13 17:41:49 -0500</span></span>
+<span id="cb7-8"><a href="installation.html#cb7-8" tabindex="-1"></a><span class="co">## git HEAD: 3d463e0b127af499942b7adc2fc5af6ddfc6f11e</span></span>
+<span id="cb7-9"><a href="installation.html#cb7-9" tabindex="-1"></a><span class="co">###########</span></span>
+<span id="cb7-10"><a href="installation.html#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="installation.html#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="installation.html#cb7-12" tabindex="-1"></a><span class="ex">Loading</span> resources</span>
+<span id="cb7-13"><a href="installation.html#cb7-13" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="installation.html#cb7-14" tabindex="-1"></a><span class="ex">scRef</span> /path/to/a/output/folder === or === scRef /path/to/a/Ref/config/file</span>
+<span id="cb7-15"><a href="installation.html#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="installation.html#cb7-16" tabindex="-1"></a><span class="ex">The</span> folder has to be existed.</span>
+<span id="cb7-17"><a href="installation.html#cb7-17" tabindex="-1"></a><span class="ex">The</span> Ref config file will be generated automatically when a path is provided</span>
+<span id="cb7-18"><a href="installation.html#cb7-18" tabindex="-1"></a><span class="ex">=====</span> CAUTION =====</span>
+<span id="cb7-19"><a href="installation.html#cb7-19" tabindex="-1"></a>    <span class="ex">1.</span> This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!</span>
+<span id="cb7-20"><a href="installation.html#cb7-20" tabindex="-1"></a>    <span class="ex">2.</span> Make sure the data provided for reference building is SCT transformed!</span>
+<span id="cb7-21"><a href="installation.html#cb7-21" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="installation.html#cb7-22" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences group [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">kejie.li@biogen.com]</span></span>
+<span id="cb7-23"><a href="installation.html#cb7-23" tabindex="-1"></a><span class="ex">------------</span></span></code></pre></div>
 <p>Similary, you will also see the manual message printed out for other scripts: scDEG, sc2celldepot, and scTool.</p>
 </div>
 <div id="installation-through-docker" class="section level3 hasAnchor" number="3.1.2">
@@ -354,36 +354,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We provide a <a href="https://www.docker.com/">Docker</a> image here: <a href="https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general" class="uri">https://hub.docker.com/repository/docker/sunyumail93/scrnasequest/general</a>. Users can pull this image to build a container, which has been tested on both Linux and Mac systems. This will take roughly 10 minutes to set up.</p>
 <p>We also provide a <a href="https://github.com/interactivereport/scRNAsequest/blob/main/Dockerfile">Dockerfile</a> if you would like to build the image from scratch using the <code>docker build</code> command, which takes ~30 min.</p>
 <p>First, please make sure Docker has been installed and can be recognized through the command line:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="installation.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> docker</span>
-<span id="cb8-2"><a href="installation.html#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Your docker path will be returned</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="installation.html#cb8-1" tabindex="-1"></a><span class="fu">which</span> docker</span>
+<span id="cb8-2"><a href="installation.html#cb8-2" tabindex="-1"></a><span class="co"># Your docker path will be returned</span></span></code></pre></div>
 <p>Go to the directory you choose. This tutorial uses $HOME (~) directory as an example:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="installation.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~</span>
-<span id="cb9-2"><a href="installation.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/interactivereport/scRNASequest.git</span>
-<span id="cb9-3"><a href="installation.html#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> scRNASequest</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="installation.html#cb9-1" tabindex="-1"></a><span class="bu">cd</span> ~</span>
+<span id="cb9-2"><a href="installation.html#cb9-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/interactivereport/scRNASequest.git</span>
+<span id="cb9-3"><a href="installation.html#cb9-3" tabindex="-1"></a><span class="bu">cd</span> scRNASequest</span></code></pre></div>
 <p>Then we pull the docker image. This step takes ~10 min.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="installation.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull sunyumail93/scrnasequest</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="installation.html#cb10-1" tabindex="-1"></a><span class="ex">docker</span> pull sunyumail93/scrnasequest</span></code></pre></div>
 <p>Initiate the docker container. This command uses -v to map the <code>demo</code> directory under scRNASequest to <code>/demo</code> in the container:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="installation.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-v</span> <span class="kw">`</span><span class="bu">pwd</span><span class="kw">`</span>/demo:/demo <span class="at">-d</span> sunyumail93/scrnasequest</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="installation.html#cb11-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-v</span> <span class="kw">`</span><span class="bu">pwd</span><span class="kw">`</span>/demo:/demo <span class="at">-d</span> sunyumail93/scrnasequest</span></code></pre></div>
 <p>The above command prepars for the demo run in 4. You can mount any directory containing your data to the Docker container using the syntax old_dir:container_dir.</p>
 <p>Verify your container:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="installation.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> container ls</span>
-<span id="cb12-2"><a href="installation.html#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="installation.html#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Results:</span></span>
-<span id="cb12-4"><a href="installation.html#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">CONTAINER</span> ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS     NAMES</span>
-<span id="cb12-5"><a href="installation.html#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">4e0f3a40ce1d</span>   sunyumail93/scrnasequest   <span class="st">&quot;/bin/sh -c &#39;while t…&quot;</span>   54 seconds ago   Up 52 seconds             interesting_lewin</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="installation.html#cb12-1" tabindex="-1"></a><span class="ex">docker</span> container ls</span>
+<span id="cb12-2"><a href="installation.html#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="installation.html#cb12-3" tabindex="-1"></a><span class="co">#Results:</span></span>
+<span id="cb12-4"><a href="installation.html#cb12-4" tabindex="-1"></a><span class="ex">CONTAINER</span> ID   IMAGE                      COMMAND                  CREATED          STATUS          PORTS     NAMES</span>
+<span id="cb12-5"><a href="installation.html#cb12-5" tabindex="-1"></a><span class="ex">4e0f3a40ce1d</span>   sunyumail93/scrnasequest   <span class="st">&quot;/bin/sh -c &#39;while t…&quot;</span>   54 seconds ago   Up 52 seconds             interesting_lewin</span></code></pre></div>
 <p>The last column is the <container_name>, and it will be used in the following steps.</p>
 <p>Now we launch the main program of this pipeline. In our example, <container_name> is interesting_lewin. Please substitute to yours:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="installation.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> scAnalyzer</span>
-<span id="cb13-2"><a href="installation.html#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="installation.html#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Output:</span></span>
-<span id="cb13-4"><a href="installation.html#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span></span>
-<span id="cb13-5"><a href="installation.html#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Please</span> set the sys.yml in /home/scRNASequest/src.</span>
-<span id="cb13-6"><a href="installation.html#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="ex">An</span> example is <span class="st">&#39;/home/scRNASequest/src/sys_example.yml&#39;</span>.</span>
-<span id="cb13-7"><a href="installation.html#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="ex">=====</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="installation.html#cb13-1" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> scAnalyzer</span>
+<span id="cb13-2"><a href="installation.html#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="installation.html#cb13-3" tabindex="-1"></a><span class="co">#Output:</span></span>
+<span id="cb13-4"><a href="installation.html#cb13-4" tabindex="-1"></a><span class="ex">=====</span></span>
+<span id="cb13-5"><a href="installation.html#cb13-5" tabindex="-1"></a><span class="ex">Please</span> set the sys.yml in /home/scRNASequest/src.</span>
+<span id="cb13-6"><a href="installation.html#cb13-6" tabindex="-1"></a><span class="ex">An</span> example is <span class="st">&#39;/home/scRNASequest/src/sys_example.yml&#39;</span>.</span>
+<span id="cb13-7"><a href="installation.html#cb13-7" tabindex="-1"></a><span class="ex">=====</span></span></code></pre></div>
 <p>This is because the sys.yml configuration file is missing under the src directory. There is a sys.yml file prepared for running the demo data (see section 2.2), and you can copy it to the pipeline src directory using the command below. It will work for future analysis also. However, you may change the information in the sys.yml file later, following the <a href="https://interactivereport.github.io/scRNAsequest/tutorial/docs/installation.html#configure-sys.yml-file">full tutorial here</a>. Please note that both ‘/demo/sys.yml’ and ‘/home/scRNASequest/src’ directories are in the container, rather than in your file system.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="installation.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> cp /demo/sys.yml /home/scRNASequest/src/</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="installation.html#cb14-1" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> cp /demo/sys.yml /home/scRNASequest/src/</span></code></pre></div>
 <p>Now we run this command again, and we will see the pipeline message printed out, same as the one at the end of section 3.1.1:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="installation.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> scAnalyzer</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="installation.html#cb15-1" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-t</span> <span class="at">-i</span> <span class="op">&lt;</span>container_name<span class="op">&gt;</span> scAnalyzer</span></code></pre></div>
 </div>
 </div>
 <div id="configure-sys.yml-file" class="section level2 hasAnchor" number="3.2">
@@ -391,30 +391,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The <strong>sys.yml</strong> file contains critical information for the pipeline, which must be set up before running the pipeline. This file only needs to create once, under the src/ directory. You can use this <a href="https://github.com/interactivereport/scRNAsequest/blob/main/src/sys_example.yml" target="_blank">sys_example.yml</a> file as a template to prepare your file. The file name must be <strong>sys.yml</strong> and is located under the src/ directory of the pipeline.</p>
 <p>The first two rows are related to cellxgene VIP and CellDepot. The <code>celldepotDir</code> is required because all .h5ad files will be copied to this directory, and when launching cellxgene VIP, it will look for files in this directory. Please look into the tutorial below to learn how to set up cellxgene VIP. After setting up cellxgene VIP, you will know the HOST and PORT of your links, which can be included in <code>celldepotHttp</code>. The scAnalyzer pipeline won’t generate error if you don’t have <code>celldepotHttp</code> set up.</p>
 <p>In our demo dataset (demo/ directory under the pipeline folder), we provide the following information:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="installation.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">celldepotDir:</span> /demo/cellxgenedir <span class="co"># the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP</span></span>
-<span id="cb16-2"><a href="installation.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">celldepotHttp:</span> http://HOST:PORT/d/ <span class="co"># the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/</span></span>
-<span id="cb16-3"><a href="installation.html#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="ex">refDir:</span> /demo/ref <span class="co"># the absolute path to the seurat refrence folder if building reference is desired</span></span>
-<span id="cb16-4"><a href="installation.html#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="ex">minCell:</span> 50</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="installation.html#cb16-1" tabindex="-1"></a><span class="ex">celldepotDir:</span> /demo/cellxgenedir <span class="co"># the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP</span></span>
+<span id="cb16-2"><a href="installation.html#cb16-2" tabindex="-1"></a><span class="ex">celldepotHttp:</span> http://HOST:PORT/d/ <span class="co"># the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/</span></span>
+<span id="cb16-3"><a href="installation.html#cb16-3" tabindex="-1"></a><span class="ex">refDir:</span> /demo/ref <span class="co"># the absolute path to the seurat refrence folder if building reference is desired</span></span>
+<span id="cb16-4"><a href="installation.html#cb16-4" tabindex="-1"></a><span class="ex">minCell:</span> 50</span></code></pre></div>
 <p>The <code>refDir</code> stores all Azimuth reference files for cell type label transfer. Please select a directory for this. The <code>scRef</code> pipeline will use this directory and copy all necessary files there. scRef will also modify this sys.yml file when new reference is added. An example of added reference is shown as:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="installation.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> human_cortex</span>
-<span id="cb17-2"><a href="installation.html#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">human_cortex:</span></span>
-<span id="cb17-3"><a href="installation.html#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_file:</span> https://zenodo.org/record/4546932/files/ref.Rds <span class="co"># local file absolute path can be provided as well</span></span>
-<span id="cb17-4"><a href="installation.html#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_link:</span> https://azimuth.hubmapconsortium.org/references/</span>
-<span id="cb17-5"><a href="installation.html#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_src:</span> single nuclei</span>
-<span id="cb17-6"><a href="installation.html#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_platform:</span> SNARE-seq2</span>
-<span id="cb17-7"><a href="installation.html#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_assay:</span> refAssay</span>
-<span id="cb17-8"><a href="installation.html#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_neighbors:</span> refdr.annoy.neighbors</span>
-<span id="cb17-9"><a href="installation.html#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_reduction:</span> refDR</span>
-<span id="cb17-10"><a href="installation.html#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_reduction.model:</span> refUMAP</span>
-<span id="cb17-11"><a href="installation.html#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">ref_label:</span></span>
-<span id="cb17-12"><a href="installation.html#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-</span> class</span>
-<span id="cb17-13"><a href="installation.html#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-</span> cluster</span>
-<span id="cb17-14"><a href="installation.html#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-</span> subclass</span>
-<span id="cb17-15"><a href="installation.html#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="ex">-</span> cross_species_cluster</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="installation.html#cb17-1" tabindex="-1"></a><span class="ex">-</span> human_cortex</span>
+<span id="cb17-2"><a href="installation.html#cb17-2" tabindex="-1"></a><span class="ex">human_cortex:</span></span>
+<span id="cb17-3"><a href="installation.html#cb17-3" tabindex="-1"></a>  <span class="ex">ref_file:</span> https://zenodo.org/record/4546932/files/ref.Rds <span class="co"># local file absolute path can be provided as well</span></span>
+<span id="cb17-4"><a href="installation.html#cb17-4" tabindex="-1"></a>  <span class="ex">ref_link:</span> https://azimuth.hubmapconsortium.org/references/</span>
+<span id="cb17-5"><a href="installation.html#cb17-5" tabindex="-1"></a>  <span class="ex">ref_src:</span> single nuclei</span>
+<span id="cb17-6"><a href="installation.html#cb17-6" tabindex="-1"></a>  <span class="ex">ref_platform:</span> SNARE-seq2</span>
+<span id="cb17-7"><a href="installation.html#cb17-7" tabindex="-1"></a>  <span class="ex">ref_assay:</span> refAssay</span>
+<span id="cb17-8"><a href="installation.html#cb17-8" tabindex="-1"></a>  <span class="ex">ref_neighbors:</span> refdr.annoy.neighbors</span>
+<span id="cb17-9"><a href="installation.html#cb17-9" tabindex="-1"></a>  <span class="ex">ref_reduction:</span> refDR</span>
+<span id="cb17-10"><a href="installation.html#cb17-10" tabindex="-1"></a>  <span class="ex">ref_reduction.model:</span> refUMAP</span>
+<span id="cb17-11"><a href="installation.html#cb17-11" tabindex="-1"></a>  <span class="ex">ref_label:</span></span>
+<span id="cb17-12"><a href="installation.html#cb17-12" tabindex="-1"></a>  <span class="ex">-</span> class</span>
+<span id="cb17-13"><a href="installation.html#cb17-13" tabindex="-1"></a>  <span class="ex">-</span> cluster</span>
+<span id="cb17-14"><a href="installation.html#cb17-14" tabindex="-1"></a>  <span class="ex">-</span> subclass</span>
+<span id="cb17-15"><a href="installation.html#cb17-15" tabindex="-1"></a>  <span class="ex">-</span> cross_species_cluster</span></code></pre></div>
 <p>The <code>powerby</code> parameter sets the ending message after running the pipeline. An example would be:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="installation.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">powerby:</span> the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span> <span class="co"># the message at the end</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="installation.html#cb18-1" tabindex="-1"></a><span class="ex">powerby:</span> the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span> <span class="co"># the message at the end</span></span></code></pre></div>
 <p>An example of the message showing:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="installation.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="installation.html#cb19-1" tabindex="-1"></a><span class="ex">Powered</span> by the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com<span class="kw">;</span><span class="ex">yuhenry.sun@biogen.com]</span></span></code></pre></div>
 <p>If you leave <code>powerby</code> as blank, it will show as: Powered by None.</p>
 </div>
 <div id="install-cellxgene-vip" class="section level2 hasAnchor" number="3.3">

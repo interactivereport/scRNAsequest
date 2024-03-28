@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing</title>
   <meta name="description" content="Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.38 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 8 Differential expression (DE) analysis | scRNASequest: an ecosystem of scRNA-seq analysis, visualization and publishing" />
   <meta property="og:type" content="book" />
@@ -22,7 +22,7 @@
 
 
 
-<meta name="date" content="2023-08-10" />
+<meta name="date" content="2024-03-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -260,8 +260,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Covariate adjustment:</strong></p>
 <p>Adjusting covariates is optional. By default, NEBULA considers the value of <strong>log of total UMI (library size)</strong> as the offset covariate in our pipeline, so you don’t need to adjust this again in <strong>“covars”</strong>.</p>
 <p>If needed, you can put a formula in the <strong>“covars”</strong> column using the meta information from the sampleMeta.csv file, such as Sex, Age, etc. You can also include QC metrics such as mitochondria percentage (pct_MT), etc. Please find a full list of QC metrics below. You can also open the Cellxgene VIP and check the right side. All numeric covariates are listed there.</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb59-1"><a href="differential-expression-de-analysis.html#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb59-1"><a href="differential-expression-de-analysis.html#cb59-1" tabindex="-1"></a><span class="ex">n_genes_by_counts,</span> log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_counts_in_top_100_genes, pct_counts_in_top_200_genes, pct_counts_in_top_500_genes, pct_MT, n_genes, predicted.CellType.score</span></code></pre></div>
 <p>You may consider <strong>pct_MT</strong> as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the <strong>“covars”</strong> column: <strong>Age+Sex+pct_MT</strong>.</p>
+<p><strong>Continuous/Numeric variable as the comparison group:</strong></p>
+<p>If user is interested in using a numeric variable (such as Age) as the comparison group in the comparison. Please provide the column header of the numeric column in the cell/sample meta table in the <strong>“group”</strong> column of the above DEGinfo.csv table, and leave <strong>“alt”</strong> and <strong>“ref”</strong> columns of that row empty. This is currently only supported in the NEBULA method.</p>
 <p><strong>Missing values:</strong></p>
 <p>It’s important to know that if any cells don’t have such DE condition information. For example, some samples don’t have information such as ‘treated’ or ‘control’ labeled, and instead, the values were ‘NA’, ‘NaN’, etc. In such case, we can easily include such information in the main config.yml file by defining the NA values to be ignored. The pipeline will remove all these cells from the DE analysis.</p>
 <pre><code>#An example of the config.yml file:
@@ -289,15 +291,15 @@ NAstring: [NA, NaN, NAN] #provide a list of strings which should be considered N
 <p>We can also add <em>covars</em> if needed, but this is optional.</p>
 <p>The default DE analysis is performed by <a href="https://www.nature.com/articles/s42003-021-02146-6" target="_blank"><strong>NEBULA</strong></a>. As for the model, NEBULA provides two choices: <strong>HL</strong> and <strong>LN</strong>. For more details about them, please refer to the <a href="https://cran.r-project.org/web/packages/nebula/vignettes/nebula_example.html#difference-between-nebula-ln-and-nebula-hl" target="_blank">NEBULA manual</a>.</p>
 <p>Here is the DEGinfo.csv we described above:</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb61-1"><a href="differential-expression-de-analysis.html#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
-<span id="cb61-2"><a href="differential-expression-de-analysis.html#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</span></span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb61-1"><a href="differential-expression-de-analysis.html#cb61-1" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
+<span id="cb61-2"><a href="differential-expression-de-analysis.html#cb61-2" tabindex="-1"></a><span class="ex">Compare_Female_vs_Male,library_id,predicted.celltype1,Sex,Female,Male,,NEBULA,HL</span></span></code></pre></div>
 <p>After preparing the DEGinfo.csv file, simply add it to the <strong>config.yml</strong> file:</p>
 <pre><code>DEG_desp: ~/E-MTAB-11115/processing/DEGinfo.csv</code></pre>
 <p>Then rerun the pipeline. The pipeline won’t run the previous steps (i.e. filtering, harmonization, etc.) again, so it will directly run the DE analysis based on the harmonized h5ad file.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb63-1"><a href="differential-expression-de-analysis.html#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
-<span id="cb63-2"><a href="differential-expression-de-analysis.html#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-3"><a href="differential-expression-de-analysis.html#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Example:</span></span>
-<span id="cb63-4"><a href="differential-expression-de-analysis.html#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb63-1"><a href="differential-expression-de-analysis.html#cb63-1" tabindex="-1"></a><span class="ex">scAnalyzer</span> Path/to/a/config/file</span>
+<span id="cb63-2"><a href="differential-expression-de-analysis.html#cb63-2" tabindex="-1"></a></span>
+<span id="cb63-3"><a href="differential-expression-de-analysis.html#cb63-3" tabindex="-1"></a><span class="co">#Example:</span></span>
+<span id="cb63-4"><a href="differential-expression-de-analysis.html#cb63-4" tabindex="-1"></a><span class="ex">scAnalyzer</span> ~/E-MTAB-11115/processing/config.yml</span></code></pre></div>
 <p>This step may take a few hours to run. The output files will be generated in the directory:</p>
 <pre><code>outputdir
     ... previous results         #Omitted, see section 6.4
@@ -316,7 +318,7 @@ NAstring: [NA, NaN, NAN] #provide a list of strings which should be considered N
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-40">Table 8.1: </span>DEG analysis of Female.vs.Male in astrocytes
+<span id="tab:unnamed-chunk-40">Table 8.1: </span><span id="tab:unnamed-chunk-40">Table 8.2: </span>DEG analysis of Female.vs.Male in astrocytes
 </caption>
 <thead>
 <tr>
@@ -710,7 +712,7 @@ Comparison_Ast_vs_Oligo,library_id,SelectAll,predicted.celltype1,astrocytes,Olig
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-41">Table 8.2: </span>DEG analysis of astrocytes.vs.Oligos
+<span id="tab:unnamed-chunk-41">Table 8.3: </span><span id="tab:unnamed-chunk-41">Table 8.4: </span>DEG analysis of astrocytes.vs.Oligos
 </caption>
 <thead>
 <tr>
@@ -1078,17 +1080,17 @@ NBGMM (HL)
 <div id="example-3" class="section level2 hasAnchor" number="8.3">
 <h2><span class="header-section-number">8.3</span> Example 3<a href="differential-expression-de-analysis.html#example-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In this example, we show how to perform DE analysis using multiple software. In the config file, each line is a comparison, and for the same comparison (treat v.s. control), we can set up multiple runs using different DE tools as below:</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb68-1"><a href="differential-expression-de-analysis.html#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
-<span id="cb68-2"><a href="differential-expression-de-analysis.html#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_nebula,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,NEBULA,HL</span></span>
-<span id="cb68-3"><a href="differential-expression-de-analysis.html#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_t_test,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,t_test,</span></span>
-<span id="cb68-4"><a href="differential-expression-de-analysis.html#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_u_test,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,u_test,</span></span>
-<span id="cb68-5"><a href="differential-expression-de-analysis.html#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_edgeR,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,edgeR,</span></span>
-<span id="cb68-6"><a href="differential-expression-de-analysis.html#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_limma,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,limma,</span></span>
-<span id="cb68-7"><a href="differential-expression-de-analysis.html#cb68-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_DESeq2,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,DESeq2,</span></span>
-<span id="cb68-8"><a href="differential-expression-de-analysis.html#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_MAST,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,MAST,</span></span>
-<span id="cb68-9"><a href="differential-expression-de-analysis.html#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_limma_cell_level,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,limma_cell_level,</span></span>
-<span id="cb68-10"><a href="differential-expression-de-analysis.html#cb68-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_glmmTMB,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,glmmTMB,poisson</span></span>
-<span id="cb68-11"><a href="differential-expression-de-analysis.html#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Treated_vs_Control_ancova,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,ancova,</span></span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb68-1"><a href="differential-expression-de-analysis.html#cb68-1" tabindex="-1"></a><span class="ex">comparisonName,sample,cluster,group,alt,ref,covars[+</span> separated],method[default NEBULA],model[default HL]</span>
+<span id="cb68-2"><a href="differential-expression-de-analysis.html#cb68-2" tabindex="-1"></a><span class="ex">Treated_vs_Control_nebula,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,NEBULA,HL</span></span>
+<span id="cb68-3"><a href="differential-expression-de-analysis.html#cb68-3" tabindex="-1"></a><span class="ex">Treated_vs_Control_t_test,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,t_test,</span></span>
+<span id="cb68-4"><a href="differential-expression-de-analysis.html#cb68-4" tabindex="-1"></a><span class="ex">Treated_vs_Control_u_test,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,u_test,</span></span>
+<span id="cb68-5"><a href="differential-expression-de-analysis.html#cb68-5" tabindex="-1"></a><span class="ex">Treated_vs_Control_edgeR,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,edgeR,</span></span>
+<span id="cb68-6"><a href="differential-expression-de-analysis.html#cb68-6" tabindex="-1"></a><span class="ex">Treated_vs_Control_limma,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,limma,</span></span>
+<span id="cb68-7"><a href="differential-expression-de-analysis.html#cb68-7" tabindex="-1"></a><span class="ex">Treated_vs_Control_DESeq2,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,DESeq2,</span></span>
+<span id="cb68-8"><a href="differential-expression-de-analysis.html#cb68-8" tabindex="-1"></a><span class="ex">Treated_vs_Control_MAST,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,MAST,</span></span>
+<span id="cb68-9"><a href="differential-expression-de-analysis.html#cb68-9" tabindex="-1"></a><span class="ex">Treated_vs_Control_limma_cell_level,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,limma_cell_level,</span></span>
+<span id="cb68-10"><a href="differential-expression-de-analysis.html#cb68-10" tabindex="-1"></a><span class="ex">Treated_vs_Control_glmmTMB,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,glmmTMB,poisson</span></span>
+<span id="cb68-11"><a href="differential-expression-de-analysis.html#cb68-11" tabindex="-1"></a><span class="ex">Treated_vs_Control_ancova,library_id,sctHarmony_cluster_predicted.celltype,Treatment,Treated,Vehicle,,ancova,</span></span></code></pre></div>
 <p>Please note that NEBULA and glmmTMB require <strong>model</strong> information.</p>
 <p>For NEBULA, users can choose from <strong>HL</strong> and <strong>LN</strong>, and the pipeline uses ‘HL’ by default. The differences between them can be found in the <a href="https://github.com/lhe17/nebula" target="_blank">NEBULA GitHub page</a>:</p>
 <p>“NEBULA-LN is faster and performs particularly well when the number of cells per subject (CPS) is large. In addition, NEBULA-LN is much more accurate in estimating a very large subject-level overdispersion. In contrast, NEBULA-HL is slower but more accurate in estimating the cell-level overdispersion.”</p>

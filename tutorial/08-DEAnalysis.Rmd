@@ -22,6 +22,10 @@ n_genes_by_counts, log1p_n_genes_by_counts, pct_counts_in_top_50_genes, pct_coun
 
 You may consider **pct_MT** as a covariate to adjust, but be careful to adjust other covariates here unless you have a good reason to do so. An example of the formula to be filled out in the **"covars"** column: **Age+Sex+pct_MT**.
 
+**Continuous/Numeric variable as the comparison group:**
+
+If user is interested in using a numeric variable (such as Age) as the comparison group in the comparison. Please provide the column header of the numeric column in the cell/sample meta table in the **"group"** column of the above DEGinfo.csv table, and leave **"alt"** and **"ref"** columns of that row empty. This is currently only supported in the NEBULA method.
+
 **Missing values:**
 
 It's important to know that if any cells don't have such DE condition information. For example, some samples don't have information such as 'treated' or 'control' labeled, and instead, the values were 'NA', 'NaN', etc. In such case, we can easily include such information in the main config.yml file by defining the NA values to be ignored. The pipeline will remove all these cells from the DE analysis.
