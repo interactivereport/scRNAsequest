@@ -245,6 +245,7 @@ def runPipe(strConfig):
     scaleF = mH.combine(methods,prefix,config)
     runDEG(strConfig,prefix,config)
     moveCellDepot(prefix,config,scaleF)
+    print("=== scAnalyzer is completed ===")
   
   MsgPower()
 def setupDir(strOut):
@@ -356,13 +357,20 @@ def moveCellDepot(prefix,config,scaleF=None):
   sysConfig = getConfig()
   if sysConfig['celldepotDir'] is None:
     print("*** CellDeport is NOT setup ***")
-    print("=== scAnalyzer is completed ===")
     return()
   strCDfile = os.path.join(sysConfig['celldepotDir'],os.path.basename("%s.h5ad"%prefix))
-  if os.path.isfile(strCDfile):
+  strRawfile = os.path.join(sysConfig['celldepotDir'],os.path.basename("%s_raw_obsAdd.h5ad"%prefix))
+  if os.path.isfile(strCDfile) and os.access(strCDfile,os.W_OK):
     os.remove(strCDfile)
-  shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
-  shutil.copy("%s_raw_obsAdd.h5ad"%prefix, sysConfig['celldepotDir'])
+  if os.path.isfile(strRawfile) and os.access(strRawfile,os.W_OK):
+    os.remove(strRawfile)
+  if not os.path.isfile(strCDfile):
+    shutil.copy("%s.h5ad"%prefix, sysConfig['celldepotDir'])
+  else:
+    print("Error: cannot copy the file to celldepot folder, permission issue!")
+    return()
+  if not os.path.isfile(strRawfile):
+    shutil.copy("%s_raw_obsAdd.h5ad"%prefix, sysConfig['celldepotDir'])
   rmLock(config)
   
   # create description file
@@ -381,9 +389,9 @@ def moveCellDepot(prefix,config,scaleF=None):
   if os.path.isfile("%s.db"%prefix):
     shutil.copy("%s.db"%prefix, sysConfig['celldepotDir'])
     print("scDEG is available in VIP")
-  print("\nTo check the result, please visit: %s%s.h5ad/"%(sysConfig['celldepotHttp'],os.path.basename(prefix)))
+  #print("\nTo check the result, please visit: %s%s.h5ad/"%(sysConfig['celldepotHttp'],os.path.basename(prefix)))
   print("\nAfter confirm the results, please use 'Create Project' on CellDepot to add this project with 'File Name' of %s.h5ad."%os.path.basename(prefix))
-  print("=== scAnalyzer is completed ===")
+  
 
 def runDEG(strConfig,prefix,config):
   if os.path.isfile("%s.db"%prefix) and not config["newProcess"]:
