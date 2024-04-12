@@ -11,12 +11,12 @@ dependencies:
   - scanpy=1.10.1
   - r-sctransform=0.4.1
   - r-seurat=5.0.3
-  - r-seuratobject=5.0.0 # limited by matrix 1.6_1.1
+  - r-seuratobject=5.0.1 # 5.0.0 limited by matrix 1.6_1.1
   - r-seurat-disk=0.0.0.9021
   - r-ggplot2=3.5.0
   - r-patchwork
   - r-harmony=1.2.0
-  - r-matrix=1.6_1.1 #required by seurat, several issue with newer matrix
+  - r-matrix=1.6_5 # 1.6_1.1 was mentioned in several issue with newer matrix
   - r-liger=2.0.1
   - r-rjson
   - r-rcppcnpy
@@ -85,3 +85,7 @@ dependencies:
   - aiosignal
   - pyro-ppl
   - cmake=3.22
+  - bioconductor-bsgenome.hsapiens.ucsc.hg38
+  - bioconductor-jaspar2020
+  - bioconductor-tfbstools
+  - r-signac=1.13.0
