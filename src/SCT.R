@@ -64,13 +64,17 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
   }
   saveX(D,strOut,gID)
 }
-saveX <- function(D,strH5,gID){
+saveX <- function(D,strH5,ggID){
   message("\tsaving expression: ",strH5)
   saveRDS(D,paste0(strH5,".rds"))
   if("SCT"%in%names(D)){
-    X <- Matrix::t(Matrix::Matrix(D@assays$SCT@data,sparse=T))
+    X <- Matrix::t(Matrix::Matrix(D@assays$SCT@layers$data,sparse=T))
+    cID <- D@assays$SCT@cells[['data']]
+    gID <- D@assays$SCT@features[['data']]
   }else{
-    X <- Matrix::t(Matrix::Matrix(D@assays$RNA@data,sparse=T))
+    X <- Matrix::t(Matrix::Matrix(D@assays$RNA@layers$data,sparse=T))
+    cID <- D@assays$RNA@cells[['data']]
+    gID <- D@assays$RNA@features[['data']]
   }
   suppressMessages(suppressWarnings({
     a <- file.remove(strH5)
@@ -89,9 +93,8 @@ saveX <- function(D,strH5,gID){
   #h5write(gID[colnames(X)],file=strF,name="gID")
   #h5write(expScale,file=strF,name="scaleFactor")
   #h5closeAll()
-  
-  cat(paste(rownames(X),collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
-  cat(paste(gID[colnames(X)],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
+  cat(paste(cID,collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
+  cat(paste(ggID[gID],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
   #cat(expScale,file=gsub("h5$","scaleF",strH5))
 }
 mergeAllbatches <- function(strRDS,strOut,batchKey){
