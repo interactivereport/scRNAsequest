@@ -45,9 +45,13 @@ def main():
   D.var.highly_variable.to_csv(strHVG)
   Dbatch = D.obs["library_id"].copy()
   
+  clusterMethod = config['clusterMethod'] if config.get('clusterMethod') is not None else "Louvain"
+  clusterResolution = config['clusterResolution'] if config.get('clusterResolution') is not None else 0.8
+  
   strMeta = re.sub("_hvg.csv$",".rds",strHVG)#strH5ad.replace("raw.h5ad","liger.csv")
-  cmd = "Rscript %s %s %s %s |& tee %s/LIGER.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"liger.R"),
-                            strH5ad,strHVG,strMeta,os.path.dirname(strMeta))
+  cmd = "Rscript %s %s %s %s %s %s |& tee %s/LIGER.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"liger.R"),
+                            strH5ad,strHVG,strMeta,clusterMethod,str(clusterResolution),os.path.dirname(strMeta))
+
   if os.path.isfile(strMeta):
     print("Using previous LIGER results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
   else:  
