@@ -62,7 +62,9 @@ def getData_one(oneMeta,sID,strOut,dblScore=True):
       Check10Xmtx(oneMeta[UMIcol])
       adata = sc.read_10x_mtx(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.h5'):
-    adata = sc.read_10x_h5(oneMeta[UMIcol])
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore")
+      adata = sc.read_10x_h5(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.h5ad'):
     adata = sc.read_h5ad(oneMeta[UMIcol])
   elif oneMeta[UMIcol].endswith('.csv'):
