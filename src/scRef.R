@@ -98,24 +98,32 @@ checkExist <- function(strF){
     return(F)
   return(T)
 }
-checkConfig <- function(strConfig,sysConfig){
+checkConfig <- function(strConfig,refPath){
   message("Checking config file ...")
   config <- yaml::read_yaml(strConfig)
-  ## compatible with 1st version
-  if("ref_pca" %in%names(config)) config$ref_reduction=config$ref_pca
-  sapply(c("ref_name","ref_link","ref_src","ref_platform","ref_reduction","ref_label"),
-         function(x,sInfo){
-           a <- sInfo[[x]]
-           if(length(a)==0 || nchar(a[1])==0) MsgExit(paste0("Please provided required infomraiton @",x))
-         },config)
+  stopifnot(file.exists(config$ref_raw))
+  stopifnot(length(config$ref_reduction)==1)
+  stopifnot(length(config$ref_label)>0)
+  stopifnot(length(config$ref_name)==1)
+  stopifnot(nchar(config$ref_name)>3)
   
-  if(config$ref_name%in%sysConfig$ref && !config$overwrite){
-    MsgExit(paste0("ref_name (",config$ref_name,") exists, please either change it or set 'overwrite: True'"))
+  if(config$publish){
+    sapply(c("ref_version","ref_summary","ref_species","ref_system","ref_tech"),
+           function(x,sInfo){
+             a <- sInfo[[x]]
+             if(length(a)==0 || nchar(a[1])==0) MsgExit(paste0("Please provided required infomraiton @",x))
+           },config)
+    seuratRef <- SeuratData::AvailableData()$Dataset
+    if(config$ref_name%in%SeuratData::AvailableData()$Dataset)
+      MsgExit(paste0("Seurat ref (",config$ref_name,") exists and cannot be overwrriten"))
+    strSysRef <- file.path(refPath,"scRNAsequest_ref.csv")
+    if(!file.exists(strSysRef))
+      cat("Dataset,Version,Summary,species,system,ncells,tech\n",sep="",file=strSysRef)
+    allRef <- data.table::fread(strSysRef)
+    if(config$ref_name%in%allRef$Dataset && !config$overwrite){
+      MsgExit(paste0("Public ref (",config$ref_name,") exists!"))
+    }
   }
-  if(!checkExist(config$ref_rds))
-    if(!checkExist(config$ref_h5ad_raw))
-      MsgExit(paste0("Either one seurat object rds file or raw h5ad files is required to be existed"))
-  
   return(config)
 }
 checkH5adRefSetting <- function(config){
@@ -130,53 +138,80 @@ checkH5adRefSetting <- function(config){
                    paste(config$ref_label[!config$ref_label%in%colnames(meta)],collapse=", ")))
 }
 checkRDSRefSeting <- function(config,D){
-  if(!"SCT" %in% names(D)) MsgExit(paste0("The 'SCT' assay is required but not in the rds file"))
+  refAssay <- DefaultAssay(D)
+  message("Default (active) seurat assay is: ",refAssay)
+  #if(!"SCT" %in% names(D)) MsgExit(paste0("The 'SCT' assay is required but not in the rds file"))
+  if(!"SCTModel.list" %in% slotNames(D[[refAssay]]) || length(D[[refAssay]]@SCTModel.list)==0) 
+    MsgExit("The SCTModel.list is reqired in the activated assay ",refAssay)
   if(!config$ref_reduction %in% names(D)) MsgExit(paste0("The 'ref_reduction' (",config$ref_reduction,") is not in the rds file"))
   if(ncol(D[[config$ref_reduction]])<50) MsgExit(paste0("At least 50 dimentions are required in reduction where ",config$ref_reduction," only contains ",ncol(D[[config$ref_reduction]])))
-  if(D@reductions[[config$ref_reduction]]@assay.used!="SCT") MsgExit(paste0("The specified PCA (",config$ref_reduction,") did NOT derived from SCT but ",D@reductions$pca@assay.used))
+  #if(D@reductions[[config$ref_reduction]]@assay.used!="SCT") MsgExit(paste0("The specified PCA (",config$ref_reduction,") did NOT derived from SCT but ",D@reductions$pca@assay.used))
   if(sum(dim(D@assays$SCT@data)==dim(D@assays$SCT@scale.data))!=2)
     MsgExit(paste0("Both of 'data' and 'scale.data' are required in SCT assay with the same dimensions"))
-
   if(sum(!config$ref_label%in%colnames(D@meta.data))>0)
     MsgExit(paste0("The following annotation labels (case sensitive) are not in the rds file:\n",
                    paste(config$ref_label[!config$ref_label%in%colnames(D@meta.data)],collapse=", ")))
   #https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
-  if(!"SCT_snn"%in%names(D)) warning(paste("SCT_snn neighber is not available, will be calculated based on SCT assay and provided reduction",config$ref_reduction))
+  #if(!"SCT_snn"%in%names(D)) warning(paste("SCT_snn neighber is not available, will be calculated based on SCT assay and provided reduction",config$ref_reduction))
+}
+prepareSeurat <- function(D,batch){
+  refAssay <- DefaultAssay(D)
+  if(length(D[[refAssay]]@SCTModel.list)==1){
+    if(length(VariableFeatures(D))<1)
+      D <- FindVariableFeatures(D)
+  }else{
+    message("Multiple SCT models detected!\nUsing ",batch," to integrate SCT models")
+    Dlist <- SplitObject(D,split.by=batch)
+    D <- integrateSCT(Dlist)
+  }
+  return(D)
+}
+integrateSCT <- function(Dlist){
+  if(length(Dlist)==1) return(Dlist[[1]])
+  features <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
+  Dlist <- PrepSCTIntegration(Dlist,anchor.features=features)
+  anchors <- FindIntegrationAnchors(
+    object.list = Dlist,
+    anchor.features = features,
+    normalization.method = "SCT",
+    dims = 1:50
+  )
+  SCT <- IntegrateData(
+    anchorset = anchors,
+    normalization.method = "SCT",
+    dims = 1:50
+  )
+  return(SCT)
 }
 getSCT <- function(strH5ad,batch){
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
                           meta.data=getobs(strH5ad))
-  Dmedian <- median(colSums(D@assays$RNA@counts))
   if(!batch%in%colnames(D@meta.data)) MsgExit("ref_batch (",batch,") is not one of the annotations")
   Dlist <- SplitObject(D,split.by=batch)
   rm("D")
   gc()
   message("\tSCTransform ...")
-  Dlist <- sapply(Dlist,function(one,medianUMI){
+  Dlist <- sapply(Dlist,function(one){
     message("\t\tSCT ",unique(unlist(one[[batch]],use.names=F))," ...")
-    #after checking/testing, the above would return proper SCT nomralized data
-    #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
-    #https://github.com/satijalab/sctransform/issues/128
     return(suppressMessages(suppressWarnings(
       SCTransform(one,method = 'glmGamPoi',
                   new.assay.name="SCT",
                   return.only.var.genes = FALSE,
-                  scale_factor=medianUMI,
                   verbose = FALSE)
     )))
-  },Dmedian)
-  if(length(Dlist)==1){
-    SCT <- Dlist[[1]]
-  }else{
-    SCT <- merge(Dlist[[1]], y=Dlist[-1])
-  }
-  VariableFeatures(SCT) <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
-  return(SCT)
+  })
+  return(integrateSCT(Dlist))
 }
 unifySCTmodel <- function(SCT){
   if(length(levels(SCT[["SCT"]])) == 1) return(SCT)
   # obtain one unified SCT model for Azimuth, and the SCT model is not used for mapping which cause problem of normalizing
+  
+  
+  
+  
+  
+  
   Dtmp <- SCTransform(SCT,method = 'glmGamPoi',new.assay.name="SCT",return.only.var.genes = FALSE,verbose = FALSE)
   if(is.null(levels(SCT[["SCT"]]))){
     if(min(dim(SCT[["SCT"]]@data))>100) Dtmp[["SCT"]]@data <- SCT[["SCT"]]@data
@@ -188,118 +223,90 @@ unifySCTmodel <- function(SCT){
   }
   return(SCT)
 }
-saveRef <- function(D,config,sysConfig,strAzimuth="azimuth"){
-  message("saving to scAnalyzer ...")
-  strRef <- file.path(sysConfig$refDir,
-                       gsub("[ [:punct:]]","_",paste(strAzimuth,config$ref_name,config$ref_src,config$ref_platform,"ref")),
-                       "ref.Rds")
-  message("ref saved @",strRef)
-  dir.create(dirname(strRef),showWarnings=F)
-  saveRDS(D,strRef)
+saveRef <- function(strRef,config,refDir,nCell){
+  message("saving to the scRNAsequest ...")
+  strSysRef <- file.path(refPath,"scRNAsequest_ref.csv")
+  allRef <- data.table::fread(strSysRef)
   
-  strReadme <- file.path(dirname(strRef),"readme")
-  cat("This is created by scRef based on a project @",config$output,"\n\n",
-      sep="",file=strReadme)
-  conn <- file(strReadme,"a")
-  sink(conn, type="message")
-  MsgInit()
-  sink(type="message")
-  close(conn)
-  system(paste("chmod a+r -R",dirname(strRef)))
-  # update system config
-  addOne <- setNames(list(list(ref_file=strRef,
-                               ref_link=config$ref_link,
-                               ref_src=config$ref_src,
-                               ref_platform=config$ref_platform,
-                               ref_assay="refAssay",
-                               ref_neighbors="refdr.annoy.neighbors",
-                               ref_reduction="refDR",
-                               ref_reduction.model="refUMAP",
-                               ref_label=config$ref_label)),
-                     config$ref_name)
-  sysConfig$ref <- c(sysConfig$ref,config$ref_name)
-  sysConfig <- c(sysConfig[names(sysConfig)!="methods"],
-                 addOne,
-                 sysConfig["methods"])
-  strSys <- paste0(strPipePath,"/src/sys.yml")
-  comments <- grep("^#",readLines(strSys),value=T)
-  yaml::write_yaml(sysConfig,strSys)
-  cat(paste(comments,collapse="\n"),"\n",
-      sep="",file=strSys,append=T)
-  message("\nA new reference (",config$ref_name,") is added into the scAnalyzer!")
+  if(config$ref_name%in%list.dirs(refDir,full.names=F)){
+   file.rename(file.path(refDir,config$ref_name),
+               file.path(refDir,paste0(config$ref_name,"_archived",format(Sys.time(),"%Y%m%d"),"_",Sys.getenv("USER")))) 
+  }
+  file.copy(strRef,refDir,recursive = TRUE)
+  
+  allRef <- data.frame(data.table::fread(strSysRef))
+  if(config$ref_name%in%allRef$Dataset) allRef <- allRef[allRef$Dataset!=config$ref_name,]
+  allRef <- rbind(allRef,
+                  data.frame(Dataset=config$ref_name,
+                             Version=config$ref_version,
+                             Summary=config$ref_summary,
+                             species=config$ref_species,
+                             system=config$ref_system,
+                             ncells=nCell,
+                             tech=config$ref_tech))
+  data.table::fwrite(strSysRef)
+  message("\nA new reference (",config$ref_name,") is added into the scRNAsequest!")
   MsgPower()
 }
 createRef <- function(strConfig){
-  sysConfig <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))
-  config <- checkConfig(strConfig,sysConfig)
+  customRef <- file.path(strPipePath,"src","sys_ref.csv")
+  sysRefDir <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))$refDir
+  config <- checkConfig(strConfig,sysRefDir)
   suppressMessages(suppressWarnings(loadingPKG()))
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
   #"/camhpc/ngs/projects/TST11837/dnanexus/20220311155416_maria.zavodszky/sc20220403_0/TST11837_SCT.h5ad"
-  strRef <- file.path(config$output,paste0(config$ref_name,"_for_scAnalyzer.rds"))
-  if(!file.exists(strRef)){
+  strRef <- file.path(config$output,config$ref_name)
+
+  if(!dir.exists(strRef) || !file.exists(file.path(strRef,'ref.Rds')) || !file.exists(file.path(strRef,'idx.annoy'))){
     strTemp <- file.path(config$output,"ref_notFor_scAnalyzer.rds")
     if(!file.exists(strTemp)){
       if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
         message("Reading rds file @",config$ref_rds)
         D <- readRDS(config$ref_rds)
-        DefaultAssay(D) <- "SCT"
         checkRDSRefSeting(config,D)
-        if(length(D@assays$SCT@var.features)==0){
-          VariableFeatures(D) <- D@assays[[D@reductions[[config$ref_reduction]]@assay.used]]@var.features
-        }
-        D@reductions[[config$ref_reduction]]@assay.used <- "SCT"
+        D <- prepareSeurat(D)
+        D@reductions[[config$ref_reduction]]@assay.used <- DefaultAssay(D)
       }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
         message("Reading h5ad file ...")
         checkH5adRefSetting(config)
         D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
-        DefaultAssay(D) <- "SCT"
         xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_reduction))
         rownames(xy) <- colnames(D)
         D[[config$ref_reduction]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
                                                     key="PC_",
-                                                    assay="SCT")
+                                                    assay=DefaultAssay(D))
       }else{
         MsgExit(paste0("Either one seurat object rds file or two h5ad files are required to be existed"))
       }
       
-      message("Processing ...")
+      message("Azimuth Processing ...")
       #https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
-      D <- unifySCTmodel(D)
-      if(!"SCT_snn"%in%names(D)) D <- FindNeighbors(D, dims = 1:50, reduction=config$ref_reduction,verbose = FALSE)
-      D <- RunSPCA(D, npcs=ncol(D[[config$ref_reduction]]), graph = 'SCT_snn')
-      
-      D <- FindNeighbors(D, dims = 1:50, reduction="spca",verbose = FALSE)
-      D <- RunUMAP(D, dims = 1:50, reduction="spca",umap.method = "uwot",
-                   return.model=TRUE)
+      #D <- unifySCTmodel(D)
+      dim_n <- ncol(D[[config$ref_reduction]])
+      graph <- paste0(DefaultAssay(D),"_snn")
+      if(!graph%in%names(D)) D <- FindNeighbors(D, dims = 1:dim_n, reduction=config$ref_reduction,verbose = FALSE)
+      D <- RunSPCA(D, npcs=dim_n, graph = graph)
+      D <- RunUMAP(D, dims = 1:dim_n, reduction="spca",umap.method="umap-learn",metric = "correlation",return.model=TRUE)
       saveRDS(D,strTemp)
     }else{
       message("Previous tmp file found @",strTemp,"\nPlease remove it if all new reference is needed.\nLoading ...")
       D <- readRDS(strTemp)
     }
-    
     message("Creating Azimuth reference ...")
-    D_ref <- AzimuthReference(
-      D,
-      refUMAP = "umap",
-      refDR = "spca",
-      refAssay = "SCT",
-      dims = 1:ncol(D[[config$ref_reduction]]),
-      plotref = "umap",
-      metadata = config$ref_label #c('genotype','age','sex','cluster',"celltype")
-    )
-    saveRDS(D_ref,strRef)
+    D_ref <- AzimuthReference(D,refAssay=DefaultAssay(D),
+                              metadata=config$ref_label)
+    dir.create(strRef,showWarnings=F,recursive=T)
+    SaveAzimuthReference(D_ref,strRef)
   }else{
     message("Found the existed ref @",strRef,"\n\tPlease remove/rename it rerun is prefered!")
+    D_ref <- readRDS(file.path(strRef,"ref.Rds"))
   }
   
   if(config$publish){
-    D_Azimuth <- readRDS(strRef)
-    saveRef(D_Azimuth,config,sysConfig)
+    saveRef(strRef,config,sysRefDir,dim(D_ref)[2])
   }else{
-    message("The private reference could be used by provide the following full path to 'ref_name' in scAnalyzer config file:")
+    message("The private reference can be used by provide the following full path to 'ref_name' in scAnalyzer config file:")
     message("\t",strRef)
   }
-    
-  
 }
 main()

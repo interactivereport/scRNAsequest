@@ -1,21 +1,21 @@
 # please check wiki page for the details
 output: OUTPUTdir
-# the following is normally located in the same folder of celldepot hosting h5ad files
-ref_h5ad_raw: # full path to the h5ad file contains raw UMI along with cell annotation and layout
-ref_batch: library_id
-# above two parameters are ignored, if a seurat object can be located in the project folder
-ref_rds: #full path to the processed seurat object including SCT assay, cell annotation and layout
-
-# All information below are required
 ref_name: # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
-ref_link: # The web link to the information of this reference
-ref_src: # sc/"single cell" or sn/"single nuclei"
-ref_platform: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
+ref_raw: # require. file path to an h5ad file which contains raw counts; or to a Seurat file (rds or h5seurat) activate assay contains SCT model
+# if multiple samples were used, please provide the meta table column to identify them for spltting (integrate SCT models)
+ref_batch: library_id
 #list a reduction to be used (at least 50 dimensions full name from VIP or one from seurat 'reductions' ) 
 # details: https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
 # this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
 # For instance, if harmony was prefered layout then providing either 'harmony' (50 dimention) or 'harmony-PCA'
 ref_reduction: pca 
 ref_label: [] # list the annotations (case sensitive) to be used for transferring
+
+# All information below are required if publish is True
 publish: False #should this reference be published into scAnalyzer
 overwrite: False #overwrite the existing scAnalyzer reference 
+ref_version: 
+ref_summary: # can include a web link to the information of this reference
+ref_species: 
+ref_system: #can be tissue or in vitro system
+ref_tech: # which single cell/neuclei technology e.g. 10X, SNARE-seq2, dropSeq, ...
