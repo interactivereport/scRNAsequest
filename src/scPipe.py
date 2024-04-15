@@ -53,12 +53,21 @@ def MsgPower():
   print("------------")
 def MsgHelp():
   sysConfig = getConfig()
-  print(sysConfig["prehelp"])
+  if sysConfig.get("prehelp") is not None:
+    print(sysConfig.get("prehelp"))
   #print("The config file will be generated automatically when a DNAnexus download folder is provided")
-  print("Available reference data:")
-  for i in sysConfig['ref']:
-    print("\t%s: more information @ %s"%(i,sysConfig[i]["ref_link"]))
-  print("If one of the above can be used as a reference for your datasets, please update the config file with the name in 'ref_name'.\n")
+  strSeuratRef = os.path.join(strPipePath,"seuratdata.csv")
+  subprocess.run("R -q -e 'data.table::fwrite(SeuratData::AvailableData(),\"%s\")'"%strSeuratRef,
+    shell=True,check=True,stdout=subprocess.PIPE)
+  refInfo = pd.read_csv(strSeuratRef).iloc[:,0:7]
+  strSysRef = os.path.join(sysConfig['refDir'],"scRNAsequest_ref.csv")
+  if os.path.isfile(strSysRef):
+    refInfo = pd.concat([refInfo,pd.read_csv(strSysRef)]).reset_index(drop=True)
+  print("Available reference data (use 'Dataset' column in config):")
+  print(refInfo.iloc[:,0:3].to_string(index=False))
+  
+  print("\n\nusage: scAnalyzer </path/to/the/config/file> or scAnalyzer </path/to/a/folder>")
+  print("\tAn template config file will be created if </path/to/a/folder> is provided")
   Exit()
 def MsgInit():
   print("\n\n*****",datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"*****")
