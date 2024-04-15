@@ -29,8 +29,8 @@ MsgHelp <- function(){
   message("The folder has to be existed.")
   message("The Ref config file will be generated automatically when a path is provided")
   message("===== CAUTION =====")
-  message("\t1. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!")
-  message("\t2. Make sure the data provided for reference building is SCT transformed!")
+  message("\t1. If 'publish: True' is set in config. This process will add a seurat reference data into the scRNAsequest pipeline PERMANENTLY!")
+  message("\t2. If seurat object is provided, make sure the data provided for reference building is SCT transformed!")
   MsgPower()
   q()
 }
@@ -126,16 +126,16 @@ checkConfig <- function(strConfig,refPath){
   }
   return(config)
 }
-checkH5adRefSetting <- function(config){
-  xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_reduction))
-  if(is.null(xy)) MsgExit(paste0("The 'ref_reduction' (",config$ref_reduction,") is not in the h5ad file"))
+checkH5adRefSetting <- function(ref_h5ad,ref_reduction,ref_label){
+  xy <- getobsm(ref_h5ad,paste0("X_",ref_reduction))
+  if(is.null(xy)) MsgExit(paste0("The 'ref_reduction' (",ref_reduction,") is not in the h5ad file"))
   
-  if(ncol(xy)<50) MsgExit(paste("At least 50 dimentions are required in reduction where",config$ref_reduction,"only contains",ncol(xy)))
+  if(ncol(xy)<50) MsgExit(paste("At least 50 dimentions are required in reduction where",ref_reduction,"only contains",ncol(xy)))
   
-  meta <- getobs(config$ref_h5ad)
-  if(sum(!config$ref_label%in%colnames(meta))>0)
+  meta <- getobs(ref_h5ad)
+  if(sum(!ref_label%in%colnames(meta))>0)
     MsgExit(paste0("The following annotation labels (case sensitive) are not in the h5ad file:\n",
-                   paste(config$ref_label[!config$ref_label%in%colnames(meta)],collapse=", ")))
+                   paste(ref_label[!ref_label%in%colnames(meta)],collapse=", ")))
 }
 checkRDSRefSeting <- function(config,D){
   refAssay <- DefaultAssay(D)
@@ -146,8 +146,8 @@ checkRDSRefSeting <- function(config,D){
   if(!config$ref_reduction %in% names(D)) MsgExit(paste0("The 'ref_reduction' (",config$ref_reduction,") is not in the rds file"))
   if(ncol(D[[config$ref_reduction]])<50) MsgExit(paste0("At least 50 dimentions are required in reduction where ",config$ref_reduction," only contains ",ncol(D[[config$ref_reduction]])))
   #if(D@reductions[[config$ref_reduction]]@assay.used!="SCT") MsgExit(paste0("The specified PCA (",config$ref_reduction,") did NOT derived from SCT but ",D@reductions$pca@assay.used))
-  if(sum(dim(D@assays$SCT@data)==dim(D@assays$SCT@scale.data))!=2)
-    MsgExit(paste0("Both of 'data' and 'scale.data' are required in SCT assay with the same dimensions"))
+  #if(sum(dim(D@assays$SCT@data)==dim(D@assays$SCT@scale.data))!=2)
+  #  MsgExit(paste0("Both of 'data' and 'scale.data' are required in SCT assay with the same dimensions"))
   if(sum(!config$ref_label%in%colnames(D@meta.data))>0)
     MsgExit(paste0("The following annotation labels (case sensitive) are not in the rds file:\n",
                    paste(config$ref_label[!config$ref_label%in%colnames(D@meta.data)],collapse=", ")))
@@ -168,6 +168,7 @@ prepareSeurat <- function(D,batch){
 }
 integrateSCT <- function(Dlist){
   if(length(Dlist)==1) return(Dlist[[1]])
+  message("Integrate SCT models")
   features <- SelectIntegrationFeatures(Dlist,nfeatures=3000)
   Dlist <- PrepSCTIntegration(Dlist,anchor.features=features)
   anchors <- FindIntegrationAnchors(
@@ -248,6 +249,13 @@ saveRef <- function(strRef,config,refDir,nCell){
   message("\nA new reference (",config$ref_name,") is added into the scRNAsequest!")
   MsgPower()
 }
+saveInfo <- function(strConfig,strOut){
+  file.copy(strConfig,strOut)
+  conn <- file(file.path(strOut,"readme"))
+  sink(file=conn,type='message')
+  MsgInit()
+  close(conn)
+}
 createRef <- function(strConfig){
   customRef <- file.path(strPipePath,"src","sys_ref.csv")
   sysRefDir <- yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))$refDir
@@ -260,16 +268,19 @@ createRef <- function(strConfig){
   if(!dir.exists(strRef) || !file.exists(file.path(strRef,'ref.Rds')) || !file.exists(file.path(strRef,'idx.annoy'))){
     strTemp <- file.path(config$output,"ref_notFor_scAnalyzer.rds")
     if(!file.exists(strTemp)){
-      if(!is.null(config$ref_rds) && file.exists(config$ref_rds)){
-        message("Reading rds file @",config$ref_rds)
-        D <- readRDS(config$ref_rds)
+      if(grepl("rds$",config$ref_raw) || grepl("h5seurat$",config$ref_raw)){#!is.null(config$ref_rds) && file.exists(config$ref_rds)
+        message("Reading seurat file @",config$ref_raw)
+        if(grepl("rds$",config$ref_raw))
+          D <- readRDS(config$ref_raw)
+        else
+          D <- LoadH5Seurat(config$ref_raw)
         checkRDSRefSeting(config,D)
-        D <- prepareSeurat(D)
+        D <- prepareSeurat(D,config$ref_batch)
         D@reductions[[config$ref_reduction]]@assay.used <- DefaultAssay(D)
-      }else if(!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)){
-        message("Reading h5ad file ...")
-        checkH5adRefSetting(config)
-        D <- getSCT(config$ref_h5ad_raw,config$ref_batch)
+      }else if(grepl("h5ad$",config$ref_raw)){#!is.null(config$ref_h5ad_raw) && file.exists(config$ref_h5ad_raw)
+        message("Reading h5ad file @",config$ref_raw)
+        checkH5adRefSetting(config$ref_raw,config$ref_reduction,config$ref_label)
+        D <- getSCT(config$ref_raw,config$ref_batch)
         xy <- getobsm(config$ref_h5ad,paste0("X_",config$ref_reduction))
         rownames(xy) <- colnames(D)
         D[[config$ref_reduction]] <- CreateDimReducObject(embeddings=xy[colnames(D),],
@@ -296,7 +307,8 @@ createRef <- function(strConfig){
     D_ref <- AzimuthReference(D,refAssay=DefaultAssay(D),
                               metadata=config$ref_label)
     dir.create(strRef,showWarnings=F,recursive=T)
-    SaveAzimuthReference(D_ref,strRef)
+    SaveAzimuthReference(D_ref,paste0(strRef,.Platform$file.sep))
+    saveInfo(strConfig,strRef)
   }else{
     message("Found the existed ref @",strRef,"\n\tPlease remove/rename it rerun is prefered!")
     D_ref <- readRDS(file.path(strRef,"ref.Rds"))

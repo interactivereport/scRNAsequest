@@ -3,7 +3,7 @@ output: OUTPUTdir
 ref_name: # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
 ref_raw: # require. file path to an h5ad file which contains raw counts; or to a Seurat file (rds or h5seurat) activate assay contains SCT model
 # if multiple samples were used, please provide the meta table column to identify them for spltting (integrate SCT models)
-ref_batch: library_id
+ref_batch: library_id # if seurat object provided with single SCT model, this is ignored
 #list a reduction to be used (at least 50 dimensions full name from VIP or one from seurat 'reductions' ) 
 # details: https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
 # this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
