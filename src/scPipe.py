@@ -60,11 +60,12 @@ def MsgHelp():
   subprocess.run("R -q -e 'data.table::fwrite(SeuratData::AvailableData(),\"%s\")'"%strSeuratRef,
     shell=True,check=True,stdout=subprocess.PIPE)
   refInfo = pd.read_csv(strSeuratRef).iloc[:,0:7]
+  refInfo = refInfo[refInfo.Summary.str.startswith("Azimuth Reference")]
   strSysRef = os.path.join(sysConfig['refDir'],"scRNAsequest_ref.csv")
   if os.path.isfile(strSysRef):
     refInfo = pd.concat([refInfo,pd.read_csv(strSysRef)]).reset_index(drop=True)
-  print("Available reference data (use 'Dataset' column in config):")
-  print(refInfo.iloc[:,0:3].to_string(index=False))
+  print("Available reference data (use 'Dataset' column in config):\n")
+  print(refInfo.to_string(index=False))#.iloc[:,0:3]
   
   print("\n\nusage: scAnalyzer </path/to/the/config/file> or scAnalyzer </path/to/a/folder>")
   print("\tAn template config file will be created if </path/to/a/folder> is provided")
