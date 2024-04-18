@@ -47,8 +47,8 @@ runLiger <- function(strH5ad,strHVG,batchKey,
   X <- dplyr::bind_cols(data.frame(adatalg@cellMeta[,paste0(tolower(clusterMethod),"_cluster"),drop=F]) %>% 
                           dplyr::rename_at(1,~paste0("Liger_",.)),
                         data.frame(adatalg@H.norm) %>% 
-                          dplyr::rename_at(vars(contains("Factor_")),list(~str_replace(.,"Factor_","PCA_"))),
-                        data.frame(adatalg@dimReds$UMAP))
+                          dplyr::rename_at(vars(contains("Factor_")),list(~str_replace(.,"Factor_","pca_"))),
+                        setNames(data.frame(adatalg@dimReds$UMAP),tolower(colnames(adatalg@dimReds$UMAP))))
   saveRDS(X,strOut)
 }
 main <- function(){
