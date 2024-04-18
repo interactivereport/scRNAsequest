@@ -39,8 +39,8 @@ def calc_sil_pca50(prefix,oneM):
 
 def cal_sil_pca50_one(pcaKey,strH5ad):
   k = re.sub("^X_|_pca","",pcaKey)
-  if k=='pca':
-    k="raw"
+  #if k=='pca':
+  #  k="raw"
   sil_coeff = None
   adata = ad.read_h5ad(strH5ad,backed="r")
   obs = adata.obs.copy()
@@ -51,7 +51,9 @@ def cal_sil_pca50_one(pcaKey,strH5ad):
     cKey=[one for one in obs.columns if re.search('^%s.*cluster$|^%s.*louvain$'%(k,k),one,re.IGNORECASE)]
     if len(cKey)>0:
       sil_coeff = silhouette_samples(X=X[:, :50], labels=np.array(obs[cKey[0]].values))
-    print("\tFinishing %s: %s"%(pcaKey,cKey[0]))
+      print("\tFinishing %s: %s"%(pcaKey,cKey[0]))
+    else:
+      print("--> missing clusters in %s PCA: SKIP! <--"%k)
   return k,sil_coeff
 
 def make_df(i):

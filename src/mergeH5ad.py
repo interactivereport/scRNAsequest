@@ -85,7 +85,7 @@ def obsCOR(obs,strH5ad):
   obs = obs.loc[:,obs.apply(lambda x: x.nunique()>1)]
   dt = {}
   for cName in obs.columns:
-    if not pd.api.types.is_categorical_dtype(obs[cName]) and obs[cName].nunique()<100:
+    if not obs[cName].dtype=='category' and obs[cName].nunique()<100:
       dt[cName]='category'
   obs = obs.astype(dt).copy()
   pVal = pd.DataFrame(1,index=obs.columns,columns=obs.columns)
@@ -106,7 +106,7 @@ def obsCOR(obs,strH5ad):
         if pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
           s,pVal.loc[a,b]=ss.pearsonr(obsT[a].values,obsT[b].values)
           ax = obsT.plot.scatter(x=a,y=b,s=1,zorder=0)
-        elif pd.api.types.is_numeric_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
+        elif pd.api.types.is_numeric_dtype(obsT[a]) and isinstance(obs[b].dtype,pd.CategoricalDtype):
           sList = [v[1].values for v in obsT[[a,b]].groupby([b])[a]]
           s,pVal.loc[a,b] = ss.f_oneway(*sList)
           ax = obsT.boxplot(column=a,by=b,flierprops={'marker': '.','markersize':2},zorder=0,rot=90)
@@ -115,7 +115,7 @@ def obsCOR(obs,strH5ad):
           ax.grid(linestyle='dotted')
           if obsT[a].max()>1000:
             ax.set_yscale('log')
-        elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_numeric_dtype(obsT[b]):
+        elif isinstance(obs[a].dtype,pd.CategoricalDtype) and pd.api.types.is_numeric_dtype(obsT[b]):
           sList = [v[1].values for v in obsT[[a,b]].groupby([a])[b]]
           s,pVal.loc[a,b] = ss.f_oneway(*sList)
           ax = obsT.boxplot(column=b,by=a,vert=False,flierprops={'marker': '.','markersize':2},zorder=0)  
@@ -124,7 +124,7 @@ def obsCOR(obs,strH5ad):
           ax.grid(linestyle='dotted')
           if obsT[b].max()>1000:
             ax.set_xscale('log')
-        elif pd.api.types.is_categorical_dtype(obsT[a]) and pd.api.types.is_categorical_dtype(obsT[b]):
+        elif isinstance(obs[a].dtype,pd.CategoricalDtype) and isinstance(obs[b].dtype,pd.CategoricalDtype):
           A = obsT[[a,b]]#.drop_duplicates()
           ct = pd.crosstab(A[a],A[b])
           if ct.nunique().nunique()==1:
