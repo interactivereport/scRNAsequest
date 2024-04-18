@@ -7,7 +7,9 @@ PKGloading <- function(){
   require(reshape2)
   require(peakRAM)
   require(BiocParallel)
+  require(Azimuth)
   options(future.globals.maxSize=8000*1024^2,check.names=F) 
+  #SeuratData::AvailableData()
 }
 refTmpName <- paste(c("A",sample(c(LETTERS[1:20],letters[1:20],0:9),15,replace=T)),collapse="")
 updateRef <- function(ref,config){
@@ -38,151 +40,90 @@ updateRef <- function(ref,config){
 
   return(list(config=config,ref=ref))
 }
-processSCTrefOne <- function(strH5ad,batch,config){
-  if(grepl("^http",config$ref_file))
-    reference <- readRDS(url(config$ref_file))
-  else
-    reference <- readRDS(config$ref_file)
-  res <- updateRef(reference,config)
-  config <- res$config
-  reference <- res$ref
-  rm(res)
-  message("\t\tCreating seurat object ...")
+extractMap <- function(mapD,rName){
+  X <- mapD@meta.data[,c("mapping.score",grep("^predicted",colnames(mapD@meta.data),value=T))]
+  firstOne <- F
+  for(oneReduc in names(mapD@reductions)){
+    oneX <- mapD[[oneReduc]]@cell.embeddings
+    if(!firstOne && ncol(oneX)>=50){
+      colnames(oneX) <- paste0("pca_",1:ncol(oneX))
+      firstOne <- T
+    }else{
+      colnames(oneX) <- paste0(ifelse(grepl("umap",oneReduc,ignore.case=T),"umap",oneReduc),"_",1:ncol(oneX))
+    }
+    X <- cbind(X,oneX)
+  }
+  if(rName!=refTmpName)
+    colnames(X) <- paste0(rName,"_",colnames(X))
+  X$cID <- rownames(X)
+  return(X)
+}
+mergeMap <- function(mapL){
+  D <- do.call(plyr::rbind.fill,mapL)
+  meta <- data.frame(D[,grep("cID",colnames(D),invert=T,value=T)],
+                     check.names=F)
+  meta <- dplyr::bind_cols(lapply(meta,function(x){
+    if(is.numeric(x)){
+      x[is.na(x)] <- min(x,na.rm=T)
+    }else{
+      x <- as.character(x)
+      x[is.na(x)] <- "missing"
+    }
+    return(x)
+  }))
+  #meta[colnames(meta)] <- do.call(cbind,)
+  return(data.frame(row.names=D[,"cID"],
+                    meta,check.names=F))
+}
+processSCTref <- function(strH5ad,batch,refList){
+  message("\tCreating seurat object ...")
   D <- CreateSeuratObject(counts=getX(strH5ad),
                           project="SCT",
                           meta.data=getobs(strH5ad))
-  cellN <- dim(D)[2]
-  #Dmedian <- median(colSums(D@assays$RNA@counts))
   Dlist <- SplitObject(D,split.by=batch)
+  #Dmedian <- median(colSums(D@assays$RNA@counts))
+  #cellN <- dim(D)[2]
   #message("\tmemory usage before mapping: ",sum(sapply(ls(),function(x){object.size(get(x))})),"B for ",cellN," cells")
   rm(D)
   gc()
-  Dlist <- bplapply(1:length(Dlist),function(i){#,medianUMI
+  maplist <- bplapply(1:length(Dlist),function(i){#,medianUMI
     bID <- Dlist[[i]]@meta.data[1,batch]
-    message("\t\tmapping ",bID)
+    message("\tmapping ",bID)
     #after checking/testing, the below would return proper SCT nomralized data
     #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
     #https://github.com/satijalab/sctransform/issues/128
-    oneD <- tryCatch({
-      suppressMessages(suppressWarnings(
-        SCTransform(Dlist[[i]],method = 'glmGamPoi',
-                    new.assay.name="SCT",
-                    return.only.var.genes = FALSE,
-                    #scale_factor=medianUMI,
-                    verbose = FALSE)
-      ))
-    },error=function(cond){
-      message("\t\twithout glmGamPoi for ",bID)
-      return(suppressMessages(suppressWarnings(
-        SCTransform(Dlist[[i]],
-                    new.assay.name="SCT",
-                    return.only.var.genes = FALSE,
-                    #scale_factor=medianUMI,
-                    verbose = FALSE)
-      )))
-    })
-    anchors <- suppressMessages(suppressWarnings(
-      FindTransferAnchors(
-        reference = reference,
-        query = oneD,
-        k.filter = NA,
-        reference.neighbors = config$ref_neighbors,
-        reference.assay = config$ref_assay,
-        query.assay = "SCT",
-        reference.reduction = config$ref_reduction,
-        normalization.method = "SCT",
-        features = intersect(rownames(x = reference), VariableFeatures(object = oneD)),
-        dims = 1:50,
-        mapping.score.k = 100,
-        verbose=F
-      )
-    ))
-    oneD <- tryCatch({
-      suppressMessages(suppressWarnings(
-        MapQuery(
-          anchorset = anchors,
-          query = oneD,
-          reference = reference,
-          refdata = setNames(as.list(config$ref_label),config$ref_label),
-          reference.reduction = config$ref_reduction, 
-          reduction.model = config$ref_reduction.model,
-          verbose=F
-        )
-      ))
-    },error=function(cond){
-      message("\t\tERROR MapQuery for ",bID,". Mostly due to limited ",nrow(anchors@anchors)," anchors")
-      for(one in config$ref_label){
-        oneD@meta.data[paste0("predicted.",one,".score")] <- 0
-        oneD@meta.data[paste0("predicted.",one)] <- "Failed"
-      }
-      for(one in c(config$ref_reduction,config$ref_reduction.model)){
-        oneD[[paste0('ref.',one)]] <- CreateDimReducObject(embeddings=matrix(0,nrow=nrow(oneD@meta.data),ncol=2,
-                                                                             dimnames=list(rownames(oneD@meta.data),paste("ref",one,1:2,sep="_"))),
-                                                           key=paste0("ref",one,"_"),
-                                                           assay="SCT")
-      }
-      return(oneD)
-    })
-    return(oneD)
+    #Azimuth v5 mapping
+    meta <- data.frame(cID=colnames(Dlist[[i]]))
+    for(oneRef in names(refList)){
+      message("\t\t",oneRef)
+      oneD <- tryCatch({
+        suppressMessages(suppressWarnings(
+          RunAzimuth(Dlist[[i]],reference=refList[oneRef],verbose=F)
+        ))
+      },error=function(err){
+        return(NULL)
+      })
+      if(is.null(oneD)) next
+      #saveRDS(oneD,gsub(".h5ad",paste0("_",oneRef,".rds"),strH5ad))
+      oneM <- extractMap(oneD,oneRef)
+      meta <- merge(meta,oneM,by="cID",all=T)
+    }
+    return(meta)
   },BPPARAM = MulticoreParam(workers=min(5,length(Dlist),max(1,parallelly::availableCores()-2)),
                              tasks=length(Dlist)))
-  meta = extractX(Dlist,batch)
-  return(meta)
-}
-extractX <- function(Dlist,batch){
-  meta <- NULL
-  for(i in 1:length(Dlist)){
-    message("\t\tmerging ",Dlist[[i]]@meta.data[1,batch])
-    X <- Dlist[[i]]@meta.data[,grep("^predicted",colnames(Dlist[[i]]@meta.data)),drop=F]
-    layout <- c()
-    for(j in names(Dlist[[i]]@reductions)){
-      layout <- cbind(layout,Dlist[[i]]@reductions[[j]]@cell.embeddings[,1:2])
-    }
-    colnames(layout) <- sapply(strsplit(colnames(layout),"_"),function(x){
-      ix <- grep("umap",x,ignore.case = T)
-      if(length(ix)>0) x[ix] <- "umap"
-      return(paste(x,collapse="_"))
-    })
-    X <- cbind(X,layout)
-    X <- cbind(cID=rownames(X),X)
-    meta <- rbind(meta,X)
-  }
-  return(meta)
-}
-processSCTref <- function(strH5ad,batch,refList,strOut){
-  D <- NULL
-  for(one in names(refList)){
-    message("*** Mapping ",one)
-    print(peakRAM(X <- processSCTrefOne(strH5ad,batch,refList[[one]])))
-    if(one!=refTmpName){
-      cNames <- gsub("^predicted",paste0("predicted.",one),colnames(X))
-      cNames[!grepl("^cID$|^predicted",cNames)] <- 
-        sapply(strsplit(cNames[!grepl("^cID$|^predicted",cNames)],"_"),
-               function(x){return(paste(c(head(x,-1),one,tail(x,1)),collapse="_"))})
-      colnames(X) <- cNames
-    }
-    if(is.null(D)) D <- X
-    else{
-      D <- merge(D,X,by="cID",all=T)
-    }
-  }
-  saveRDS(data.frame(row.names=D[,"cID"],
-                     D[,grep("cID",colnames(D),invert=T,value=T)],
-                     check.names=F),strOut)
-  #data.table::fwrite(D,strOut)
-  plotCrossAnno(D,names(refList),strOut)
+  return(mergeMap(maplist))
 }
 plotCrossAnno <- function(D,refID,strOut){
   if(length(refID)==1) return()
   pdf(paste0(strOut,".pdf"),width=8,height=8)
   for(i in 1:(length(refID)-1)){
     for(j in (i+1):length(refID)){
-      sel1 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("predicted.",refID[i]),colnames(D))]
-      sel2 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("predicted.",refID[j]),colnames(D))]
+      sel1 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("^",refID[i],"_predicted"),colnames(D))]
+      sel2 <- colnames(D)[!grepl("score$",colnames(D))&grepl(paste0("^",refID[j],"_predicted"),colnames(D))]
       for(selA in sel1){
         for(selB in sel2){
           X <- melt(table(D[,c(selA,selB)]))
-          print(ggplot(X,aes_string(selA,selB))+
+          print(ggplot(X,aes(.data[[selA]],.data[[selB]]))+
                   geom_tile(aes(fill = value),show.legend=F)+
                   geom_text(aes(label = value))+
                   scale_fill_gradient(low = "white", high = "red")+
@@ -198,21 +139,35 @@ checkRef <- function(refNames,sysConfig){
   if(!is.list(refNames)){
     refNames <- setNames(list(refNames),refTmpName)
   }
-  strRef <- list()
+  
+  seuratRef <- SeuratData::AvailableData()
+  seuratRef <- seuratRef$Dataset[grepl("Azimuth Reference",seuratRef$Summary)]
+  sysRef <- NULL
+  strSysRef = file.path(sysConfig$refDir,"scRNAsequest_ref.csv")
+  if(file.exists(strSysRef)){
+    sysRef <- data.table::fread(strSysRef)$Dataset
+  }
+  strRef <- c()
   for(one in names(refNames)){
     if(is.null(one) || nchar(one)==0)
       stop("missing ref name!")
     if(grepl(":",one) && is.null(refNames[[one]]))
-      stop(paste("A space is required after ':' in define reference:",one))
+      stop("A space is required after ':' in defined reference: ",one)
     
-    if(grepl("rds$",refNames[[one]]) && file.exists(refNames[[one]])){
-      strRef <- c(strRef,setNames(list(list(ref_file=refNames[[one]])),one))
-    }else if(!is.null(refNames[[one]]) && refNames[[one]]%in%names(sysConfig)){
-      strRef <- c(strRef,setNames(list(sysConfig[[refNames[[one]]]]),one))
+    if(!is.null(refNames[[one]]) && refNames[[one]]%in%sysRef)
+       refNames[[one]] <- file.path(sysConfig$refDir,refNames[[one]])
+    if(!is.null(refNames[[one]]) && (refNames[[one]]%in%seuratRef || 
+                                     (dir.exists(refNames[[one]]) && 
+                                      file.exists(file.path(refNames[[one]],"ref.Rds")) &&
+                                      file.exists(file.path(refNames[[one]],"idx.annoy"))))){
+      strRef <- append(strRef,setNames(refNames[[one]],one))
+    }else{
+      stop("Unknown reference: ",refNames[[one]],"\n\tIf system reference was used, please contact Admin!")
     }
+
   }
   if(length(strRef)==0){
-    stop(paste("unknown reference:",paste(refNames,collapse=", ")))
+    stop("unknown reference: ",paste(refNames,collapse="; "))
   }
   return(strRef)
 }
@@ -229,13 +184,15 @@ main <- function(){
   
   config <- yaml::read_yaml(strConfig)
   sysConfig <- yaml::read_yaml(paste0(dirname(selfPath),"/sys.yml"))
-  strRef <- checkRef(config$ref_name,sysConfig)
+  refList <- checkRef(config$ref_name,sysConfig)
 
   strOut <- args[3]
   if(length(args)>3) batchKey <- args[4]
   
   source(paste0(dirname(selfPath),"/readH5ad.R"))
-  processSCTref(strH5ad,batchKey,strRef,strOut)
+  print(peakRAM(D <- processSCTref(strH5ad,batchKey,refList)))
+  saveRDS(D,strOut)
+  plotCrossAnno(D,names(refList),strOut)
 }
 
 main()

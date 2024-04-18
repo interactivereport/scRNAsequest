@@ -4,9 +4,9 @@ import subprocess, os, h5py, sys, warnings, logging, yaml, re, datetime, glob, f
 import anndata as ad
 from scipy import sparse
 from scipy.sparse import csc_matrix
-import pandas as pd
 import batchUtility as bU
 import pyarrow.feather as feather
+import pandas as pd
 import rpy2.robjects as robjects
 from rpy2.robjects import pandas2ri
 readRDS = robjects.r['readRDS']
@@ -24,6 +24,7 @@ def msgError(msg):
 def runOneBatch(oneH5ad,strConfig,oneMeta):
   cmd = "Rscript %s %s %s %s |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
                             oneH5ad,strConfig,oneMeta,re.sub("rds$","log",oneMeta))
+  #print(cmd)
   subprocess.run(cmd,shell=True,check=True)
   
 def batchRef(strH5ad,strConfig,strMeta,batchCell):
@@ -48,6 +49,9 @@ def batchRef(strH5ad,strConfig,strMeta,batchCell):
     print("\n\n")
   meta = pd.concat(mapInfo)
   meta.index = list(meta.index)
+  for col in meta.columns:
+    if meta[col].dtype=='float64':
+      meta[col]=meta[col].astype('float32')
   feather.write_feather(meta,strMeta)
   print("mapping completed")
   return(meta)
@@ -70,8 +74,9 @@ def main():
   FakeD = pd.DataFrame({"FakeG%d"%i:[0 for j in range(meta.shape[0])] for i in range(2)},
                       index=meta.index)
   D = ad.AnnData(FakeD)
-  D.obs = pd.concat([meta[[one for one in meta.columns if one.startswith("predicted")]],Dbatch],axis=1,join="inner")
-  for one in set([one.rsplit("_",1)[0] for one in [one for one in meta.columns if not one.startswith("predicted")]]):
+  annoCol = [one for one in meta.columns if "_predicted." in one or "_mapping." in one]
+  D.obs = pd.concat([meta[annoCol],Dbatch],axis=1,join="inner")
+  for one in set([one.rsplit("_",1)[0] for one in list(set(meta.columns)-set(annoCol))]):
     D.obsm['X_SeuratRef_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
   print("\tsaving ...")
   with warnings.catch_warnings():
