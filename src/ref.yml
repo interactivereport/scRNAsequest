@@ -1,15 +1,16 @@
 # please check wiki page for the details
 output: OUTPUTdir
 ref_name: # please provide a unique name prefer to include species and tissue (check existed by calling scAnalyzer without argument)
-ref_raw: # require. file path to an h5ad file which contains raw counts; or to a Seurat file (rds or h5seurat) activate assay contains SCT model
-# if multiple samples were used, please provide the meta table column to identify them for spltting (integrate SCT models)
-ref_batch: library_id # if seurat object provided with single SCT model, this is ignored
-#list a reduction to be used (at least 50 dimensions full name from VIP or one from seurat 'reductions' ) 
-# details: https://github.com/satijalab/azimuth/wiki/Azimuth-Reference-Format
-# this reduction is NOT directly used, but used to find the neighbors which is then used for computing sPCA reduction which is used in the reference
+ref_raw: # require. file path to an h5ad file which contains raw counts; or to a Seurat file (rds or h5seurat) RNA counts will be used
+# The following reduction is used to find the neighbors which is then used for computing sPCA reduction which is then used in the reference
 # For instance, if harmony was prefered layout then providing either 'harmony' (50 dimention) or 'harmony-PCA'
-ref_reduction: pca 
+# If set, the integration will not perform and "ref_integration" is ignored.
+ref_reduction:  
+# if 'ref_reduction' is not set, the PCA after SCT integration will be used
+ref_batch: library_id 
+ref_integration: Layer # the method to integrate SCT assays (fast->slow): Layer (fastest,https://github.com/satijalab/seurat/issues/7542), RPCA, CCA 
 ref_label: [] # list the annotations (case sensitive) to be used for transferring
+core: 8
 
 # All information below are required if publish is True
 publish: False #should this reference be published into scAnalyzer
