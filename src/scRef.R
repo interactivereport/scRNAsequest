@@ -29,7 +29,7 @@ MsgExit <- function(...){
   q()
 }
 MsgPower <- function(){
-  message("\nPowered by the Research Data Sciences group [zhengyu.ouyang@biogen.com;kejie.li@biogen.com]")
+  message("\nPowered by ", yaml::read_yaml(paste0(strPipePath,"/src/sys.yml"))$powerby)
   message("------------")
 }
 MsgHelp <- function(){
@@ -130,7 +130,7 @@ createRef <- function(strConfig){
     if(!succ) MsgExit("Failed ",config$ref_integration," integration on SCT! Please reduce the number of batch samples or try to use other integration method!")
     saveInfo(strConfig,strRef)
   }else{
-    message("Found the existed ref @",strRef,"\n\tPlease remove/rename it rerun is prefered!")
+    message("Found the existed ref @",strRef,"\n\tPlease remove/rename it if a rerun is prefered!")
   }
   
   if(config$publish){
@@ -140,6 +140,7 @@ createRef <- function(strConfig){
     message("The private reference can be used by provide the following full path to 'ref_name' in scAnalyzer config file:")
     message("\t",strRef)
   }
+  MsgPower()
 }
 
 checkExist <- function(strF){
@@ -195,7 +196,7 @@ checkH5adRefSetting <- function(ref_h5ad,ref_reduction,ref_batch,ref_label){
 }
 saveRef <- function(strRef,config,refDir,nCell){
   message("saving to the scRNAsequest ...")
-  strSysRef <- file.path(refPath,"scRNAsequest_ref.csv")
+  strSysRef <- file.path(refDir,"scRNAsequest_ref.csv")
   allRef <- data.table::fread(strSysRef)
   
   if(config$ref_name%in%list.dirs(refDir,full.names=F)){
@@ -216,7 +217,6 @@ saveRef <- function(strRef,config,refDir,nCell){
                              tech=config$ref_tech))
   data.table::fwrite(allRef,strSysRef)
   message("\nA new reference (",config$ref_name,") is added into the scRNAsequest!")
-  MsgPower()
 }
 saveInfo <- function(strConfig,strOut){
   file.copy(strConfig,strOut)
