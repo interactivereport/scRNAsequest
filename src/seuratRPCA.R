@@ -4,7 +4,9 @@ PKGloading <- function(){
   require(peakRAM)
   #require(RcppCNPy)
   #require(readr)
-  options(stringsAsFactors = FALSE)
+  options(stringsAsFactors = FALSE,
+          future.globals.maxSize=12*1024^3,
+          future.seed=TRUE)
 }
 
 runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
@@ -17,24 +19,20 @@ runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
   D <- SCTransform(D,vst.flavor="v2",
                    return.only.var.genes=F,
                    verbose=F)
+  message("\tPCA ...")
+  D <- RunPCA(D,npcs=50,verbose = FALSE)
+  dr <- "pca"
   if(length(D[["RNA"]]@layers)>1){
-    D <- RunPCA(D,npcs=50,verbose = FALSE)
+    message("\tRPCA integration ...")
+    dr <- "rpca"
     D <- IntegrateLayers(D,method=RPCAIntegration,
                          orig.reduction = "pca",
                          normalization.method="SCT",
+                         new.reduction=dr,
                          verbose = F)
   }
-  message("\tPCA ...")
-  D <- RunPCA(D,npcs=50,verbose = FALSE)
-  message("\tUMAP ...")
-  D <- suppressWarnings(suppressMessages(
-    RunUMAP(D,dims=1:50,
-               reduction="pca",
-               umap.method="umap-learn",
-               metric = "correlation",
-               verbose=F)))
   message("\tFind neighbors ...")
-  D <- FindNeighbors(D,dims = 1:50,verbose=F)
+  D <- FindNeighbors(D,reduction=dr,dims = 1:50,verbose=F)
   
   message("\tClustering ",cluster_method," (",clusterResolution,") ...")
   if(grepl("Leiden",cluster_method,ignore.case=T)){
@@ -42,6 +40,13 @@ runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
   }else{
     D <- FindClusters(D,verbose = FALSE,resolution=clusterResolution)#default Algorithm: 1 = original Louvain algorithm
   }
+  message("\tUMAP ...")
+  D <- suppressWarnings(suppressMessages(
+    RunUMAP(D,dims=1:50,
+               reduction=dr,
+               umap.method="umap-learn",
+               metric = "correlation",
+               verbose=F)))
   # prepare saving
   X <- cbind(D[["seurat_clusters"]],
              D[["pca"]]@cell.embeddings,
