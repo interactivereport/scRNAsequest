@@ -68,7 +68,7 @@ dependencies:
   - r-bookdown
   - r-knitr
   - r-kableextra
-  - umap-learn
+  - umap-learn=0.5.4
   - leidenalg
   - r-shinyjs
   - plotly

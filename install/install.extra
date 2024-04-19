@@ -9,6 +9,9 @@ R -q -e 'if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref=
 R -q -e 'if(!require(RcppPlanc)) devtools::install_github("welch-lab/RcppPlanc",upgrade="never",dependencies=F)'
 # for all UMAP: https://github.com/bwlewis/irlba/issues/70
 R -q -e 'install.packages("irlba", type = "source",repos="https://cran.rstudio.com/")'
+#set Reticulate using conda python in R (add following to .env)
+#echo "RETICULATE_PYTHON=$(which python)" >> $(dirname $(which R))/../lib/R/etc/Renviron
+
 #cellbender v0.3.0
 # issue with v0.3.1: https://github.com/broadinstitute/CellBender/issues/306
 python -m pip install --trusted-host pypi.org git+https://github.com/broadinstitute/CellBender@4990df713f296256577c92cab3314daeeca0f3d7
