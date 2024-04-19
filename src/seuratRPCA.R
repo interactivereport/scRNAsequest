@@ -24,15 +24,19 @@ runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
                          normalization.method="SCT",
                          verbose = F)
   }
+  message("\tPCA ...")
   D <- RunPCA(D,npcs=50,verbose = FALSE)
-  D <- RunUMAP(D,dims=1:50,
+  message("\tUMAP ...")
+  D <- suppressWarnings(suppressMessages(
+    RunUMAP(D,dims=1:50,
                reduction="pca",
                umap.method="umap-learn",
                metric = "correlation",
-               verbose=F)
+               verbose=F)))
+  message("\tFind neighbors ...")
   D <- FindNeighbors(D,dims = 1:50,verbose=F)
   
-  message("Clustering ",cluster_method," (",clusterResolution,") ...")
+  message("\tClustering ",cluster_method," (",clusterResolution,") ...")
   if(grepl("Leiden",cluster_method,ignore.case=T)){
     D <- FindClusters(D,verbose = FALSE,resolution=clusterResolution,method="igraph",algorithm=4)
   }else{
@@ -45,8 +49,8 @@ runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
   colnames(X) <- gsub("^PC","pca",colnames(X))
   colnames(X) <- gsub("^UMAP","umap",colnames(X))
   colnames(X) <- gsub("seurat_clusters","seuratRPCA_cluster",colnames(X))
-  X <- cbind(cID=rownames(X),X)
-  write_csv(X,strOut)
+  #X <- cbind(cID=rownames(X),X)
+  data.table::fwrite(cbind(cID=rownames(X),X),strOut)
 }
 
 main <- function(){
@@ -58,7 +62,7 @@ main <- function(){
   clusterResolution <- as.numeric(args[3])
   cluster_method <- args[4]
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
-  print(peakRam(
+  print(peakRAM(
     runRPCA(strH5ad,batchKey,args[2],cluster_method,clusterResolution)))
 }
 
