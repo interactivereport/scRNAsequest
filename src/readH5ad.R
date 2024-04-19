@@ -12,7 +12,8 @@ getobs <- function(strH5ad){
   meta <- do.call(cbind.data.frame, obs[sel]) %>% mutate_all(~ifelse(is.nan(.),NA,.))
   #meta <- do.call(cbind.data.frame, obs[grep("^_",names(obs),invert=T)])
   #dimnames(meta) <- list(obs[["_index"]],grep("^_",names(obs),invert=T,value=T))
-  rownames(meta) <- obs[[grep("index$|^barcode$",names(obs))]]
+  if(ncol(meta)==0) meta <- data.frame(row.names=obs[[grep("index$|^barcode$",names(obs))]])
+  else rownames(meta) <- obs[[grep("index$|^barcode$",names(obs))]]
   for(one in names(obs[["__categories"]])){
     if(min(meta[,one])<0){
       ann <- meta[,one]+1
