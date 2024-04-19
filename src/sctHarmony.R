@@ -5,8 +5,10 @@ PKGloading <- function(){
   require(peakRAM)
   require(BiocParallel)#parallelly::availableCores()-2
   #register(MulticoreParam())#parallelly::availableCores()-2
-  options(stringsAsFactors = FALSE,future.globals.maxSize=12*1024^3)
   require(future)
+  options(stringsAsFactors = FALSE,
+          future.globals.maxSize=12*1024^3,
+          future.seed=TRUE)
   plan("multicore")
 }
 
@@ -177,12 +179,15 @@ processPCA <- function(strPCA,strOut,batch,clusterResolution,cluster_method){
   message("starting Harmony ...")
   PCA <- getobsm(strPCA,"X_pca")
   meta <- getobs(strPCA)
-  PCA <- harmony::HarmonyMatrix(PCA,meta,batch,do_pca=FALSE,verbose=FALSE)
+  if(length(unique(meta[[batch]]))>1){
+    PCA <- harmony::RunHarmony(PCA,meta,batch,do_pca=FALSE,verbose=FALSE)
+  }
   message("Finishing Harmony ...")
   dimN <- ncol(PCA)
   colnames(PCA) <- paste0("pca_",1:dimN)
-  D <- CreateSeuratObject(counts=matrix(0,nrow=2,ncol=nrow(PCA),dimnames=list(paste0("G",1:2),rownames(PCA))),
-                          project="sctHarmony",
+  D <- CreateSeuratObject(counts=data.frame(matrix(0,nrow=2,ncol=nrow(PCA),
+                                                   dimnames=list(paste0("G",1:2),rownames(PCA))),
+                                            check.names=F),
                           meta.data=meta)
   D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="RNA")
   #saveRDS(D,"sctHarmony.rds")

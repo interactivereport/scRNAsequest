@@ -57,7 +57,7 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN):
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     sctD.write(strPCA)
-  print("\tThe SCT step for all samples are completed!")
+  print("\tThe sct PCA step for all samples are completed!")
   return None
 
 def runRharmony(strPCA,strMeta,clusterResolution,clusterMethod):
