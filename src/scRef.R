@@ -447,7 +447,8 @@ sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reducti
     D[["RNA"]] <- split(D[["RNA"]],f=unlist(D[[batch]],use.names=F))
     message("\tSCT ...")
     D <- SCTransform(D,vst.flavor="v2",
-                     return.only.var.genes=F)
+                     return.only.var.genes=F,
+                     verbose=F)
   }
   reductName <- "scRNASequest"
   if(!is.null(refReduct)){
@@ -477,18 +478,28 @@ sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reducti
     D <- RunUMAP(D,dims=1:dim_n,reduction="spca",
                  umap.method="umap-learn",metric="correlation",
                  return.model=TRUE,verbose=F))
-  
   if(length(D@assays$SCT@SCTModel.list)>1){
     message("\tUnify SCT models")
-    A <- D@meta.data %>% dplyr::group_by(across(all_of(c(batch,ref_label)))) %>% dplyr::count()
+    # select the top three samples with most cells
+    A <- D@meta.data %>% dplyr::group_by(across(all_of(batch))) %>% dplyr::count()
+    ncells <- ceiling(max(A$n)/1000)*1000
+    selID <- A[order(A$n,decreasing=T),][[batch]][1:min(3,nrow(A))]
+    # select samples with most annotations
+    A <- D@meta.data %>% 
+      dplyr::filter(!!sym(batch)%in%selID) %>% 
+      dplyr::group_by(across(all_of(c(batch,ref_label)))) %>% 
+      dplyr::count()
     selID <- names(table(A[batch]))[table(A[batch])==max(table(A[batch]))]
+    # select samples with max cells in the smallest annotation
     if(length(selID)>1){
       A <- A %>% dplyr::filter(!!sym(batch)%in%selID)%>% dplyr::group_by(across(all_of(batch))) %>% dplyr::summarise(MIN=min(n))
       selID <- A[[batch]][order(A$MIN,decreasing=T)][1]
     }
     refModel <- D@assays$SCT@SCTModel.list[[selID]]
+    
     D <- SCTransform(D,vst.flavor="v2",
                      variable.features.n=global_feature_n,
+                     ncells=ncells,
                      reference.SCT.model=refModel,
                      verbose=F)
     refModel <- D@assays$SCT@SCTModel.list[[selID]]
