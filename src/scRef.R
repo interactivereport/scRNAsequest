@@ -132,7 +132,6 @@ createRef <- function(strConfig){
   }else{
     message("Found the existed ref @",strRef,"\n\tPlease remove/rename it if a rerun is prefered!")
   }
-  
   if(config$publish){
     D_ref <- readRDS(file.path(strRef,"ref.Rds"))
     saveRef(strRef,config,sysRefDir,dim(D_ref)[2])
@@ -223,6 +222,7 @@ saveInfo <- function(strConfig,strOut){
   conn <- file(file.path(strOut,"readme"),"w")
   sink(file=conn,type='message')
   MsgInit()
+  sink(type='message')
   close(conn)
 }
 
