@@ -60,12 +60,16 @@ getX <- function(strH5ad,useRaw=T){
   message("\t\textracting counts")
   if(useRaw && sum(grepl("/raw/X",keys$group))>0){
     message("\t\t\tFound .raw.X")
+    if(keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim']>(2^31-1))
+      stop(paste("Max elements in sparse matrix is 2^31-1, input:",
+                 keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim']))
     X <- h5read(strH5ad,"/raw/X")
   }else{
+    if(keys[grepl("/X",keys$group) & grepl("data",keys$name),'dim']>(2^31-1))
+      stop(paste("Max elements in sparse matrix is 2^31-1, input:",
+                 keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim']))
     X <- h5read(strH5ad,"X")
   }
-  if(length(X$data)>(2^31-1))
-    stop(paste("Max elements in sparse matrix is 2^31-1, input:",length(X$data)))
   message("\t\textracting gene name")
   if(useRaw && sum(grepl("/raw/var",keys$group))>0){
     message("\t\t\tFound .raw.var")
