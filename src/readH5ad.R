@@ -54,7 +54,58 @@ getID <- function(strH5ad,keys,grp){
     stop(paste("unknown adata format: Neither index or _index exists in group",grp))
   }
 }
-getX <- function(strH5ad,useRaw=T){
+getBatchX <- function(strH5ad,batchID,useRaw=T){
+  meta <- getobs(strH5ad)
+  message("\tobtainning X ...")
+  keys <- h5ls(strH5ad)
+  message("\t\textracting counts by batch ID ",batchID)
+  if(min(diff(as.numeric(factor(meta[[batchID]],levels=unique(meta[[batchID]])))))<0)
+    stop("Samples are NOT ordered by batch ID in the give h5ad!")
+  message("\t\textracting gene name")
+  if(useRaw && sum(grepl("/raw/var",keys$group))>0){
+    message("\t\t\tFound .raw.var")
+    gID <- getID(strH5ad,keys,"/raw/var") #h5read(strH5ad,"/raw/var/_index")
+  }else{
+    gID <- getID(strH5ad,keys,"/var") #h5read(strH5ad,"/var/_index")
+  }
+  message("\t\textracting cell name")
+  if(useRaw && sum(grepl("/raw/obs",keys$group))>0){
+    message("\t\tFound .raw.obs")
+    cID <- getID(strH5ad,keys,"/raw/obs") #h5read(strH5ad,"/raw/obs/_index")
+  }else{
+    cID <- getID(strH5ad,keys,"/obs") #h5read(strH5ad,"/obs/_index")
+  }
+  gID <- as.vector(gID)
+  cID <- as.vector(cID)
+  if(useRaw && sum(grepl("/raw/X",keys$group))>0){
+    message("\t\t\tFound .raw.X")
+    selGroup <- "/raw/X"
+  }else{
+    selGroup <- "/X"
+  }
+  indptr <- h5read(strH5ad,paste0(selGroup,"/indptr"))
+  if((length(indptr)-1)!=length(cID))
+    stop("Given h5ad is NOT CSC, cannot get batch X!")
+  X <- lapply(setNames(unique(meta[[batchID]]),unique(meta[[batchID]])),
+              function(one){
+                message("\t\tsample: ",one)
+                cIx <- seq_along(meta[[batchID]])[meta[[batchID]]==one]
+                iStart <- indptr[min(cIx)]+1
+                iEnd <- indptr[max(cIx)+1]
+                if((iEnd-iStart+1)>(2^31-1)) stop("Max elements in sparse matrix is 2^31-1")
+                x <- h5read(strH5ad,paste0(selGroup,"/data"),index=list(iStart:iEnd))
+                i <- h5read(strH5ad,paste0(selGroup,"/indices"),index=list(iStart:iEnd))+1
+                p <- indptr[min(cIx):(max(cIx)+1)]-indptr[min(cIx)]
+                M <- sparseMatrix(i=i,p=p,x=as.numeric(x),
+                                  dims=c(length(gID),length(cIx)),
+                                  dimnames=list(gID,cID[cIx]))
+                return(M)
+  })
+  return(X)
+}
+getX <- function(strH5ad,batchID=NULL,useRaw=T){
+  if(!is.null(batchID))
+    return(getBatchX(strH5ad,batchID,useRaw))
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
   message("\t\textracting counts")
@@ -87,11 +138,11 @@ getX <- function(strH5ad,useRaw=T){
   gID <- as.vector(gID)
   cID <- as.vector(cID)
   message("\t\tcreating sparse matrix")
-  if((max(X$indices)+1)==length(gID) || (length(X$indptr)-1)==length(cID)){ # CSR sparse matrix
+  if((max(X$indices)+1)==length(gID) || (length(X$indptr)-1)==length(cID)){ # CSC sparse matrix
     M <- sparseMatrix(i=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
                       dimnames=list(gID,cID))
-  }else if((max(X$indices)+1)==length(cID) || (length(X$indptr)-1)==length(gID)){#CSC sparse matrix
+  }else if((max(X$indices)+1)==length(cID) || (length(X$indptr)-1)==length(gID)){#CSR sparse matrix
     M <- sparseMatrix(j=X$indices+1,p=X$indptr,x=as.numeric(X$data),
                       dims=c(length(gID),length(cID)),
                       dimnames=list(gID,cID))
