@@ -15,10 +15,8 @@ PKGloading <- function(){
 runLiger <- function(strH5ad,strHVG,batchKey,
                      clusterMethod,clusterResolution,
                      strOut){
-  X <- getX(strH5ad)
   meta <- getobs(strH5ad)
-  Xlist <- list()
-  for(one in unique(meta[,batchKey])) Xlist[[one]] <- X[,(1:nrow(meta))[meta[,batchKey]==one]]
+  Xlist <- getX(strH5ad,batchID=batchKey)
   ## create liger obj and norm
   message("\tcreating liger object")
   adatalg <- suppressMessages(createLiger(rawData = Xlist,removeMissing=FALSE,addPrefix=F))
