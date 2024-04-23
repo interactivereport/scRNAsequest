@@ -13,12 +13,18 @@ PKGloading <- function(){
 
 processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
   if(is.null(bPrepSCT)) bPrepSCT <- F
-  X <- getX(strH5ad)
-  gID <- setNames(rownames(X),gsub("_","-",rownames(X)))
-  rownames(X) <- names(gID) #gsub("_","-",rownames(X))
+  X <- getX(strH5ad,batchID=batch)
+  gID <- setNames(rownames(X[[1]]),gsub("_","-",rownames(X[[1]])))
+  X <- lapply(X,function(one){
+    rownames(one) <- names(gID)
+    return(one)
+  })
+  #rownames(X) <- names(gID) #gsub("_","-",rownames(X))
   D <- CreateSeuratObject(counts=X,
                           project="SCT",
                           meta.data=getobs(strH5ad))
+  rm(X)
+  gc()
   if(is.null(expScale) || expScale==0){
     message("\t\t--> SCT normalization is selected <--")
     Dmedian <- NA
@@ -26,37 +32,14 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
       message("\t***median UMI is used to normalize across samples by scale_factor from vst***")
       expScale <- Dmedian <- median(colSums(D@assays$RNA@counts))#min(colSums(D@assays$RNA@counts))#
     }
-    Dlist <- SplitObject(D,split.by=batch)
-    Dlist <- sapply(Dlist,function(one,medianUMI){
-      message("\t\tSCT ",one@meta.data[1,batch]," ...")
-      #after checking/testing, the above would return proper SCT nomralized data
-      #/edgehpc/dept/compbio/users/zouyang/process/PRJNA544731/src/SCT_scale_batch.ipynb
-      #https://github.com/satijalab/sctransform/issues/128
-      return(suppressMessages(suppressWarnings(
-        SCTransform(one,method = 'glmGamPoi',
-                    new.assay.name="SCT",
-                    return.only.var.genes = FALSE,
-                    scale_factor=medianUMI,
-                    verbose = FALSE)
-      )))
-    },Dmedian)
-    if(length(Dlist)==1){
-      D <- Dlist[[1]]
-    }else{
-      #D <- merge(Dlist[[1]], y=Dlist[-1])
-      # according to the test the blow save almost half of memory comparing the above
-      D <- Dlist[[1]]
-      Dlist[[1]] <- NULL
-      for(i in 1:length(Dlist)){
-        D <- merge(D,Dlist[[1]])
-        Dlist[[1]] <- NULL
-      }
-      if(!is.null(bPrepSCT) && bPrepSCT){
-        message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
-        D <- PrepSCTFindMarkers(D)
-        #expScale <- D@assays$SCT@SCTModel.list[[1]]@median_umi
-      }
+    D <- SCTransform(D,vst.flavor="v2",
+                     return.only.var.genes = FALSE,
+                     scale_factor=medianUMI)
+    if(!is.null(bPrepSCT) && bPrepSCT){
+      message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
+      D <- PrepSCTFindMarkers(D)
     }
+    D <- split(D[["SCT"]],f=unlist(DDnorm[[batch]],use.names=F))
   }else{
     message("\t\t--> LogNormal normalization is selected <--")
     message("\tScale: ",expScale)
@@ -68,10 +51,12 @@ saveX <- function(D,strH5,ggID){
   message("\tsaving expression: ",strH5)
   saveRDS(D,paste0(strH5,".rds"))
   if("SCT"%in%names(D)){
+    D[["SCT"]] <- JoinLayers(D[["SCT"]])
     X <- Matrix::t(Matrix::Matrix(D@assays$SCT@layers$data,sparse=T))
     cID <- D@assays$SCT@cells[['data']]
     gID <- D@assays$SCT@features[['data']]
   }else{
+    D[["RNA"]] <- JoinLayers(D[["RNA"]])
     X <- Matrix::t(Matrix::Matrix(D@assays$RNA@layers$data,sparse=T))
     cID <- D@assays$RNA@cells[['data']]
     gID <- D@assays$RNA@features[['data']]
@@ -113,6 +98,27 @@ mergeAllbatches <- function(strRDS,strOut,batchKey){
   }
   saveRDS(D,strOut)
 }
+mergeAllbatches1 <- function(strRDS,strOut,batchKey){
+  D <- NULL
+  message("\tmerge all normalized seruat objects")
+  for(one in strRDS){
+    message("\t\t",basename(one),"\t",which(strRDS==one),"/",length(strRDS))
+    oneD <- readRDS(one)
+    for(oneAssay in names(oneD))
+      oneD[[oneAssay]] <- split(oneD[[oneAssay]],f=unlist(oneD[[batchKey]],use.names=F))
+    if(is.null(D)) D <- oneD
+    else D <- merge(D,oneD)
+    rm(oneD)
+    gc()
+  }
+  if("SCT" %in% names(D)){
+    message("\tPrepSCTFindMarkers might take a while")
+    D <- PrepSCTFindMarkers(D)
+    cat(D@assays$SCT@SCTModel.list[[1]]@median_umi,file=gsub("rds$","scaleF",strOut))
+  }
+  saveRDS(D,strOut)
+}
+
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
