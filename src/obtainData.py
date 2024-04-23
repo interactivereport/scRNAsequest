@@ -28,7 +28,7 @@ def getSysConfig():
     config = yaml.safe_load(f)
   return(config)
 def getIntronExon(strF,cID):
-  IEcount = pd.read_csv(strF,sep=None,index_col=0)
+  IEcount = pd.read_csv(strF,sep=" ",index_col=0)
   if len(list(set(IEcount.index) & set(cID)))<len(cID):
     IEcount.index = list(IEcount.index+"-1")
   IEcount = IEcount.loc[cID,:]
@@ -148,7 +148,7 @@ def splitMeta(meta,strOut):
   if len(strMeta)==0:
     nbatch = 0
     for one in [meta.iloc[ix[i:i+split_size]] for i in range(0,len(ix),split_size)]:
-      strMeta.append(os.path.join(strOut,"tmp_%d.csv"%nbatch))
+      strMeta.append(os.path.join(strOut,"tmp_{0:03}.csv".format(nbatch)))
       one.to_csv(strMeta[-1],index=False)
       nbatch += 1
   return strMeta
