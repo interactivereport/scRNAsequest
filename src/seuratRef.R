@@ -216,7 +216,7 @@ main <- function(){
 
   strOut <- args[3]
   subCores <- 5
-  if(length(args)>3) subCores <- args[4]
+  if(length(args)>3) subCores <- as.numeric(args[4])
   if(length(args)>4) batchKey <- args[5]
   
   source(paste0(dirname(selfPath),"/readH5ad.R"))
