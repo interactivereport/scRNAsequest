@@ -2,6 +2,7 @@ PKGloading <- function(){
   require(rhdf5)
   require(Matrix)
   require(dplyr)
+  require(BiocParallel)
 }
 suppressMessages(suppressWarnings(PKGloading()))
 
@@ -54,11 +55,11 @@ getID <- function(strH5ad,keys,grp){
     stop(paste("unknown adata format: Neither index or _index exists in group",grp))
   }
 }
-getBatchX <- function(strH5ad,batchID,useRaw=T){
+getBatchX <- function(strH5ad,batchID,useRaw=T,core=Inf){
   meta <- getobs(strH5ad)
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
-  message("\t\textracting counts by batch ID ",batchID)
+  message("\t\textracting counts by batch ID: ",batchID)
   if(min(diff(as.numeric(factor(meta[[batchID]],levels=unique(meta[[batchID]])))))<0)
     stop("Samples are NOT ordered by batch ID in the give h5ad!")
   message("\t\textracting gene name")
@@ -83,29 +84,50 @@ getBatchX <- function(strH5ad,batchID,useRaw=T){
   }else{
     selGroup <- "/X"
   }
-  indptr <- h5read(strH5ad,paste0(selGroup,"/indptr"))
+  indptr <- h5read(strH5ad,paste0(selGroup,"/indptr"),bit64conversion="double")
   if((length(indptr)-1)!=length(cID))
     stop("Given h5ad is NOT CSC, cannot get batch X!")
-  X <- lapply(setNames(unique(meta[[batchID]]),unique(meta[[batchID]])),
-              function(one){
-                message("\t\tsample: ",one)
-                cIx <- seq_along(meta[[batchID]])[meta[[batchID]]==one]
-                iStart <- indptr[min(cIx)]+1
-                iEnd <- indptr[max(cIx)+1]
-                if((iEnd-iStart+1)>(2^31-1)) stop("Max elements in sparse matrix is 2^31-1")
-                x <- h5read(strH5ad,paste0(selGroup,"/data"),index=list(iStart:iEnd))
-                i <- h5read(strH5ad,paste0(selGroup,"/indices"),index=list(iStart:iEnd))+1
-                p <- indptr[min(cIx):(max(cIx)+1)]-indptr[min(cIx)]
-                M <- sparseMatrix(i=i,p=p,x=as.numeric(x),
-                                  dims=c(length(gID),length(cIx)),
-                                  dimnames=list(gID,cID[cIx]))
-                return(M)
-  })
+  bNames <- unique(meta[[batchID]])#[1:5]
+  X <- bplapply(setNames(bNames,bNames),
+                function(one){
+                  message("\t\tsample: ",one,"\t",which(bNames==one),"/",length(bNames),appendLF=F)
+                  cIx <- seq_along(meta[[batchID]])[meta[[batchID]]==one]
+                  iStart <- indptr[min(cIx)]+1
+                  iEnd <- indptr[max(cIx)+1]
+                  if((iEnd-iStart+1)>(2^31-1)) stop("Max elements in sparse matrix is more than 2^31-1")
+                  x <- h5read(strH5ad,paste0(selGroup,"/data"),index=list(iStart:iEnd))
+                  i <- h5read(strH5ad,paste0(selGroup,"/indices"),index=list(iStart:iEnd))+1
+                  p <- indptr[min(cIx):(max(cIx)+1)]-indptr[min(cIx)]
+                  M <- sparseMatrix(i=i,p=p,x=as.numeric(x),
+                                    dims=c(length(gID),length(cIx)),
+                                    dimnames=list(gID,cID[cIx]))
+                  rm(x,i,p)
+                  gc()
+                  return(M)
+                },BPPARAM = MulticoreParam(workers=min(core,length(bNames),max(1,parallelly::availableCores()-2)),
+                                           tasks=length(bNames)))
+  if(F){
+    X <- lapply(setNames(unique(meta[[batchID]]),unique(meta[[batchID]])),
+                function(one){
+                  message("\t\tsample: ",one)
+                  cIx <- seq_along(meta[[batchID]])[meta[[batchID]]==one]
+                  iStart <- indptr[min(cIx)]+1
+                  iEnd <- indptr[max(cIx)+1]
+                  if((iEnd-iStart+1)>(2^31-1)) stop("Max elements in sparse matrix is 2^31-1")
+                  x <- h5read(strH5ad,paste0(selGroup,"/data"),index=list(iStart:iEnd))
+                  i <- h5read(strH5ad,paste0(selGroup,"/indices"),index=list(iStart:iEnd))+1
+                  p <- indptr[min(cIx):(max(cIx)+1)]-indptr[min(cIx)]
+                  M <- sparseMatrix(i=i,p=p,x=as.numeric(x),
+                                    dims=c(length(gID),length(cIx)),
+                                    dimnames=list(gID,cID[cIx]))
+                  return(M)
+                })
+  }
   return(X)
 }
-getX <- function(strH5ad,batchID=NULL,useRaw=T){
+getX <- function(strH5ad,batchID=NULL,useRaw=T,core=5){
   if(!is.null(batchID))
-    return(getBatchX(strH5ad,batchID,useRaw))
+    return(getBatchX(strH5ad,batchID,useRaw,core))
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
   message("\t\textracting counts")

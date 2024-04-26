@@ -75,10 +75,38 @@ mergeMap <- function(mapL){
   return(data.frame(row.names=D[,"cID"],
                     meta,check.names=F))
 }
+processAzimuth5 <- function(strH5ad,batch,refList,subCores){
+  message("\tCreating seurat object ...")
+  D <- CreateSeuratObject(counts=getX(strH5ad,batchID=batch,core=subCores),
+                          project="seuratRef",
+                          meta.data=getobs(strH5ad))
+  message("\tMapping each reference ...")
+  maplist <- bplapply(names(refList),function(oneRef){
+    oneD <- suppressMessages(suppressWarnings(
+      RunAzimuth(D,reference=refList[oneRef],verbose=F)
+    ))
+    #print(oneD)
+    return(extractMap(oneD,oneRef))
+  },
+  BPPARAM = MulticoreParam(workers=min(subCores,length(refList),max(1,parallelly::availableCores()-2)),
+                             tasks=length(refList)))
+  meta <- do.call(merge,c(maplist,by="cID",all=T,sort=F))
+  meta <- dplyr::bind_cols(lapply(meta,function(x){
+    if(is.numeric(x)){
+      x[is.na(x)] <- min(x,na.rm=T)
+    }else{
+      x <- as.character(x)
+      x[is.na(x)] <- "missing"
+    }
+    return(x)
+  }))
+  return(data.frame(row.names=meta$cID,
+                    meta[,-1],check.names=F))
+}
 processSCTref <- function(strH5ad,batch,refList){
   message("\tCreating seurat object ...")
-  D <- CreateSeuratObject(counts=getX(strH5ad),
-                          project="SCT",
+  D <- CreateSeuratObject(counts=getX(strH5ad,batchID=batch),
+                          project="seuratRef",
                           meta.data=getobs(strH5ad))
   Dlist <- SplitObject(D,split.by=batch)
   #Dmedian <- median(colSums(D@assays$RNA@counts))
@@ -187,10 +215,13 @@ main <- function(){
   refList <- checkRef(config$ref_name,sysConfig)
 
   strOut <- args[3]
-  if(length(args)>3) batchKey <- args[4]
+  subCores <- 5
+  if(length(args)>3) subCores <- args[4]
+  if(length(args)>4) batchKey <- args[5]
   
   source(paste0(dirname(selfPath),"/readH5ad.R"))
-  print(peakRAM(D <- processSCTref(strH5ad,batchKey,refList)))
+  #print(peakRAM(D <- processSCTref(strH5ad,batchKey,refList)))
+  print(peakRAM(D <- processAzimuth5(strH5ad,batchKey,refList,subCores)))
   saveRDS(D,strOut)
   plotCrossAnno(D,names(refList),strOut)
 }

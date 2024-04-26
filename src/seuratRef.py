@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import subprocess, os, h5py, sys, warnings, logging, yaml, re, datetime, glob, functools
+import cmdUtility as cU
 import anndata as ad
 from scipy import sparse
 from scipy.sparse import csc_matrix
@@ -21,13 +22,15 @@ def msgError(msg):
   print(msg)
   exit()
 
-def runOneBatch(oneH5ad,strConfig,oneMeta):
-  cmd = "Rscript %s %s %s %s |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
-                            oneH5ad,strConfig,oneMeta,re.sub("rds$","log",oneMeta))
+def runOneBatch(oneH5ad,strConfig,oneMeta,subCore):
+  print("***** processing: %s *****"%os.path.basename(oneH5ad))
+  cmd = "Rscript %s %s %s %s %d |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
+                            oneH5ad,strConfig,oneMeta,subCore,re.sub("rds$","log",oneMeta))
   #print(cmd)
   subprocess.run(cmd,shell=True,check=True)
+  return(oneMeta)
   
-def batchRef(strH5ad,strConfig,strMeta,batchCell):
+def batchRef(strH5ad,strConfig,strMeta,batchCell,subCore=5):
   if os.path.isfile(strMeta):
     print("Using previous SeuratRef results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = feather.read_feather(strMeta)
@@ -36,17 +39,20 @@ def batchRef(strH5ad,strConfig,strMeta,batchCell):
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
-  mapInfo=[]
+  parallelCMD = []
   for oneH5ad in h5adList:
-    print("***** batch: %s *****"%os.path.basename(oneH5ad))
     oneMeta = re.sub("h5ad$","rds",oneH5ad)
     if not os.path.isfile(oneMeta):
-      runOneBatch(oneH5ad,strConfig,oneMeta)
+      parallelCMD.append(functools.partial(runOneBatch,oneH5ad,strConfig,oneMeta,subCore))
+  metaList=cU.parallel_cmd(parallelCMD,min(subCore,len(parallelCMD)))
+  mapInfo=[]
+  print("Reading batch results ...")
+  for oneH5ad in h5adList:
+    oneMeta = re.sub("h5ad$","rds",oneH5ad)
     if not os.path.isfile(oneMeta):
       msgError("\tERROR: %s SeuratRef failed!"%os.path.basename(oneH5ad))
     oneMap = pandas2ri.rpy2py_dataframe(readRDS(oneMeta))
     mapInfo.append(oneMap)
-    print("\n\n")
   meta = pd.concat(mapInfo)
   meta.index = list(meta.index)
   for col in meta.columns:
@@ -69,7 +75,7 @@ def main():
   D = ad.read_h5ad(strH5ad,backed="r") #,backed=True
   Dbatch = D.obs[batchKey].copy()
   strMeta = "%s.feather"%os.path.join(config["output"],"SeuratRef",config["prj_name"])#strH5ad.replace("raw.h5ad","seuratRef.csv")
-  meta = batchRef(strH5ad,strConfig,strMeta,config.get('batchCell'))
+  meta = batchRef(strH5ad,strConfig,strMeta,config.get('batchCell'),subCore=5 if config.get('subprocess') is None else config.get('subprocess'))
   
   FakeD = pd.DataFrame({"FakeG%d"%i:[0 for j in range(meta.shape[0])] for i in range(2)},
                       index=meta.index)
