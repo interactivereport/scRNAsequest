@@ -38,7 +38,8 @@ def splitBatch(strH5ad,strOut,batchCell=None,batchKey=None,hvgN=None):
       while span<=1:
         print("\t\ttry with span: %.2f"%span)
         try:
-          hvg = sc.pp.highly_variable_genes(D,flavor='seurat_v3',inplace=False,batch_key=batchKey,n_top_genes=hvgN,span=span)
+          #https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html
+          hvg = sc.pp.highly_variable_genes(D,flavor='seurat_v3_paper',inplace=False,batch_key=batchKey,n_top_genes=hvgN,span=span)
           break
         except:
           span += 0.1
@@ -58,7 +59,7 @@ def splitBatch(strH5ad,strOut,batchCell=None,batchKey=None,hvgN=None):
         #print(cellN)
         if cellN>batchCell or one==sName[-1]:
           print("batch %d: %d samples"%(batchN,len(sID)))
-          strH5ad=os.path.join(strOut,"tmp_%d.h5ad"%batchN)
+          strH5ad=os.path.join(strOut,"tmp_{0:03}.h5ad".format(batchN))
           batchN +=1
           with open(re.sub("h5ad$","txt",strH5ad),"w") as f:
             f.write("\n".join(sID))

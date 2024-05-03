@@ -22,10 +22,10 @@ def msgError(msg):
   print(msg)
   exit()
 
-def runOneBatch(oneH5ad,strConfig,oneMeta,subCore):
+def runOneBatch(oneH5ad,strConfig,oneMeta):
   print("***** processing: %s *****"%os.path.basename(oneH5ad))
-  cmd = "Rscript %s %s %s %s %d |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
-                            oneH5ad,strConfig,oneMeta,subCore,re.sub("rds$","log",oneMeta))
+  cmd = "Rscript %s %s %s %s |& tee %s"%(os.path.join(strPipePath,"seuratRef.R"),
+                            oneH5ad,strConfig,oneMeta,re.sub("rds$","log",oneMeta))
   #print(cmd)
   subprocess.run(cmd,shell=True,check=True)
   return(oneMeta)
@@ -43,11 +43,13 @@ def batchRef(strH5ad,strConfig,strMeta,batchCell,subCore=5):
   for oneH5ad in h5adList:
     oneMeta = re.sub("h5ad$","rds",oneH5ad)
     if not os.path.isfile(oneMeta):
-      parallelCMD.append(functools.partial(runOneBatch,oneH5ad,strConfig,oneMeta,subCore))
-  metaList=cU.parallel_cmd(parallelCMD,min(subCore,len(parallelCMD)))
+      parallelCMD.append(functools.partial(runOneBatch,oneH5ad,strConfig,oneMeta))
+  if len(parallelCMD)>0:
+    metaList=cU.parallel_cmd(parallelCMD,min(subCore,len(parallelCMD)))
   mapInfo=[]
   print("Reading batch results ...")
   for oneH5ad in h5adList:
+    print("\t%s"%os.path.basename(oneH5ad))
     oneMeta = re.sub("h5ad$","rds",oneH5ad)
     if not os.path.isfile(oneMeta):
       msgError("\tERROR: %s SeuratRef failed!"%os.path.basename(oneH5ad))

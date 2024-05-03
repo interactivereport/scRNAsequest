@@ -14,15 +14,13 @@ def run_cmd(cmd):
       print("%s process return above error"%cmd)#,e.stderr.decode("utf-8")
     cmdR = e
   return cmdR
+def smap(f):
+  return f()
 def parallel_cmd(funcs,core=1):
   with multiprocessing.Pool(processes=core) as pool:
     a=pool.map(smap,funcs)
-  res = {}
-  [res.update(one) for one in a if one is not None]
-  return res
+  return a
 ## parallel job management
-def smap(f):
-  return f()
 def submit_cmd(cmds,config,core=None,memG=0):
   #cmds = {k:v for i, (k,v) in enumerate(cmds.items()) if not v is None}
   if len(cmds)==0:

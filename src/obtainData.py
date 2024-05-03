@@ -1,4 +1,4 @@
-import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools
+import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools, psutil,gc,resource
 from datetime import datetime
 import scanpy as sc
 import anndata as ad
@@ -124,11 +124,13 @@ def getData_batch(strMeta,sID,strOut,dblScore=True):
   if len(adatals)==1:
     adata = adatals[0]
     adata.obs[batchKey]=meta[sID][0]
+    adata.index += ("-" + meta[sID][0])
   else:   
-    adata = sc.AnnData.concatenate(*adatals,
+    adata = ad.concat(adatals,
       join="outer",
-      batch_categories=meta[sID],
-      batch_key=batchKey)
+      keys=meta[sID],
+      label=batchKey,
+      index_unique="-")
   print("\tmerging samples completed!")
   ## remove duplicated columns in var
   varCol = [one.split("-")[0] for one in adata.var.columns]
@@ -154,23 +156,35 @@ def splitMeta(meta,strOut):
   return strMeta
 
 def mergeBatch(strMetas,strH5ad):
-  D = None
+  Dlist = []
+  cellN = 0
   for one in strMetas.split(","):
     oneH5ad = re.sub("csv$","h5ad",one)
-    print("\tMerging ",os.path.basename(oneH5ad))
+    print("\tReading ",os.path.basename(oneH5ad))
     if not os.path.isfile(oneH5ad):
       msgError("Reading batch failed: missing %s"%oneH5ad)
-    D1=sc.read_h5ad(oneH5ad)
-    if D is None:
-      D = D1
-    else:
-      D = D.concatenate(D1,join="outer",batch_key=None,index_unique=None,)
-    print("\t+++ %d cells +++"%D.shape[0])
-    del D1
+    Dlist.append(ad.read_h5ad(oneH5ad))
+    # the following does NOT save more memory
+    #D1=ad.read_h5ad(oneH5ad)
+    #if D is None:
+    #  D = D1
+    #else:
+    #  #D = ad.concat([D,D1],join="outer")
+    #  #D = D.concatenate(D1,join="outer",batch_key=None,index_unique=None)
+    #del D1
+    #gc.collect()
+    cellN += Dlist[-1].shape[0]
+    print("\t+++ %d cells +++ peak memory %.2fG"%(cellN,resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
+  print("\tMerging ...")
+  D = ad.concat(Dlist,join="outer")
+  del Dlist
+  gc.collect()
+  print("\t+++ %d cells +++ peak memory %.2fG"%(D.shape[0],resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
   print("\tFiltering genes by minimal cell 1")
   sc.pp.filter_genes(D,min_cells=1)
   print("\tsaving",os.path.basename(strH5ad))
   D.write(strH5ad)
+  print("\tFinal peak memory %.2fG"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
 
 def getData(meta,config,strH5ad):
   print("starting Reading ...")
@@ -199,7 +213,7 @@ def getData(meta,config,strH5ad):
       continue
     cmd.append("python -u %s/obtainData.py %s %s %s %s"%(strPipePath,one,sID,config["output"],dbl))
   if len(cmd)>0:
-    cU.submit_cmd({"ReadB%d"%i:cmd[i] for i in range(len(cmd))},config)
+    cU.submit_cmd({"ReadB{0:03}".format(i):cmd[i] for i in range(len(cmd))},config)#"ReadB{0:03}".format(i)
   print("merging reading batches")
   cU.submit_cmd({"ReadBm":"python -u %s/obtainData.py %s %s"%(strPipePath,",".join(metaBatch),strH5ad)},config)
   if not os.path.isfile(strH5ad):

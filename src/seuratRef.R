@@ -221,7 +221,8 @@ main <- function(){
   
   source(paste0(dirname(selfPath),"/readH5ad.R"))
   #print(peakRAM(D <- processSCTref(strH5ad,batchKey,refList)))
-  print(peakRAM(D <- processAzimuth5(strH5ad,batchKey,refList,subCores)))
+  print(peakRAM(D <- processAzimuth5(strH5ad,batchKey,refList,
+                                     ifelse(is.null(config$subprocess),5,config$subprocess))))
   saveRDS(D,strOut)
   plotCrossAnno(D,names(refList),strOut)
 }

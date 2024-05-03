@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random, time
+import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random, time,resource,gc
+import cmdUtility as cU
 from scipy import sparse
 from scipy.sparse import csc_matrix
 import pandas as pd
@@ -22,11 +23,12 @@ def msgError(msg):
   exit()
 
 def runOneSCT(oneH5ad,strConfig,strSCT):
+  print("***** process: %s *****"%os.path.basename(oneH5ad))
   cmd = "Rscript %s SCT %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
                               oneH5ad,strSCT,strConfig,os.path.dirname(strSCT))
   subprocess.run(cmd,shell=True,check=True)
 
-def sct(strH5ad,strConfig,strPCA,batchCell,hvgN):
+def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
   if os.path.isfile(strPCA):
     print("\tUsing previous sct PCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strPCA)
     return()
@@ -34,30 +36,44 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN):
   if len(h5adList)==0:
     msgError("No h5ad!")
   print("There are total of %d batches"%len(h5adList))
+  Dlist=[]
+  cN=0
   sctD=None
+  parallelCMD = []
   for oneH5ad in h5adList:
-    print("***** batch: %s *****"%os.path.basename(oneH5ad))
     strSCT = re.sub(".h5ad$",".rds",oneH5ad)
     if not os.path.isfile(strSCT):
-      runOneSCT(oneH5ad,strConfig,strSCT)
+      parallelCMD.append(functools.partial(runOneSCT,oneH5ad,strConfig,strSCT))
+  if len(parallelCMD)>0:
+    metaList=cU.parallel_cmd(parallelCMD,min(subCore,len(parallelCMD)))
+  print("Reading batches ...")
+  for oneH5ad in h5adList:
+    strSCT = re.sub(".h5ad$",".rds",oneH5ad)
     if not os.path.isfile(strSCT):
       msgError("\tERROR: %s sctHarmony failed in SCT step!"%os.path.basename(oneH5ad))
     oneD=ad.AnnData(pandas2ri.rpy2py_dataframe(readRDS(strSCT)))
     print("***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
-    if sctD is None:
-      sctD = oneD
-    else:
-      sctD = sctD.concatenate(oneD,batch_key=None,index_unique=None)#,join='outer'
-    print("After merge: %d cells %d genes\n\n"%(sctD.shape[0],sctD.shape[1]))
+    Dlist.append(oneD)
+    cN += oneD.shape[0]
+    del oneD
+    gc.collect()
+    print("\tTotal %d cells\tPeak memory %.2fG"%(cN,resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
+  print("Merging SCT batches ...")
+  sctD=ad.concat(Dlist,join="outer")
+  del Dlist
+  gc.collect()
+  print("\tPeak memory %.2fG"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
+
   sctD.X[np.isnan(sctD.X)] = 0
   print("Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
   batchV=sc.read_h5ad(strH5ad,backed="r").obs[batchKey].copy()
   sctD.obs[batchKey]=batchV[sctD.obs.index]
+  print("PCA ...")
   sc.tl.pca(sctD,n_comps=50,svd_solver='arpack')
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     sctD.write(strPCA)
-  print("\tThe sct PCA step for all samples are completed!")
+  print("\tThe sct PCA step for all samples are completed with peak memory %.2fG!"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
   return None
 
 def runRharmony(strPCA,strMeta,clusterResolution,clusterMethod):
@@ -67,13 +83,13 @@ def runRharmony(strPCA,strMeta,clusterResolution,clusterMethod):
                               strPCA,strMeta,clusterResolution,clusterMethod,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,clusterResolution,clusterMethod):
+def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,clusterResolution,clusterMethod,subCore):
   if os.path.isfile(strMeta):
     print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
     return(meta)
   strPCA = re.sub("rds$","pca.h5ad",strMeta)
-  sct(strH5ad,strConfig,strPCA,batchCell,hvgN)
+  sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore)
   runRharmony(strPCA,strMeta,clusterResolution,clusterMethod)
   if not os.path.isfile(strMeta):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
@@ -91,7 +107,8 @@ def main():
 
   strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
   meta = sctHarmony(strH5ad,strConfig,strMeta,config.get('batchCell'),config.get('harmonyBatchGene'),
-    config.get('clusterResolution'),config.get('clusterMethod'))
+    config.get('clusterResolution'),config.get('clusterMethod'),
+    subCore=5 if config.get('subprocess') is None else config.get('subprocess'))
 
   for one in meta.columns:
     if meta[one].nunique()<100:

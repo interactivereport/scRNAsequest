@@ -83,6 +83,10 @@ def obsCOR(obs,strH5ad):
     return
   print("Correlation among obs for scDEG consideration")
   obs = obs.loc[:,obs.apply(lambda x: x.nunique()>1)]
+  naRows = obs.isna().any(axis=1)
+  if naRows.sum()>0:
+    print("\tRemove %d NA rows/cells"%naRows.sum())
+    obs=obs[~naRows]
   dt = {}
   for cName in obs.columns:
     if not obs[cName].dtype=='category' and obs[cName].nunique()<100:
@@ -176,7 +180,7 @@ def integrateH5ad(strH5ad,methods,prefix,outH5ad,majorR=None,ref_name=None):
     print("\tmerging ",one)
     D1 = ad.read_h5ad(oneH5ad,backed="r")
     obs = D1.obs.copy()
-    addObs = [one for one in obs.columns if not one in D.obs.columns]
+    addObs = [_ for _ in obs.columns if not _ in D.obs.columns]
     if one == "SeuratRef":
       seuratRefCluster=obs.columns
       prefix_ref="" if ref_name is None else ref_name.split(',')[0]
@@ -203,8 +207,8 @@ def integrateH5ad(strH5ad,methods,prefix,outH5ad,majorR=None,ref_name=None):
       if D.obs[one].dtype == 'category':
         D.obs[one] = list(D.obs[one])
         D.obs[one].fillna("NA")
-  obsCOR(D.obs,outH5ad)
   D.write(outH5ad)
+  obsCOR(D.obs,outH5ad)
 def findMajor(X,majorR):
   # first column is the cluster number, second column is the label
   colName = list(X.columns)

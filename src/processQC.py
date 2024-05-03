@@ -1,4 +1,4 @@
-import yaml, io, os, sys, re, logging, warnings, glob, math, functools, time
+import yaml, io, os, sys, re, logging, warnings, glob, math, functools, time, resource
 import pandas as pd
 import scanpy as sc
 import anndata as ad
@@ -334,9 +334,9 @@ def main():
     sTime = timer()
     adata = sc.read_h5ad(preH5ad)
     print("\t%.2f seconds"%(timer()-sTime))
-    print("10X Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
+    print("Prefilter Report: %d cells with %d genes"%(adata.shape[0],adata.shape[1]))
     filterRes=["Filter,cutoff,cell_number,gene_number\n"]
-    filterRes.append("10X report,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
+    filterRes.append("Prefilter,,%d,%d\n"%(adata.shape[0],adata.shape[1]))
     preprocess(adata,config)
     strPrefilterQC = os.path.join(config["output"],qcDir,"prefilter.QC.pdf")
     if not os.path.isfile(strPrefilterQC):
@@ -349,6 +349,8 @@ def main():
       plotQC(adata,os.path.join(config["output"],qcDir,"postfilter.QC.pdf"),config["group"])
     checkCells(adata)
     adata.write(postH5ad)
+    print("\t%.2f seconds"%(timer()-sTime))
+    print("\tQC final peak memory %.2fG"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
   elif task == 'rawOBSM':
     strH5ad = sys.argv[2]
     strOut = sys.argv[3]
@@ -361,6 +363,7 @@ def main():
     adata = sc.read_h5ad(strH5ad)
     adata.obs,adata.obsm=obtainRAWobsm(adata,cluster_reso,cluster_method)
     adata.write(strOut)
+    print("\trawOBSM final peak memory %.2fG"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
   else:
     msgError("Unknown task for processQC: ",task)
 

@@ -8,12 +8,13 @@ PKGloading <- function(){
   #require(future) #no effect on SCT
   #plan("multiprocess", workers = 8)
   require(peakRAM)
+  require(BiocParallel)
   options(future.globals.maxSize=8000*1024^2)
 }
 
-processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
+processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT,core=10){
   if(is.null(bPrepSCT)) bPrepSCT <- F
-  X <- getX(strH5ad,batchID=batch)
+  X <- getX(strH5ad,batchID=batch,core=core)
   gID <- setNames(rownames(X[[1]]),gsub("_","-",rownames(X[[1]])))
   X <- lapply(X,function(one){
     rownames(one) <- names(gID)
@@ -39,7 +40,7 @@ processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT){
       message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
       D <- PrepSCTFindMarkers(D)
     }
-    D <- split(D[["SCT"]],f=unlist(DDnorm[[batch]],use.names=F))
+    D[["SCT"]] <- split(D[["SCT"]],f=unlist(DDnorm[[batch]],use.names=F))
   }else{
     message("\t\t--> LogNormal normalization is selected <--")
     message("\tScale: ",expScale)
@@ -82,66 +83,56 @@ saveX <- function(D,strH5,ggID){
   cat(paste(ggID[gID],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
   #cat(expScale,file=gsub("h5$","scaleF",strH5))
 }
-mergeAllbatches <- function(strRDS,strOut,batchKey){
+mergeAllbatches <- function(strRDS,strOut,core){
   D <- NULL
   message("\tmerge all normalized seruat objects")
-  for(one in strRDS){
-    oneD <- readRDS(one)
-    message("\t\t",oneD@meta.data[1,batchKey],"\t",which(strRDS==one),"/",length(strRDS))
-    if(is.null(D)) D <- oneD
-    else D <- merge(D,oneD)
-  }
+  Dlist <- bplapply(strRDS,function(one){
+    message("\t\tReading ",basename(one),"\t",which(strRDS==one),"/",length(strRDS)," @",Sys.time())
+    return(readRDS(one))
+  },
+  BPPARAM = MulticoreParam(workers=min(core,length(strRDS),max(1,parallelly::availableCores()-2))))
+  # tasks in MulticoreParam seems exectute as batches, each batch every tasks needs to be all completed until the next batch
+  gc()
+  message("\t\tMerging ...@",Sys.time())
+  D <- merge(Dlist[[1]],Dlist[-1])
+  rm(Dlist)
+  gc()
+  message("\t\tFinished @",Sys.time())
   if("SCT" %in% names(D)){
     message("\tPrepSCTFindMarkers might take a while")
     D <- PrepSCTFindMarkers(D)
     cat(D@assays$SCT@SCTModel.list[[1]]@median_umi,file=gsub("rds$","scaleF",strOut))
   }
+  message("\tSaving ...")
   saveRDS(D,strOut)
 }
-mergeAllbatches1 <- function(strRDS,strOut,batchKey){
-  D <- NULL
-  message("\tmerge all normalized seruat objects")
-  for(one in strRDS){
-    message("\t\t",basename(one),"\t",which(strRDS==one),"/",length(strRDS))
-    oneD <- readRDS(one)
-    for(oneAssay in names(oneD))
-      oneD[[oneAssay]] <- split(oneD[[oneAssay]],f=unlist(oneD[[batchKey]],use.names=F))
-    if(is.null(D)) D <- oneD
-    else D <- merge(D,oneD)
-    rm(oneD)
-    gc()
-  }
-  if("SCT" %in% names(D)){
-    message("\tPrepSCTFindMarkers might take a while")
-    D <- PrepSCTFindMarkers(D)
-    cat(D@assays$SCT@SCTModel.list[[1]]@median_umi,file=gsub("rds$","scaleF",strOut))
-  }
-  saveRDS(D,strOut)
-}
-
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
   args = commandArgs(trailingOnly=TRUE)
-  if(length(args)<2) stop("Path to h5ad file, the output file and config file are required!")
-  if(length(args)==2){
-    strRDS <- paste0(unlist(strsplit(args[1],",")),".rds")
-    print(peakRAM(mergeAllbatches(strRDS,args[2],batchKey)))
-  }else{
-    strH5ad <- args[1]
+  #if(length(args)<2) stop("Path to h5ad file, the output file and config file are required!")
+  task <- args[1]
+  if(task=="MERGE"){
+    strRDS <- paste0(unlist(strsplit(args[2],",")),".rds")
+    print(peakRAM(mergeAllbatches(strRDS,args[3],as.numeric(args[4]))))
+  }else if(task=="NORM"){
+    strH5ad <- args[2]
     if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
-    strOut <- args[2]
-    strConfig <- args[3]
+    strOut <- args[3]
+    strConfig <- args[4]
     if(!file.exists(strConfig)){
       stop(paste0("Config file (",strConfig,") does not exist!"))
     }else{
       config <- yaml::read_yaml(strConfig)
     }
-    scaleF=as.numeric(args[4])
-    if(length(args)>4) batchKey <- args[5]
+    scaleF=as.numeric(args[5])
+    if(length(args)>5) batchKey <- args[6]
     
     source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
-    print(peakRAM(processH5ad(strH5ad,batchKey,strOut,scaleF,config$PrepSCTFindMarkers)))
+    print(peakRAM(processH5ad(strH5ad,batchKey,strOut,scaleF,config$PrepSCTFindMarkers,
+                              ifelse(is.null(config$subprocess),5,config$subprocess))))
+  }else{
+    stop("Unknown task in SCT.R: ",task)
   }
 }
 
