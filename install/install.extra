@@ -15,4 +15,4 @@ R -q -e 'install.packages("irlba", type = "source",repos="https://cran.rstudio.c
 #cellbender v0.3.0
 # issue with v0.3.1: https://github.com/broadinstitute/CellBender/issues/306
 python -m pip install --trusted-host pypi.org git+https://github.com/broadinstitute/CellBender@4990df713f296256577c92cab3314daeeca0f3d7
-pip3 install torch torchvision torchaudio
+pip3 install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2

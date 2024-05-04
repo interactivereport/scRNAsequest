@@ -71,6 +71,14 @@ dependencies:
   - umap-learn=0.5.4
   - leidenalg
   - r-shinyjs
+  - r-shiny
+  - r-shinybs
+  - r-shinydashboard
+  - r-presto
+  - r-dt
+  - r-dofuture
+  - r-dorng
+  - r-trust
   - plotly
   - pypdf2
   - openssl
