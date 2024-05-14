@@ -1,4 +1,4 @@
-import scPipe, os, time, sys, re, shutil
+import scPipe, os, time, sys, re, shutil, warnings
 import cmdUtility as cU
 import pandas as pd
 import scanpy as sc
@@ -64,13 +64,14 @@ def cellbender(strMeta,nCore=0,useParallel=True):
     if os.path.exists(oneH5):
       print("\t%s SKIP! CellBender H5 exists: \n\t\t%s"%(oneName,oneH5))
     else:
-      cmds["CB_"+oneName] = "cellbender remove-background --input %s --output %s %s--expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f%s"%(
-        meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i],cpuCMD)
+      cmds["CB_"+oneName] = "mkdir -p CB_{0};cd CB_{0}".format(oneName)
+      cmds["CB_"+oneName] += ";cellbender remove-background --input %s --output %s %s--expected-cells %d --total-droplets-included %d --fpr 0.01 --epochs 150 --low-count-threshold %d --learning-rate %f%s"%(
+      	meta[UMIcol][i],oneH5,useCuda,meta[CB_expCellNcol][i],meta[CB_dropletNcol][i],meta[CB_count][i],meta[CB_learningR][i],cpuCMD)
         # at lease seurat4 don't support cellbender output directly 
-      cmds["CB_"+oneName] += ";ptrepack --complevel 5 %s:/matrix %s:/matrix"%(H5pair[oneName]['new_path'],H5pair[oneName]['seurat_path'])
+      cmds["CB_"+oneName] += ";rm -f %s;ptrepack --complevel 5 %s:/matrix %s:/matrix"%(H5pair[oneName]['seurat_path'],H5pair[oneName]['new_path'],H5pair[oneName]['seurat_path'])
   if len(cmds)>0:
     print('\nrunning cellbeder for the following samples:\n%s'%'\n'.join([re.sub("^CB_","",i) for i in cmds.keys()]))
-    cU.submit_cmd(cmds,{'parallel':'slurm' if useParallel else False,'output':strOut,'gpu':useGPU},core=nCore,memG=mem)
+    cU.submit_cmd(cmds,{'parallel':'slurm' if useParallel else False,'output':strOut,'gpu':useGPU},core=nCore,memG=mem,condaEnv="condaEnvCB")
   cellbenderMergeLog(H5pair,strOut)
   cellbenderMergePdf(H5pair,strOut)
   cellbenderQC(H5pair,strOut)
@@ -112,10 +113,12 @@ def cellbenderQC(H5pair,strOut):
     geneRMr={}
     for one in H5pair:
       print("\t"+one)#,": %s vs %s"%(os.path.basename(one['old_path']),os.path.basename(one['new_path']))
-      old_adata = sc.read_10x_h5(H5pair[one]['old_path'])
-      old_adata.var_names_make_unique()
-      new_adata = sc.read_10x_h5(H5pair[one]['new_path'])
-      new_adata.var_names_make_unique()
+      with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        old_adata = sc.read_10x_h5(H5pair[one]['old_path'])
+        old_adata.var_names_make_unique()
+        new_adata = sc.read_10x_h5(H5pair[one]['new_path'])
+        new_adata.var_names_make_unique()
       cellN+=[{sampleNameCol:one,'cell_number':new_adata.shape[0]}]
       sc.pp.filter_cells(old_adata,min_counts=1)
       sc.pp.filter_cells(new_adata,min_counts=1)

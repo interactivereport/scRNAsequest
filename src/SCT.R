@@ -95,6 +95,8 @@ mergeAllbatches <- function(strRDS,strOut,core){
   gc()
   message("\t\tMerging ...@",Sys.time())
   D <- merge(Dlist[[1]],Dlist[-1])
+  # cannot save Assay5 with h5seurat without variablefeatures : https://github.com/mojaveazure/seurat-disk/issues/27
+  if(is.null(VariableFeatures(D))) VariableFeatures(D) <- SelectIntegrationFeatures(Dlist,verbose=F)
   rm(Dlist)
   gc()
   message("\t\tFinished @",Sys.time())

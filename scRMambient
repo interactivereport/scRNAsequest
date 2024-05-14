@@ -36,7 +36,7 @@ done
 
 set -e
 if [[ -f "$meta" ]]; then
-  env -i meta="$meta" nCore=$nCore parallel=$parallel src="$src" bash -c 'source $src/.env;eval $condaEnv;export LD_LIBRARY_PATH=/gpfs/data01/glasslab/bioinformatics/condaEnv/scRNAsequest/lib;python -u $src/scRMambient.py $meta $nCore $parallel 2>&1 | tee -a scRMambient.$(date +%Y%m%d).log'
+  env -i meta="$meta" nCore=$nCore parallel=$parallel src="$src" bash -c 'source $src/.env;eval $condaEnv;python -u $src/scRMambient.py $meta $nCore $parallel 2>&1 | tee -a scRMambient.$(date +%Y%m%d).log'
 else
   echo "scRMambient: Remove background RNA"
   echo "https://cellbender.readthedocs.io/en/latest/usage/index.html"

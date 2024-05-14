@@ -21,7 +21,7 @@ def parallel_cmd(funcs,core=1):
     a=pool.map(smap,funcs)
   return a
 ## parallel job management
-def submit_cmd(cmds,config,core=None,memG=0):
+def submit_cmd(cmds,config,core=None,memG=0,condaEnv="condaEnv"):
   #cmds = {k:v for i, (k,v) in enumerate(cmds.items()) if not v is None}
   if len(cmds)==0:
     return
@@ -40,7 +40,7 @@ def submit_cmd(cmds,config,core=None,memG=0):
       except:
         print("%s process return error!"%one)
   elif parallel=="sge":
-    jID = qsub(cmds,config['output'],core,memG=memG)
+    jID = qsub(cmds,config['output'],core,memG=memG,condaEnv=condaEnv)
     print("----- Monitoring all submitted SGE jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
     cmdN = {one:1 for one in cmds.keys()}
@@ -60,7 +60,7 @@ def submit_cmd(cmds,config,core=None,memG=0):
     if memG==0 and config.get('memory') is not None and config.get('memory').endswith("G"):
       print("\tAssign memory according to config: ",config.get('memory'))
       memG=int(re.sub("G$","",config.get('memory')))
-    jID = sbatch(cmds,config['output'],core,memG=memG,jID=config.get("jobID"),gpu=config.get('gpu'))
+    jID = sbatch(cmds,config['output'],core,memG=memG,jID=config.get("jobID"),gpu=config.get('gpu'),condaEnv=condaEnv)
     print("\t----- Monitoring all submitted SLURM jobs: %s ..."%jID)
     ## in case of long waiting time to avoid Recursion (too deep)
     cmdN = {one:1 for one in cmds.keys()}
@@ -80,7 +80,7 @@ def submit_cmd(cmds,config,core=None,memG=0):
     print("ERROR: unknown parallel setting: %s"%parallel)
     exit()
 
-def qsub(cmds,strPath,core,memG=0,jID=None):
+def qsub(cmds,strPath,core,memG=0,jID=None,condaEnv="condaEnv"):
   if jID is None:
     jID = "j%d"%random.randint(10,99)
   strWD = os.path.join(strPath,jID)
@@ -99,7 +99,8 @@ def qsub(cmds,strPath,core,memG=0,jID=None):
                             .replace('wkPath',strWD)
                             .replace("jID",jID)
                             .replace("sysPath",strPipePath)
-                            .replace("strCMD",cmds[one]))
+                            .replace("strCMD",cmds[one])
+                            .replace("condaEnv",condaEnv))
     strF=os.path.join(strWD,"%s.sh"%one)
     with open(strF,"w") as f:
       f.write(oneScript)
@@ -162,7 +163,7 @@ def qstat(jID,strPath,cmds,cmdN,core,memG,failedJobs):
   #  time.sleep(60)
   #  qstat(jID,strPath,cmds,core,iN)
 
-def sbatch(cmds,strPath,core,memG=0,jID=None,gpu=False):
+def sbatch(cmds,strPath,core,memG=0,jID=None,gpu=False,condaEnv="condaEnv"):
   gpu=False if gpu is None else gpu
   sbatchScript=sbatchScriptCPU
   if gpu:
@@ -181,7 +182,8 @@ def sbatch(cmds,strPath,core,memG=0,jID=None,gpu=False):
                             .replace('wkPath',strWD)
                             .replace("jID",jID)
                             .replace("sysPath",strPipePath)
-                            .replace("strCMD",cmds[one]))
+                            .replace("strCMD",cmds[one])
+                            .replace("condaEnv",condaEnv))
     strF=os.path.join(strWD,"%s.sh"%one)
     with open(strF,"w") as f:
       f.write(oneScript)

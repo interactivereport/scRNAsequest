@@ -1,4 +1,4 @@
-import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools, psutil,gc,resource
+import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools,gc,resource
 from datetime import datetime
 import scanpy as sc
 import anndata as ad
@@ -124,7 +124,7 @@ def getData_batch(strMeta,sID,strOut,dblScore=True):
   if len(adatals)==1:
     adata = adatals[0]
     adata.obs[batchKey]=meta[sID][0]
-    adata.index += ("-" + meta[sID][0])
+    adata.obs.index += ("-" + meta[sID][0])
   else:   
     adata = ad.concat(adatals,
       join="outer",

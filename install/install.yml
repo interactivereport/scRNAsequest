@@ -83,7 +83,6 @@ dependencies:
   - pypdf2
   - openssl
   - pyopenssl
-  - pytables=3.9.2
   - pdf2image
   - pillow=10.3.0
   - r-globals
@@ -96,4 +95,7 @@ dependencies:
   - bioconductor-bsgenome.hsapiens.ucsc.hg38
   - bioconductor-jaspar2020
   - bioconductor-tfbstools
+  - libacl
+  - attr
   - r-signac=1.13.0
+  - openblas-devel=0.3.21 #for RcppPlanc

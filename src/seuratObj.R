@@ -25,7 +25,7 @@ seuratObj <- function(strRDS,strH5ad){
     dimnames(X) <- list(X[,1],paste(key,1:ncol(X),sep="_"))
     D[[keyname]] <- CreateDimReducObject(embeddings=as.matrix(X[rownames(D@meta.data),-1]),key=paste0(key,"_"),assay=D@active.assay)
   }
-  message("Saving h5seurat")
+  message("Saving seurat rds")
   suppressMessages(SeuratDisk::SaveH5Seurat(D,filename=gsub("h5ad$","h5seurat",strH5ad),overwrite=T))
 }
 
