@@ -138,6 +138,10 @@ def getData_batch(strMeta,sID,strOut,dblScore=True,subcore=5):
   adata.var = adata.var.iloc[:,varInx]
   adata.var.columns=[varCol[i] for i in varInx]
   print("\tsaving adata")
+  #check the column type of obs
+  obs_col_type = adata.obs.applymap(type).nunique()
+  for one in obs_col_type.index[obs_col_type>1]:
+    adata.obs[one] = adata.obs[one].astype("str")
   adata.write(strH5ad)
 
 def splitMeta(meta,strOut):
