@@ -53,7 +53,7 @@ def Check10Xmtx(strDir):
         with open(one,"rb") as Fin:
           with gzip.open("%s.gz"%one,"wb") as Fout:
             shutil.copyfileobj(Fin, Fout)
-def getData_one(oneMeta,sID,strOut,dblScore=True):
+def getData_one(oneMeta,sID,strOut,dblScore=True,subcore=5):
   print("\t%s"%oneMeta[sID])
   if os.path.isdir(oneMeta[UMIcol]):
     if os.path.isfile(os.path.join(oneMeta[UMIcol],"DGE.mtx")):#Parse biosciences
@@ -107,10 +107,10 @@ def getData_one(oneMeta,sID,strOut,dblScore=True):
       adata.obs[one]=oneMeta[one]
   # add dbl detection
   if dblScore:
-    adata=dbl.singleDBL(strOut,oneMeta[UMIcol],oneMeta[sID],adata)
+    adata=dbl.singleDBL(strOut,oneMeta[UMIcol],oneMeta[sID],adata,subcore)
   return adata
 
-def getData_batch(strMeta,sID,strOut,dblScore=True):
+def getData_batch(strMeta,sID,strOut,dblScore=True,subcore=5):
   print("processing one sample batch UMI ...")
   strH5ad = re.sub("csv$","h5ad",strMeta)
   if os.path.isfile(strH5ad):
@@ -118,8 +118,8 @@ def getData_batch(strMeta,sID,strOut,dblScore=True):
     return
   meta = pd.read_csv(strMeta)
   adatals = []
-  with multiprocessing.Pool(processes=min(5,meta.shape[0])) as pool:
-    adatals = pool.starmap(getData_one,[[row,sID,strOut,dblScore] for idx, row in meta.iterrows()])
+  with multiprocessing.Pool(processes=min(subcore,meta.shape[0])) as pool:
+    adatals = pool.starmap(getData_one,[[row,sID,strOut,dblScore,subcore] for idx, row in meta.iterrows()])
   print("\tmerging samples ...")
   if len(adatals)==1:
     adata = adatals[0]
@@ -211,7 +211,8 @@ def getData(meta,config,strH5ad):
     if os.path.isfile(oneH5ad):
       print("\tUsing previous batch reading result: %s\nPlease remove/rename above file if new batch reading is required!"%oneH5ad)
       continue
-    cmd.append("python -u %s/obtainData.py %s %s %s %s"%(strPipePath,one,sID,config["output"],dbl))
+    cmd.append("python -u %s/obtainData.py %s %s %s %s %d"%(strPipePath,one,sID,config["output"],dbl,
+    	5 if config.get("subprocess") is None else config["subprocess"]))
   if len(cmd)>0:
     cU.submit_cmd({"ReadB{0:03}".format(i):cmd[i] for i in range(len(cmd))},config)#"ReadB{0:03}".format(i)
   print("merging reading batches")
@@ -227,7 +228,7 @@ def main():
     msgError("ERROR: sample meta files, project output path and sample name column header are required!")
   if len(sys.argv)==3:
     return mergeBatch(sys.argv[1],sys.argv[2])
-  getData_batch(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]=='True')
+  getData_batch(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4]=='True',int(sys.argv[5]))
 
 if __name__ == "__main__":
   main()

@@ -31,15 +31,15 @@ def dbl(config,strH5ad,adata):
   meta = pd.read_csv(strDBL,index_col=0,header=0)
   adata.obs = adata.obs.merge(meta,how='left',left_index=True,right_index=True)
   return adata
-def singleDBL(strOut,strUMI,sID,adata):
+def singleDBL(strOut,strUMI,sID,adata,subcore=5):
   print("\t\tstarting doublet finding ...")
   os.makedirs(os.path.join(strOut,"dbl"),exist_ok=True)
   strBarcode= "%s_barcode.csv"%os.path.join(strOut,"dbl",sID)
   with open(strBarcode,"w") as f:
     f.write("\n".join(adata.obs.index))
   strDBL = "%s.csv"%os.path.join(strOut,"dbl",sID)
-  cmd = "Rscript %s %s %s %s &> %s/%s.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
-                            strUMI,strDBL,strBarcode,os.path.dirname(strDBL),sID)
+  cmd = "Rscript %s %s %s %s %d &> %s/%s.log"%(os.path.join(os.path.dirname(os.path.realpath(__file__)),"dbl.R"),
+                            strUMI,strDBL,strBarcode,subcore,os.path.dirname(strDBL),sID)
   if os.path.isfile(strDBL):
     print("Using previous scDBL results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strDBL)
   else:

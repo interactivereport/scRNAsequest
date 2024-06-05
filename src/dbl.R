@@ -34,7 +34,7 @@ dbl <- function(strH5ad,batch,strOut){
   saveRDS(DBL,paste0(strOut,".rds"))
   write.csv(DBL[,c("scDblFinder.class","scDblFinder.score")],file=strOut)
 }
-dbl_single <- function(strUMI,strOut,strBarcode="library_id"){
+dbl_single <- function(strUMI,strOut,strBarcode="library_id",subcore=5){
   if(dir.exists(strUMI)){
     X <- Read10X(strUMI)
   }else if(grepl("h5$",strUMI)){
@@ -52,7 +52,7 @@ dbl_single <- function(strUMI,strOut,strBarcode="library_id"){
   message(ncol(X),"\tcells for scDblFinder")
   DBL <- tryCatch(
     {
-      Xdbl <- scDblFinder(X,BPPARAM=MulticoreParam(max(1,parallelly::availableCores()-2)))
+      Xdbl <- scDblFinder(X,BPPARAM=MulticoreParam(subcore))
       data.frame(Xdbl@colData)
     },
     error=function(cond){
@@ -97,17 +97,19 @@ dbl_oneplot <- function(DD,gTitle=""){
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
+  subcore=5
   args = commandArgs(trailingOnly=TRUE)
   if(length(args)<2) stop("Path to h5ad file and the output file are required!")
   strH5ad <- args[1]
   if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
   strOut <- args[2]
   if(length(args)>2) batchKey <- args[3]
+  if(length(args)>3) subcore <- as.numeric(args[4])
   
   if(grepl("h5ad$",strH5ad)){
     print(system.time(dbl(strH5ad,batchKey,strOut)))
   }else{
-    print(system.time(dbl_single(strH5ad,strOut,batchKey)))
+    print(system.time(dbl_single(strH5ad,strOut,batchKey,subcore)))
   }
   
 }
