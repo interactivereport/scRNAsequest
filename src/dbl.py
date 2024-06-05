@@ -32,7 +32,7 @@ def dbl(config,strH5ad,adata):
   adata.obs = adata.obs.merge(meta,how='left',left_index=True,right_index=True)
   return adata
 def singleDBL(strOut,strUMI,sID,adata,subcore=5):
-  print("\t\tstarting doublet finding ...")
+  print("\t\t%s: starting doublet finding ..."%sID)
   os.makedirs(os.path.join(strOut,"dbl"),exist_ok=True)
   strBarcode= "%s_barcode.csv"%os.path.join(strOut,"dbl",sID)
   with open(strBarcode,"w") as f:
@@ -46,7 +46,7 @@ def singleDBL(strOut,strUMI,sID,adata,subcore=5):
     subprocess.run(cmd,shell=True,check=True)#,stdout=subprocess.PIPE
   if not os.path.isfile(strDBL):
     msgError("\tERROR: doublet finding failed!")
-  print("\t\tcompleted doublet finding")
+  print("\t\t%s: completed doublet finding"%sID)
   # merge dbl results
   meta = pd.read_csv(strDBL,index_col=0,header=0)
   adata.obs = adata.obs.merge(meta,how='left',left_index=True,right_index=True)
