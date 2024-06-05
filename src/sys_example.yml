@@ -4,22 +4,6 @@ refDir: # the absolute path to the Seurat reference folder if building reference
 minCell: 50
 readSampleChunk: 50
 powerby: # the message at the end
-ref: # list refrence data could be used for Seurat Reference Mapping, one example is from azimuth list below
-- human_cortex
-human_cortex:
-  ref_file: https://zenodo.org/record/4546932/files/ref.Rds # local file absolute path can be provided as well
-  ref_link: https://azimuth.hubmapconsortium.org/references/
-  ref_src: single nuclei
-  ref_platform: SNARE-seq2
-  ref_assay: refAssay
-  ref_neighbors: refdr.annoy.neighbors
-  ref_reduction: refDR
-  ref_reduction.model: refUMAP
-  ref_label:
-  - class
-  - cluster
-  - subclass
-  - cross_species_cluster
 methods:
   SCT:
   - SCT.py
