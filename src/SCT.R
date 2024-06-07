@@ -5,45 +5,38 @@ PKGloading <- function(){
   require(sctransform)
   require(rhdf5)
   require(Matrix)
-  #require(future) #no effect on SCT
+  require(future) #no effect on SCT
   #plan("multiprocess", workers = 8)
   require(peakRAM)
   require(BiocParallel)
-  options(future.globals.maxSize=8000*1024^2)
+  options(future.globals.maxSize=50*1024^3)
 }
 
 processH5ad <- function(strH5ad,batch,strOut,expScale,bPrepSCT,core=10){
   if(is.null(bPrepSCT)) bPrepSCT <- F
-  X <- getX(strH5ad,batchID=batch,core=core)
-  gID <- setNames(rownames(X[[1]]),gsub("_","-",rownames(X[[1]])))
-  X <- lapply(X,function(one){
-    rownames(one) <- names(gID)
-    return(one)
-  })
-  #rownames(X) <- names(gID) #gsub("_","-",rownames(X))
-  D <- CreateSeuratObject(counts=X,
-                          project="SCT",
-                          meta.data=getobs(strH5ad))
-  rm(X)
-  gc()
   if(is.null(expScale) || expScale==0){
     message("\t\t--> SCT normalization is selected <--")
-    Dmedian <- NA
-    if(!bPrepSCT){
-      message("\t***median UMI is used to normalize across samples by scale_factor from vst***")
-      expScale <- Dmedian <- median(colSums(D@assays$RNA@counts))#min(colSums(D@assays$RNA@counts))#
-    }
-    D <- SCTransform(D,vst.flavor="v2",
-                     return.only.var.genes = FALSE,
-                     scale_factor=medianUMI)
-    if(!is.null(bPrepSCT) && bPrepSCT){
+    D <- getSCTransform(strH5ad,batch,core,sctAssay=T)
+    gID <- D@misc$gID
+    if(bPrepSCT){
       message("\t***PrepSCTFindMarkers***\n\t\tMight take a while ...")
+    	#plan("multisession",workers=core) #seems like it is very easy to broke Error: MultisessionFuture Post-mortem diagnostic: No process exists with this PID, i.e. the localhost worker is no longer alive.
       D <- PrepSCTFindMarkers(D)
     }
-    D[["SCT"]] <- split(D[["SCT"]],f=unlist(DDnorm[[batch]],use.names=F))
   }else{
     message("\t\t--> LogNormal normalization is selected <--")
     message("\tScale: ",expScale)
+    X <- getX(strH5ad,batchID=batch,core=core)
+    gID <- setNames(rownames(X[[1]]),gsub("_","-",rownames(X[[1]])))
+    X <- lapply(X,function(one){
+    	rownames(one) <- names(gID)
+    	return(one)
+    })
+    D <- CreateSeuratObject(counts=X,
+    												project="SCT",
+    												meta.data=getobs(strH5ad))
+    rm(X)
+    gc()
     D <- NormalizeData(D,assay="RNA",normalization.method = "LogNormalize", scale.factor = expScale,verbose = FALSE)
   }
   saveX(D,strOut,gID)
@@ -52,10 +45,10 @@ saveX <- function(D,strH5,ggID){
   message("\tsaving expression: ",strH5)
   saveRDS(D,paste0(strH5,".rds"))
   if("SCT"%in%names(D)){
-    D[["SCT"]] <- JoinLayers(D[["SCT"]])
-    X <- Matrix::t(Matrix::Matrix(D@assays$SCT@layers$data,sparse=T))
-    cID <- D@assays$SCT@cells[['data']]
-    gID <- D@assays$SCT@features[['data']]
+    #D[["SCT"]] <- JoinLayers(D[["SCT"]])
+    X <- Matrix::t(Matrix::Matrix(D@assays$SCT@data,sparse=T))
+    cID <- colnames(D@assays$SCT@data)
+    gID <- rownames(D@assays$SCT@data)
   }else{
     D[["RNA"]] <- JoinLayers(D[["RNA"]])
     X <- Matrix::t(Matrix::Matrix(D@assays$RNA@layers$data,sparse=T))
@@ -73,15 +66,8 @@ saveX <- function(D,strH5,ggID){
   #h5write(colnames(X),file=strH5,name="col_names")
   h5closeAll()
   
-  #strF <- gsub("h5$","info.h5",strH5)
-  #a <- file.remove(strF)
-  #h5write(rownames(X),file=strF,name="cID")
-  #h5write(gID[colnames(X)],file=strF,name="gID")
-  #h5write(expScale,file=strF,name="scaleFactor")
-  #h5closeAll()
   cat(paste(cID,collapse="\n"),sep="",file=gsub("h5$","cID",strH5))
   cat(paste(ggID[gID],collapse="\n"),sep="",file=gsub("h5$","gID",strH5))
-  #cat(expScale,file=gsub("h5$","scaleF",strH5))
 }
 mergeAllbatches <- function(strRDS,strOut,core){
   D <- NULL
@@ -130,7 +116,7 @@ main <- function(){
     scaleF=as.numeric(args[5])
     if(length(args)>5) batchKey <- args[6]
     
-    source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
+    source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/SCTransform.R"),chdir=T)
     print(peakRAM(processH5ad(strH5ad,batchKey,strOut,scaleF,config$PrepSCTFindMarkers,
                               ifelse(is.null(config$subprocess),5,config$subprocess))))
   }else{

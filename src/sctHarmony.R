@@ -4,74 +4,27 @@ PKGloading <- function(){
   require(harmony)
   require(peakRAM)
   require(BiocParallel)#parallelly::availableCores()-2
-  #register(MulticoreParam())#parallelly::availableCores()-2
   require(future)
   options(stringsAsFactors = FALSE,
-          future.globals.maxSize=12*1024^3,
+          future.globals.maxSize=50*1024^3,
           future.seed=TRUE)
-  plan("multicore")
+  #plan("multicore",workers=)
 }
 # using seurat5
 processV5 <- function(strH5ad,batch,strOut,geneN,core=10){
   assayName <- "sctHarmony"
   dimN <- 50
-  X <- getX(strH5ad,batchID=batch,core=core)
-  gID <- setNames(rownames(X[[1]]),gsub("_","-",rownames(X[[1]])))
-  X <- lapply(X,function(one){
-    rownames(one) <- names(gID)
-    return(one)
-  })
-  meta <- getobs(strH5ad)
-  Dlist <- bplapply(names(X),
-                function(id){
-                  message("\tSCT ",id,"\t",which(names(X)==id),"/",length(X),appendLF=F)
-                  one <- tryCatch({
-                    DD <- CreateSeuratObject(counts=X[id],
-                                            project=assayName,
-                                            meta.data=meta[colnames(X[[id]]),])
-                    SCTransform(DD,vst.flavor="v2",
-                                new.assay.name=assayName,
-                                return.only.var.genes=FALSE,
-                                verbose=FALSE)
-                  },error=function(ee){
-                    message("\t\tError: ",conditionMessage(ee))
-                    DD <- SCTransform(D,vst.flavor="v1",
-                                     return.only.var.genes = FALSE,
-                                     new.assay.name=assayName,
-                                     verbose=FALSE)
-                    return(DD)
-                    })
-                  rm(DD)
-                  gc()
-                  return(one)
-                },
-                BPPARAM = MulticoreParam(workers=min(core,length(X),max(1,parallelly::availableCores()-2)),
-                                         tasks=length(X)))
-  rm(X)
-  gc()
+  hvg <- T
   strHVG <- paste0(dirname(strH5ad),"/hvg.csv")
   if(file.exists(strHVG)){
-    message("\tUsing Highly Variable Features from scanpy.highly_variable_genes")
-    hvg <- data.table::fread(strHVG,header=T)
-    selGene <- intersect(unlist(hvg[[1]]),Reduce(intersect,lapply(Dlist,function(one)return(rownames(one[[assayName]])))))
-  }else{
-    message("\tFinding Highly Variable Features by Seurat.SelectIntegrationFeatures ...")
-    selGene <- SelectIntegrationFeatures(Dlist,nfeatures=geneN)
+  	message("\tUsing Highly Variable Features from scanpy.highly_variable_genes")
+  	hvg <- unlist(data.table::fread(strHVG,header=T)[[1]])
   }
-  message("\t\t",length(selGene)," features")
-  if(length(selGene)<100) stop(paste0("Two few features (",length(selGene),")! Please increase the number of harmonyBatchGene (remove tmp folder)!"))
-  #saveRDS(Dlist,file="sctHarmony.rds")
+  D <- getSCTransform(strH5ad,batch,core,assayName=assayName,geneN=geneN,hvg=hvg)
+  plan("multicore",workers=core)
+  D[[assayName]] <- JoinLayers(D[[assayName]])
   message("\tsaving ...")
-  D <- NULL
-  for(i in 1:length(Dlist)){
-    message("\t\t",Dlist[[1]]@meta.data[1,batch])
-    oneD <- data.frame(t(Dlist[[1]]@assays[[assayName]]@scale.data[selGene,]),check.names=F)
-    if(is.null(D)) D <- oneD
-    else D <- rbind(D,oneD)
-    Dlist[[1]] <- NULL
-    gc()
-  }
-  saveRDS(D,strOut)
+  saveRDS(D[[assayName]]@layers$scale.data,strOut)
 }
 
 # following the discussion @https://github.com/immunogenomics/harmony/issues/41
@@ -154,8 +107,9 @@ processSCT <- function(strH5ad,batch,strOut,geneN){
   rm(Dlist)
   saveRDS(D,strOut)
 }
-processPCA <- function(strPCA,strOut,batch,clusterResolution,cluster_method){
+processPCA <- function(strPCA,strOut,batch,clusterResolution,cluster_method,core){
   message("starting Harmony ...")
+	plan("multicore",workers=core)
   PCA <- getobsm(strPCA,"X_pca")
   meta <- getobs(strPCA)
   if(length(unique(meta[[batch]]))>1){
@@ -204,9 +158,7 @@ main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"
   args = commandArgs(trailingOnly=TRUE)
-  
-  
-  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
+  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/SCTransform.R"),chdir=T)
   if(length(args)<2) stop("Path to h5ad file, the output file and config file are required!")
   
   task <- args[1]
@@ -215,7 +167,6 @@ main <- function(){
     if(!file.exists(strH5ad)) stop(paste0("H5ad file (",strH5ad,") does not exist!"))
     strOut <- args[3]
     strConfig <- args[4]
-    
     if(!file.exists(strConfig)){
       stop(paste0("Config file (",strConfig,") does not exist!"))
     }else{
@@ -229,10 +180,17 @@ main <- function(){
     strPCA <- args[2]
     if(!file.exists(strPCA)) stop(paste0("PCA file (",strPCA,") does not exist!"))
     strOut <- args[3]
-    clu_reso <- as.numeric(args[4])
-    clu_method <- args[5]
-    if(length(args)>5) batchKey <- args[6]
-    print(peakRAM(processPCA(strPCA,strOut,batchKey,clu_reso,clu_method)))
+    strConfig <- args[4]
+    if(!file.exists(strConfig)){
+    	stop(paste0("Config file (",strConfig,") does not exist!"))
+    }else{
+    	config <- yaml::read_yaml(strConfig)
+    }
+    clu_reso <- ifelse(is.null(config$clusterResolution),0.8,config$clusterResolution)
+    clu_method <- ifelse(is.null(config$clusterMethod),"Louvain",config$clusterMethod)
+    subcore <- ifelse(is.null(config$subprocess),5,config$subprocess)
+    if(length(args)>4) batchKey <- args[5]
+    print(peakRAM(processPCA(strPCA,strOut,batchKey,clu_reso,clu_method,subcore)))
   }else{
     stop(paste("Unknown sctHarmony task:",task))
   }

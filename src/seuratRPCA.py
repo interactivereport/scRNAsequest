@@ -34,10 +34,8 @@ def main():
   strOut = "%s.csv.gz"%os.path.join(config["output"],"SeuratRPCA",config["prj_name"])#strH5ad.replace("raw.h5ad","seurat_rpca.csv.gz")
   
   
-  cmd = "Rscript %s %s %s %.2f %s |& tee %s/SeuratRPCA.log"%(os.path.join(strPipePath,"seuratRPCA.R"),
-                            strH5ad,strOut,
-                            0.8 if config.get('clusterResolution') is None else config.get('clusterResolution'),
-                            'Louvain' if config.get('clusterMethod') is None else config.get('clusterMethod'),
+  cmd = "Rscript %s %s %s %s |& tee %s/SeuratRPCA.log"%(os.path.join(strPipePath,"seuratRPCA.R"),
+                            strH5ad,strConfig,strOut,
                             os.path.dirname(strOut))
   if os.path.isfile(strOut):
     print("Using previous SeuratRPCA results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strOut)

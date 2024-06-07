@@ -1,24 +1,15 @@
-
 PKGloading <- function(){
   require(Seurat)
   require(peakRAM)
   #require(RcppCNPy)
   #require(readr)
   options(stringsAsFactors = FALSE,
-          future.globals.maxSize=12*1024^3,
+          future.globals.maxSize=50*1024^3,
           future.seed=TRUE)
 }
-
-runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
-  D <- CreateSeuratObject(counts=getX(strH5ad),
-                          project="RPCA",
-                          meta.data=getobs(strH5ad))
-  
-  D[["RNA"]] <- split(D[["RNA"]],f=unlist(D[[batch]],use.names=F))
-  message("\tSCT ...")
-  D <- SCTransform(D,vst.flavor="v2",
-                   return.only.var.genes=F,
-                   verbose=F)
+runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution,subcore=5,geneN=3000){
+  D <- getSCTransform(strH5ad,batch,subcore,geneN=geneN,sctAssay=T,only.var.genes=T)
+  plan("multisession",workers=subcore)
   message("\tPCA ...")
   D <- RunPCA(D,npcs=50,verbose = FALSE)
   dr <- "pca"
@@ -33,7 +24,6 @@ runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
   }
   message("\tFind neighbors ...")
   D <- FindNeighbors(D,reduction=dr,dims = 1:50,verbose=F)
-  
   message("\tClustering ",cluster_method," (",clusterResolution,") ...")
   if(grepl("Leiden",cluster_method,ignore.case=T)){
     D <- FindClusters(D,verbose = FALSE,resolution=clusterResolution,method="igraph",algorithm=4)
@@ -57,18 +47,25 @@ runRPCA <- function(strH5ad,batch,strOut,cluster_method,clusterResolution){
   #X <- cbind(cID=rownames(X),X)
   data.table::fwrite(cbind(cID=rownames(X),X),strOut)
 }
-
 main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"#
   args = commandArgs(trailingOnly=TRUE)
   if(length(args)<2) stop("Path to 2 files are required!")
   strH5ad <- args[1]
-  clusterResolution <- as.numeric(args[3])
-  cluster_method <- args[4]
-  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
+  strConfig <- args[2]
+  if(!file.exists(strConfig)){
+  	stop(paste0("Config file (",strConfig,") does not exist!"))
+  }else{
+  	config <- yaml::read_yaml(strConfig)
+  }
+  clusterResolution <- ifelse(is.null(config$clusterResolution),0.8,config$clusterResolution)
+  cluster_method <- ifelse(is.null(config$clusterMethod),"Louvain",config$clusterMethod)
+  subcore <- ifelse(is.null(config$subprocess),5,config$subprocess)
+  geneN <- ifelse(is.null(config$harmonyBatchGene),3000,config$harmonyBatchGene)
+  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/SCTransform.R"),chdir=T)
   print(peakRAM(
-    runRPCA(strH5ad,batchKey,args[2],cluster_method,clusterResolution)))
+    runRPCA(strH5ad,batchKey,args[2],cluster_method,clusterResolution,subcore,geneN)))
 }
 
 main()

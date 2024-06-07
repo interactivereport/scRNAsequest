@@ -76,11 +76,11 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
   print("\tThe sct PCA step for all samples are completed with peak memory %.2fG!"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
   return None
 
-def runRharmony(strPCA,strMeta,clusterResolution,clusterMethod):
+def runRharmony(strPCA,strMeta,strConfig):
   clusterResolution=0.8 if clusterResolution is None else clusterResolution
   clusterMethod='Louvain' if clusterMethod is None else clusterMethod
-  cmd = "Rscript %s Harmony %s %s %.2f %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
-                              strPCA,strMeta,clusterResolution,clusterMethod,os.path.dirname(strMeta))
+  cmd = "Rscript %s Harmony %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
+                              strPCA,strMeta,strConfig,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
 def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,clusterResolution,clusterMethod,subCore):
@@ -90,7 +90,7 @@ def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,clusterResolution,cluste
     return(meta)
   strPCA = re.sub("rds$","pca.h5ad",strMeta)
   sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore)
-  runRharmony(strPCA,strMeta,clusterResolution,clusterMethod)
+  runRharmony(strPCA,strMeta,strConfig)
   if not os.path.isfile(strMeta):
     msgError("\tERROR: sctHarmony failed in final harmony step!")
   meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
