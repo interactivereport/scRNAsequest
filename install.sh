@@ -66,6 +66,7 @@ getSSL () {
 		b+="  GIT_SSL_CAPATH: $1\n"
 		b+="  REQUESTS_CA_BUNDLE: $1\n"
 		b+="  SSL_CERT_FILE: $1\n"
+		b+="  CURL_CA_BUNDLE: $1\n"
 	fi
   echo "$b"
 }
