@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import scanpy as sc
 import pandas as pd
 warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=UserWarning)
 logging.disable()
 
 UMIcol="h5path"
