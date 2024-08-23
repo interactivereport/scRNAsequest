@@ -1,4 +1,4 @@
-import os, math, warnings, logging
+import os, math, warnings, logging, re
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import scanpy as sc
