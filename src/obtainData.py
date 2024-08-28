@@ -31,7 +31,8 @@ def getIntronExon(strF,cID):
   IEcount = pd.read_csv(strF,sep=" ",index_col=0)
   if len(list(set(IEcount.index) & set(cID)))<len(cID):
     IEcount.index = list(IEcount.index+"-1")
-  IEcount = IEcount.loc[cID,:]
+  #IEcount = IEcount.loc[cID,:]
+  IEcount = pd.DataFrame(index=cID).join(IEcount)
   IErate = IEcount.apply(lambda x:x/sum(x),axis=1)
   IErate.columns = [a.replace("count","rate") for a in IErate.columns]
   IE = IEcount.merge(IErate,left_index=True,right_index=True)
