@@ -15,16 +15,26 @@ processV5 <- function(strH5ad,batch,strOut,geneN,core=10){
   assayName <- "sctHarmony"
   dimN <- 50
   hvg <- T
-  strHVG <- paste0(dirname(strH5ad),"/hvg.csv")
+  strHVG <- file.path(dirname(strH5ad),"hvg.csv")
   if(file.exists(strHVG)){
   	message("\tUsing Highly Variable Features from scanpy.highly_variable_genes")
   	hvg <- unlist(data.table::fread(strHVG,header=T)[[1]])
   }
   D <- getSCTransform(strH5ad,batch,core,assayName=assayName,geneN=geneN,hvg=hvg)
-  plan("multicore",workers=core)
+  #plan("multicore",workers=core) #seems not working for joinLayers
   D[[assayName]] <- JoinLayers(D[[assayName]])
   message("\tsaving ...")
-  saveRDS(D[[assayName]]@layers$scale.data,strOut)
+  if(grepl("rds$",strOut)){
+  	saveRDS(D[[assayName]]@layers$scale.data,strOut)
+  }else if(grepl("h5$",strOut)){
+  	h5write(D[[assayName]]@layers$scale.data,strOut,"X")
+  	h5write(D[[assayName]]@cells[['scale.data']],strOut,"obs_name")
+  	h5write(D[[assayName]]@features[['scale.data']],strOut,"var_name")
+  }else{
+  	message("\t\t*** Warning: unknown file suffix: ",basename(strOut))
+  	message("\t\t\t\tSaving full seurat object")
+  	saveRDS(D,paste0(strOut,".rds"))
+  }
 }
 
 # following the discussion @https://github.com/immunogenomics/harmony/issues/41

@@ -40,18 +40,24 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
   cN=0
   sctD=None
   parallelCMD = []
+  strSCTsuffix = ".h5" # ".rds"
   for oneH5ad in h5adList:
-    strSCT = re.sub(".h5ad$",".rds",oneH5ad)
+    strSCT = re.sub(".h5ad$",strSCTsuffix,oneH5ad)
     if not os.path.isfile(strSCT):
       parallelCMD.append(functools.partial(runOneSCT,oneH5ad,strConfig,strSCT))
   if len(parallelCMD)>0:
     metaList=cU.parallel_cmd(parallelCMD,min(subCore,len(parallelCMD)))
   print("Reading batches ...")
   for oneH5ad in h5adList:
-    strSCT = re.sub(".h5ad$",".rds",oneH5ad)
+    strSCT = re.sub(".h5ad$",strSCTsuffix,oneH5ad)
+    print("\t",os.path.basename(strSCT))
     if not os.path.isfile(strSCT):
       msgError("\tERROR: %s sctHarmony failed in SCT step!"%os.path.basename(oneH5ad))
-    oneD=ad.AnnData(pandas2ri.rpy2py_dataframe(readRDS(strSCT)))
+    if strSCT.endswith('rds'):
+    	oneD=ad.AnnData(pandas2ri.rpy2py_dataframe(readRDS(strSCT)))
+    elif strSCT.endswith('h5'):
+    	with h5py.File(strSCT,'r') as f:
+    		oneD=ad.AnnData(pd.DataFrame(np.array(f['X']),columns=np.array(f['var_name'],dtype='str'),index=np.array(f['obs_name'],dtype='str')))
     print("***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
     Dlist.append(oneD)
     cN += oneD.shape[0]
