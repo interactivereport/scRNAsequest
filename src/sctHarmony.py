@@ -24,8 +24,8 @@ def msgError(msg):
 
 def runOneSCT(oneH5ad,strConfig,strSCT):
   print("***** process: %s *****"%os.path.basename(oneH5ad))
-  cmd = "Rscript %s SCT %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
-                              oneH5ad,strSCT,strConfig,os.path.dirname(strSCT))
+  cmd = "Rscript %s SCT %s %s %s |& tee %s.log"%(os.path.join(strPipePath,"sctHarmony.R"),
+                              oneH5ad,strSCT,strConfig,strSCT)
   subprocess.run(cmd,shell=True,check=True)
 
 def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):

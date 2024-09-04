@@ -317,7 +317,7 @@ scDEG <- R6Class("scDEG",
                              }
                            }
                          }
-                         if(length(endCol)>0) oneInfo <- cbind(oneInfo[,!colnames(oneInfo)%in%endCol],oneInfo[,endCol])
+                         if(length(endCol)>0) oneInfo <- cbind(oneInfo[,!colnames(oneInfo)%in%endCol],oneInfo[,endCol,drop=F])
                          return(oneInfo)
                        })
                      print(data.frame(meta))
