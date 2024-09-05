@@ -133,14 +133,14 @@ getX <- function(strH5ad,batchID=NULL,useRaw=T,core=5){
   message("\t\textracting counts")
   if(useRaw && sum(grepl("/raw/X",keys$group))>0){
     message("\t\t\tFound .raw.X")
-    if(keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim']>(2^31-1))
-      stop(paste("Max elements in sparse matrix is 2^31-1, input:",
-                 keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim']))
+  	Xdim <- as.numeric(keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim'])
+    if(is.na(Xdim) || Xdim>(2^31-1))
+      stop(paste("Max allowed element length in sparse matrix is 2^31-1, input:",Xdim))
     X <- h5read(strH5ad,"/raw/X")
   }else{
-    if(keys[grepl("/X",keys$group) & grepl("data",keys$name),'dim']>(2^31-1))
-      stop(paste("Max elements in sparse matrix is 2^31-1, input:",
-                 keys[grepl("/raw/X",keys$group) & grepl("data",keys$name),'dim']))
+  	Xdim <- as.numeric(keys[grepl("/X",keys$group) & grepl("data",keys$name),'dim'])
+    if(is.na(Xdim) || Xdim>(2^31-1))
+      stop(paste("Max allowed element length in sparse matrix is 2^31-1, input:",Xdim))
     X <- h5read(strH5ad,"X")
   }
   message("\t\textracting gene name")
