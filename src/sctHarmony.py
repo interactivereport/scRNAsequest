@@ -83,13 +83,11 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
   return None
 
 def runRharmony(strPCA,strMeta,strConfig):
-  clusterResolution=0.8 if clusterResolution is None else clusterResolution
-  clusterMethod='Louvain' if clusterMethod is None else clusterMethod
   cmd = "Rscript %s Harmony %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
                               strPCA,strMeta,strConfig,os.path.dirname(strMeta))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,clusterResolution,clusterMethod,subCore):
+def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,subCore):
   if os.path.isfile(strMeta):
     print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
     meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
@@ -113,7 +111,6 @@ def main():
 
   strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
   meta = sctHarmony(strH5ad,strConfig,strMeta,config.get('batchCell'),config.get('harmonyBatchGene'),
-    config.get('clusterResolution'),config.get('clusterMethod'),
     subCore=5 if config.get('subprocess') is None else config.get('subprocess'))
 
   for one in meta.columns:
