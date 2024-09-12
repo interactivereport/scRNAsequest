@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random, time,resource,gc
+import subprocess, os, h5py, sys, warnings, re, yaml, logging, glob, functools, random, time,resource,gc,datetime
 import cmdUtility as cU
 from scipy import sparse
 from scipy.sparse import csc_matrix
@@ -35,7 +35,7 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
   h5adList = sorted(bU.splitBatch(strH5ad,os.path.join(os.path.dirname(strPCA),"tmp"),batchCell,batchKey,hvgN))
   if len(h5adList)==0:
     msgError("No h5ad!")
-  print("There are total of %d batches"%len(h5adList))
+  print(datetime.datetime.now(),": There are total of %d batches"%len(h5adList))
   Dlist=[]
   cN=0
   sctD=None
@@ -47,7 +47,8 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
       parallelCMD.append(functools.partial(runOneSCT,oneH5ad,strConfig,strSCT))
   if len(parallelCMD)>0:
     metaList=cU.parallel_cmd(parallelCMD,min(subCore,len(parallelCMD)))
-  print("Reading batches ...")
+  print(datetime.datetime.now(),": Reading batches ...")
+  g=[]
   for oneH5ad in h5adList:
     strSCT = re.sub(".h5ad$",strSCTsuffix,oneH5ad)
     print("\t",os.path.basename(strSCT))
@@ -58,78 +59,93 @@ def sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore=5):
     elif strSCT.endswith('h5'):
     	with h5py.File(strSCT,'r') as f:
     		oneD=ad.AnnData(pd.DataFrame(np.array(f['X']),columns=np.array(f['var_name'],dtype='str'),index=np.array(f['obs_name'],dtype='str')))
-    print("***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
+    		g.append(np.array(f['var_name'],dtype='str'))
+    print(datetime.datetime.now(),": ***** finishing  %d cells and %d genes *****"%(oneD.shape[0],oneD.shape[1]))
     Dlist.append(oneD)
     cN += oneD.shape[0]
     del oneD
     gc.collect()
-    print("\tTotal %d cells\tPeak memory %.2fG"%(cN,resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
-  print("Merging SCT batches ...")
+    print(datetime.datetime.now(),": \tTotal %d cells\tPeak memory %.2fG"%(cN,resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
+  print(datetime.datetime.now(),": Merging SCT batches ...")
   sctD=ad.concat(Dlist,join="outer")
   del Dlist
   gc.collect()
-  print("\tPeak memory %.2fG"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
+  g = list(functools.reduce(set.intersection, map(set, g)))
+  g = random.sample(g,k=min(len(g),int((2**31-1)/sctD.shape[0])))
+  tmpD = ad.AnnData(sctD[:,g].to_df())
+  tmpD.X = csc_matrix(tmpD.X)
+  sctD.raw = tmpD
+  del tmpD
+  gc.collect()
+  print(datetime.datetime.now(),": \tPeak memory %.2fG"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
 
   sctD.X[np.isnan(sctD.X)] = 0
-  print("Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
+  print(datetime.datetime.now(),": Total: %d cells and %d genes"%(sctD.shape[0],sctD.shape[1]))
   batchV=sc.read_h5ad(strH5ad,backed="r").obs[batchKey].copy()
   sctD.obs[batchKey]=batchV[sctD.obs.index]
-  print("PCA ...")
+  print(datetime.datetime.now(),": PCA ...")
   sc.tl.pca(sctD,n_comps=50,svd_solver='arpack')
   with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     sctD.write(strPCA)
-  print("\tThe sct PCA step for all samples are completed with peak memory %.2fG!"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
+  print(datetime.datetime.now(),": \tThe sct PCA step for all samples are completed with peak memory %.2fG!"%(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024**2))
   return None
 
-def runRharmony(strPCA,strMeta,strConfig):
+def runRharmony(strPCA,strH5,strConfig):
   cmd = "Rscript %s Harmony %s %s %s |& tee %s/sctHarmony.log"%(os.path.join(strPipePath,"sctHarmony.R"),
-                              strPCA,strMeta,strConfig,os.path.dirname(strMeta))
+                              strPCA,strH5,strConfig,os.path.dirname(strH5))
   subprocess.run(cmd,shell=True,check=True)
 
-def sctHarmony(strH5ad,strConfig,strMeta,batchCell,hvgN,subCore):
-  if os.path.isfile(strMeta):
-    print("Using previous sctHarmony results: %s\n***=== Important: If a new run is desired, please remove/rename the above file "%strMeta)
-    meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
-    return(meta)
-  strPCA = re.sub("rds$","pca.h5ad",strMeta)
-  sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore)
-  runRharmony(strPCA,strMeta,strConfig)
-  if not os.path.isfile(strMeta):
-    msgError("\tERROR: sctHarmony failed in final harmony step!")
-  meta = pandas2ri.rpy2py_dataframe(readRDS(strMeta))
-  print("sctHarmony completed")
-  return(meta)
+def sctHarmony(strH5ad,strConfig,config):
+	batchCell = config.get('batchCell')
+	hvgN=config.get('harmonyBatchGene')
+	subCore=5 if config.get('subprocess') is None else config.get('subprocess')
+	strHarmony = "%s.h5ad"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
+	if os.path.isfile(strHarmony):
+		print(datetime.datetime.now(),": Using previous harmony results: %s\n\tIf a new run is needed, please rename/remove the above file"%strHarmony)
+		return
+	strPCA = re.sub("h5ad$","pca.h5ad",strHarmony)
+	sct(strH5ad,strConfig,strPCA,batchCell,hvgN,subCore)
+	strHarmonyPCA = re.sub("h5ad","pca.h5",strHarmony)
+	runRharmony(strPCA,strHarmonyPCA,strConfig)
+	if not os.path.isfile(strHarmonyPCA):
+		msgError("Harmony failed in R")
+	with h5py.File(strHarmonyPCA,'r') as f:
+		PCA = np.array(f['PCA']).transpose()
+		cID = np.array(f['obs_name'])
+	print(datetime.datetime.now(),": \tsctHarmony R completed")
+	D = ad.AnnData(pd.DataFrame({"FakeG%d"%i:[0 for j in range(PCA.shape[0])] for i in range(2)},
+		index=cID))
+	D.obsm['X_sctHarmony_pca'] = PCA
+	print(datetime.datetime.now(),": \tFinding Neighbors")
+	sc.pp.neighbors(D,n_neighbors=20,use_rep='X_sctHarmony_pca')
+	print(datetime.datetime.now(),": \tUMAP")
+	sc.tl.umap(D)
+	cMethod = "louvain" if config.get('clusterMethod') is None else config.get('clusterMethod')
+	cResolution = 0.8 if config.get('clusterResolution') is None else config.get('clusterResolution')
+	print(datetime.datetime.now(),": Clustering %s (%f)"%(cMethod,cResolution))
+	if bool(re.search('leiden',cMethod,re.IGNORECASE)):
+		sc.tl.leiden(D,resolution=cResolution)
+	elif bool(re.search('louvain',cMethod,re.IGNORECASE)):
+		sc.tl.louvain(D,resolution=cResolution)
+	else:
+		msgError("unknow clustering method (leiden or louvain): %s"%cMethod)
+	D.obs.columns = [re.sub(cMethod,'sctHarmony_cluster',_) for _ in D.obs.columns]
+	D.obsm['X_sctHarmony_umap'] = D.obsm["X_umap"]
+	del D.obsm["X_umap"]
+	D1 = ad.read_h5ad(strPCA,backed='r')
+	D.obs[batchKey] = D1.obs[batchKey].copy()
+	D.write(strHarmony)
+	print(datetime.datetime.now(),": sctHarmony process completed!")
 
 def main():
-  print("starting SCT+Harmony ...")
+  print(datetime.datetime.now(),": starting SCT+Harmony ...")
   if len(sys.argv)<2:
     msgError("ERROR: raw h5ad file and the config file are required!")
   config = bU.inputCheck(sys.argv)
   strH5ad = sys.argv[1]
   strConfig=sys.argv[2]
-
-  strMeta = "%s.rds"%os.path.join(config["output"],"sctHarmony",config["prj_name"])#strH5ad.replace("raw.h5ad","sctHarmony.csv")
-  meta = sctHarmony(strH5ad,strConfig,strMeta,config.get('batchCell'),config.get('harmonyBatchGene'),
-    subCore=5 if config.get('subprocess') is None else config.get('subprocess'))
-
-  for one in meta.columns:
-    if meta[one].nunique()<100:
-      meta[one]=meta[one].astype("category")
-    
-  print("\tsctHarmony R completed")
-  FakeD = pd.DataFrame({"FakeG%d"%i:[0 for j in range(meta.shape[0])] for i in range(2)},
-                      index=meta.index)
-  D = ad.AnnData(FakeD)
-  selMeta = [one for one in meta.columns if 'cluster' in one.lower()]+[batchKey]
-  D.obs = meta[selMeta]
-  for one in set([one.rsplit("_",1)[0] for one in [one for one in meta.columns if not one in selMeta]]):
-    D.obsm['X_sctHarmony_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
-  print("\tsaving ...")
-  with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    D.write(re.sub("rds$","h5ad",strMeta))
-  print("sctHarmony process completed!")
+  sctHarmony(strH5ad,strConfig,config)
 
 if __name__ == "__main__":
   start_time = time.time()

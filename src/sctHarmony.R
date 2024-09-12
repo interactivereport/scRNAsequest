@@ -126,14 +126,23 @@ processPCA <- function(strPCA,strOut,batch,clusterResolution,cluster_method,core
     PCA <- harmony::RunHarmony(PCA,meta,batch,do_pca=FALSE,verbose=FALSE)
   }
   message("Finishing Harmony ...")
-  dimN <- ncol(PCA)
+  h5write(PCA,strOut,'PCA')
+  h5write(rownames(PCA),strOut,"obs_name")
+  return()
+  #Seurat FindNeighbors report "Error: std::bad_alloc" from Computing SNN
+  # this seems caused by it accesses expression matrix which is empty 
+  # https://github.com/satijalab/seurat/issues/9290
   colnames(PCA) <- paste0("pca_",1:dimN)
-  D <- CreateSeuratObject(counts=data.frame(matrix(0,nrow=2,ncol=nrow(PCA),
-                                                   dimnames=list(paste0("G",1:2),rownames(PCA))),
-                                            check.names=F),
+  dimN <- ncol(PCA)
+  X <- getX(strPCA)
+  D <- CreateSeuratObject(counts=matrix(0,nrow=nrow(X),ncol=ncol(X),
+  																			dimnames=dimnames(X)),
                           meta.data=meta)
-  D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="RNA")
-  #saveRDS(D,"sctHarmony.rds")
+  D[["SCT"]] <- CreateAssay5Object(counts=matrix(0,nrow=nrow(X),ncol=ncol(X),
+  																							 dimnames=dimnames(X)),
+  																 data=X)
+  D[['harmony']] <- CreateDimReducObject(embeddings=PCA,key="pca_",assay="SCT")
+  saveRDS(D,gsub("h5ad","harmony.rds",strPCA))
   message("Find Neighbor ...")
   D <- FindNeighbors(D, dims = 1:dimN,reduction="harmony",verbose = FALSE)
   message("UMAP ...")
