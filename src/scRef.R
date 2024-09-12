@@ -10,9 +10,6 @@ loadingPKG <- function(){
   require(BiocParallel)
   require(dplyr)
   options(future.globals.maxSize=8000*1024^2,stringsAsFactors=F)
-  source("/mnt/depts/dept04/compbio/users/zouyang/tools/scRNAsequest/src/readH5ad.R")
-  source("/mnt/depts/dept04/compbio/users/zouyang/tools/scRNAsequest/src/azimuth.R")
-  
   #require(cowplot)
   #require(patchwork)
   #require(sctransform)
@@ -229,7 +226,7 @@ saveInfo <- function(strConfig,strOut){
 # put the whole process in one function avoiding memory copy in R
 sctIntegrationCCA <- function(strRaw,batch,strRef,ref_label,core=4,ref_reduction=NULL){
   message("\n\n=== CCA integration on SCT assays")
-  plan("default")
+  #plan("default")
   refReduct <- NULL
   if(grepl("rds$",strRaw)){
     D <- readRDS(strRaw)
@@ -267,7 +264,7 @@ sctIntegrationCCA <- function(strRaw,batch,strRef,ref_label,core=4,ref_reduction
     message("\tPrepare Integration ...")
     features <- SelectIntegrationFeatures(Dlist,nfeatures=global_feature_n,verbose = FALSE)
     Dlist <- PrepSCTIntegration(Dlist,assay="SCT",anchor.features=features,verbose = FALSE)
-    plan("multisession", workers = core)
+    #plan("multisession", workers = core)
     message("\tFind Anchors ...")
     anchors <- FindIntegrationAnchors(
       object.list = Dlist,
@@ -319,7 +316,7 @@ sctIntegrationCCA <- function(strRaw,batch,strRef,ref_label,core=4,ref_reduction
 }
 sctIntegrationRPCA <- function(strRaw,batch,strRef,ref_label,core=4,ref_reduction=NULL){
   message("\n\n=== RPCA integration on SCT assays")
-  plan("default")
+  #plan("default")
   refReduct <- NULL
   if(grepl("rds$",strRaw)){
     D <- readRDS(strRaw)
@@ -362,7 +359,7 @@ sctIntegrationRPCA <- function(strRaw,batch,strRef,ref_label,core=4,ref_reductio
         RunPCA(Dlist[[i]],features=features,verbose = FALSE)
       )))
     },BPPARAM = MulticoreParam(workers=min(core,length(Dlist)),tasks=length(Dlist)))
-    plan("multisession", workers = core)
+    #plan("multisession", workers = core)
     message("\tFind RPCA Anchors ...")
     anchors <- FindIntegrationAnchors(
       object.list = Dlist,
@@ -419,7 +416,7 @@ sctIntegrationRPCA <- function(strRaw,batch,strRef,ref_label,core=4,ref_reductio
 }
 sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reduction=NULL){
   message("\n\n=== Harmony integration on SCT assays")
-  plan("multisession", workers = core)
+  #plan("multisession", workers = core)
   refReduct <- NULL
   if(grepl("rds$",strRaw)){
     D <- readRDS(strRaw)
@@ -446,9 +443,7 @@ sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reducti
     message("\tSplit batches ...")
     D[["RNA"]] <- split(D[["RNA"]],f=unlist(D[[batch]],use.names=F))
     message("\tSCT ...")
-    D <- SCTransform(D,vst.flavor="v2",
-                     return.only.var.genes=F,
-                     verbose=F)
+    D <- SCTransform(D,return.only.var.genes=F)#,vst.flavor="v2",verbose=F
   }
   reductName <- "scRNASequest"
   if(!is.null(refReduct)){
