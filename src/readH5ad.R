@@ -137,11 +137,13 @@ getX <- function(strH5ad,batchID=NULL,useRaw=T,core=5){
     if(is.na(Xdim) || Xdim>(2^31-1))
       stop(paste("Max allowed element length in sparse matrix is 2^31-1, input:",Xdim))
     X <- h5read(strH5ad,"/raw/X")
-  }else{
+  }else if(sum(grepl("/X",keys$group))>0){
   	Xdim <- as.numeric(keys[grepl("/X",keys$group) & grepl("data",keys$name),'dim'])
     if(is.na(Xdim) || Xdim>(2^31-1))
       stop(paste("Max allowed element length in sparse matrix is 2^31-1, input:",Xdim))
     X <- h5read(strH5ad,"X")
+  }else{
+  	stop("Sparse matrix is required for either .X or .raw.X!")
   }
   message("\t\textracting gene name")
   if(useRaw && sum(grepl("/raw/var",keys$group))>0){
