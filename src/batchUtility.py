@@ -6,6 +6,9 @@ print=functools.partial(print, flush=True)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 
+def msgError(msg):
+  print("***** "+msg)
+  exit()
 def inputCheck(args):
   strH5ad = args[1]
   if not os.path.isfile(strH5ad):
