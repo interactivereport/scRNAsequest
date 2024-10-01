@@ -80,17 +80,21 @@ processAzimuth5 <- function(strH5ad,batch,refList,subCores){
   D <- CreateSeuratObject(counts=getX(strH5ad,batchID=batch,core=subCores),
                           project="seuratRef",
                           meta.data=getobs(strH5ad))
-  message("\tMapping each reference ...")
+  message("\tFor ",basename(strH5ad)," Mapping each reference of ",paste(names(refList),collapse=";"))
   maplist <- bplapply(names(refList),function(oneRef){
+  	message("\t\t",basename(strH5ad),": ",refList[oneRef])
     oneD <- suppressMessages(suppressWarnings(
-      RunAzimuth(D,reference=refList[oneRef],verbose=F)
+      RunAzimuth(D,reference=refList[oneRef],verbose=F)#
     ))
+    #oneD <- RunAzimuth(D,reference=refList[oneRef])
     #print(oneD)
+    #saveRDS(oneD,paste0(oneRef,".rds"))
     return(extractMap(oneD,oneRef))
   },
-  BPPARAM = MulticoreParam(workers=min(subCores,length(refList),max(1,parallelly::availableCores()-2)),
+  BPPARAM = MulticoreParam(workers=min(subCores,length(refList),max(1,parallelly::availableCores()-2)),#1,#
                              tasks=length(refList)))
-  meta <- do.call(merge,c(maplist,by="cID",all=T,sort=F))
+  meta <- Reduce(function(x,y)merge(x,y,by="cID",all=T,sort=F),maplist)
+  #meta <- do.call(merge,c(maplist,by="cID",all=T,sort=F))
   meta <- dplyr::bind_cols(lapply(meta,function(x){
     if(is.numeric(x)){
       x[is.na(x)] <- min(x,na.rm=T)

@@ -125,12 +125,14 @@ def sctHarmony(strH5ad,strConfig,config):
 	cResolution = 0.8 if config.get('clusterResolution') is None else config.get('clusterResolution')
 	print(datetime.datetime.now(),": Clustering %s (%f)"%(cMethod,cResolution))
 	if bool(re.search('leiden',cMethod,re.IGNORECASE)):
+		cMethod = 'leiden'
 		sc.tl.leiden(D,resolution=cResolution)
 	elif bool(re.search('louvain',cMethod,re.IGNORECASE)):
+		cMethod = 'louvain'
 		sc.tl.louvain(D,resolution=cResolution)
 	else:
 		msgError("unknow clustering method (leiden or louvain): %s"%cMethod)
-	D.obs.columns = [re.sub(cMethod,'sctHarmony_cluster',_) for _ in D.obs.columns]
+	D.obs.columns = [re.sub(cMethod,'sctHarmony_cluster',_,flags=re.IGNORECASE) for _ in D.obs.columns]
 	D.obsm['X_sctHarmony_umap'] = D.obsm["X_umap"]
 	del D.obsm["X_umap"]
 	D1 = ad.read_h5ad(strPCA,backed='r')
