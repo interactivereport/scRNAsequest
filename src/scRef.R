@@ -437,13 +437,47 @@ sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reducti
   }else{
     stop("unknown format: ",strRaw)
   }
+  refModel <- NULL
   if("SCTModel.list" %in% slotNames(D[[DefaultAssay(D)]]) && length(D[[DefaultAssay(D)]]@SCTModel.list)==1){
     message("*** Directly use ",DefaultAssay(D)," assay with only 1 SCT model!")
   }else{
-    message("\tSplit batches ...")
-    D[["RNA"]] <- split(D[["RNA"]],f=unlist(D[[batch]],use.names=F))
     message("\tSCT ...")
-    D <- SCTransform(D,return.only.var.genes=F)#,vst.flavor="v2",verbose=F
+    nBatches <- length(unique(unlist(D[[batch]],use.names=F)))
+    if(nBatches==1){
+    	D <- SCTransform(D,return.only.var.genes=F)#,vst.flavor="v2",verbose=F
+    }else{
+    	message("\tFind unify SCT model")
+    	A <- D@meta.data %>% dplyr::group_by(across(all_of(batch))) %>% dplyr::count()
+    	ncells <- ceiling(max(A$n)/1000)*1000
+    	selID <- A[order(A$n,decreasing=T),][[batch]][1:min(3,nrow(A))]
+    	# select samples with most annotations
+    	A <- D@meta.data %>% 
+    		dplyr::filter(!!sym(batch)%in%selID) %>% 
+    		dplyr::group_by(across(all_of(c(batch,ref_label)))) %>% 
+    		dplyr::count()
+    	selID <- names(table(A[batch]))[table(A[batch])==max(table(A[batch]))]
+    	# select samples with max cells in the smallest annotation
+    	if(length(selID)>1){
+    		A <- A %>% dplyr::filter(!!sym(batch)%in%selID)%>% dplyr::group_by(across(all_of(batch))) %>% dplyr::summarise(MIN=min(n))
+    		selID <- A[[batch]][order(A$MIN,decreasing=T)][1]
+    	}
+    	subD <- subset(D,batch==selID)
+    	subD <- SCTransform(subD,return.only.var.genes=F,variable.features.n=global_feature_n,ncells=ncells,verbose=F)
+    	message("\tSplit batches ...")
+    	D[["RNA"]] <- split(D[["RNA"]],f=unlist(D[[batch]],use.names=F))
+    	refModel <- subD@assays$SCT@SCTModel.list[[1]]
+    	D <- SCTransform(D,vst.flavor="v2",
+    									 variable.features.n=global_feature_n,
+    									 ncells=ncells,
+    									 reference.SCT.model=refModel,
+    									 return.only.var.genes=F,
+    									 verbose=F)
+    	#refModel <- D@assays$SCT@SCTModel.list[[selID]]
+    	cA <- lapply(D[["SCT"]]@SCTModel.list,function(x)return(x@cell.attributes))
+    	names(cA) <- NULL
+    	refModel@cell.attributes <- do.call(rbind,cA)
+    	#D[["SCT"]]@SCTModel.list <- list(refModel=refModel)
+    }
   }
   reductName <- "scRNASequest"
   if(!is.null(refReduct)){
@@ -473,43 +507,14 @@ sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reducti
     D <- RunUMAP(D,dims=1:dim_n,reduction="spca",
                  umap.method="umap-learn",metric="correlation",
                  return.model=TRUE,verbose=F))
-  if(length(D@assays$SCT@SCTModel.list)>1){
-    message("\tUnify SCT models")
-    # select the top three samples with most cells
-    A <- D@meta.data %>% dplyr::group_by(across(all_of(batch))) %>% dplyr::count()
-    ncells <- ceiling(max(A$n)/1000)*1000
-    selID <- A[order(A$n,decreasing=T),][[batch]][1:min(3,nrow(A))]
-    # select samples with most annotations
-    A <- D@meta.data %>% 
-      dplyr::filter(!!sym(batch)%in%selID) %>% 
-      dplyr::group_by(across(all_of(c(batch,ref_label)))) %>% 
-      dplyr::count()
-    selID <- names(table(A[batch]))[table(A[batch])==max(table(A[batch]))]
-    # select samples with max cells in the smallest annotation
-    if(length(selID)>1){
-      A <- A %>% dplyr::filter(!!sym(batch)%in%selID)%>% dplyr::group_by(across(all_of(batch))) %>% dplyr::summarise(MIN=min(n))
-      selID <- A[[batch]][order(A$MIN,decreasing=T)][1]
-    }
-    refModel <- D@assays$SCT@SCTModel.list[[selID]]
-    
-    D <- SCTransform(D,vst.flavor="v2",
-                     variable.features.n=global_feature_n,
-                     ncells=ncells,
-                     reference.SCT.model=refModel,
-                     verbose=F)
-    refModel <- D@assays$SCT@SCTModel.list[[selID]]
-    cA <- lapply(D[["SCT"]]@SCTModel.list,function(x)return(x@cell.attributes))
-    names(cA) <- NULL
-    refModel@cell.attributes <- do.call(rbind,cA)
-    D[["SCT"]]@SCTModel.list <- list(refModel=refModel)
-  }
+  if(!is.null(refModel))
+  	D[["SCT"]]@SCTModel.list <- list(refModel=refModel)
   message("\tSave tmp")
-  saveRDS(D,paste0(strRef,".rds"))
+  saveRDS(D,paste0(strRef,"_ref.rds"))
   
   message("Creating Azimuth reference ...")
   D_ref <- suppressMessages(suppressWarnings(
-    AzimuthReference(D,refAssay=DefaultAssay(D),
-                            metadata=ref_label)))
+    AzimuthReference(D,refAssay=DefaultAssay(D),metadata=ref_label)))
   dir.create(strRef,showWarnings=F,recursive=T)
   suppressMessages(suppressWarnings(
     SaveAzimuthReference(D_ref,paste0(strRef,.Platform$file.sep))))
