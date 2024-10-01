@@ -55,23 +55,23 @@ getID <- function(strH5ad,keys,grp){
     stop(paste("unknown adata format: Neither index or _index exists in group",grp))
   }
 }
-getBatchX <- function(strH5ad,batchID,useRaw=T,core=Inf){
+getBatchX <- function(strH5ad,batchID,useRaw=T,core=Inf,verbose=F){
   meta <- getobs(strH5ad)
-  message("\tobtainning X ...")
+  if(verbose) message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
-  message("\t\textracting counts by batch ID: ",batchID)
+  if(verbose) message("\t\textracting counts by batch ID: ",batchID)
   if(min(diff(as.numeric(factor(meta[[batchID]],levels=unique(meta[[batchID]])))))<0)
     stop("Samples are NOT ordered by batch ID in the give h5ad!")
-  message("\t\textracting gene name")
+  if(verbose) message("\t\textracting gene name")
   if(useRaw && sum(grepl("/raw/var",keys$group))>0){
-    message("\t\t\tFound .raw.var")
+  	if(verbose) message("\t\t\tFound .raw.var")
     gID <- getID(strH5ad,keys,"/raw/var") #h5read(strH5ad,"/raw/var/_index")
   }else{
     gID <- getID(strH5ad,keys,"/var") #h5read(strH5ad,"/var/_index")
   }
-  message("\t\textracting cell name")
+  if(verbose) message("\t\textracting cell name")
   if(useRaw && sum(grepl("/raw/obs",keys$group))>0){
-    message("\t\tFound .raw.obs")
+  	if(verbose) message("\t\tFound .raw.obs")
     cID <- getID(strH5ad,keys,"/raw/obs") #h5read(strH5ad,"/raw/obs/_index")
   }else{
     cID <- getID(strH5ad,keys,"/obs") #h5read(strH5ad,"/obs/_index")
@@ -90,7 +90,7 @@ getBatchX <- function(strH5ad,batchID,useRaw=T,core=Inf){
   bNames <- unique(meta[[batchID]])#[1:5]
   X <- bplapply(setNames(bNames,bNames),
                 function(one){
-                  message("\t\tsample: ",one,"\t",which(bNames==one),"/",length(bNames),appendLF=F)
+                	if(verbose) message("\t\tsample: ",one,"\t",which(bNames==one),"/",length(bNames),appendLF=F)
                   cIx <- seq_along(meta[[batchID]])[meta[[batchID]]==one]
                   iStart <- indptr[min(cIx)]+1
                   iEnd <- indptr[max(cIx)+1]
@@ -109,7 +109,7 @@ getBatchX <- function(strH5ad,batchID,useRaw=T,core=Inf){
   if(F){
     X <- lapply(setNames(unique(meta[[batchID]]),unique(meta[[batchID]])),
                 function(one){
-                  message("\t\tsample: ",one)
+                	if(verbose) message("\t\tsample: ",one)
                   cIx <- seq_along(meta[[batchID]])[meta[[batchID]]==one]
                   iStart <- indptr[min(cIx)]+1
                   iEnd <- indptr[max(cIx)+1]
@@ -125,9 +125,9 @@ getBatchX <- function(strH5ad,batchID,useRaw=T,core=Inf){
   }
   return(X)
 }
-getX <- function(strH5ad,batchID=NULL,useRaw=T,core=5){
+getX <- function(strH5ad,batchID=NULL,useRaw=T,core=5,...){
   if(!is.null(batchID))
-    return(getBatchX(strH5ad,batchID,useRaw,core))
+    return(getBatchX(strH5ad,batchID,useRaw,core,...))
   message("\tobtainning X ...")
   keys <- h5ls(strH5ad)
   message("\t\textracting counts")
