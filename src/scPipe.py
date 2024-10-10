@@ -113,7 +113,7 @@ def initMeta(strInput):
     warnings.simplefilter("ignore")
     if not 'notMeta' in sysConfig.keys():
       sysConfig['notMeta'] = []
-    meta = meta[[one for one in meta.columns if not one in sysConfig['notMeta']]].dropna(1,'all')
+    meta = meta[[one for one in meta.columns if not one in sysConfig['notMeta']]].dropna(axis=1,how='all')
   # if intron/exon count files are available
   strInEx = findIntronExon(list(meta[config["sample_name"]]),strInput)
   if strInEx is not None:
