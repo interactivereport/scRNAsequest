@@ -6,6 +6,7 @@ eval $condaEnvCB
 conda env update -f $(dirname $0)/CB_variables.yml
 conda deactivate
 eval $condaEnvCB
+pip install tables==3.7.0
 #conda install -y -c conda-forge python=3.7 pytables=3.6.1
 pip3 install lxml==5.1.0 torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
 #cellbender v0.3.0
