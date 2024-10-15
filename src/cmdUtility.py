@@ -241,7 +241,10 @@ def squeue(jID,strPath,cmds,cmdN,core,memG,failedJobs,gpu=False):
         print("\tFinished: %s"%one)
         finishedJob.append(one)
   if len(resub)>0:
-    re1=sbatch(resub,strPath,core,memG,jID,gpu=gpu)
+    for one in resub.keys():
+      strF=os.path.join(strWD,"%s.sh"%one)
+      run_cmd("sbatch %s"%strF)
+    #re1=sbatch(resub,strPath,core,memG,jID,gpu=gpu)
     time.sleep(5) #might not needed for the qsub to get in
   for one in finishedJob:
     del cmds[one]
