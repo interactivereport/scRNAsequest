@@ -82,7 +82,7 @@ def main():
   FakeD = pd.DataFrame({"FakeG%d"%i:[0 for j in range(meta.shape[0])] for i in range(2)},
                       index=meta.index)
   D = ad.AnnData(FakeD)
-  annoCol = [one for one in meta.columns if "_predicted." in one or "_mapping." in one]
+  annoCol = [one for one in meta.columns if "predicted." in one or "mapping." in one]
   D.obs = pd.concat([meta[annoCol],Dbatch],axis=1,join="inner")
   for one in set([one.rsplit("_",1)[0] for one in list(set(meta.columns)-set(annoCol))]):
     D.obsm['X_SeuratRef_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
