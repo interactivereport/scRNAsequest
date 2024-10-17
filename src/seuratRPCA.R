@@ -51,7 +51,7 @@ main <- function(){
   suppressMessages(suppressWarnings(PKGloading()))
   batchKey="library_id" #"batch"#
   args = commandArgs(trailingOnly=TRUE)
-  if(length(args)<2) stop("Path to 2 files are required!")
+  if(length(args)<3) stop("Path to 3 files are required!")
   strH5ad <- args[1]
   strConfig <- args[2]
   if(!file.exists(strConfig)){
@@ -65,7 +65,7 @@ main <- function(){
   geneN <- ifelse(is.null(config$harmonyBatchGene),3000,config$harmonyBatchGene)
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/SCTransform.R"),chdir=T)
   print(peakRAM(
-    runRPCA(strH5ad,batchKey,args[2],cluster_method,clusterResolution,subcore,geneN)))
+    runRPCA(strH5ad,batchKey,args[3],cluster_method,clusterResolution,subcore,geneN)))
 }
 
 main()
