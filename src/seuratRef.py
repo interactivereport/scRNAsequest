@@ -84,7 +84,7 @@ def main():
   D = ad.AnnData(FakeD)
   annoCol = [one for one in meta.columns if "predicted." in one or "mapping." in one]
   D.obs = pd.concat([meta[annoCol],Dbatch],axis=1,join="inner")
-  for one in set([one.rsplit("_",1)[0] for one in list(set(meta.columns)-set(annoCol))]):
+  for one in set([one.rsplit("_",1)[0] for one in list(set(meta.columns)-set(annoCol+['cID']))]):
     D.obsm['X_SeuratRef_%s'%one] = meta[[a for a in meta.columns if a.startswith(one)]].values
   print("\tsaving ...")
   with warnings.catch_warnings():
