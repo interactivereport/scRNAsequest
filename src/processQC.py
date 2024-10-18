@@ -50,6 +50,7 @@ def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
   strOut = os.path.join(strOut,qcDir)
   os.makedirs(strOut,exist_ok=True)
   seqQC = []
+  newFormat = False
   for i in range(meta.shape[0]):
     strF = glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
     #strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
@@ -58,7 +59,13 @@ def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
       strF = strF[0]
       print("\tQC: %s"%strF)
       one = pd.read_csv(strF,thousands=",")
-      one.index=[meta[sID][i]]
+      if one.shape[0]>3:
+      	newFormat=True
+      	mergeKeys = list(one.columns)
+      	a=mergeKeys.pop()
+      	one.columns = [re.sub('Metric Value',meta[sID][i],_) for _ in one.columns]
+      else:
+      	one.index=[meta[sID][i]]
       seqQC.append(one)
     else:
       print("\tMissing QC: ",meta[sID][i])
@@ -66,7 +73,12 @@ def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
   if len(seqQC)<1:
     print("***NO sequence QC***")
     return
-  QC = pd.concat(seqQC)
+  if newFormat:
+  	QC = functools.reduce(lambda l,r: pd.merge(l,r,on=mergeKeys,how='left'),seqQC)
+  	QC.to_csv("%s/sequencingQC.csv"%strOut)
+  	return
+  else:
+  	QC = pd.concat(seqQC)
   k=list(QC.columns)
   for i,one in enumerate(k):
     if pd.api.types.is_string_dtype(QC[one]) and QC[one][0].endswith("%"):
