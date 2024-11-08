@@ -56,7 +56,7 @@ saveX <- function(D,strH5,ggID){
     gID <- D@assays$RNA@features[['data']]
   }
   suppressMessages(suppressWarnings({
-    a <- file.remove(strH5)
+    if(file.exists(strH5))a <- file.remove(strH5)
     h5write(X@x,file=strH5,name="data")
     h5write(X@i,file=strH5,name="indices")
   }))
