@@ -27,7 +27,7 @@ def getRefName(config):
   elif isinstance(refName,dict):
     refName=",".join(refName.keys())
   else:
-    refName=','
+    refName=os.path.basename(refName)
   return refName
 def combine(mIDs,prefix,config):
   CKmethods = [one for one in mIDs if os.path.isfile("%s.h5ad"%os.path.join(config['output'],one,config["prj_name"]))]+['raw']
