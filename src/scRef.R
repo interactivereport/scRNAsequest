@@ -461,7 +461,8 @@ sctIntegrationLayer <- function(strRaw,batch,strRef,ref_label,core=4,ref_reducti
     		A <- A %>% dplyr::filter(!!sym(batch)%in%selID)%>% dplyr::group_by(across(all_of(batch))) %>% dplyr::summarise(MIN=min(n))
     		selID <- A[[batch]][order(A$MIN,decreasing=T)][1]
     	}
-    	subD <- subset(D,batch==selID)
+    	message("\tSelected ",selID)
+    	subD <- subset(D,!!sym(batch)==selID)
     	subD <- SCTransform(subD,return.only.var.genes=F,variable.features.n=global_feature_n,ncells=ncells,verbose=F)
     	message("\tSplit batches ...")
     	D[["RNA"]] <- split(D[["RNA"]],f=unlist(D[[batch]],use.names=F))
