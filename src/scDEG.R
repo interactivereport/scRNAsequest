@@ -327,7 +327,7 @@ scDEG <- R6Class("scDEG",
                      rownames(private$sInfo) <- private$sInfo[,private$id_col]
                      private$sInfo <- private$sInfo[,c(private$grp_col,covar),drop=F]
                      private$sInfo <- private$sInfo[,sapply(private$sInfo,function(x)return(sum(grepl("^Skip$",x)|(grepl(":",x)&grepl(";",x)))==0)),drop=F]
-
+                     message("return scDEG_check_model")
                      return(meta)
                    },
                    scDEG_apply_filter_pseudoBulk=function(min.ave.pseudo.bulk.cpm = 1){
@@ -411,22 +411,3 @@ scDEG <- R6Class("scDEG",
                      message("\t",sum(private$c_index)," cells")
                    }
                  ))
-
-
-testFun <- function(){
-  strH5ad <- "/mnt/depts/dept04/compbio/users/zouyang/tools/scRNAsequest/example/testFull/TST11837_oyoung_batch_raw_obsAdd.h5ad"
-  strH5ad <- "/mnt/depts/dept04/compbio/projects/htvc/data/single_cell/human/AD_sc_atlas_2023rerun/scDEG/07Fujita_ExNeuron/scAD_2023rerun_raw_obsAdd_labelFilter.h5ad"
-  #sce <- scDEG$new(id_col='library_id',cluster_col='predicted.A.celltype1',grp_col='Genotype',ctrl_value='WT',alt_value='DMSXL',
-  #                 strX=strH5ad,strMeta=strH5ad,pipelinePath="/mnt/depts/dept04/compbio/users/zouyang/tools/scRNAsequest/src")
-  sce <- scDEG$new(id_col='subjectID',cluster_col='celltype_coarse',grp_col='AD_status',ctrl_value='Control',alt_value='AD',
-                   strX=strH5ad,strMeta=strH5ad,pipelinePath="/mnt/depts/dept04/compbio/users/zouyang/tools/scRNAsequest/src")
-  filters <- list(rmGene=c("Mt-","MT-","mt-"),
-                  min.cells.per.gene = 50,min.perc.cells.per.gene = 0.10,min.cells.per.gene.type = "and",
-                  perc_threshold = 0.9, perc.filter.type = "and",
-                  lib_size_low = 200, lib_size_high = 20*10^6,
-                  min.genes.per.cell = 500, min.cells.per.subj = 5,
-                  min.ave.pseudo.bulk.cpm=1)
-  return(sce$run('DESeq2',filters,'ExNeuron',c('Sex','age_death'),method='HL'))#NEBULA
-}
-#fTable <- testFun()
-#source("src/scDEG.R");testFun()
