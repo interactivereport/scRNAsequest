@@ -28,7 +28,12 @@ def getSysConfig():
     config = yaml.safe_load(f)
   return(config)
 def getIntronExon(strF,cID):
-  IEcount = pd.read_csv(strF,sep=" ",index_col=0)
+	IEcount = pd.read_csv(strF,sep="\t",index_col=0)
+  if IEcount.shape[0]!= 2:
+  	IEcount = pd.read_csv(strF,sep=" ",index_col=0)
+  if IEcount.shape[0]!= 2:
+  	print("\tThe intron|exon file format is unknown!")
+  	return(None)
   if len(list(set(IEcount.index) & set(cID)))<len(cID):
     IEcount.index = list(IEcount.index+"-1")
   #IEcount = IEcount.loc[cID,:]
@@ -94,7 +99,8 @@ def getData_one(oneMeta,sID,strOut,dblScore=True,subcore=5):
   ## add intro/exon counts/ratio if exists
   if IntronExon in oneMeta.keys() and os.path.isfile(oneMeta[IntronExon]):
     IE = getIntronExon(oneMeta[IntronExon],adata.obs_names)
-    adata.obs = adata.obs.merge(IE,left_index=True,right_index=True)
+    if IE is not None:
+    	adata.obs = adata.obs.merge(IE,left_index=True,right_index=True)
   if ANNcol in oneMeta.keys() and not pd.isna(oneMeta[ANNcol]):
     if not os.path.exists(oneMeta[ANNcol]):
       print("\t\tWarning: cell level meta file does not exist!\n\t\t\t%s"%oneMeta[ANNcol])
