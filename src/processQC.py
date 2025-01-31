@@ -20,6 +20,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 logging.disable(level=logging.INFO)
 batchKey="library_id"
 UMIcol="h5path"
+seqMetrics="sequence_metrics"
 Rmarkdown="Rmarkdown"
 tempDir="raw"
 qcDir="QC"
@@ -53,11 +54,10 @@ def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
   seqQC = []
   newFormat = False
   for i in range(meta.shape[0]):
-    strF = glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
+    strF = meta[seqMetrics][i]#glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
     #strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
     #if os.path.isfile(strF):
-    if len(strF)>0:
-      strF = strF[0]
+    if os.path.isfile(strF):
       print("\tQC: %s"%strF)
       one = pd.read_csv(strF,thousands=",")
       if one.shape[0]>3:

@@ -17,6 +17,7 @@ strPipePath=""
 UMIcol="h5path"
 ANNcol="metapath"
 IntronExon="intron_exon_count_path"
+seqMetrics="sequence_metrics"
 batchKey="library_id"
 CB_expCellNcol="expected_cells"
 CB_dropletNcol="droplets_included"
@@ -114,6 +115,10 @@ def initMeta(strInput):
     if not 'notMeta' in sysConfig.keys():
       sysConfig['notMeta'] = []
     meta = meta[[one for one in meta.columns if not one in sysConfig['notMeta']]].dropna(axis=1,how='all')
+  # if sequence metrics files are available
+  strMetrics = findSeqMetrics(list(meta[config["sample_name"]]),strInput)
+  if strMetrics is not None:
+    meta.insert(0,seqMetrics,strMetrics)
   # if intron/exon count files are available
   strInEx = findIntronExon(list(meta[config["sample_name"]]),strInput)
   if strInEx is not None:
@@ -148,6 +153,19 @@ def findIntronExon(sNames,strInput):
   n = 0
   for i in sNames:
     oneF = glob.glob("%s/%s.intron_exon_UMI*"%(strInput,i))
+    if len(oneF)>0:
+      n +=1
+      sFile.append(oneF[0])
+    else:
+      sFile.append("")
+  if n>0:
+    return(sFile)
+  return(None)
+def findSeqMetrics(sNames,strInput):
+  sFile = []
+  n = 0
+  for i in sNames:
+    oneF = glob.glob("%s/%s.metrics_summary*"%(strInput,i))
     if len(oneF)>0:
       n +=1
       sFile.append(oneF[0])
