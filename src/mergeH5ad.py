@@ -58,7 +58,7 @@ def combine(mIDs,prefix,config):
   print("kBET & silhouette evaluation ...")
   strKbet = "%s/evaluation/kBet.pdf"%os.path.dirname(prefix)
   strSil = "%s/evaluation/silhouette.pdf"%os.path.dirname(prefix)
-  strSeurat = prefix+".h5seurat"
+  strSeurat = prefix+".rds"
   cmds={}
   if os.path.isfile(strKbet):
     print("\tkBET result exists: %s\n\t\tPlease rename/remove the above file if a new kBET evaluation is needed!"%strKbet)
@@ -69,7 +69,7 @@ def combine(mIDs,prefix,config):
   else:
     cmds["silhouette"]="python -u %s/silhouette.py %s.h5ad %s"%(strPipePath,prefix,strSil)
   if os.path.isfile(strSeurat):
-    print("\th5seurat exists: %s\n\t\tPlease rename/remove the above file if a new h5seurat merge is needed!"%strSeurat)
+    print("\tSeurat rds exists: %s\n\t\tPlease rename/remove the above file if a new h5seurat merge is needed!"%strSeurat)
   else:
     cmds["inSeurat"]="python -u %s/mergeH5ad.py %s"%(strPipePath,prefix)
   if len(cmds)>0:

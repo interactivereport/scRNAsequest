@@ -26,7 +26,9 @@ seuratObj <- function(strRDS,strH5ad){
     D[[keyname]] <- CreateDimReducObject(embeddings=as.matrix(X[rownames(D@meta.data),-1]),key=paste0(key,"_"),assay=D@active.assay)
   }
   message("Saving seurat rds")
-  suppressMessages(SeuratDisk::SaveH5Seurat(D,filename=gsub("h5ad$","h5seurat",strH5ad),overwrite=T))
+  saveRDS(D,gsub("h5ad$","rds",strH5ad))
+  # seuratdisk not support seurat v5 well
+  #suppressMessages(SeuratDisk::SaveH5Seurat(D,filename=gsub("h5ad$","h5seurat",strH5ad),overwrite=T))
 }
 
 main <- function(){
