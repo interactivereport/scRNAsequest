@@ -441,7 +441,7 @@ To sees the full list of possible parameters for CellDepot publication, see file
 Next, run the scPub command. 
 
 ```
-scPub CellDepot_config.yml
+{path_for_scRNASequest)/scPub.sh CellDepot_config.yml
 ```
 
 The project will be published to CellDepot with the specified privacy setting. 
