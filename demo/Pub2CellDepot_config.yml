@@ -12,6 +12,7 @@ Description:	#Project Description. This attribute supports multiple lines such a
 Custom Accession:	#e.g., SCP8888
 Species:	#e.g., Human, Mouse, Rat
 Diseases:	#e.g., Alzheimer's Disease, Multiple Sclerosis
+Experiment_Type: #e.g. scRNA, or multiple values: ["scRNA","CosMx"]
 URL:	# URL of the data source if applicable
 Notes:	#Project Notes
 Title:	#Publication Title
@@ -19,5 +20,5 @@ Year::	#Publication Year
 DOI:	#DOI
 PMCID:	#PMC ID
 PMID:	#PubMed ID
-Data_Generated_By:	#Point of Contact
+User_Email:	#	Email of the Project Owner, e.g.  john@example.com
 Is_Private_Users: #Email addresses of the authorized users.This value will be used if Is_Private is 1 (confidential) or 2 (restricted).
