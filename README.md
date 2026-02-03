@@ -421,3 +421,28 @@ Please refer to the [GitHub website](https://github.com/interactivereport/cellxg
 
 Please refer to this tutorial to manage and publish the project using CellDepot: https://interactivereport.github.io/CellDepot/bookdown/docs/.
 
+For Enterprise CellDepot that supports API, one can use command line interface to import projects to CellDepot and set the project privacy settings.  
+
+First, please set up a config file listing the h5ad file and project information.
+
+```yaml
+Name:	#Project Name, this is a required field
+Is_Private:  #Project_Privacy setting, options are 0, 1, or 2, If the field is left empty, the default value 0 will be used.
+#0: Company-Wide (default)
+#1: Confidential (authorized users will have full access, other users will have no access)
+#2: Restricted (authorized users will have full access, other users will have restricted access)
+#Enter file name for one of the two fields below based on the Project_Privacy setting.
+File_Name:  #file name of the h5ad file (required for Company-wide projects), the file should be saved in the public celldepot data folder. 
+#If the data is processed by scRNASequest pipeline, the h5ad file will be automatically saved to the public celldepot data folder.
+File_Name_Private:  #full file path of the h5ad file (required for Confidential/Restricted projects). The file path will be hidden to unauthorized users CellDepot.
+```
+To sees the full list of possible parameters for CellDepot publication, see file `Pub2CellDepot_config.yml` in the demo folder. 
+
+Next, run the scPub command. 
+
+```
+scPub CellDepot_config.yml
+```
+
+The project will be published to CellDepot with the specified privacy setting. 
+
