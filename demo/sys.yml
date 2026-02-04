@@ -1,5 +1,7 @@
 celldepotDir: /demo/cellxgenedir # the absolute path to the cellxgene VIP host folder, where the h5ad files will be copied to for cellxgene VIP
 celldepotHttp: http://HOST:PORT/d/ # the cellxgene host (with --dataroot option) link  http://HOST:PORT/d/
+CellDepotApp: #https://{celldepot app URL}/app/core/, needed for publishing projects to CellDepot (scPub.sh)
+CellDepotAppKey: #API key for publishing projects to CellDepot, contact the admin for CellDepot to get it
 refDir: /demo/ref # the absolute path to the seurat refrence folder if building reference is desired
 minCell: 50
 powerby: the Research Data Sciences Group at Biogen [zhengyu.ouyang@biogen.com;yuhenry.sun@biogen.com] # the message at the end
