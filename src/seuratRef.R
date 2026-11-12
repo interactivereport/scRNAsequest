@@ -80,6 +80,10 @@ processAzimuth5 <- function(strH5ad,batch,refList,subCores){
   D <- CreateSeuratObject(counts=getX(strH5ad,batchID=batch,core=subCores),
                           project="seuratRef",
                           meta.data=getobs(strH5ad))
+  # getBatchX() returns per-sample count matrices, which CreateSeuratObject stores
+  # as multiple v5 layers; RunAzimuth's GetAssayData(slot="counts") fails on those.
+  # Collapse them into a single counts layer before mapping.
+  D[["RNA"]] <- JoinLayers(D[["RNA"]])
   message("\tFor ",basename(strH5ad)," Mapping each reference of ",paste(names(refList),collapse=";"))
   maplist <- bplapply(names(refList),function(oneRef){
   	message("\t\t",basename(strH5ad),": ",refList[oneRef])

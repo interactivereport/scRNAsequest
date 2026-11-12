@@ -1,4 +1,6 @@
 ---
+# "dependencies" lets newer conda (>= 25) recognize this as an environment.yml file; keep "variables:" last, install.sh appends to it
+dependencies: []
 variables:
   OPENBLAS_NUM_THREADS: 1
   PYTHONNOUSERSITE: 1

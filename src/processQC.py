@@ -54,9 +54,19 @@ def plotSeqQC(meta,sID,strOut,grp=None,redo=None):
   seqQC = []
   newFormat = False
   for i in range(meta.shape[0]):
-    strF = meta[seqMetrics][i]#glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
-    #strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
-    #if os.path.isfile(strF):
+    
+    ####edited by DJ 20260202###
+    try:
+      strF = meta[seqMetrics][i]
+    except KeyError:
+      strF = ""
+
+#    strF = meta[seqMetrics][i]#glob.glob(os.path.join(os.path.dirname(meta[UMIcol][i]),"%s*metrics_summary.csv"%meta[sID][i]))
+#    #strF = os.path.join(os.path.dirname(meta[UMIcol][i]),"%s.metrics_summary.csv"%meta[sID][i])
+#    #if os.path.isfile(strF):
+
+    ############################
+
     if os.path.isfile(strF):
       print("\tQC: %s"%strF)
       one = pd.read_csv(strF,thousands=",")

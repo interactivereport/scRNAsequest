@@ -6,7 +6,7 @@ channels:
 dependencies:
   - r-base=4.3.3
   - python=3.10
-  - python_abi
+  - python_abi=3.10
   - anndata=0.10.7
   - scanpy=1.10.1
   - r-sctransform=0.4.1
@@ -14,88 +14,88 @@ dependencies:
   - r-seuratobject=5.0.1 # 5.0.0 limited by matrix 1.6_1.1
   - r-seurat-disk=0.0.0.9021
   - r-ggplot2=3.5.0
-  - r-patchwork
+  - r-patchwork=1.2.0 # 1.3.x needs ggplot2 >= 3.5.2 (is_ggplot) but declares >= 3.0.0
   - r-harmony=1.2.0
   - r-matrix=1.6_5 # 1.6_1.1 was mentioned in several issue with newer matrix
   - r-liger=2.0.1
-  - r-rjson
-  - r-rcppcnpy
-  - r-readr
-  - r-devtools
-  - r-hdf5r
-  - r-foreach
-  - r-doparallel
-  - r-tidyverse
-  - r-tmb
-  - r-glmmtmb
-  - r-slam
-  - r-domc
-  - r-emmeans
-  - r-rfast
-  - r-future
-  - r-uwot
-  - r-igraph
+  - r-rjson=0.2.21
+  - r-rcppcnpy=0.2.11
+  - r-readr=2.1.5
+  - r-devtools=2.4.5
+  - r-hdf5r=1.3.10
+  - r-foreach=1.5.2
+  - r-doparallel=1.0.17
+  - r-tidyverse=2.0.0
+  - r-tmb=1.9.11
+  - r-glmmtmb=1.1.9
+  - r-slam=0.1_50
+  - r-domc=1.3.8
+  - r-emmeans=1.10.1
+  - r-rfast=2.1.0
+  - r-future=1.33.2
+  - r-uwot=0.1.16
+  - r-igraph=2.0.3
   - bioconductor-genomeinfodbdata=1.2.10
-  - bioconductor-glmgampoi
-  - bioconductor-limma
-  - bioconductor-edger
-  - bioconductor-deseq2
-  - bioconductor-apeglm
-  - bioconductor-biomart
-  - bioconductor-mast
-  - bioconductor-ensdb.hsapiens.v86
-  - bioconductor-scater
-  - bioconductor-rhdf5
-  - bioconductor-scdblfinder
+  - bioconductor-glmgampoi=1.14.0
+  - bioconductor-limma=3.58.1
+  - bioconductor-edger=4.0.16
+  - bioconductor-deseq2=1.42.0
+  - bioconductor-apeglm=1.24.0
+  - bioconductor-biomart=2.58.0
+  - bioconductor-mast=1.28.0
+  - bioconductor-ensdb.hsapiens.v86=2.99.0
+  - bioconductor-scater=1.30.1
+  - bioconductor-rhdf5=2.46.1
+  - bioconductor-scdblfinder=1.16.0
   - pandas=2.2.1
   - numexpr=2.8.4
-  - scipy
+  - scipy=1.13.0 # scanpy 1.10.1 uses sparse .A, removed in scipy 1.14
   - numpy=1.26.4
-  - pyyaml
-  - seaborn
-  - matplotlib
-  - scrublet
-  - scanorama
-  - rpy2
-  - scikit-learn
-  - anndata2ri
-  - h5py
-  - numba
-  - python-igraph
-  - igraph
-  - louvain
-  - multicore-tsne
-  - r-bookdown
-  - r-knitr
-  - r-kableextra
+  - pyyaml=6.0.1
+  - seaborn=0.13.2
+  - matplotlib=3.8.4 # scanpy 1.10.1 uses Legend.legendHandles, removed in matplotlib 3.9
+  - scrublet=0.2.3
+  - scanorama=1.7.4
+  - rpy2=3.5.11
+  - scikit-learn=1.4.2
+  - anndata2ri=1.3.1
+  - h5py=3.11.0
+  - numba=0.59.1
+  - python-igraph=0.11.5
+  - igraph=0.10.12
+  - louvain=0.8.2
+  - multicore-tsne=0.1_d4ff4aab
+  - r-bookdown=0.39
+  - r-knitr=1.46
+  - r-kableextra=1.4.0
   - umap-learn=0.5.4
-  - leidenalg
-  - r-shinyjs
-  - r-shiny
-  - r-shinybs
-  - r-shinydashboard
-  - r-presto
-  - r-dt
-  - r-dofuture
-  - r-dorng
-  - r-trust
-  - plotly
-  - pypdf2
-  - openssl
-  - pyopenssl
-  - pdf2image
+  - leidenalg=0.10.2
+  - r-shinyjs=2.1.0
+  - r-shiny=1.8.1.1
+  - r-shinybs=0.61.1
+  - r-shinydashboard=0.7.2
+  - r-presto=1.0.0
+  - r-dt=0.33
+  - r-dofuture=1.0.1
+  - r-dorng=1.8.6
+  - r-trust=0.1_8
+  - plotly=5.22.0
+  - pypdf2=2.11.1
+  - openssl # left unpinned on purpose: security library, not a tested pipeline dependency
+  - pyopenssl=24.0.0
+  - pdf2image=1.17.0
   - pillow=10.3.0
-  - r-globals
-  - r-ggrastr
+  - r-globals=0.16.3
+  - r-ggrastr=1.0.2
   - pyarrow=15.0.0
-  - scikit-misc
-  - aiosignal
-  - pyro-ppl
+  - scikit-misc=0.1.4
+  - aiosignal=1.3.1
+  - pyro-ppl=1.9.0
   - cmake=3.22
-  - bioconductor-bsgenome.hsapiens.ucsc.hg38
-  - bioconductor-jaspar2020
-  - bioconductor-tfbstools
-  - libacl
-  - attr
+  - bioconductor-bsgenome.hsapiens.ucsc.hg38=1.4.5
+  - bioconductor-jaspar2020=0.99.10
+  - bioconductor-tfbstools=1.40.0
+  - libacl=2.3.2
+  - attr=2.5.1
   - r-signac=1.13.0
   - openblas-devel=0.3.21 #for RcppPlanc

@@ -27,11 +27,12 @@ src="$(dirname $0)/src"
 condaPath=$(dirname $(dirname $condaPath))
 
 # remove old conda env
-conda env remove -p $appEnvPath
-conda env remove -p $appEnvPathCB
+conda env remove -y -p $appEnvPath || true
+conda env remove -y -p $appEnvPathCB || true
 
 # Create conda env, mamba is not in the base conda
-conda create -y -p $appEnvPath python=3.10 mamba -c conda-forge
+# pin mamba to the version install.yml resolves to; otherwise mamba replaces itself mid-install and package post-link scripts fail
+conda create -y -p $appEnvPath python=3.10 mamba=1.5.8 -c conda-forge
 conda create -y -p $appEnvPathCB python=3.7 -c conda-forge
 
 # set SSL if available
