@@ -32,7 +32,16 @@ conda env remove -y -p $appEnvPathCB || true
 
 # Create conda env, mamba is not in the base conda
 # pin mamba to the version install.yml resolves to; otherwise mamba replaces itself mid-install and package post-link scripts fail
-conda create -y -p $appEnvPath python=3.10 mamba=1.5.8 -c conda-forge
+# By default the env is created from install/install.lock: the exact packages of the tested env, so nothing is solved
+# and no version can drift. Set SCRNASEQUEST_LOCK=0 to solve install/install.yml instead (slow; newer packages may break).
+useLock=0
+if [[ "${SCRNASEQUEST_LOCK:-1}" == 1 && -f install/install.lock && "$(uname -sm)" == "Linux x86_64" ]]; then
+    useLock=1
+    echo "Creating $appEnvPath from install/install.lock"
+    conda create -y -p $appEnvPath --file install/install.lock
+else
+    conda create -y -p $appEnvPath python=3.10 mamba=1.5.8 -c conda-forge
+fi
 conda create -y -p $appEnvPathCB python=3.7 -c conda-forge
 
 # set SSL if available
@@ -93,7 +102,7 @@ echo "export condaEnv='source $condaPath/etc/profile.d/conda.sh;conda activate $
 echo "export condaEnvCB='source $condaPath/etc/profile.d/conda.sh;conda activate $appEnvPathCB'" >> $src/.env
 
 # install dependencies for conda env
-env -i src="$src" bash -c 'source $src/.env;$src/../install/install.sh'
+env -i src="$src" useLock="$useLock" bash -c 'source $src/.env;$src/../install/install.sh'
 env -i src="$src" bash -c 'source $src/.env;$src/../install/CB.sh'
 
 echo ""

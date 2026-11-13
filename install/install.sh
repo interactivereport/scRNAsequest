@@ -7,7 +7,11 @@ mamba env update -f $(dirname $0)/install_variables.yml
 conda deactivate
 eval $condaEnv
 echo -e "\t*** install packages ***"
-mamba env update -f $(dirname $0)/install.yml
+if [[ "$useLock" == 1 ]]; then
+  echo -e "\t\tconda packages already installed from install.lock"
+else
+  mamba env update -f $(dirname $0)/install.yml
+fi
 
 #export CBLAS_H_DIR=/edgehpc/apps/gb/anaconda3/4.9.2/include
 #export PKG_CONFIG_PATH=/mnt/depts/dept04/compbio/edge_condaEnv/scRNAsequest_seurat5/lib/pkgconfig
@@ -15,9 +19,9 @@ mamba env update -f $(dirname $0)/install.yml
 # R exits with an error and `set -e` stops the installation instead of finishing with the package missing.
 R -q -e 'if(!require(peakRAM)) install.packages("peakRAM",repos="https://cran.rstudio.com/"); library(peakRAM)'
 R -q -e 'if(!require(revealjs)) install.packages("revealjs",repos="https://cran.rstudio.com/"); library(revealjs)'
-R -q -e 'if(!require(kBET)) devtools::install_github("theislab/kBET",upgrade="never",dependencies=F); library(kBET)'
+R -q -e 'if(!require(kBET)) devtools::install_github("theislab/kBET",ref="afc5f431bcbefd73267acc066a0f2e4eaa10a355",upgrade="never",dependencies=F); library(kBET)'
 R -q -e 'if(!require(nebula)) devtools::install_github("lhe17/nebula",ref="v.1.5.3",upgrade="never",dependencies=F); library(nebula)'
-R -q -e 'if(!require(SeuratData)) devtools::install_github("satijalab/seurat-data",upgrade="never",dependencies=F); library(SeuratData)'
+R -q -e 'if(!require(SeuratData)) devtools::install_github("satijalab/seurat-data",ref="4dc08e022f51c324bc7bf785b1b5771d2742701d",upgrade="never",dependencies=F); library(SeuratData)'
 R -q -e 'if(!require(Azimuth)) devtools::install_github("satijalab/azimuth",ref="v0.5.0",upgrade="never",dependencies=F); library(Azimuth)'
 # RcppPlanc builds a bundled hwloc with its own ./configure, which looks for gcc/cc on PATH; the conda env only has the
 # prefixed compiler, so pass R's compiler explicitly (otherwise this relies on a system gcc, which Docker images lack)

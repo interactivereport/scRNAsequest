@@ -15,6 +15,8 @@ processV5 <- function(strH5ad,batch,strOut,geneN,core=10){
   assayName <- "sctHarmony"
   dimN <- 50
   hvg <- T
+  # harmonyBatchGene is optional in the config; without a default, SelectIntegrationFeatures fails on nfeatures=NULL
+  if(is.null(geneN)) geneN <- 3000
   strHVG <- file.path(dirname(strH5ad),"hvg.csv")
   if(file.exists(strHVG)){
   	message("\tUsing Highly Variable Features from scanpy.highly_variable_genes")

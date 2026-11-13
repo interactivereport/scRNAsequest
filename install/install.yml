@@ -33,6 +33,7 @@ dependencies:
   - r-emmeans=1.10.1
   - r-rfast=2.1.0
   - r-future=1.33.2
+  - r-future.apply=1.11.2 # newer future.apply needs a newer future than 1.33.2; otherwise SeuratObject fails to load
   - r-uwot=0.1.16
   - r-igraph=2.0.3
   - bioconductor-genomeinfodbdata=1.2.10
@@ -69,6 +70,7 @@ dependencies:
   - r-knitr=1.46
   - r-kableextra=1.4.0
   - umap-learn=0.5.4
+  - setuptools=69.5.1 # umap-learn 0.5.4 imports pkg_resources, which newer setuptools no longer ships
   - leidenalg=0.10.2
   - r-shinyjs=2.1.0
   - r-shiny=1.8.1.1

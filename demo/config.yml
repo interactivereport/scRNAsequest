@@ -34,6 +34,7 @@ parallel: False #"sge" or "slurm"
 core: 2
 overwrite: True
 major_cluster_rate: 0.7 # the proportion of cells of an integration cluster to be assigned to a seurat reference label
+harmonyBatchGene: 5000 # the number of high variable genes for each batch during sctHarmony step
 
 ## DEG analysis for an annotation (such as disease vs health) within a cell type annotation
 DEG_desp: /demo/DEGinfo.csv #required for DEG analysis
