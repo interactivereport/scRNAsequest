@@ -216,7 +216,13 @@ getX <- function(strFs){
   X <- list()
   for(one in strFs){
     if(dir.exists(one)){
-      X[[length(X)+1]] <- Read10X(one)
+      source(file.path(strPipePath,"src/readParse.R"))
+      strParse <- findParse(one)
+      if(!is.null(strParse)){ # Parse Biosciences folder (DGE.mtx/count_matrix.mtx); cell names are sample_bc_wells
+        X[[length(X)+1]] <- readParse(strParse)
+      }else{
+        X[[length(X)+1]] <- Read10X(one)
+      }
     }else if(grepl("h5$",one)){
       X[[length(X)+1]] <- Read10X_h5(one)
     }else{

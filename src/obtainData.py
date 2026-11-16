@@ -1,4 +1,4 @@
-import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools,gc,resource
+import os,multiprocessing,warnings,sys,logging,glob,re,random, yaml,functools,gc,resource,gzip,shutil
 from datetime import datetime
 import scanpy as sc
 import anndata as ad
@@ -49,26 +49,42 @@ def findParse_mtx(strDir):
     if os.path.isfile(os.path.join(strDir,one)):
       return os.path.join(strDir,one)
   return None
+def checkParse(strDir):
+  # quick checks (file names and column headers only); returns the list of problems, empty if none
+  strGene = os.path.join(strDir,"all_genes.csv")
+  strCell = os.path.join(strDir,"cell_metadata.csv")
+  msg = ["missing file: %s"%os.path.basename(one) for one in [strGene,strCell] if not os.path.isfile(one)]
+  if len(msg)>0:
+    return msg
+  gCol = list(pd.read_csv(strGene,nrows=0).columns)
+  cCol = list(pd.read_csv(strCell,nrows=0).columns)
+  if not "gene_name" in gCol:
+    msg.append("all_genes.csv: missing column 'gene_name' (found: %s)"%", ".join(gCol))
+  missCol = [one for one in ["sample","bc_wells"] if not one in cCol]
+  if len(missCol)>0:
+    msg.append("cell_metadata.csv: missing column(s) '%s' (found: %s)"%("', '".join(missCol),", ".join(cCol)))
+  return msg
+def checkUMIdir(strDir):
+  # a UMI folder is either Parse Biosciences output or 10x mtx output; returns the list of problems, empty if none
+  if findParse_mtx(strDir) is not None:
+    return ["Parse Biosciences folder, "+one for one in checkParse(strDir)]
+  def has(*names):
+    return any(os.path.isfile(os.path.join(strDir,one+ext)) for one in names for ext in ["",".gz"])
+  miss = [one for one,ok in [("matrix.mtx",has("matrix.mtx")),("barcodes.tsv",has("barcodes.tsv")),
+                             ("features.tsv (or genes.tsv)",has("features.tsv","genes.tsv"))] if not ok]
+  if len(miss)>0:
+    return ["not a supported mtx folder: no Parse Biosciences matrix (%s), and missing 10x file(s): %s"%(" or ".join(ParseMTX),", ".join(miss))]
+  return []
 def getParse_mtx(strDir):
   # Raise (not exit) on incompatible input: this runs in a multiprocessing pool, where exit() would hang the pool
   def parseError(msg):
     raise ValueError("Incompatible Parse Biosciences input folder %s:\n\t%s"%(strDir,"\n\t".join(msg)))
   strMTX = findParse_mtx(strDir)
-  strGene = os.path.join(strDir,"all_genes.csv")
-  strCell = os.path.join(strDir,"cell_metadata.csv")
-  # check the gene/cell tables first, they are quick to read
-  msg = ["missing file: %s"%os.path.basename(one) for one in [strGene,strCell] if not os.path.isfile(one)]
+  msg = checkParse(strDir)
   if len(msg)>0:
     parseError(msg)
-  gInfo = pd.read_csv(strGene)
-  cInfo = pd.read_csv(strCell)
-  if not "gene_name" in gInfo.columns:
-    msg.append("all_genes.csv: missing column 'gene_name' (found: %s)"%", ".join(gInfo.columns))
-  missCol = [one for one in ["sample","bc_wells"] if not one in cInfo.columns]
-  if len(missCol)>0:
-    msg.append("cell_metadata.csv: missing column(s) '%s' (found: %s)"%("', '".join(missCol),", ".join(cInfo.columns)))
-  if len(msg)>0:
-    parseError(msg)
+  gInfo = pd.read_csv(os.path.join(strDir,"all_genes.csv"))
+  cInfo = pd.read_csv(os.path.join(strDir,"cell_metadata.csv"))
   D = sc.read_mtx(strMTX)
   # the matrix is used as it is (cells x genes), without transpose
   if D.shape != (cInfo.shape[0],gInfo.shape[0]):

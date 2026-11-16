@@ -304,12 +304,17 @@ def getSampleMeta(strMeta):
     Exit("Sample definition file (%s) is empty"%strMeta)
   if not UMIcol in meta.columns:
     Exit("'%s' columns is required in meta file (%s)"%(UMIcol,strMeta))
+  msg = []
   for oneH5 in meta[UMIcol]:
     if os.path.isdir(oneH5):
+      # mtx folder: Parse Biosciences (DGE.mtx/count_matrix.mtx) or 10x; report all incompatible folders at once
+      msg += ["%s: %s"%(oneH5,one) for one in pQ.oD.checkUMIdir(oneH5)]
       continue
     elif os.path.isfile(oneH5) and (oneH5.endswith(".h5") or oneH5.endswith(".h5ad") or oneH5.endswith(".csv") or oneH5.endswith(".tsv")):
       continue
     Exit("The UMI file %s does not exist/not supported (only supports .h5/h5ad/csv/tsv matrix and mtx folder)"%oneH5)
+  if len(msg)>0:
+    Exit("Incompatible UMI folder(s) in '%s' column of %s:\n\t%s"%(UMIcol,strMeta,"\n\t".join(msg)))
   return(meta)
 
 def runMethods(strConfig,rawCMD):

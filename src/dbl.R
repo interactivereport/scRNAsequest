@@ -5,6 +5,7 @@ PKGloading <- function(){
   require(Matrix)
   require(BiocParallel)
   source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readH5ad.R"))
+  source(paste0(dirname(gsub("--file=","",grep("file=",commandArgs(),value=T))),"/readParse.R"))
 }
 
 dbl <- function(strH5ad,batch,strOut){
@@ -36,7 +37,12 @@ dbl <- function(strH5ad,batch,strOut){
 }
 dbl_single <- function(strUMI,strOut,strBarcode="library_id",subcore=5){
   if(dir.exists(strUMI)){
-    X <- Read10X(strUMI)
+    strParse <- findParse(strUMI)
+    if(!is.null(strParse)){
+      X <- readParse(strParse)
+    }else{
+      X <- Read10X(strUMI)
+    }
   }else if(grepl("h5$",strUMI)){
     suppressWarnings(X <- Read10X_h5(strUMI))
   }else if(grepl("csv$|tsv$",strUMI)){
@@ -57,9 +63,10 @@ dbl_single <- function(strUMI,strOut,strBarcode="library_id",subcore=5){
     },
     error=function(cond){
       message("*** Error in scDblFinder for ",strUMI," ***")
-      return(data.frame(row.names=barcodes,
-                        scDblFinder.class=rep('Failed',length(barcodes)),
-                        scDblFinder.score=rep(0,length(barcodes))))
+      # colnames(X), not barcodes: barcodes only exists when a barcode file was given (X is already subset to it)
+      return(data.frame(row.names=colnames(X),
+                        scDblFinder.class=rep('Failed',ncol(X)),
+                        scDblFinder.score=rep(0,ncol(X))))
     }
   )
   DBL <- cbind(DBL,nCount_RNA=colSums(X),nFeature_RNA=diff(X@p))
