@@ -43,12 +43,42 @@ def getIntronExon(strF,cID):
   IE = IEcount.merge(IErate,left_index=True,right_index=True)
   return(IE)
 
+ParseMTX = ["DGE.mtx","count_matrix.mtx"] # count matrix name in Parse Biosciences output (older/newer versions)
+def findParse_mtx(strDir):
+  for one in ParseMTX:
+    if os.path.isfile(os.path.join(strDir,one)):
+      return os.path.join(strDir,one)
+  return None
 def getParse_mtx(strDir):
-  D = sc.read_mtx(os.path.join(strDir,"DGE.mtx"))
-  gInfo = pd.read_csv(os.path.join(strDir,"all_genes.csv"))
+  # Raise (not exit) on incompatible input: this runs in a multiprocessing pool, where exit() would hang the pool
+  def parseError(msg):
+    raise ValueError("Incompatible Parse Biosciences input folder %s:\n\t%s"%(strDir,"\n\t".join(msg)))
+  strMTX = findParse_mtx(strDir)
+  strGene = os.path.join(strDir,"all_genes.csv")
+  strCell = os.path.join(strDir,"cell_metadata.csv")
+  # check the gene/cell tables first, they are quick to read
+  msg = ["missing file: %s"%os.path.basename(one) for one in [strGene,strCell] if not os.path.isfile(one)]
+  if len(msg)>0:
+    parseError(msg)
+  gInfo = pd.read_csv(strGene)
+  cInfo = pd.read_csv(strCell)
+  if not "gene_name" in gInfo.columns:
+    msg.append("all_genes.csv: missing column 'gene_name' (found: %s)"%", ".join(gInfo.columns))
+  missCol = [one for one in ["sample","bc_wells"] if not one in cInfo.columns]
+  if len(missCol)>0:
+    msg.append("cell_metadata.csv: missing column(s) '%s' (found: %s)"%("', '".join(missCol),", ".join(cInfo.columns)))
+  if len(msg)>0:
+    parseError(msg)
+  D = sc.read_mtx(strMTX)
+  # the matrix is used as it is (cells x genes), without transpose
+  if D.shape != (cInfo.shape[0],gInfo.shape[0]):
+    one = "%s is %d x %d, but %d cells (cell_metadata.csv) x %d genes (all_genes.csv) is expected"%(
+      os.path.basename(strMTX),D.shape[0],D.shape[1],cInfo.shape[0],gInfo.shape[0])
+    if D.shape == (gInfo.shape[0],cInfo.shape[0]):
+      one += "; the matrix is genes x cells (transposed), which is not supported"
+    parseError([one])
   gInfo.index = ad.utils.make_index_unique(pd.Index(gInfo.gene_name.values))
   D.var = gInfo
-  cInfo = pd.read_csv(os.path.join(strDir,"cell_metadata.csv"))
   cInfo.index = cInfo['sample'] + "_" + cInfo['bc_wells']
   D.obs=cInfo
   return D
@@ -62,7 +92,7 @@ def Check10Xmtx(strDir):
 def getData_one(oneMeta,sID,strOut,dblScore=True,subcore=5):
   print("\t%s"%oneMeta[sID])
   if os.path.isdir(oneMeta[UMIcol]):
-    if os.path.isfile(os.path.join(oneMeta[UMIcol],"DGE.mtx")):#Parse biosciences
+    if findParse_mtx(oneMeta[UMIcol]) is not None:#Parse biosciences
       adata = getParse_mtx(oneMeta[UMIcol])
     else:
       Check10Xmtx(oneMeta[UMIcol])
